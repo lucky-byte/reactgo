@@ -1,0 +1,33 @@
+
+const urlCodes = {
+  911: { title: '导航代码', to: '/codes' },
+  100: { title: '交易看板', to: '/' },
+  110: { title: '渠道看板', to: '/dashboard/bank' },
+  120: { title: '商户看板', to: '/dashboard/merch' },
+  200: { title: '订单查询', to: '/order/list' },
+  210: { title: '汇总统计', to: '/order/stat' },
+  300: { title: '商户进件', to: '/merch/add' },
+  310: { title: '商户管理', to: '/merch/manage' },
+  320: { title: '码牌管理', to: '/merch/paycode' },
+  330: { title: '收款页面配置', to: '/merch/paypage' },
+  400: { title: '渠道管理', to: '/bank/manage' },
+  401: { title: '添加渠道', to: '/bank/manage/add' },
+  410: { title: '渠道交易查询', to: '/bank/orders' },
+  420: { title: '渠道交易分析', to: '/bank/stats' },
+  500: { title: '系统报表', to: '/report/system' },
+  510: { title: '商户报表', to: '/report/merch' },
+  520: { title: '渠道报表', to: '/report/bank' },
+  600: { title: '商户拓展商', to: '/develop/merch' },
+  601: { title: '添加商户拓展商', to: '/develop/merch/add' },
+  610: { title: '渠道开发商', to: '/develop/bank' },
+  611: { title: '添加渠道开发商', to: '/develop/bank/add' },
+  700: { title: '用户管理', to: '/system/user' },
+  701: { title: '添加用户', to: '/system/user/add' },
+  710: { title: '访问控制', to: '/system/acl' },
+  711: { title: '添加角色', to: '/system/acl/add' },
+  720: { title: '定时任务', to: '/system/task' },
+  730: { title: '登录历史', to: '/system/history' },
+  740: { title: '系统事件', to: '/system/notification' },
+}
+
+export default urlCodes;

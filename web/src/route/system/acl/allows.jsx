@@ -1,0 +1,319 @@
+import { useEffect, useState } from 'react';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useSetRecoilState } from "recoil";
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { useSnackbar } from 'notistack';
+import { useHotkeys } from 'react-hotkeys-hook';
+import OutlinedPaper from "../../../comp/outlined-paper";
+import urlCodes from "../../sidebar/codes";
+import titleState from "../../../state/title";
+import progressState from '../../../state/progress';
+import { post, get, put } from '../../../rest';
+
+export default function AclAllows() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const setTitle = useSetRecoilState(titleState);
+  const setProgress = useSetRecoilState(progressState);
+  const { enqueueSnackbar } = useSnackbar();
+  const [refresh, setRefresh] = useState(true);
+  const [codeList, setCodeList] = useState([]);
+  const [nCodeChecked, setNCodeChecked] = useState(0);
+  const [codeAllChecked, setCodeAllChecked] = useState(false);
+  const [codeAllInterminate, setCodeAllInterminate] = useState(false);
+  const [allowList, setAllowList] = useState([]);
+  const [nAllowChecked, setNAllowChecked] = useState(0);
+  const [allowAllChecked, setAllowAllChecked] = useState(false);
+  const [allowAllInterminate, setAllowAllInterminate] = useState(false);
+  const [updated, setUpdated] = useState(false);
+
+  useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
+
+  useEffect(() => { setTitle('设置允许访问'); }, [setTitle]);
+
+  // 查询已经允许的列表
+  useEffect(() => {
+    (async () => {
+      try {
+        if (location?.state?.acl && refresh) {
+          setProgress(true);
+
+          const params = new URLSearchParams({ acl: location.state.acl });
+          const resp = await get('/system/acl/allow/list?' + params.toString());
+          const allows = resp.allows || [];
+          setAllowList(allows);
+
+          // 更新剩余可用的列表
+          const list = Object.keys(urlCodes).map(code => {
+            for (let i = 0; i < allows.length; i++) {
+              if (parseInt(allows[i].code) === parseInt(code)) {
+                return null;
+              }
+            }
+            return {
+              code: parseInt(code),
+              title: urlCodes[code].title,
+              url: urlCodes[code].to,
+            };
+          });
+          setCodeList(list.filter(i => i !== null));
+        }
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      } finally {
+        setProgress(false);
+        setRefresh(false);
+      }
+    })();
+  }, [enqueueSnackbar, location?.state?.acl, setProgress, refresh]);
+
+  // 更新可用的选择框
+  useEffect(() => {
+    const nchecked = codeList.filter(i => i.checked)?.length || 0;
+    if (nchecked === 0 || nchecked === codeList.length) {
+      setCodeAllInterminate(false);
+    } else {
+      setCodeAllInterminate(true);
+    }
+    setCodeAllChecked(nchecked === codeList.length);
+    setNCodeChecked(nchecked);
+  }, [codeList]);
+
+  // 选择全部可用菜单
+  const onCodeCheckAll = e => {
+    const list = codeList.map(i => {
+      i.checked = e.target.checked;
+      return i;
+    });
+    setCodeList(list);
+  }
+
+  // 选择可用菜单
+  const onCodeCheck = (e, index) => {
+    const list = [...codeList];
+    list[index].checked = !list[index].checked;
+    setCodeList(list);
+  }
+
+  // 更新可用的选择框
+  useEffect(() => {
+    const nchecked = allowList.filter(i => i.checked)?.length || 0;
+    if (nchecked === 0 || nchecked === allowList.length) {
+      setAllowAllInterminate(false);
+    } else {
+      setAllowAllInterminate(true);
+    }
+    setAllowAllChecked(nchecked === allowList.length);
+    setNAllowChecked(nchecked);
+  }, [allowList]);
+
+  // 选择全部已用菜单
+  const onAllowCheckAll = e => {
+    const list = allowList.map(i => {
+      i.checked = e.target.checked;
+      return i;
+    });
+    setAllowList(list);
+  }
+
+  // 选择已用菜单
+  const onAllowCheck = (e, index) => {
+    const list = [...allowList];
+    list[index].checked = !list[index].checked;
+    setAllowList(list);
+  }
+
+  // 添加
+  const onAddClick = async () => {
+    try {
+      const entries = codeList.filter(i => {
+        return i.checked;
+      })
+      await post('/system/acl/allow/add', new URLSearchParams({
+        acl: location?.state?.acl,
+        entries: JSON.stringify(entries),
+      }));
+      enqueueSnackbar('添加成功', { variant: 'success' });
+      setRefresh(true);
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  // 移除
+  const onRemoveClick = async () => {
+    try {
+      const entries = allowList.filter(i => {
+        return i.checked;
+      })
+      await post('/system/acl/allow/remove', new URLSearchParams({
+        acl: location?.state?.acl,
+        entries: JSON.stringify(entries),
+      }));
+      enqueueSnackbar('移除成功', { variant: 'success' });
+      setRefresh(true);
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  const onAllowUpdateCheck = async (uuid, read, write, admin) => {
+    try {
+      setUpdated(true);
+
+      await put('/system/acl/allow/update', new URLSearchParams({
+        uuid, read, write, admin,
+      }));
+      enqueueSnackbar('更新成功', { variant: 'success' });
+      setRefresh(true);
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    } finally {
+      setUpdated(false);
+    }
+  }
+
+  if (!location?.state?.acl) {
+    return <Navigate to='..' replace />
+  }
+
+  const { innerHeight: height } = window;
+  const maxHeight = height - 210;
+
+  return (
+    <Container as='main' maxWidth='md' sx={{ py: 4 }}>
+      <Stack direction='row' alignItems='center' sx={{ mb: 3 }}>
+        <IconButton sx={{ mr: 1 }} onClick={() => { navigate('..') }}>
+          <ArrowBackIcon color='primary' />
+        </IconButton>
+        <Stack sx={{ flex: 1 }}>
+          <Typography variant='h6'>{location?.state?.name}</Typography>
+          <Typography variant='body2'>{location?.state?.summary}</Typography>
+        </Stack>
+      </Stack>
+      <Stack direction='row' alignItems='center' spacing={2}>
+        <TableContainer component={OutlinedPaper} sx={{
+          flex: 3, height: maxHeight, overflow: 'scroll'
+        }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell align='center' padding='checkbox'>
+                  <Checkbox checked={codeAllChecked} onChange={onCodeCheckAll}
+                    indeterminate={codeAllInterminate}
+                  />
+                </TableCell>
+                <TableCell align='center'>代码</TableCell>
+                <TableCell align='center'>功能</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {codeList.map((row, index) => (
+                <TableRow key={row.code} hover selected={row.checked === true}
+                  sx={{ '> td, > th': { border: 0 } }}>
+                  <TableCell align='center' padding='checkbox'>
+                    <Checkbox checked={row.checked === true}
+                      onChange={e => onCodeCheck(e, index)}
+                    />
+                  </TableCell>
+                  <TableCell align="center">{row.code}</TableCell>
+                  <TableCell align="center">{row.title}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Stack spacing={2}>
+          <Button endIcon={<ArrowForwardIcon />}
+            disabled={nCodeChecked === 0} onClick={onAddClick}>
+            添加 {nCodeChecked} 项
+          </Button>
+          <Button color='warning' startIcon={<ArrowBackIcon />}
+            disabled={nAllowChecked === 0} onClick={onRemoveClick}>
+            移除 {nAllowChecked} 项
+          </Button>
+        </Stack>
+        <TableContainer component={OutlinedPaper} sx={{
+          flex: 5, height: maxHeight, overflow: 'scroll'
+        }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell align='center' padding='checkbox'>
+                  <Checkbox checked={allowAllChecked} onChange={onAllowCheckAll}
+                    indeterminate={allowAllInterminate}
+                  />
+                </TableCell>
+                <TableCell align='center'>代码</TableCell>
+                <TableCell align='center'>功能</TableCell>
+                <TableCell align='center' sx={{ whiteSpace: 'nowrap' }}>
+                  访问
+                </TableCell>
+                <TableCell align='center' sx={{ whiteSpace: 'nowrap' }}>
+                  修改
+                </TableCell>
+                <TableCell align='center' sx={{ whiteSpace: 'nowrap' }}>
+                  管理
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {allowList.map((row, index) => (
+                <TableRow key={row.code} hover selected={row.checked === true}
+                  sx={{ '> td, > th': { border: 0 } }}>
+                  <TableCell align='center' padding='checkbox'>
+                    <Checkbox checked={row.checked === true}
+                      onChange={e => onAllowCheck(e, index)}
+                    />
+                  </TableCell>
+                  <TableCell align="center">{row.code}</TableCell>
+                  <TableCell align="center">{row.title}</TableCell>
+                  <TableCell align="center" padding='checkbox'>
+                    <Checkbox disabled={updated} checked={row.read} color='success'
+                      onChange={e => {
+                        onAllowUpdateCheck(
+                          row.uuid, !row.read, row.write, row.admin
+                        );
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell align="center" padding='checkbox'>
+                    <Checkbox disabled={updated} checked={row.write} color='success'
+                      onChange={e => {
+                        onAllowUpdateCheck(
+                          row.uuid, row.read, !row.write, row.admin
+                        );
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell align="center" padding='checkbox'>
+                    <Checkbox disabled={updated} checked={row.admin} color='success'
+                      onChange={e => {
+                        onAllowUpdateCheck(
+                          row.uuid, row.read, row.write, !row.admin
+                        );
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Stack>
+    </Container>
+  )
+}
