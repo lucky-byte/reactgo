@@ -1,0 +1,89 @@
+# KrossIAM Configuration
+# https://github.com/krossdev/iam/blob/main/LICENSE
+
+# KIAM_DEBUG
+#
+# Debug mode or not
+#
+debug: true
+
+# KIAM_WEBDIR
+#
+# Web assets directory, default is './web'
+# Only valid if command line option -webfs=osdir, see 'kiam -h' for more.
+#
+webdir: ./web
+
+# KIAM_PROXY
+#
+# Proxy mode
+# Whether app is running behind a reverse proxy or not.
+#
+proxy: false
+
+# Log parameters
+#
+log:
+  # KIAM_LOG_PATH
+  #
+  # Where to save log file(it's a path name, not filename)
+  #
+  path: /tmp
+
+# Http server options
+#
+server:
+  # KIAM_SERVER_HTTPURL
+  #
+  # Server http(s) url(with port), like http://localhost:3100
+  # when output url link to this server(like url in email),
+  # will use this option
+  #
+  # If this option is empty, the url will be contract from below 3 options:
+  # secure, domains, bind
+  #
+  # httpurl = (secure ? https : http) :// (domains[0]) : (bind port)
+  #
+  httpurl: http://localhost
+
+  # KIAM_SERVER_BIND
+  #
+  # Server binding address, like 'host:8080' or ':8080'
+  # Optionally, if missing, will bind protocol default port and
+  # all network interface(0.0.0.0)
+  #
+  bind: :18080
+
+  # KIAM_SERVER_SECURE
+  #
+  # Enable TLS(https) or not
+  # DON'T set to false in production environment
+  #
+  # secure: true
+
+  # KIAM_SERVER_AUTOTLS
+  # KIAM_SERVER_DOMAINS
+  # KIAM_SERVER_CACHEDIR
+  #
+  # automatic access to certificates from Let's Encrypt and any other
+  # ACME-based CA.
+  # If this is true, 'tls_key' and 'tls_cert' will be ignore.
+  #
+  autotls: false
+  domains: [ localhost ]
+  cachedir: /tmp
+
+  # TLS key and cert file, only apply when 'autotls' is false
+  #
+  # tlscrt: cert.pem
+  # tlskey: key.pem
+
+# Database options
+#
+database:
+  # KIAM_DATABASE_DSN
+  #
+  # Data Source Name, see driver document for driver-specific syntax
+  #
+  dsn: postgres://localhost/demo
+  # dsn: postgres://root@localhost:26257/defaultdb

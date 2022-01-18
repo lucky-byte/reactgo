@@ -1,0 +1,17 @@
+package system
+
+import (
+	"github.com/labstack/echo/v4"
+
+	"github.com/lucky-byte/bdb/serve/route/index/system/acl"
+	"github.com/lucky-byte/bdb/serve/route/index/system/history"
+	"github.com/lucky-byte/bdb/serve/route/index/system/user"
+)
+
+func Attach(up *echo.Group) {
+	group := up.Group("/system")
+
+	user.Attach(group)
+	acl.Attach(group)
+	history.Attach(group)
+}

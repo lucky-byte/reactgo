@@ -1,0 +1,12 @@
+package user
+
+import (
+	"github.com/labstack/echo/v4"
+)
+
+func Attach(up *echo.Group) {
+	group := up.Group("/user")
+
+	group.GET("/info", info)
+	group.PUT("/passwd", passwd)
+}
