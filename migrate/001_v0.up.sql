@@ -73,4 +73,11 @@ insert into acl_allows (uuid, acl, code, title, url, read, write, admin) values 
   1100, '访问控制', '/system/acl', true, true, true
 );
 
+create table if not exists sms_settings (
+  appid       varchar(36)     not null,
+  appkey      varchar(36)     not null
+);
+
+insert into sms_settings (appid, appkey) values ('0', '0');
+
 commit;

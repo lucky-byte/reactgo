@@ -16,6 +16,7 @@ func secure(c echo.Context) error {
 
 	if err := db.SelectOne(ql, &result); err != nil {
 		cc.ErrLog(err).Error("查询系统设置错")
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"resetpass": result.ResetPass,
@@ -29,6 +30,7 @@ func resetpass(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustBool("resetpass", &resetpass).BindError()
 	if err != nil {
+		cc.ErrLog(err).Error("请求无效")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `update settings set resetpass = ?`

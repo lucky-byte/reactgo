@@ -73,3 +73,9 @@ type Settings struct {
 	UUID      string `db:"uuid"`      // uuid
 	ResetPass bool   `db:"resetpass"` // resetpass
 }
+
+// SMS settings
+type SmsSettings struct {
+	AppId  string `db:"appid"`  // appid
+	AppKey string `db:"appkey"` // appkey
+}

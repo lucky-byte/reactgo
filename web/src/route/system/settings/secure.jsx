@@ -42,7 +42,7 @@ export default function Secure() {
           <Stack sx={{ flex: 1 }}>
             <Typography>登录时允许用户找回密码</Typography>
             <FormHelperText>
-              如果不允许，需要管理员登录后台重置用户密码
+              如果不允许，则需要管理员登录后台帮助用户重置密码
             </FormHelperText>
           </Stack>
           <Switch checked={resetPass} onChange={onResetPassCheck} />
