@@ -6,7 +6,7 @@ import (
 )
 
 func Attach(up *echo.Group) {
-	code := 710
+	code := 1100
 
 	group := up.Group("/acl", acl.AllowRead(code))
 
@@ -17,11 +17,11 @@ func Attach(up *echo.Group) {
 
 	group.PUT("/name", name)
 	group.PUT("/summary", summary)
-	group.DELETE("/delete", del)
-
-	group.POST("/add", add, acl.AllowRead(711), acl.AllowWrite(711))
 
 	group.Use(acl.AllowAdmin(code))
+
+	group.POST("/add", add)
+	group.DELETE("/delete", del)
 
 	group.POST("/allow/add", allowAdd)
 	group.GET("/allow/list", allowList)

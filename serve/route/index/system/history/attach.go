@@ -6,7 +6,9 @@ import (
 )
 
 func Attach(up *echo.Group) {
-	group := up.Group("/history", acl.AllowRead(730))
+	code := 1200
+
+	group := up.Group("/history", acl.AllowRead(code))
 
 	group.POST("/", list)
 }

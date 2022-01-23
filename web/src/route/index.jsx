@@ -50,12 +50,10 @@ import codeState from "../state/code";
 import { get, put } from "../rest";
 import LuckyByte from '../img/lucky-byte.png';
 import LuckyByteDark from '../img/lucky-byte-dark.png';
-import { useColorModeContent } from "../App";
+import { useColorModeContent } from "../app";
 import NotFound from "./notfound";
 import Codes from "./codes";
 import Dashboard from "./dashboard";
-import Bank from "./bank";
-import Develop from "./develop";
 import System from "./system";
 
 export default function Index() {
@@ -110,8 +108,6 @@ export default function Index() {
         <Box sx={{ maxHeight: '100%', overflow: 'scroll' }}>
           <Routes>
             <Route path='/' element={<Dashboard />} />
-            <Route path='bank/*' element={<Bank />} />
-            <Route path='develop/*' element={<Develop />} />
             <Route path='system/*' element={<System />} />
             <Route path='/codes' element={<Codes />} />
             <Route path='*' element={<NotFound />} />
@@ -147,11 +143,13 @@ function Appbar(params) {
   useEffect(() => { document.title = title; }, [title])
 
   useEffect(() => {
+    // 如果 token 无效，则跳转登录页面
     const token = localStorage.getItem('token');
     if (!token) {
       localStorage.setItem('last-access', window.location.pathname);
       return navigate('/signin', { replace: true });
     }
+    // 更新用户信息
     if (!user || !user.userid) {
       (async () => {
         try {

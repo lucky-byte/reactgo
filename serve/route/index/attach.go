@@ -4,8 +4,6 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/lucky-byte/bdb/serve/route/index/auth"
-	"github.com/lucky-byte/bdb/serve/route/index/bank"
-	"github.com/lucky-byte/bdb/serve/route/index/develop"
 	"github.com/lucky-byte/bdb/serve/route/index/signin"
 	"github.com/lucky-byte/bdb/serve/route/index/system"
 	"github.com/lucky-byte/bdb/serve/route/index/user"
@@ -19,7 +17,5 @@ func Attach(up *echo.Echo) {
 	group.Use(auth.Authentication)
 
 	user.Attach(group)
-	bank.Attach(group)
-	develop.Attach(group)
 	system.Attach(group)
 }

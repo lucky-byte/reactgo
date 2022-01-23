@@ -31,7 +31,6 @@ import (
 	"github.com/lucky-byte/bdb/serve/ctx"
 	"github.com/lucky-byte/bdb/serve/db"
 	"github.com/lucky-byte/bdb/serve/image"
-	"github.com/lucky-byte/bdb/serve/route/api"
 	"github.com/lucky-byte/bdb/serve/route/index"
 	"github.com/lucky-byte/bdb/serve/xlog"
 )
@@ -193,7 +192,6 @@ func main() {
 	}
 
 	index.Attach(engine)
-	api.Attach(engine)
 	image.Attach(engine)
 
 	// Startup server in a goroutine so main goroutine won't block

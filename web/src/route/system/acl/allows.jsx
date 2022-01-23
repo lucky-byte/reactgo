@@ -42,7 +42,7 @@ export default function AclAllows() {
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
 
-  useEffect(() => { setTitle('设置允许访问'); }, [setTitle]);
+  useEffect(() => { setTitle('修改访问控制'); }, [setTitle]);
 
   // 查询已经允许的列表
   useEffect(() => {
@@ -170,6 +170,7 @@ export default function AclAllows() {
     }
   }
 
+  // 修改权限
   const onAllowUpdateCheck = async (uuid, read, write, admin) => {
     try {
       setUpdated(true);

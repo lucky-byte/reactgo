@@ -9,7 +9,7 @@ import { SnackbarProvider } from 'notistack';
 import Slide from '@mui/material/Slide';
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
-import App from './App';
+import App from './app';
 
 dayjs.locale('zh-cn');
 

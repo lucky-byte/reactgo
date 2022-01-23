@@ -66,19 +66,11 @@ create unique index acl_allows_acl_url on acl_allows(acl, url);
 
 insert into acl_allows (uuid, acl, code, title, url, read, write, admin) values (
   gen_random_uuid(), '7e9633f6-c83a-49a4-9a96-e120d6ca6055',
-  700, '用户管理', '/system/user', true, true, true
+  1000, '用户管理', '/system/user', true, true, true
 );
 insert into acl_allows (uuid, acl, code, title, url, read, write, admin) values (
   gen_random_uuid(), '7e9633f6-c83a-49a4-9a96-e120d6ca6055',
-  701, '添加用户', '/system/user/add', true, true, true
-);
-insert into acl_allows (uuid, acl, code, title, url, read, write, admin) values (
-  gen_random_uuid(), '7e9633f6-c83a-49a4-9a96-e120d6ca6055',
-  710, '访问控制', '/system/acl', true, true, true
-);
-insert into acl_allows (uuid, acl, code, title, url, read, write, admin) values (
-  gen_random_uuid(), '7e9633f6-c83a-49a4-9a96-e120d6ca6055',
-  711, '添加角色', '/system/acl/add', true, true, true
+  1100, '访问控制', '/system/acl', true, true, true
 );
 
 commit;
