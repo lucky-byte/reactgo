@@ -139,7 +139,7 @@ export default function SMS() {
           <TableHead>
             <TableRow>
               <TableCell align="center">模板名称</TableCell>
-              <TableCell align="center">正文</TableCell>
+              <TableCell align="center">模板正文</TableCell>
               <TableCell align="center">模板编号</TableCell>
             </TableRow>
           </TableHead>
@@ -147,7 +147,7 @@ export default function SMS() {
             <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell align="center">验证码</TableCell>
               <TableCell align="center">验证码&nbsp;
-                <NumberTip n={1} tip='短信验证码变量' />
+                <NumberTip n={1} tip='短信验证码' />
                 ，5分钟内有效
               </TableCell>
               <TableCell align="center">

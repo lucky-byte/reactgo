@@ -40,7 +40,7 @@ export default function Secure() {
       <Paper variant="outlined" sx={{ py: 1, px: 2, mt: 2 }}>
         <Stack direction='row' alignItems='center'>
           <Stack sx={{ flex: 1 }}>
-            <Typography>登录时允许用户找回密码</Typography>
+            <Typography>允许用户凭手机号和邮箱找回登录密码</Typography>
             <FormHelperText>
               如果不允许，则需要管理员登录后台帮助用户重置密码
             </FormHelperText>

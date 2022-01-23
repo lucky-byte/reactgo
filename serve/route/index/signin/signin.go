@@ -33,7 +33,7 @@ func signin(c echo.Context) error {
 	// 查询用户信息
 	if err = db.SelectOne(ql, &user, username); err != nil {
 		cc.ErrLog(err).WithField("userid", username).Error("登录失败")
-		return c.String(http.StatusInternalServerError, "服务器内部错")
+		return c.String(http.StatusForbidden, "用户名或密码错误")
 	}
 	// 检查用户状态
 	if user.Disabled || user.Deleted {
@@ -67,7 +67,7 @@ func signin(c echo.Context) error {
 
 	// 发送短信验证码
 	if user.TFA {
-		if smsid, err = sms.Send(user.Mobile); err != nil {
+		if smsid, err = sms.Code(user.Mobile); err != nil {
 			cc.ErrLog(err).WithField("userid", username).Error(
 				"发送短信验证码错误，登录失败")
 			return c.String(http.StatusInternalServerError, "发送短信验证码失败")
