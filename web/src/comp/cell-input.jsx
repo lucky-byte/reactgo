@@ -11,7 +11,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { debounce } from "lodash";
 
-export default function InplaceInput(props) {
+export default function CellInput(props) {
   const [text, setText] = useState(props.text);
   const [iconVisible, setIconVisible] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -50,8 +50,13 @@ export default function InplaceInput(props) {
   if (editing) {
     return (
       <Stack direction='row' alignItems='flex-start' sx={props.sx}>
-        <TextField variant='standard' size="small" fullWidth autoFocus
+        <TextField variant='standard' size="small" autoFocus
           multiline={props.multiline}
+          inputProps={{
+            style: {
+              fontSize: 'small',
+            }
+          }}
           value={text} onChange={onTextChange} onKeyDown={onKeyDown}
           onBlur={debounceBlur}
           InputProps={{
@@ -70,11 +75,6 @@ export default function InplaceInput(props) {
                   </Tooltip>
                 </Stack>
               </InputAdornment>
-          }}
-          inputProps={{
-            style: {
-              fontSize: props.fontSize,
-            }
           }}
         />
       </Stack>
@@ -98,18 +98,16 @@ export default function InplaceInput(props) {
   )
 }
 
-InplaceInput.propTypes = {
+CellInput.propTypes = {
   text: PropTypes.string.isRequired,
   onConfirm: PropTypes.func.isRequired,
   variant: PropTypes.string,
   multiline: PropTypes.bool,
   sx: PropTypes.object,
-  fontSize: PropTypes.string,
 }
 
-InplaceInput.defaultProps = {
-  variant: 'body1',
+CellInput.defaultProps = {
+  variant: 'body2',
   multiline: false,
   sx: {},
-  fontSize: 'normal',
 }

@@ -204,7 +204,7 @@ function AclInfo(props) {
     <Paper variant='outlined' sx={{ flex: 1, maxHeight: maxHeight, overflow: 'scroll' }}>
       <Toolbar>
         <InplaceInput variant='h6' sx={{ flex: 1 }} text={info.name || ''}
-          onConfirm={onChangeName}
+          fontSize='large' onConfirm={onChangeName}
         />
         <IconButton onClick={() => { setCollapsed(!collapsed) }}>
           {collapsed ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -213,7 +213,7 @@ function AclInfo(props) {
       </Toolbar>
       <Stack sx={{ ml: 3 }} spacing={1}>
         <InplaceInput variant='body2' text={info.summary || ''} multiline
-          onConfirm={onChangeSummary}
+          fontSize='small' onConfirm={onChangeSummary}
         />
         <Collapse in={collapsed}>
           <Stack sx={{ mb: 2 }}>

@@ -75,9 +75,10 @@ insert into acl_allows (uuid, acl, code, title, url, read, write, admin) values 
 
 create table if not exists sms_settings (
   appid       varchar(36)     not null,
-  appkey      varchar(36)     not null
+  appkey      varchar(36)     not null,
+  sign        varchar(36)     not null
 );
 
-insert into sms_settings (appid, appkey) values ('0', '0');
+insert into sms_settings (appid, appkey, sign) values ('0', '0', 'S');
 
 commit;
