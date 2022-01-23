@@ -68,47 +68,8 @@ type ACLAllow struct {
 	Admin bool   `db:"admin"` // Admin
 }
 
-// 渠道开发商
-type BankDevelop struct {
-	UUID     string         `db:"uuid"`      // uuid
-	CreateAt time.Time      `db:"create_at"` // create time
-	UpdateAt time.Time      `db:"update_at"` // update time
-	Disabled bool           `db:"disabled"`  // disabled
-	Deleted  bool           `db:"deleted"`   // deleted
-	Name     string         `db:"name"`      // name
-	Mobile   string         `db:"mobile"`    // mobile
-	Email    string         `db:"email"`     // email
-	Address  sql.NullString `db:"address"`   // address
-	Company  sql.NullString `db:"company"`   // company
-}
-
-// 商户拓展商
-type MerchDevelop struct {
-	UUID     string         `db:"uuid"`      // uuid
-	CreateAt time.Time      `db:"create_at"` // create time
-	UpdateAt time.Time      `db:"update_at"` // update time
-	Disabled bool           `db:"disabled"`  // disabled
-	Deleted  bool           `db:"deleted"`   // deleted
-	Name     string         `db:"name"`      // name
-	Mobile   string         `db:"mobile"`    // mobile
-	Email    string         `db:"email"`     // email
-	Address  sql.NullString `db:"address"`   // address
-	Company  sql.NullString `db:"company"`   // company
-}
-
-// 渠道
-type Bank struct {
-	UUID     string         `db:"uuid"`      // uuid
-	CreateAt time.Time      `db:"create_at"` // create time
-	UpdateAt time.Time      `db:"update_at"` // update time
-	Disabled bool           `db:"disabled"`  // disabled
-	Deleted  bool           `db:"deleted"`   // deleted
-	Develop  sql.NullString `db:"company"`   // develop
-	Code     string         `db:"code"`      // code
-	Name     string         `db:"name"`      // name
-	Fullname string         `db:"fullname"`  // fullname
-	Contact  string         `db:"contact"`   // contact
-	Mobile   string         `db:"mobile"`    // mobile
-	Email    string         `db:"email"`     // email
-	Address  sql.NullString `db:"address"`   // address
+// Settings
+type Settings struct {
+	UUID      string `db:"uuid"`      // uuid
+	ResetPass bool   `db:"resetpass"` // resetpass
 }

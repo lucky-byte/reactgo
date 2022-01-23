@@ -5,6 +5,7 @@ import (
 
 	"github.com/lucky-byte/bdb/serve/route/index/system/acl"
 	"github.com/lucky-byte/bdb/serve/route/index/system/history"
+	"github.com/lucky-byte/bdb/serve/route/index/system/settings"
 	"github.com/lucky-byte/bdb/serve/route/index/system/user"
 )
 
@@ -14,4 +15,5 @@ func Attach(up *echo.Group) {
 	user.Attach(group)
 	acl.Attach(group)
 	history.Attach(group)
+	settings.Attach(group)
 }

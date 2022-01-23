@@ -30,7 +30,6 @@ import Divider from '@mui/material/Divider';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import KeyIcon from '@mui/icons-material/Key';
-import AddLinkIcon from '@mui/icons-material/AddLink';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
@@ -236,12 +235,6 @@ function UserMenuIconButton(props) {
     navigate('acl', { state: { uuid: user.uuid, name: user.name, acl: user.acl } });
   };
 
-  // 绑定
-  const onBindClick = () => {
-    setAnchorEl(null);
-    navigate('bind', { state: { uuid: user.uuid, name: user.name } });
-  };
-
   // 禁用/启用
   const onDisableClick = async () => {
     try {
@@ -318,18 +311,11 @@ function UserMenuIconButton(props) {
           </ListItemIcon>
           <ListItemText>修改密码</ListItemText>
         </MenuItem>
-        <Divider />
         <MenuItem disabled={user.disabled || user.deleted} onClick={onACLClick}>
           <ListItemIcon>
             <SecurityIcon fontSize="small" color='info' />
           </ListItemIcon>
           <ListItemText>访问控制</ListItemText>
-        </MenuItem>
-        <MenuItem disabled={user.disabled || user.deleted} onClick={onBindClick}>
-          <ListItemIcon>
-            <AddLinkIcon fontSize="small" color='info' />
-          </ListItemIcon>
-          <ListItemText>绑定商户/渠道</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem disabled={user.deleted} onClick={onDisableClick}>
