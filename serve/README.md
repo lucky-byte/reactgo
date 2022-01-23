@@ -1,12 +1,19 @@
-# Kross IAM Server
+# ReactGo
+
+React + Go template project.
 
 ## Build
 
 ```
 ./build.sh
 ```
+# build
 
-This will generated `kross-iam` executable file in current directory
+```
+make build
+```
+
+This will generated `reactgo` executable file in current directory
 when build successful.
 
 ## Web FrontEnd

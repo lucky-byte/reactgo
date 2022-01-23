@@ -25,9 +25,10 @@ const urlCodes = {
   701: { title: '添加用户', to: '/system/user/add' },
   710: { title: '访问控制', to: '/system/acl' },
   711: { title: '添加角色', to: '/system/acl/add' },
-  720: { title: '定时任务', to: '/system/task' },
-  730: { title: '登录历史', to: '/system/history' },
+  720: { title: '登录历史', to: '/system/history' },
+  730: { title: '系统设置', to: '/system/settings' },
   740: { title: '系统事件', to: '/system/notification' },
+  750: { title: '定时任务', to: '/system/task' },
 }
 
 export default urlCodes;

@@ -18,15 +18,15 @@ type ViperConfig struct {
 func Load(filepath string) (*ViperConfig, error) {
 	vp := viper.NewWithOptions()
 
-	vp.SetDefault("log.path", path.Join(os.TempDir(), "bdb-log"))
+	vp.SetDefault("log.path", path.Join(os.TempDir(), "log"))
 
 	if len(filepath) > 0 {
 		vp.SetConfigFile(filepath)
 	} else {
-		vp.SetConfigName("bdb")
+		vp.SetConfigName("rgo")
 		vp.AddConfigPath(".")
 	}
-	vp.SetEnvPrefix("bdb")
+	vp.SetEnvPrefix("rgo")
 
 	replacer := strings.NewReplacer(".", "_", "-", "_")
 	vp.SetEnvKeyReplacer(replacer)
@@ -46,14 +46,8 @@ func Load(filepath string) (*ViperConfig, error) {
 	if len(config.LogPath()) == 0 {
 		return nil, fmt.Errorf("log.path not found")
 	}
-	if len(config.DatabaseDriver()) == 0 {
-		return nil, fmt.Errorf("database.driver not found")
-	}
 	if len(config.DatabaseDSN()) == 0 {
 		return nil, fmt.Errorf("database.dsn not found")
-	}
-	if len(config.MSBrokers()) == 0 {
-		return nil, fmt.Errorf("ms.brokers cannot be empty")
 	}
 	if len(config.ServerHttpURL()) == 0 {
 		if err := setHttpurl(config); err != nil {

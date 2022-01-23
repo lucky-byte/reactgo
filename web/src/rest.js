@@ -13,9 +13,9 @@ const rest = async (url, args) => {
     method: args.method,
     headers: {
       ...args.headers,
-      'X-User-Agent': 'BDB/1',
-      'X-CSRF-Token': csrf || '',
-      'X-AUTH-Token': token || '',
+      'x-user-agent': 'ReactGo/1',
+      'x-csrf-token': csrf || '',
+      'x-auth-token': token || '',
     },
     body: args.body,
     credentials: "same-origin",
@@ -23,21 +23,24 @@ const rest = async (url, args) => {
     redirect: "follow",
   });
   if (!resp.ok) {
+    // 认证失败，跳转到登录页面
     if (resp.status === 401) {
-      localStorage.removeItem('token');
       cookies.remove('csrf');
+      localStorage.removeItem('token');
       localStorage.setItem('last-access', window.location.pathname);
       setTimeout(() => { window.location.href = '/signin'; }, 500);
       throw new Error('认证失败，请重新登录');
     }
+    // 显示错误消息
     let text = await resp.text();
     if (!text) {
       text = resp.statusText;
     }
     throw new Error(text || '未知错误-' + resp.status);
   }
-  const restype = resp.headers.get("content-type");
-  if (restype?.startsWith("application/json")) {
+  // 根据返回类型解析数据，支持 json，其它类型作为 text 处理
+  const type = resp.headers.get("content-type");
+  if (type?.startsWith("application/json")) {
     return await resp.json();
   }
   return await resp.text();

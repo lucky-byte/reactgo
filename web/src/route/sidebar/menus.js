@@ -16,6 +16,7 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import InsightsIcon from '@mui/icons-material/Insights';
 import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
 import SecurityIcon from '@mui/icons-material/Security';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const menus = [{
   title: '今日看板',
@@ -96,12 +97,15 @@ const menus = [{
     icon: SecurityIcon,
   }, {
     code: 720,
-    icon: AccessAlarmIcon,
-  }, {
-    code: 730,
     icon: HistoryIcon,
   }, {
+    code: 730,
+    icon: SettingsIcon,
+  }, {
     code: 740,
+    icon: AccessAlarmIcon,
+  }, {
+    code: 750,
     icon: NotificationsIcon,
   }],
 }]

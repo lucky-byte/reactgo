@@ -106,6 +106,7 @@ export default function SignIn() {
         </Stack>
         <FormControl fullWidth sx={{mt:3}}>
           <TextField required label='登录名' placeholder="请输入登录名"
+            autoComplete="username"
             variant='standard' value={username} onChange={onUsernameChange}
             InputProps={{
               startAdornment: (
@@ -118,6 +119,7 @@ export default function SignIn() {
         </FormControl>
         <FormControl fullWidth sx={{ mt: 4 }}>
           <TextField required label='密码' placeholder="请输入登录密码"
+            autoComplete="password"
             variant='standard' type={passwordHide ? 'password' : 'text'}
             value={password} onChange={onPasswordChange}
             onKeyDown={onPasswordKeyDown}
