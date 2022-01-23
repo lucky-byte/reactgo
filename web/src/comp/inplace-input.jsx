@@ -35,11 +35,12 @@ export default function InplaceInput(props) {
     }
   }
 
-  const debounceBlur = useMemo(() => debounce(() => { setEditing(false); }, 200), []);
+  const debounceBlur = useMemo(() => debounce(() => { onCancelClick(); }, 200), []);
   useEffect(() => { return () => { debounceBlur.cancel(); } }, [debounceBlur]);
 
   const onCancelClick = () => {
     setEditing(false);
+    setIconVisible(false);
   }
 
   const onConfirmClick = () => {
@@ -50,8 +51,8 @@ export default function InplaceInput(props) {
   if (editing) {
     return (
       <Stack direction='row' alignItems='flex-start' sx={props.sx}>
-        <TextField variant='standard' size="small" fullWidth autoFocus
-          multiline={props.multiline}
+        <TextField variant='standard' size="small" fullWidth={props.fullWidth}
+          multiline={props.multiline} autoFocus
           value={text} onChange={onTextChange} onKeyDown={onKeyDown}
           onBlur={debounceBlur}
           InputProps={{
@@ -105,6 +106,7 @@ InplaceInput.propTypes = {
   multiline: PropTypes.bool,
   sx: PropTypes.object,
   fontSize: PropTypes.string,
+  fullWidth: PropTypes.bool,
 }
 
 InplaceInput.defaultProps = {
@@ -112,4 +114,5 @@ InplaceInput.defaultProps = {
   multiline: false,
   sx: {},
   fontSize: 'normal',
+  fullWidth: true,
 }

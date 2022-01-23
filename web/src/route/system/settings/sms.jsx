@@ -13,7 +13,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import InplaceInput from '../../../comp/inplace-input';
-import CellInput from '../../../comp/cell-input';
 import OutlinedPaper from '../../../comp/outlined-paper';
 import { get, put } from "../../../rest";
 
@@ -21,6 +20,8 @@ export default function SMS() {
   const { enqueueSnackbar } = useSnackbar();
   const [appid, setAppid] = useState('');
   const [appkey, setAppkey] = useState('');
+  const [sign, setSign] = useState('');
+  const [msgid, setMsgid] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -28,6 +29,12 @@ export default function SMS() {
         const resp = await get('/system/settings/sms');
         setAppid(resp.appid);
         setAppkey(resp.appkey);
+        setSign(resp.sign);
+
+        const ids = []
+        ids[1] = resp.msgid1;
+        ids[2] = resp.msgid2;
+        setMsgid(ids);
       } catch (err) {
         enqueueSnackbar(err.message);
       }
@@ -58,6 +65,32 @@ export default function SMS() {
     }
   }
 
+  const onChangeSign = async v => {
+    try {
+      await put('/system/settings/sms/sign', new URLSearchParams({
+        sign: v,
+      }));
+      setSign(v);
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  const onChangeMsgid = async (v, n) => {
+    try {
+      await put('/system/settings/sms/msgid', new URLSearchParams({
+        id: v, n,
+      }));
+      const ids = [...msgid]
+      ids[n] = v;
+      setMsgid(ids)
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
   return (
     <Stack>
       <FormHelperText sx={{ textAlign: 'center', mt: 1 }}>
@@ -73,13 +106,13 @@ export default function SMS() {
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Stack direction='row' alignItems='center'>
           <Typography sx={{minWidth: 70}} variant='subtitle2'>AppId:</Typography>
-          <InplaceInput sx={{ flex: 1, ml: 1 }} text={appid}
+          <InplaceInput sx={{ flex: 1, ml: 1 }} text={appid || '请填写'}
             onConfirm={onChangeAppid}
           />
         </Stack>
         <Stack direction='row' alignItems='center'>
           <Typography sx={{minWidth: 70}} variant='subtitle2'>AppKey:</Typography>
-          <InplaceInput sx={{ flex: 1, ml: 1 }} text={appkey}
+          <InplaceInput sx={{ flex: 1, ml: 1 }} text={appkey || '请填写'}
             onConfirm={onChangeAppkey}
           />
         </Stack>
@@ -91,8 +124,8 @@ export default function SMS() {
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Stack direction='row' alignItems='center'>
           <Typography sx={{minWidth: 70}} variant='subtitle2'>短信签名:</Typography>
-          <InplaceInput sx={{ flex: 1, ml: 1 }} text={appkey}
-            onConfirm={onChangeAppkey}
+          <InplaceInput sx={{ flex: 1, ml: 1 }} text={sign || '请填写'}
+            onConfirm={onChangeSign}
           />
         </Stack>
       </Paper>
@@ -111,17 +144,17 @@ export default function SMS() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
+            <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell align="center">验证码</TableCell>
               <TableCell align="center">验证码&nbsp;
                 <NumberTip n={1} tip='短信验证码变量' />
                 ，5分钟内有效
-                ，5分钟内有效
               </TableCell>
               <TableCell align="center">
-                <CellInput variant='body2' sx={{justifyContent:'center'}} text='未填写' />
+                <InplaceInput variant='body2' sx={{justifyContent:'center'}}
+                  fontSize='small' fullWidth={false} text={msgid[1] || '请填写'}
+                  onConfirm={v => onChangeMsgid(v, 1)}
+                />
               </TableCell>
             </TableRow>
           </TableBody>

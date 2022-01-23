@@ -17,5 +17,7 @@ func Attach(up *echo.Group) {
 
 	group.PUT("/sms/appid", smsAppid)
 	group.PUT("/sms/appkey", smsAppkey)
+	group.PUT("/sms/sign", smsSign)
+	group.PUT("/sms/msgid", smsMsgId)
 	group.PUT("/secure/resetpass", resetpass)
 }
