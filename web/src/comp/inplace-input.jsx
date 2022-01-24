@@ -44,8 +44,11 @@ export default function InplaceInput(props) {
   }
 
   const onConfirmClick = () => {
+    if (text !== props.text) {
+      props.onConfirm(text);
+      setText(props.text);
+    }
     setEditing(false);
-    props.onConfirm(text);
   }
 
   if (editing) {
@@ -100,7 +103,10 @@ export default function InplaceInput(props) {
 }
 
 InplaceInput.propTypes = {
-  text: PropTypes.string.isRequired,
+  text: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
   onConfirm: PropTypes.func.isRequired,
   variant: PropTypes.string,
   multiline: PropTypes.bool,

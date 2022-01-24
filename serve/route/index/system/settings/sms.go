@@ -9,6 +9,7 @@ import (
 	"github.com/lucky-byte/bdb/serve/db"
 )
 
+// 查询短信配置
 func smsSettings(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -24,11 +25,11 @@ func smsSettings(c echo.Context) error {
 		"appid":  result.AppId,
 		"appkey": result.AppKey,
 		"sign":   result.Sign,
-		"msgid1": result.MsgId1,
-		"msgid2": result.MsgId2,
+		"msgid1": result.MsgID1,
 	})
 }
 
+// 修改短信 appid
 func smsAppid(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -48,6 +49,7 @@ func smsAppid(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+// 修改短信 appkey
 func smsAppkey(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -67,6 +69,7 @@ func smsAppkey(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+// 修改短信签名
 func smsSign(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -86,6 +89,7 @@ func smsSign(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+// 修改正文模板 ID
 func smsMsgId(c echo.Context) error {
 	cc := c.(*ctx.Context)
 

@@ -12,6 +12,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
+import isInt from 'validator/lib/isInt';
 import InplaceInput from '../../../comp/inplace-input';
 import OutlinedPaper from '../../../comp/outlined-paper';
 import { get, put } from "../../../rest";
@@ -33,7 +34,6 @@ export default function SMS() {
 
         const ids = []
         ids[1] = resp.msgid1;
-        ids[2] = resp.msgid2;
         setMsgid(ids);
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -41,49 +41,50 @@ export default function SMS() {
     })();
   }, [enqueueSnackbar]);
 
-  const onChangeAppid = async v => {
+  const onChangeAppid = async appid => {
     try {
-      await put('/system/settings/sms/appid', new URLSearchParams({
-        appid: v,
-      }));
-      setAppid(v);
+      if (!isInt(appid)) {
+        return enqueueSnackbar('APPID 只能包含数字', { variant: 'warning' });
+      }
+      await put('/system/settings/sms/appid', new URLSearchParams({ appid }));
+      setAppid(appid);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
       enqueueSnackbar(err.message);
     }
   }
 
-  const onChangeAppkey = async v => {
+  const onChangeAppkey = async appkey => {
     try {
-      await put('/system/settings/sms/appkey', new URLSearchParams({
-        appkey: v,
-      }));
-      setAppkey(v);
+      if (appkey.length !== 32) {
+        return enqueueSnackbar('appkey 长度为 32 位', { variant: 'warning' });
+      }
+      await put('/system/settings/sms/appkey', new URLSearchParams({ appkey }));
+      setAppkey(appkey);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
       enqueueSnackbar(err.message);
     }
   }
 
-  const onChangeSign = async v => {
+  const onChangeSign = async sign => {
     try {
-      await put('/system/settings/sms/sign', new URLSearchParams({
-        sign: v,
-      }));
-      setSign(v);
+      await put('/system/settings/sms/sign', new URLSearchParams({ sign }));
+      setSign(sign);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
       enqueueSnackbar(err.message);
     }
   }
 
-  const onChangeMsgid = async (v, n) => {
+  const onChangeMsgid = async (id, n) => {
     try {
-      await put('/system/settings/sms/msgid', new URLSearchParams({
-        id: v, n,
-      }));
+      if (!isInt(id)) {
+        return enqueueSnackbar('模板编号只能包含数字', { variant: 'warning' });
+      }
+      await put('/system/settings/sms/msgid', new URLSearchParams({ id, n }));
       const ids = [...msgid]
-      ids[n] = v;
+      ids[n] = id;
       setMsgid(ids)
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {

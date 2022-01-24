@@ -77,8 +77,7 @@ create table if not exists sms_settings (
   appid       varchar(32)     not null,
   appkey      varchar(64)     not null,
   sign        varchar(32)     not null,
-  msgid1      int             not null default 0,
-  msgid2      int             not null default 0
+  msgid1      int             not null default 0
 );
 
 insert into sms_settings (appid, appkey, sign) values ('请填写', '请填写', '请填写');
