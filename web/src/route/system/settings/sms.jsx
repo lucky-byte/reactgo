@@ -147,7 +147,7 @@ export default function SMS() {
           <TableBody>
             <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell align="center">验证码</TableCell>
-              <TableCell align="center">验证码&nbsp;
+              <TableCell align="center">您的验证码是&nbsp;
                 <NumberTip n={1} tip='短信验证码' />
                 ，5分钟内有效
               </TableCell>

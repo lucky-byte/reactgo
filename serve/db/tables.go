@@ -79,5 +79,5 @@ type SmsSettings struct {
 	AppId  string `db:"appid"`  // appid
 	AppKey string `db:"appkey"` // appkey
 	Sign   string `db:"sign"`   // sign
-	MsgID1 int    `db:"msgid1"` // verify code
+	MsgID1 string `db:"msgid1"` // 验证码模板ID
 }
