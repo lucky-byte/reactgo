@@ -2,6 +2,7 @@ begin;
 
 create table if not exists settings (
   uuid        boolean         primary key default true,
+  debug       boolean         default false,
   resetpass   boolean         default false
 );
 
@@ -75,11 +76,14 @@ insert into acl_allows (uuid, acl, code, title, url, read, write, admin) values 
 
 create table if not exists sms_settings (
   appid       varchar(32)     not null,
-  appkey      varchar(64)     not null,
+  secret_id   varchar(64)     not null,
+  secret_key  varchar(64)     not null,
   sign        varchar(32)     not null,
   msgid1      varchar(32)     not null default ''
 );
 
-insert into sms_settings (appid, appkey, sign) values ('请填写', '请填写', '请填写');
+insert into sms_settings (appid, secret_id, secret_key, sign) values (
+  '请填写', '请填写', '请填写', '请填写'
+);
 
 commit;

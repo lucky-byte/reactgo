@@ -76,8 +76,9 @@ type Settings struct {
 
 // SMS settings
 type SmsSettings struct {
-	AppId  string `db:"appid"`  // appid
-	AppKey string `db:"appkey"` // appkey
-	Sign   string `db:"sign"`   // sign
-	MsgID1 string `db:"msgid1"` // 验证码模板ID
+	AppId     string `db:"appid"`      // appid
+	SecretId  string `db:"secret_id"`  // secret id
+	SecretKey string `db:"secret_key"` // secret key
+	Sign      string `db:"sign"`       // sign
+	MsgID1    string `db:"msgid1"`     // 验证码模板ID
 }

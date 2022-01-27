@@ -134,8 +134,8 @@ func addNewUser(userid, email, mobile, passwd string) error {
 		return err
 	}
 	ql = `
-		insert into users (uuid, userid, name, email, mobile, passwd, acl)
-		values (?, ?, ?, ?, ?, ?, ?)
+		insert into users (uuid, userid, name, email, mobile, passwd, acl, tfa)
+		values (?, ?, ?, ?, ?, ?, ?, false)
 	`
 	return db.ExecOne(
 		ql, uuid.NewString(), userid, userid, email, mobile, passwdHash, acl,

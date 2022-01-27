@@ -16,8 +16,13 @@ func Attach(up *echo.Group) {
 	group.Use(acl.AllowWrite(code))
 
 	group.PUT("/sms/appid", smsAppid)
-	group.PUT("/sms/appkey", smsAppkey)
+	group.PUT("/sms/secretid", smsSecretId)
+	group.PUT("/sms/secretkey", smsSecretKey)
 	group.PUT("/sms/sign", smsSign)
 	group.PUT("/sms/msgid", smsMsgId)
+
+	group.Use(acl.AllowAdmin(code))
+
+	group.POST("/sms/test", smsTest)
 	group.PUT("/secure/resetpass", resetpass)
 }

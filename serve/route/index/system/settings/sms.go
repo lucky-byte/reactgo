@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/lucky-byte/bdb/serve/ctx"
 	"github.com/lucky-byte/bdb/serve/db"
+	"github.com/lucky-byte/bdb/serve/sms"
 )
 
 // 查询短信配置
@@ -22,10 +23,11 @@ func smsSettings(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"appid":  result.AppId,
-		"appkey": result.AppKey,
-		"sign":   result.Sign,
-		"msgid1": result.MsgID1,
+		"appid":      result.AppId,
+		"secret_id":  result.SecretId,
+		"secret_key": result.SecretKey,
+		"sign":       result.Sign,
+		"msgid1":     result.MsgID1,
 	})
 }
 
@@ -49,20 +51,40 @@ func smsAppid(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-// 修改短信 appkey
-func smsAppkey(c echo.Context) error {
+// 修改短信 secret id
+func smsSecretId(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var appkey string
+	var secret_id string
 
-	err := echo.FormFieldBinder(c).MustString("appkey", &appkey).BindError()
+	err := echo.FormFieldBinder(c).MustString("secret_id", &secret_id).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("请求无效")
 		return c.NoContent(http.StatusBadRequest)
 	}
-	ql := `update sms_settings set appkey = ?`
+	ql := `update sms_settings set secret_id = ?`
 
-	if err = db.ExecOne(ql, appkey); err != nil {
+	if err = db.ExecOne(ql, secret_id); err != nil {
+		cc.ErrLog(err).Error("更新短信配置错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
+}
+
+// 修改短信 secret key
+func smsSecretKey(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var secret_key string
+
+	err := echo.FormFieldBinder(c).MustString("secret_key", &secret_key).BindError()
+	if err != nil {
+		cc.ErrLog(err).Error("请求无效")
+		return c.NoContent(http.StatusBadRequest)
+	}
+	ql := `update sms_settings set secret_key = ?`
+
+	if err = db.ExecOne(ql, secret_key); err != nil {
 		cc.ErrLog(err).Error("更新短信配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -93,9 +115,11 @@ func smsSign(c echo.Context) error {
 func smsMsgId(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var n, id uint
+	var n uint
+	var id string
 
-	err := echo.FormFieldBinder(c).MustUint("n", &n).MustUint("id", &id).BindError()
+	err := echo.FormFieldBinder(c).
+		MustUint("n", &n).MustString("id", &id).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("请求无效")
 		return c.NoContent(http.StatusBadRequest)
@@ -105,6 +129,29 @@ func smsMsgId(c echo.Context) error {
 	if err = db.ExecOne(ql, id); err != nil {
 		cc.ErrLog(err).Error("更新短信配置错")
 		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
+}
+
+// 发送测试短信
+func smsTest(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var n int
+	var mobile string
+	var params []string
+
+	err := echo.FormFieldBinder(c).
+		MustInt("n", &n).
+		MustString("mobile", &mobile).
+		MustStrings("params", &params).BindError()
+	if err != nil {
+		cc.ErrLog(err).Error("请求无效")
+		return c.NoContent(http.StatusBadRequest)
+	}
+	if err = sms.Send([]string{mobile}, n, params); err != nil {
+		cc.ErrLog(err).Error("发送短信错")
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.NoContent(http.StatusOK)
 }
