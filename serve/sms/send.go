@@ -1,21 +1,37 @@
 package sms
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/lucky-byte/bdb/serve/db"
+	"github.com/lucky-byte/bdb/serve/xlog"
 	"github.com/pkg/errors"
 )
 
 // 短信正文模板 ID 常数
 const (
 	IDVerifyCode = 1 // 验证码
+)
+
+const (
+	host      = "sms.tencentcloudapi.com"
+	algorithm = "TC3-HMAC-SHA256"
+	service   = "sms"
+	version   = "2021-01-11"
+	action    = "SendSms"
+	region    = "ap-nanjing"
+	headers   = "content-type;host"
 )
 
 // 查询短信配置
@@ -53,15 +69,38 @@ func hmacsha256(s, key string) string {
 	return string(hashed.Sum(nil))
 }
 
-const (
-	host      = "sms.tencentcloudapi.com"
-	algorithm = "TC3-HMAC-SHA256"
-	service   = "sms"
-	version   = "2017-03-12"
-	action    = "SendSms"
-	region    = "ap-guangzhou"
-	headers   = "content-type;host"
-)
+// 计算 Authorization 签名
+func authorization(r []byte, t int64, settings *db.SmsSettings) string {
+	h := fmt.Sprintf("content-type:application/json\nhost:%s\n", host)
+	i := fmt.Sprintf("POST\n/\n\n%s\n%s\n%s", h, headers, hex256(r))
+
+	d := time.Unix(t, 0).UTC().Format("2006-01-02")
+	s := fmt.Sprintf("%s/%s/tc3_request", d, service)
+
+	si := fmt.Sprintf("%s\n%d\n%s\n%s", algorithm, t, s, hex256([]byte(i)))
+
+	sd := hmacsha256(d, "TC3"+settings.SecretKey)
+	sv := hmacsha256(service, sd)
+	ss := hmacsha256("tc3_request", sv)
+	sign := hex.EncodeToString([]byte(hmacsha256(si, ss)))
+
+	return fmt.Sprintf("%s Credential=%s/%s, SignedHeaders=%s, Signature=%s",
+		algorithm, settings.SecretId, s, headers, sign,
+	)
+}
+
+// 短信发送响应结构
+type response struct {
+	Response struct {
+		SendStatusSet []struct {
+			Serial      string `json:"SerialNo"`
+			PhoneNumber string `json:"PhoneNumber"`
+			Fee         int    `json:"Fee"`
+			Code        string `json:"Code"`
+			Message     string `json:"Message"`
+		} `json:"SendStatusSet"`
+	} `json:"Response"`
+}
 
 // 通过接口发送短信
 func send(mobile []string, n int, params []string) error {
@@ -82,26 +121,50 @@ func send(mobile []string, n int, params []string) error {
 	}
 	b, err := json.Marshal(p)
 	if err != nil {
-		return errors.Wrap(err, "json marshal")
+		return errors.Wrap(err, "json marshal 错")
 	}
-	h := fmt.Sprintf("content-type:application/json\nhost:%s\n", host)
-	i := fmt.Sprintf("POST\n/\n\n%s\n%s\n%s", h, headers, hex256(b))
+	xlog.X.Infof("发送短信请求: %s", b)
 
 	t := time.Now().Unix()
-	d := time.Unix(t, 0).UTC().Format("2006-01-02")
-	s := fmt.Sprintf("%s/%s/tc3_request", d, service)
+	a := authorization(b, t, settings)
 
-	si := fmt.Sprintf("%s\n%d\n%s\n%s", algorithm, t, s, hex256([]byte(i)))
+	req, err := http.NewRequest("POST", "https://"+host, bytes.NewBuffer(b))
+	if err != nil {
+		return errors.Wrap(err, "发送短信错")
+	}
+	req.Header.Set("Host", host)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", a)
+	req.Header.Set("X-TC-Version", version)
+	req.Header.Set("X-TC-Action", action)
+	req.Header.Set("X-TC-Region", region)
+	req.Header.Set("X-TC-Timestamp", strconv.FormatInt(t, 10))
+	req.Header.Set("X-TC-Language", "zh-CN")
 
-	sd := hmacsha256(d, "TC3"+"secretKey")
-	sv := hmacsha256(service, sd)
-	ss := hmacsha256("tc3_request", sv)
-	sign := hex.EncodeToString([]byte(hmacsha256(si, ss)))
+	// 发送 HTTP 请求
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return errors.Wrap(err, "HTTP POST 错")
+	}
+	defer resp.Body.Close()
 
-	a := fmt.Sprintf("%s Credential=%s/%s, SignedHeaders=%s, Signature=%s",
-		algorithm, "secretId", s, headers, sign,
-	)
-	fmt.Printf("auth: %s\n", a)
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return errors.Wrap(err, "读取响应数据错")
+	}
+	xlog.X.Infof("发送短信响应: %s", body)
+
+	var j response
+
+	if err = json.Unmarshal(body, &j); err != nil {
+		return errors.Wrap(err, "解析响应数据错")
+	}
+	// 逐个检查短信发送状态，如果有一条失败则返回错误，即只有全部成功才返回成功
+	for _, v := range j.Response.SendStatusSet {
+		if strings.ToLower(v.Code) != "ok" {
+			return fmt.Errorf("%s", v.Message)
+		}
+	}
 	return nil
 }
 

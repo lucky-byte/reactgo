@@ -151,7 +151,7 @@ func smsTest(c echo.Context) error {
 	}
 	if err = sms.Send([]string{mobile}, n, params); err != nil {
 		cc.ErrLog(err).Error("发送短信错")
-		return c.String(http.StatusBadRequest, err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusOK)
 }

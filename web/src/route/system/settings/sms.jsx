@@ -295,17 +295,18 @@ function ModifyDialog(props) {
       <DialogTitle>修改模板编号</DialogTitle>
       <DialogContent>
         <DialogContentText>模板名称: {name}</DialogContentText>
-        <TextField
-          autoFocus
-          label="模板编号"
-          fullWidth
-          variant="outlined"
-          value={id}
-          onChange={e => setId(e.target.value)}
-          inputProps={{ maxLength: 16 }}
-          sx={{ mt: 3 }}
-          helperText='请填写正确的模板编号，建议填写后发送测试短信进行验证。'
-        />
+        <Paper variant="outlined" sx={{ p: 2, mt: 3 }}>
+          <TextField
+            autoFocus
+            label="模板编号"
+            fullWidth
+            variant="standard"
+            value={id}
+            onChange={e => setId(e.target.value)}
+            inputProps={{ maxLength: 16 }}
+            helperText='请填写正确的模板编号，建议填写后发送测试短信进行验证。'
+          />
+        </Paper>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={onClose}>取消</Button>
@@ -345,27 +346,28 @@ function TestDialog(props) {
       <DialogContent>
         <DialogContentText>模板名称: {name}</DialogContentText>
         <FormHelperText>发送短信将产生运营商费用，请知悉。</FormHelperText>
-        <TextField
-          autoFocus
-          type="tel"
-          label="手机号"
-          fullWidth
-          variant="standard"
-          value={mobile}
-          onChange={e => setMobile(e.target.value)}
-          inputProps={{ maxLength: 11 }}
-          sx={{ mt: 3 }}
-          helperText='短信将发送到该手机号'
-        />
-        <TextField
-          label="参数"
-          fullWidth
-          variant="standard"
-          value={params}
-          onChange={e => setParams(e.target.value)}
-          sx={{ mt: 3 }}
-          helperText='请按照模板规范填写参数，如有多个参数请用逗号(,)分隔'
-        />
+        <Paper variant="outlined" sx={{ p: 2, mt: 3 }}>
+          <TextField
+            autoFocus
+            type="tel"
+            label="手机号"
+            fullWidth
+            variant="standard"
+            value={mobile}
+            onChange={e => setMobile(e.target.value)}
+            inputProps={{ maxLength: 11 }}
+            helperText='短信将发送到该手机号'
+          />
+          <TextField
+            label="参数"
+            fullWidth
+            variant="standard"
+            value={params}
+            onChange={e => setParams(e.target.value)}
+            sx={{ mt: 3 }}
+            helperText='短信正文中 {n} 的内容，请按照模板规范顺序填写，如有多个参数请用逗号(,)分隔'
+          />
+        </Paper>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={onClose}>取消</Button>
