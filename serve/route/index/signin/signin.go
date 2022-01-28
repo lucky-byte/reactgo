@@ -51,9 +51,17 @@ func signin(c echo.Context) error {
 		return c.String(http.StatusForbidden, "登录名或密码错误")
 	}
 	newJwt := auth.NewAuthJWT(user.UUID, true, 12*time.Hour)
+	smsid := ""
 
-	// 如果需要2步认证，则设置为未激活的 token
+	// 需要2步认证
 	if user.TFA {
+		// 发送短信验证码
+		if smsid, err = sms.SendCode(user.Mobile); err != nil {
+			cc.ErrLog(err).WithField("userid", username).
+				Error("发送短信验证码错误，登录失败")
+			return c.String(http.StatusInternalServerError, "发送短信验证码失败")
+		}
+		// 设置为未激活
 		newJwt.Activate = false
 		newJwt.ExpiresAt = &jwt.NumericDate{Time: time.Now().Add(10 * time.Minute)}
 	}
@@ -63,16 +71,7 @@ func signin(c echo.Context) error {
 		cc.ErrLog(err).WithField("userid", username).Error("登录失败")
 		return c.String(http.StatusForbidden, "服务器内部错")
 	}
-	smsid := ""
 
-	// 发送短信验证码
-	if user.TFA {
-		if smsid, err = sms.Code(user.Mobile); err != nil {
-			cc.ErrLog(err).WithField("userid", username).Error(
-				"发送短信验证码错误，登录失败")
-			return c.String(http.StatusInternalServerError, "发送短信验证码失败")
-		}
-	}
 	// 更新用户信息
 	ql = `
 		update users set

@@ -12,21 +12,24 @@ import Button from "@mui/material/Button";
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import userState from "../state/user";
-import { put } from "../rest";
+import { post, put } from "../rest";
 
 export default function SignIn2FA() {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = useRecoilValue(userState);
   const { enqueueSnackbar } = useSnackbar();
+  const [smsid, setSmsid] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [time, setTime] = useState(60);
-  const user = useRecoilValue(userState);
 
   useEffect(() => {
     if (!location?.state?.smsid) {
       return navigate('/signin', { replace: true });
     }
+    setSmsid(location.state.smsid);
+
     const token = localStorage.getItem('token');
     if (!token || !user || !user.userid) {
       return navigate('/signin', { replace: true });
@@ -64,7 +67,7 @@ export default function SignIn2FA() {
       setLoading(true);
 
       const resp = await put('/signin/2fa', new URLSearchParams({
-        mobile: user.mobile, smsid: location.state.smsid, code: code
+        mobile: user.mobile, smsid, code
       }));
       if (!resp || !resp.token) {
         return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
@@ -81,14 +84,26 @@ export default function SignIn2FA() {
       }
       navigate(last_access || '/', { replace: true });
     } catch (err) {
-      enqueueSnackbar(err.message, { variant: 'error' });
+      enqueueSnackbar(err.message);
     } finally {
       setLoading(false);
     }
   }
 
-  const onReSendClick = () => {
-    setTime(60);
+  // 重新发送验证码
+  const onReSendClick = async () => {
+    try {
+      const resp = await post('/signin/resend', new URLSearchParams({
+        mobile: user.mobile
+      }));
+      if (!resp.smsid) {
+        throw new Error('响应数据无效');
+      }
+      setSmsid(resp.smsid);
+      setTime(60);
+    } catch (err) {
+      enqueueSnackbar(err.message)
+    }
   }
 
   return (

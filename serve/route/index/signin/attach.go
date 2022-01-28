@@ -9,4 +9,5 @@ func Attach(engine *echo.Group) {
 
 	router.PUT("/", signin)
 	router.PUT("/2fa", tfa)
+	router.POST("/resend", resend)
 }

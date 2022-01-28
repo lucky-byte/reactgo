@@ -2,7 +2,6 @@ package signin
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/labstack/echo/v4"
 
@@ -11,15 +10,13 @@ import (
 	"github.com/lucky-byte/bdb/serve/sms"
 )
 
-func tfa(c echo.Context) error {
+// 重新发送短信验证码
+func resend(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var mobile, smsid, code string
+	var mobile string
 
-	err := echo.FormFieldBinder(c).
-		MustString("mobile", &mobile).
-		MustString("smsid", &smsid).
-		MustString("code", &code).BindError()
+	err := echo.FormFieldBinder(c).MustString("mobile", &mobile).BindError()
 	if err != nil {
 		c.String(http.StatusBadRequest, "请求数据不完整")
 	}
@@ -39,19 +36,11 @@ func tfa(c echo.Context) error {
 		cc.Log().Error("登录 TOKEN.user 无效")
 		return c.String(http.StatusBadRequest, "无效的请求")
 	}
-
-	// 验证短信验证码
-	err = sms.VerifyCode(smsid, code, mobile)
+	// 重新发送验证码
+	smsid, err := sms.SendCode(mobile)
 	if err != nil {
-		cc.ErrLog(err).WithField("mobile", mobile).Error("验证短信验证码失败")
-		return c.String(http.StatusBadRequest, err.Error())
+		cc.ErrLog(err).Error("发送短信验证码错误")
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	// 重新生成登录TOKEN
-	newJwt := auth.NewAuthJWT(jwt.User, true, 12*time.Hour)
-	token, err := auth.JWTGenerate(newJwt)
-	if err != nil {
-		cc.ErrLog(err).WithField("mobile", mobile).Error("生成登录 TOKEN 错")
-		return c.String(http.StatusInternalServerError, "服务器内部错")
-	}
-	return c.JSON(http.StatusOK, echo.Map{"token": token})
+	return c.JSON(http.StatusOK, echo.Map{"smsid": smsid})
 }
