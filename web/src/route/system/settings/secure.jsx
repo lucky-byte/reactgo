@@ -37,12 +37,13 @@ export default function Secure() {
 
   return (
     <Stack>
-      <Paper variant="outlined" sx={{ py: 1, px: 2, mt: 2 }}>
+      <Paper variant="outlined" sx={{ p: 2, mt: 2 }}>
         <Stack direction='row' alignItems='center'>
           <Stack sx={{ flex: 1 }}>
-            <Typography>允许用户凭手机号和邮箱找回登录密码</Typography>
+            <Typography>允许用户找回登录密码</Typography>
             <FormHelperText>
-              如果不允许，则需要管理员登录后台帮助用户重置密码
+              找回密码需要用户的手机号和邮箱地址正确，如果不允许，
+              则需要管理员登录后台帮助用户重置密码
             </FormHelperText>
           </Stack>
           <Switch checked={resetPass} onChange={onResetPassCheck} />

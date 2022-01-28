@@ -11,7 +11,7 @@ import (
 )
 
 // 查询短信配置
-func smsSettings(c echo.Context) error {
+func smsConfig(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	ql := `select * from sms_settings`

@@ -87,12 +87,21 @@ export default function InplaceInput(props) {
 
   return (
     <Stack direction='row' alignItems='center' sx={props.sx}>
-      <Typography variant={props.variant} onClick={onEditClick}
-        onMouseEnter={() => { setIconVisible(true); }}
-        onMouseLeave={() => { setIconVisible(false); }}
-        sx={{ cursor: 'pointer' }}>
-        {props.text}
-      </Typography>
+      {props.text ?
+        <Typography variant={props.variant} onClick={onEditClick}
+          onMouseEnter={() => { setIconVisible(true); }}
+          onMouseLeave={() => { setIconVisible(false); }}
+          color={props.color} sx={{ cursor: 'pointer' }}>
+          {props.text}
+        </Typography>
+        :
+        <Typography variant={props.variant} onClick={onEditClick}
+          onMouseEnter={() => { setIconVisible(true); }}
+          onMouseLeave={() => { setIconVisible(false); }}
+          sx={{ cursor: 'pointer', color: '#8888' }}>
+          {props.placeholder}
+        </Typography>
+      }
       <IconButton onClick={onEditClick} sx={{
         display: iconVisible ? 'visible' : 'none', padding: 0, marginLeft: '4px',
       }}>
@@ -104,8 +113,7 @@ export default function InplaceInput(props) {
 
 InplaceInput.propTypes = {
   text: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
+    PropTypes.string, PropTypes.number,
   ]).isRequired,
   onConfirm: PropTypes.func.isRequired,
   variant: PropTypes.string,
@@ -113,6 +121,8 @@ InplaceInput.propTypes = {
   sx: PropTypes.object,
   fontSize: PropTypes.string,
   fullWidth: PropTypes.bool,
+  placeholder: PropTypes.string,
+  color: PropTypes.string,
 }
 
 InplaceInput.defaultProps = {
@@ -121,4 +131,6 @@ InplaceInput.defaultProps = {
   sx: {},
   fontSize: 'normal',
   fullWidth: true,
+  placeholder: '空',
+  color: '',
 }

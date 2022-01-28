@@ -68,7 +68,7 @@ export default function UserAdd() {
     }
     try {
       await post('/system/user/add', new URLSearchParams(data));
-      enqueueSnackbar(`用户 ${data.name} 已添加成功`, { variant: 'success' });
+      enqueueSnackbar(`用户 ${data.name} 添加成功`, { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message);
@@ -82,10 +82,10 @@ export default function UserAdd() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={4}>
             <Stack direction='row' spacing={3}>
-              <TextField label='登录名' variant='standard' fullWidth
-                required autoFocus
-                placeholder='用于登录的名称，可以使用任何字符'
+              <TextField label='登录名' variant='standard' fullWidth required autoFocus
+                placeholder='系统登录名，可使用任何字符，建议使用字母和数字'
                 helperText={errors?.userid?.message}
+                error={errors?.userid}
                 {...register('userid', {
                   required: "不能为空",
                   maxLength: {
@@ -93,12 +93,83 @@ export default function UserAdd() {
                   },
                 })}
               />
-              <TextField label='真实姓名' variant='standard' fullWidth
-                required
+              <TextField label='真实姓名' variant='standard' fullWidth required
                 placeholder='用户真实姓名'
                 helperText={errors?.name?.message}
+                error={errors?.name}
                 {...register('name', {
                   required: "不能为空",
+                  maxLength: {
+                    value: 64, message: '超出最大长度'
+                  },
+                })}
+              />
+            </Stack>
+            <Stack direction='row' spacing={3}>
+              <TextField label='手机号' variant='standard' fullWidth
+                required type='tel'
+                placeholder='登录时用于接收短信验证码'
+                inputProps={{ maxLength: 11 }}
+                helperText={errors?.mobile?.message}
+                error={errors?.mobile}
+                {...register('mobile', {
+                  required: "不能为空",
+                  minLength: {
+                    value: 11, message: '长度不足11位'
+                  },
+                  maxLength: {
+                    value: 11, message: '长度不能超出11位'
+                  },
+                  pattern: {
+                    value: /^1[0-9]{10}$/, message: '格式不符合规范'
+                  },
+                })}
+              />
+              <TextField label='邮箱地址' variant='standard' fullWidth
+                required type='email'
+                placeholder='用于接收重要邮件，请填写真实有效的邮箱地址'
+                helperText={errors?.email?.message}
+                error={errors?.email}
+                {...register('email', {
+                  required: "不能为空",
+                  maxLength: {
+                    value: 128, message: '超出最大长度'
+                  },
+                })}
+              />
+            </Stack>
+            <Stack direction='row' spacing={3}>
+              <TextField label='登录密码' variant='standard' fullWidth focused
+                required type='password' autoComplete='new-password'
+                placeholder='登录密码不能少于6个字符'
+                InputProps={{
+                  endAdornment:
+                    <InputAdornment position="end">
+                      <Button size='small' onClick={onNewPassword}>随机密码</Button>
+                    </InputAdornment>
+                }}
+                helperText={errors?.password?.message}
+                error={errors?.password}
+                {...register('password', {
+                  required: "不能为空",
+                  minLength: {
+                    value: 6, message: '长度不足6位'
+                  },
+                  maxLength: {
+                    value: 64, message: '超出最大长度'
+                  },
+                })}
+              />
+              <TextField label='确认登录密码' variant='standard' fullWidth focused
+                required type='password' autoComplete='new-password'
+                placeholder='再次输入登录密码'
+                helperText={errors?.password2?.message}
+                error={errors?.password2}
+                {...register('password2', {
+                  required: "不能为空",
+                  minLength: {
+                    value: 6, message: '长度不足6位'
+                  },
                   maxLength: {
                     value: 64, message: '超出最大长度'
                   },
@@ -135,75 +206,7 @@ export default function UserAdd() {
                 添加一个
               </FormHelperText>
             </Stack>
-            <Stack direction='row' spacing={3}>
-              <TextField label='登录密码' variant='standard' fullWidth focused
-                required type='password' autoComplete='new-password'
-                placeholder='登录密码不能少于6个字符'
-                InputProps={{
-                  endAdornment:
-                    <InputAdornment position="end">
-                      <Button size='small' onClick={onNewPassword}>随机密码</Button>
-                    </InputAdornment>
-                }}
-                helperText={errors?.password?.message}
-                {...register('password', {
-                  required: "不能为空",
-                  minLength: {
-                    value: 6, message: '长度不足6位'
-                  },
-                  maxLength: {
-                    value: 64, message: '超出最大长度'
-                  },
-                })}
-              />
-              <TextField label='确认登录密码' variant='standard' fullWidth focused
-                required type='password' autoComplete='new-password'
-                placeholder='再次输入登录密码'
-                helperText={errors?.password2?.message}
-                {...register('password2', {
-                  required: "不能为空",
-                  minLength: {
-                    value: 6, message: '长度不足6位'
-                  },
-                  maxLength: {
-                    value: 64, message: '超出最大长度'
-                  },
-                })}
-              />
-            </Stack>
-            <Stack direction='row' spacing={3}>
-              <TextField label='手机号' variant='standard' fullWidth
-                required type='tel'
-                placeholder='登录时用于接收短信验证码'
-                inputProps={{ maxLength: 11 }}
-                helperText={errors?.mobile?.message}
-                {...register('mobile', {
-                  required: "不能为空",
-                  minLength: {
-                    value: 11, message: '长度不足11位'
-                  },
-                  maxLength: {
-                    value: 11, message: '长度不能超出11位'
-                  },
-                  pattern: {
-                    value: /^1[0-9]{10}$/, message: '格式不符合规范'
-                  },
-                })}
-              />
-              <TextField label='邮箱地址' variant='standard' fullWidth
-                required type='email'
-                placeholder='用于接收重要邮件，请填写真实有效的邮箱地址'
-                helperText={errors?.email?.message}
-                {...register('email', {
-                  required: "不能为空",
-                  maxLength: {
-                    value: 128, message: '超出最大长度'
-                  },
-                })}
-              />
-            </Stack>
             <TextField label='联系地址' variant='standard' fullWidth
-              maxLength={256}
               placeholder='联系地址，如果没有可以不填'
               {...register('address', {
                 maxLength: {

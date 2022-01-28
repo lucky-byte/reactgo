@@ -8,7 +8,7 @@ import (
 	"github.com/lucky-byte/bdb/serve/db"
 )
 
-func secure(c echo.Context) error {
+func secureConfig(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	ql := `select * from settings`

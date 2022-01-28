@@ -76,7 +76,7 @@ export default function UserInfo() {
     try {
       data.uuid = location.state.uuid;
       await put('/system/user/info', new URLSearchParams(data));
-      enqueueSnackbar('用户资料已更新成功', { variant: 'success' });
+      enqueueSnackbar('用户资料更新成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message);
@@ -98,6 +98,7 @@ export default function UserInfo() {
                 required
                 placeholder='用于登录，使用字母或数字'
                 helperText={errors?.userid?.message}
+                error={errors?.userid}
                 {...register('userid', {
                   required: "不能为空",
                   maxLength: {
@@ -109,6 +110,7 @@ export default function UserInfo() {
                 required
                 placeholder='用户真实姓名'
                 helperText={errors?.name?.message}
+                error={errors?.name}
                 {...register('name', {
                   required: "不能为空",
                   maxLength: {
@@ -123,6 +125,7 @@ export default function UserInfo() {
                 placeholder='登录时用于接收短信验证码'
                 inputProps={{ maxLength: 11 }}
                 helperText={errors?.mobile?.message}
+                error={errors?.mobile}
                 {...register('mobile', {
                   required: "不能为空",
                   minLength: {
@@ -140,6 +143,7 @@ export default function UserInfo() {
                 required type='email'
                 placeholder='用于接收各种邮件'
                 helperText={errors?.email?.message}
+                error={errors?.email}
                 {...register('email', {
                   required: "不能为空",
                   maxLength: {
@@ -149,7 +153,6 @@ export default function UserInfo() {
               />
             </Stack>
             <TextField label='联系地址' variant='standard' focused fullWidth
-              maxLength={256}
               placeholder='联系地址，如果没有可以不填'
               {...register('address', {
                 maxLength: {

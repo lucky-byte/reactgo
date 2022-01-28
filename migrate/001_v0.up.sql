@@ -2,7 +2,7 @@ begin;
 
 create table if not exists settings (
   uuid        boolean         primary key default true,
-  debug       boolean         default false,
+  mail_prefix varchar(64)     default '',
   resetpass   boolean         default false
 );
 
@@ -65,25 +65,42 @@ create table if not exists acl_allows (
 create unique index acl_allows_acl_code on acl_allows(acl, code);
 create unique index acl_allows_acl_url on acl_allows(acl, url);
 
-insert into acl_allows (uuid, acl, code, title, url, read, write, admin) values (
+insert into acl_allows (
+  uuid, acl, code, title, url, read, write, admin
+) values (
   gen_random_uuid(), '7e9633f6-c83a-49a4-9a96-e120d6ca6055',
   1000, '用户管理', '/system/user', true, true, true
 );
-insert into acl_allows (uuid, acl, code, title, url, read, write, admin) values (
+insert into acl_allows (
+  uuid, acl, code, title, url, read, write, admin
+) values (
   gen_random_uuid(), '7e9633f6-c83a-49a4-9a96-e120d6ca6055',
   1100, '访问控制', '/system/acl', true, true, true
 );
 
 create table if not exists sms_settings (
-  appid       varchar(32)     not null,
-  secret_id   varchar(64)     not null,
-  secret_key  varchar(64)     not null,
-  sign        varchar(32)     not null,
+  appid       varchar(32)     not null default '',
+  secret_id   varchar(64)     not null default '',
+  secret_key  varchar(64)     not null default '',
+  sign        varchar(32)     not null default '',
   msgid1      varchar(32)     not null default ''
 );
 
-insert into sms_settings (appid, secret_id, secret_key, sign) values (
-  '请填写', '请填写', '请填写', '请填写'
+insert into sms_settings (appid) values ('');
+
+create table if not exists mtas (
+  uuid        varchar(36)     primary key not null,
+  name        varchar(32)     not null,
+  host        varchar(128)    not null,
+  port        int             not null default 465,
+  ssl         boolean         not null default true,
+  sender      varchar(128)    not null,
+  replyto     varchar(128),
+  username    varchar(128),
+  passwd      varchar(128),
+  cc          text,
+  bcc         text,
+  sortno      int             unique
 );
 
 commit;

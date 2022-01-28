@@ -66,7 +66,7 @@ export default function UserACL() {
       await put('/system/user/acl', new URLSearchParams({
         uuid: location?.state?.uuid, acl: acl,
       }));
-      enqueueSnackbar(`访问控制已成功更新`, { variant: 'success' });
+      enqueueSnackbar(`更新成功`, { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message);

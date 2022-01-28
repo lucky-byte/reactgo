@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSetRecoilState } from "recoil";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useLocation } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Paper from '@mui/material/Paper';
 import Tabs from '@mui/material/Tabs';
@@ -13,10 +13,27 @@ import SMS from './sms';
 import Secure from './secure';
 
 export default function Settings() {
+  const location = useLocation();
   const setTitle = useSetRecoilState(titleState);
   const [tabValue, setTabValue] = useState(1);
 
   useEffect(() => { setTitle('系统设置'); }, [setTitle]);
+
+  useEffect(() => {
+    const pathname = location?.pathname;
+    if (!pathname) {
+      return;
+    }
+    if (pathname.includes('/mail')) {
+      return setTabValue(2);
+    }
+    if (pathname.includes('/sms')) {
+      return setTabValue(3);
+    }
+    if (pathname.includes('/secure')) {
+      return setTabValue(4);
+    }
+  }, [location?.pathname]);
 
   return (
     <Container as='main' maxWidth='md' sx={{ py: 3 }}>
@@ -30,7 +47,7 @@ export default function Settings() {
         </Tabs>
         <Routes>
           <Route path='/' element={<Generic />} />
-          <Route path='mail' element={<Mail />} />
+          <Route path='mail/*' element={<Mail />} />
           <Route path='sms' element={<SMS />} />
           <Route path='secure' element={<Secure />} />
           <Route path='*' element={<NotFound />} />

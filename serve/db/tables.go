@@ -70,15 +70,32 @@ type ACLAllow struct {
 
 // Settings
 type Settings struct {
-	UUID      string `db:"uuid"`      // uuid
-	ResetPass bool   `db:"resetpass"` // resetpass
+	UUID       string `db:"uuid"`        // uuid
+	MailPrefix string `db:"mail_prefix"` // 邮件标题前缀
+	ResetPass  bool   `db:"resetpass"`   // 找回密码
 }
 
-// SMS settings
+// 短信配置
 type SmsSettings struct {
 	AppId     string `db:"appid"`      // appid
 	SecretId  string `db:"secret_id"`  // secret id
 	SecretKey string `db:"secret_key"` // secret key
 	Sign      string `db:"sign"`       // sign
 	MsgID1    string `db:"msgid1"`     // 验证码模板ID
+}
+
+// 邮件 mta
+type MTAs struct {
+	UUID     string `db:"uuid"`     // uuid
+	Name     string `db:"name"`     // 名称
+	Host     string `db:"host"`     // 主机
+	Port     int    `db:"port"`     // 端口
+	SSL      bool   `db:"ssl"`      // SSL 模式
+	Sender   string `db:"sender"`   // 发送地址
+	ReplyTo  string `db:"replyto"`  // 回复地址
+	Username string `db:"username"` // 认证用户名
+	Passwd   string `db:"passwd"`   // 密码
+	CC       string `db:"cc"`       // 抄送
+	BCC      string `db:"bcc"`      // 密送
+	SortNo   int    `db:"sortno"`   // 排序序号
 }

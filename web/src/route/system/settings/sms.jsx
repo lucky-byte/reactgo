@@ -112,45 +112,44 @@ export default function SMS() {
           https://cloud.tencent.com/product/sms
         </Link>
       </FormHelperText>
-      <Paper variant="outlined" sx={{ p: 2, mt: 3 }}>
-        <Stack direction='row' alignItems='baseline'>
-          <Typography sx={{ minWidth: 80 }} variant='subtitle2'>
-            SDK AppId:
-          </Typography>
-          <Stack sx={{ flex: 1, ml: 1 }}>
-            <InplaceInput text={appid || '请填写'} onConfirm={onChangeAppid} />
-            <FormHelperText>
-              可以在腾讯短信管理后台
-              <Link component='a' target='_blank'
-                href='https://console.cloud.tencent.com/smsv2/app-manage'>
-                应用列表
-              </Link>
-              中查询 SDK AppId
-            </FormHelperText>
+      <FormHelperText sx={{ mt: 3 }}>
+        可以在腾讯短信管理后台
+        <Link component='a' target='_blank'
+          href='https://console.cloud.tencent.com/smsv2/app-manage'>
+          应用列表
+        </Link>
+        中查询 SDK AppId，在腾讯云后台
+        <Link component='a' target='_blank'
+          href='https://console.cloud.tencent.com/cam/capi'>
+          API密钥管理
+        </Link>
+        中查询 Secret Id 及 Secret Key。
+      </FormHelperText>
+      <Paper variant="outlined" sx={{ p: 2 }}>
+        <Stack spacing={1}>
+          <Stack direction='row' alignItems='center'>
+            <Typography sx={{ minWidth: 80 }} variant='subtitle2'>
+              SDK AppId:
+            </Typography>
+            <InplaceInput sx={{ flex: 1 }} text={appid} placeholder='请填写'
+              color="primary" onConfirm={onChangeAppid}
+            />
           </Stack>
-        </Stack>
-        <Stack direction='row' alignItems='center' sx={{ mt: 2 }}>
-          <Typography sx={{minWidth: 80}} variant='subtitle2'>
-            Secret Id:
-          </Typography>
-          <InplaceInput sx={{ flex: 1, ml: 1 }} text={secretId || '请填写'}
-            onConfirm={onChangeSecretId}
-          />
-        </Stack>
-        <Stack direction='row' alignItems='baseline'>
-          <Typography sx={{minWidth: 80}} variant='subtitle2'>
-            Secret Key:
-          </Typography>
-          <Stack sx={{ flex: 1, ml: 1 }}>
-            <InplaceInput text={secretKey || '请填写'} onConfirm={onChangeSecretKey} />
-            <FormHelperText>
-              可以在腾讯云后台
-              <Link component='a' target='_blank'
-                href='https://console.cloud.tencent.com/cam/capi'>
-                API密钥管理
-              </Link>
-              中查询 Secret Id 及 Secret Key
-            </FormHelperText>
+          <Stack direction='row' alignItems='center'>
+            <Typography sx={{ minWidth: 80 }} variant='subtitle2'>
+              Secret Id:
+            </Typography>
+            <InplaceInput sx={{ flex: 1 }} text={secretId} placeholder='请填写'
+              color="primary" onConfirm={onChangeSecretId}
+            />
+          </Stack>
+          <Stack direction='row' alignItems='baseline'>
+            <Typography sx={{ minWidth: 80 }} variant='subtitle2'>
+              Secret Key:
+            </Typography>
+            <InplaceInput sx={{ flex: 1 }} text={secretKey} placeholder='请填写'
+              color="primary" onConfirm={onChangeSecretKey}
+            />
           </Stack>
         </Stack>
       </Paper>
@@ -166,8 +165,8 @@ export default function SMS() {
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Stack direction='row' alignItems='center'>
           <Typography sx={{minWidth: 70}} variant='subtitle2'>短信签名:</Typography>
-          <InplaceInput sx={{ flex: 1, ml: 1 }} text={sign || '请填写'}
-            onConfirm={onChangeSign}
+          <InplaceInput sx={{ flex: 1, ml: 1 }} text={sign} placeholder='请填写'
+            color="primary" onConfirm={onChangeSign}
           />
         </Stack>
       </Paper>
@@ -198,7 +197,7 @@ export default function SMS() {
               <TableCell align="center">
                 您的验证码是 <NumberTip n={1} tip='短信验证码' />，5分钟内有效
               </TableCell>
-              <TableCell align="center">{msgids[1] || '请填写'}</TableCell>
+              <TableCell align="center">{msgids[1] || '空'}</TableCell>
               <TableCell align="center" padding="checkbox">
                 <MenuButton name='验证码' n={1} msgid={msgids[1]} updateMsgid={updateMsgid} />
               </TableCell>

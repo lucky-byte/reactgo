@@ -252,7 +252,7 @@ function UserMenuIconButton(props) {
       await post('/system/user/disable',
         new URLSearchParams({ uuid: user.uuid })
       );
-      enqueueSnackbar('用户状态已更新成功', { variant: 'success' });
+      enqueueSnackbar('用户状态更新成功', { variant: 'success' });
       requestRefresh();
     } catch (err) {
       if (err) {

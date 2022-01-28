@@ -37,12 +37,24 @@ const (
 // 查询短信配置
 func getSettings() (*db.SmsSettings, error) {
 	ql := `select * from sms_settings`
-	var result db.SmsSettings
+	var settings db.SmsSettings
 
-	if err := db.SelectOne(ql, &result); err != nil {
+	if err := db.SelectOne(ql, &settings); err != nil {
 		return nil, errors.Wrap(err, "查询短信配置错")
 	}
-	return &result, nil
+	if len(settings.AppId) == 0 {
+		return nil, fmt.Errorf("未配置 SDK AppId")
+	}
+	if len(settings.SecretId) == 0 {
+		return nil, fmt.Errorf("未配置 Secret Id")
+	}
+	if len(settings.SecretKey) == 0 {
+		return nil, fmt.Errorf("未配置 Secret Key")
+	}
+	if len(settings.Sign) == 0 {
+		return nil, fmt.Errorf("未配置短信签名")
+	}
+	return &settings, nil
 }
 
 // 获取短信正文模板编号
@@ -89,17 +101,26 @@ func authorization(r []byte, t int64, settings *db.SmsSettings) string {
 	)
 }
 
+type responseSendStatusSet struct {
+	SerialNo    string
+	PhoneNumber string
+	Fee         int
+	Code        string
+	Message     string
+}
+
+type responseError struct {
+	Code    string
+	Message string
+}
+
 // 短信发送响应结构
 type response struct {
 	Response struct {
-		SendStatusSet []struct {
-			Serial      string `json:"SerialNo"`
-			PhoneNumber string `json:"PhoneNumber"`
-			Fee         int    `json:"Fee"`
-			Code        string `json:"Code"`
-			Message     string `json:"Message"`
-		} `json:"SendStatusSet"`
-	} `json:"Response"`
+		SendStatusSet []responseSendStatusSet
+		Error         responseError
+		RequestId     string
+	}
 }
 
 // 通过接口发送短信
@@ -154,13 +175,17 @@ func send(mobile []string, n int, params []string) error {
 	}
 	xlog.X.Infof("发送短信响应: %s", body)
 
-	var j response
+	var resp_json response
 
-	if err = json.Unmarshal(body, &j); err != nil {
+	if err = json.Unmarshal(body, &resp_json); err != nil {
 		return errors.Wrap(err, "解析响应数据错")
 	}
-	// 逐个检查短信发送状态，如果有一条失败则返回错误，即只有全部成功才返回成功
-	for _, v := range j.Response.SendStatusSet {
+	e := resp_json.Response.Error
+
+	if len(e.Code) > 0 && strings.ToLower(e.Code) != "ok" {
+		return fmt.Errorf("%s", e.Message)
+	}
+	for _, v := range resp_json.Response.SendStatusSet {
 		if strings.ToLower(v.Code) != "ok" {
 			return fmt.Errorf("%s", v.Message)
 		}
