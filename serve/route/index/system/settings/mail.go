@@ -229,3 +229,44 @@ func mailModify(c echo.Context) error {
 	}
 	return c.NoContent(http.StatusOK)
 }
+
+// 排序
+func mailSort(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var uuid2, dir string
+	var sortno int
+
+	err := echo.FormFieldBinder(c).
+		MustString("uuid", &uuid2).
+		MustString("dir", &dir).
+		MustInt("sortno", &sortno).BindError()
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	// 移到最前
+	if dir == "top" {
+		ql := `
+			update mtas set sortno = (select min(sortno) from mtas) - 1
+			where uuid = ?
+		`
+		if err = db.ExecOne(ql, uuid2); err != nil {
+			cc.ErrLog(err).Error("排序错误")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
+	}
+	// 移到最后
+	if dir == "bottom" {
+		ql := `
+			update mtas set sortno = (select max(sortno) from mtas) + 1
+			where uuid = ?
+		`
+		if err = db.ExecOne(ql, uuid2); err != nil {
+			cc.ErrLog(err).Error("排序错误")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		return c.NoContent(http.StatusOK)
+	}
+	return c.String(http.StatusBadRequest, "操作无效")
+}

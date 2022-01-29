@@ -17,6 +17,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import VerticalAlignTopIcon from '@mui/icons-material/VerticalAlignTop';
+import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom';
 import EditIcon from '@mui/icons-material/Edit';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Divider from "@mui/material/Divider";
@@ -108,9 +110,9 @@ export default function MailSettings() {
                   {mta.host}:{mta.port}/{mta.ssl ? 'SSL' : 'StartTLS'}
                 </TableCell>
                 <TableCell align="center">{mta.sender}</TableCell>
-                <TableCell align="center">{mta.nsent}</TableCell>
+                <TableCell align="centee">{mta.sortno}</TableCell>
                 <TableCell align="center" padding="checkbox">
-                  <MenuButton uuid={mta.uuid} name={mta.name}
+                  <MenuButton uuid={mta.uuid} name={mta.name} sortno={mta.sortno}
                     requestRefresh={() => setRefresh(true)}
                   />
                 </TableCell>
@@ -130,7 +132,7 @@ function MenuButton(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const { uuid, name, requestRefresh } = props;
+  const { uuid, name, sortno, requestRefresh } = props;
 
   const onOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -138,6 +140,20 @@ function MenuButton(props) {
 
   const onClose = () => {
     setAnchorEl(null);
+  }
+
+  const onSort = async dir => {
+    try {
+      await put('/system/settings/mail/sort', new URLSearchParams({
+        uuid, dir, sortno,
+      }));
+      enqueueSnackbar('更新成功', { variant: 'success' });
+      requestRefresh();
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    } finally {
+      onClose();
+    }
   }
 
   const onModify = () => {
@@ -171,6 +187,19 @@ function MenuButton(props) {
         <MoreVertIcon />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
+        <MenuItem onClick={() => onSort('top')}>
+          <ListItemIcon>
+            <VerticalAlignTopIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>移到最前</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => onSort('bottom')}>
+          <ListItemIcon>
+            <VerticalAlignBottomIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>移到最后</ListItemText>
+        </MenuItem>
+        <Divider />
         <MenuItem onClick={onModify}>
           <ListItemIcon>
             <EditIcon fontSize="small" />

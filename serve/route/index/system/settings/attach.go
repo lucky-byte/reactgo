@@ -19,6 +19,7 @@ func Attach(up *echo.Group) {
 
 	group.PUT("/mail/prefix", mailPrefix)
 	group.PUT("/mail/modify", mailModify)
+	group.PUT("/mail/sort", mailSort)
 
 	group.PUT("/sms/appid", smsAppid)
 	group.PUT("/sms/secretid", smsSecretId)
