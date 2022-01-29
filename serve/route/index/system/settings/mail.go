@@ -2,6 +2,7 @@ package settings
 
 import (
 	"net/http"
+	"net/mail"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -38,6 +39,7 @@ func mailConfig(c echo.Context) error {
 			"ssl":    v.SSL,
 			"sender": v.Sender,
 			"sortno": v.SortNo,
+			"nsent":  v.NSent,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{
@@ -87,6 +89,17 @@ func mailAdd(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	// 检查地址格式
+	if _, err = mail.ParseAddress(sender); err != nil {
+		cc.ErrLog(err).Errorf("解析发件人地址(%s)错误", sender)
+		return c.String(http.StatusBadRequest, "发件人地址错误")
+	}
+	if len(replyto) > 0 {
+		if _, err = mail.ParseAddress(replyto); err != nil {
+			cc.ErrLog(err).Errorf("解析回复地址(%s)错误", replyto)
+			return c.String(http.StatusBadRequest, "回复地址错误")
+		}
+	}
 	ql := `select coalesce(max(sortno), 0) from mtas`
 	sortno := 0
 
@@ -103,8 +116,29 @@ func mailAdd(c echo.Context) error {
 	)`
 	err = db.ExecOne(ql, uuid.NewString(),
 		name, host, port, ssl, sender, replyto, username, password,
-		ccc, bcc, sortno+1)
+		ccc, bcc, sortno+1,
+	)
 	if err != nil {
+		cc.ErrLog(err).Error("更新邮件配置错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
+}
+
+// 删除邮件传输代理
+func mailDel(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var uuid string
+
+	err := echo.QueryParamsBinder(c).MustString("uuid", &uuid).BindError()
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	ql := `delete from mtas where uuid = ?`
+
+	if err := db.ExecOne(ql, uuid); err != nil {
+		cc.ErrLog(err).Error("删除邮件传输代理错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

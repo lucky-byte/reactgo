@@ -221,8 +221,15 @@ export default function UserAdd() {
                   <Switch defaultChecked {...register('tfa')} />
                 }
               />
-              <FormControlLabel
-                label="将登录信息（网址、登录名及密码）发送到用户邮箱"
+              <FormControlLabel sx={{ mt: 1 }}
+                label={
+                  <Stack spacing={0}>
+                    <Typography>将登录信息（网址、登录名及密码）发送到用户邮箱</Typography>
+                    <FormHelperText sx={{ mt: 0, color: 'orangered' }}>
+                      邮件中将包含所有登录需要的信息，请务必确认录入的邮箱地址属于该用户。
+                    </FormHelperText>
+                  </Stack>
+                }
                 control={
                   <Switch defaultChecked {...register('sendmail')} />
                 }

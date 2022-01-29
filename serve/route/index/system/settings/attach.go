@@ -14,10 +14,9 @@ func Attach(up *echo.Group) {
 	group.GET("/sms", smsConfig)
 	group.GET("/secure", secureConfig)
 
-	group.Use(acl.AllowWrite(code))
+	group.Use(acl.AllowWrite(code)) // 写权限
 
 	group.PUT("/mail/prefix", mailPrefix)
-	group.POST("/mail/add", mailAdd)
 
 	group.PUT("/sms/appid", smsAppid)
 	group.PUT("/sms/secretid", smsSecretId)
@@ -25,8 +24,13 @@ func Attach(up *echo.Group) {
 	group.PUT("/sms/sign", smsSign)
 	group.PUT("/sms/msgid", smsMsgId)
 
-	group.Use(acl.AllowAdmin(code))
+	group.Use(acl.AllowAdmin(code)) // Admin 权限
+
+	group.POST("/mail/add", mailAdd)
+	group.DELETE("/mail/delete", mailDel)
 
 	group.POST("/sms/test", smsTest)
+
 	group.PUT("/secure/resetpass", resetpass)
+	group.PUT("/secure/duration", duration)
 }

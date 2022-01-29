@@ -15,32 +15,44 @@ import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import EditIcon from '@mui/icons-material/Edit';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Divider from "@mui/material/Divider";
 import { useSnackbar } from 'notistack';
+import { useConfirm } from 'material-ui-confirm';
 import InplaceInput from '../../../../comp/inplace-input';
 import OutlinedPaper from '../../../../comp/outlined-paper';
-import { get, put } from "../../../../rest";
+import { get, put, del } from "../../../../rest";
 
 export default function MailSettings() {
   const { enqueueSnackbar } = useSnackbar();
   const [prefix, setPrefix] = useState('');
   const [mtas, setMtas] = useState([]);
+  const [refresh, setRefresh] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const resp = await get('/system/settings/mail');
-        setPrefix(resp.mail_prefix);
-        setMtas(resp.mtas || []);
+        if (refresh) {
+          const resp = await get('/system/settings/mail');
+          setPrefix(resp.mail_prefix);
+          setMtas(resp.mtas || []);
+        }
       } catch (err) {
         enqueueSnackbar(err.message);
+      } finally {
+        setRefresh(false);
       }
     })();
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, refresh]);
 
   const onChangePrefix = async v => {
     try {
-      await put('/system/settings/mail/prefix', new URLSearchParams({ prefix: v }));
+      await put('/system/settings/mail/prefix', new URLSearchParams({
+        prefix: v
+      }));
       setPrefix(v);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
@@ -83,21 +95,24 @@ export default function MailSettings() {
               <TableCell align="center">名称</TableCell>
               <TableCell align="center">服务器</TableCell>
               <TableCell align="center">发件人</TableCell>
-              <TableCell align="center">回复地址</TableCell>
+              <TableCell align="center">发送量</TableCell>
               <TableCell align="center" padding="checkbox"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {mtas.map(mta => (
-              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableRow key={mta.uuid}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell align="center">{mta.name}</TableCell>
                 <TableCell align="center">
                   {mta.host}:{mta.port}/{mta.ssl ? 'ssl' : 'startTLS'}
                 </TableCell>
                 <TableCell align="center">{mta.sender}</TableCell>
-                <TableCell align="center">{mta.replyto}</TableCell>
+                <TableCell align="center">{mta.nsent}</TableCell>
                 <TableCell align="center" padding="checkbox">
-                  <MenuButton uuid={mta.uuid} />
+                  <MenuButton uuid={mta.uuid} name={mta.name}
+                    requestRefresh={setRefresh}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -110,10 +125,12 @@ export default function MailSettings() {
 
 function MenuButton(props) {
   const navigate = useNavigate();
+  const confirm = useConfirm();
+  const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const { uuid } = props;
+  const { uuid, name, requestRefresh } = props;
 
   const onOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -128,8 +145,24 @@ function MenuButton(props) {
     navigate('modify', { state: { uuid }});
   }
 
-  const onDelete = () => {
-    onClose();
+  const onDelete = async () => {
+    try {
+      await confirm({
+        description: `确定要删除 ${name} 吗？删除后不能恢复。`,
+        confirmationText: '删除',
+        confirmationButtonProps: { color: 'error' },
+      });
+      const params = new URLSearchParams({ uuid });
+      await del('/system/settings/mail/delete?' + params.toString());
+      enqueueSnackbar('删除成功', { variant: 'success' });
+      requestRefresh();
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    } finally {
+      onClose();
+    }
   }
 
   return (
@@ -138,9 +171,19 @@ function MenuButton(props) {
         <MoreVertIcon />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
-        <MenuItem onClick={onModify}>修改</MenuItem>
+        <MenuItem onClick={onModify}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>修改</ListItemText>
+        </MenuItem>
         <Divider />
-        <MenuItem onClick={onDelete}>删除</MenuItem>
+        <MenuItem onClick={onDelete}>
+          <ListItemIcon>
+            <RemoveCircleOutlineIcon fontSize="small" color='error' />
+          </ListItemIcon>
+          <ListItemText>删除</ListItemText>
+        </MenuItem>
       </Menu>
     </div>
   )

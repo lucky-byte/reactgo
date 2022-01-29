@@ -50,7 +50,14 @@ func signin(c echo.Context) error {
 		cc.ErrLog(err).WithField("userid", username).Error("登录失败")
 		return c.String(http.StatusForbidden, "登录名或密码错误")
 	}
-	newJwt := auth.NewAuthJWT(user.UUID, true, 12*time.Hour)
+	ql = `select token_duration from settings`
+	var duration time.Duration
+
+	if err = db.SelectOne(ql, &duration); err != nil {
+		cc.ErrLog(err).WithField("userid", username).Error("查询设置错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	newJwt := auth.NewAuthJWT(user.UUID, true, duration*time.Minute)
 	smsid := ""
 
 	// 需要2步认证

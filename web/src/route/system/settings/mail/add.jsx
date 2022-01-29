@@ -64,7 +64,7 @@ export default function MailAdd() {
             />
             <Stack direction='row' spacing={3}>
               <TextField label='服务器地址' variant='standard' required
-                autoComplete='off'
+                autoComplete='url'
                 placeholder='邮件服务器域名，例如 smtp.qq.com'
                 helperText={errors?.host?.message}
                 error={errors?.host}
@@ -103,7 +103,7 @@ export default function MailAdd() {
             </Stack>
             <Stack>
               <TextField label='发件人地址' variant='standard' fullWidth required
-                autoComplete='off'
+                autoComplete='email'
                 placeholder='发件人邮箱地址，通常也是登录账号'
                 helperText={errors?.sender?.message}
                 error={errors.sender}
@@ -137,7 +137,7 @@ export default function MailAdd() {
                 placeholder='服务器登录密码'
                 InputProps={{
                   endAdornment:
-                    <InputAdornment>
+                    <InputAdornment position='end'>
                       <IconButton onClick={() => setPasswordVisible(!passwordVisible)}>
                         {passwordVisible ?
                           <VisibilityOffIcon />
@@ -158,42 +158,52 @@ export default function MailAdd() {
               />
             </Stack>
             <Stack>
-            <TextField label='回复地址' variant='standard' fullWidth
-              autoComplete='off'
-              placeholder='邮件回复地址，可以不填'
-              helperText={errors?.replyto?.message}
-              error={errors?.replyto}
-              {...register('replyto', {
-                maxLength: {
-                  value: 64, message: '超出最大长度'
-                },
-              })}
-            />
+              <TextField label='回复地址' variant='standard' fullWidth
+                autoComplete='email'
+                placeholder='邮件回复地址，可以不填'
+                helperText={errors?.replyto?.message}
+                error={errors?.replyto}
+                {...register('replyto', {
+                  maxLength: {
+                    value: 64, message: '超出最大长度'
+                  },
+                })}
+              />
               <FormHelperText>
                 可以是简单的邮箱地址，例如 zs@mail.com，也可以是带有名称的格式，
                 例如 zhangsan &lt;zs@mail.com&gt;
               </FormHelperText>
             </Stack>
-            <TextField label='抄送地址' variant='standard' fullWidth
-              placeholder='邮件抄送地址，可以不填，多个地址以逗号分隔'
-              helperText={errors?.cc?.message}
-              error={errors?.cc}
-              {...register('cc', {
-                maxLength: {
-                  value: 256, message: '超出最大长度'
-                },
-              })}
-            />
-            <TextField label='密送地址' variant='standard' fullWidth
-              placeholder='邮件密送地址，可以不填，多个地址以逗号分隔'
-              helperText={errors?.bcc?.message}
-              error={errors?.bcc}
-              {...register('bcc', {
-                maxLength: {
-                  value: 256, message: '超出最大长度'
-                },
-              })}
-            />
+            <Stack>
+              <TextField label='抄送地址' variant='standard' fullWidth
+                placeholder='邮件抄送地址，可以不填，多个地址以逗号分隔'
+                helperText={errors?.cc?.message}
+                error={errors?.cc}
+                {...register('cc', {
+                  maxLength: {
+                    value: 256, message: '超出最大长度'
+                  },
+                })}
+              />
+              <FormHelperText>
+                系统发出的每封邮件都会抄送到这里配置的地址，多个地址以逗号(,)分割。
+              </FormHelperText>
+            </Stack>
+            <Stack>
+              <TextField label='密送地址' variant='standard' fullWidth
+                placeholder='邮件密送地址，可以不填，多个地址以逗号分隔'
+                helperText={errors?.bcc?.message}
+                error={errors?.bcc}
+                {...register('bcc', {
+                  maxLength: {
+                    value: 256, message: '超出最大长度'
+                  },
+                })}
+              />
+              <FormHelperText>
+                系统发出的每封邮件都会密送到这里配置的地址，多个地址以逗号(,)分割。
+              </FormHelperText>
+            </Stack>
             <Stack direction='row' spacing={2} justifyContent='flex-end'>
               <Button color='secondary' disabled={isSubmitting}
                 onClick={() => { navigate('..') }}>

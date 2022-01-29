@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/lucky-byte/bdb/serve/ctx"
+	"github.com/lucky-byte/bdb/serve/db"
 	"github.com/lucky-byte/bdb/serve/route/index/auth"
 	"github.com/lucky-byte/bdb/serve/sms"
 )
@@ -47,7 +48,14 @@ func tfa(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	// 重新生成登录TOKEN
-	newJwt := auth.NewAuthJWT(jwt.User, true, 12*time.Hour)
+	ql := `select token_duration from settings`
+	var duration time.Duration
+
+	if err = db.SelectOne(ql, &duration); err != nil {
+		cc.ErrLog(err).Error("查询设置错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	newJwt := auth.NewAuthJWT(jwt.User, true, duration*time.Minute)
 	token, err := auth.JWTGenerate(newJwt)
 	if err != nil {
 		cc.ErrLog(err).WithField("mobile", mobile).Error("生成登录 TOKEN 错")

@@ -1,9 +1,10 @@
 begin;
 
 create table if not exists settings (
-  uuid        boolean         primary key default true,
-  mail_prefix varchar(64)     default '',
-  resetpass   boolean         default false
+  uuid            boolean         primary key default true,
+  mail_prefix     varchar(64)     default '',
+  resetpass       boolean         default false,
+  token_duration  int             default 1440
 );
 
 insert into settings (uuid) values (true);
@@ -100,7 +101,8 @@ create table if not exists mtas (
   passwd      varchar(128),
   cc          text,
   bcc         text,
-  sortno      int             unique
+  sortno      int             unique,
+  nsent       int             default 0
 );
 
 commit;

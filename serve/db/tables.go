@@ -70,9 +70,10 @@ type ACLAllow struct {
 
 // Settings
 type Settings struct {
-	UUID       string `db:"uuid"`        // uuid
-	MailPrefix string `db:"mail_prefix"` // 邮件标题前缀
-	ResetPass  bool   `db:"resetpass"`   // 找回密码
+	UUID          string `db:"uuid"`           // uuid
+	MailPrefix    string `db:"mail_prefix"`    // 邮件标题前缀
+	ResetPass     bool   `db:"resetpass"`      // 找回密码
+	TokenDuration int    `db:"token_duration"` // 会话持续时间
 }
 
 // 短信配置
@@ -98,4 +99,5 @@ type MTAs struct {
 	CC       string `db:"cc"`       // 抄送
 	BCC      string `db:"bcc"`      // 密送
 	SortNo   int    `db:"sortno"`   // 排序序号
+	NSent    int    `db:"nsent"`    // 发送量
 }

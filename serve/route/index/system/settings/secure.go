@@ -19,10 +19,12 @@ func secureConfig(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"resetpass": result.ResetPass,
+		"resetpass":      result.ResetPass,
+		"token_duration": result.TokenDuration,
 	})
 }
 
+// 允许找回密码
 func resetpass(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -36,6 +38,25 @@ func resetpass(c echo.Context) error {
 	ql := `update settings set resetpass = ?`
 
 	if err = db.ExecOne(ql, resetpass); err != nil {
+		cc.ErrLog(err).Error("更新系统设置错")
+	}
+	return c.NoContent(http.StatusOK)
+}
+
+// 更新会话持续时间
+func duration(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var duration int
+
+	err := echo.FormFieldBinder(c).MustInt("duration", &duration).BindError()
+	if err != nil {
+		cc.ErrLog(err).Error("请求无效")
+		return c.NoContent(http.StatusBadRequest)
+	}
+	ql := `update settings set token_duration = ?`
+
+	if err = db.ExecOne(ql, duration); err != nil {
 		cc.ErrLog(err).Error("更新系统设置错")
 	}
 	return c.NoContent(http.StatusOK)
