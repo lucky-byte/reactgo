@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { Navigate, useLocation, useNavigate } from "react-router-dom"
 import { useForm, Controller } from "react-hook-form";
@@ -29,15 +29,22 @@ export default function UserInfo() {
 
   useEffect(() => { setTitle('修改用户资料'); }, [setTitle]);
 
-  const { register, handleSubmit, control, setValue,
-    formState: {
-      errors, isSubmitting
-    }
-  } = useForm({
+  const { register, handleSubmit, control, setValue, formState: {
+    errors, isSubmitting
+  }} = useForm({
     defaultValues: {
       tfa: true,
     }
   });
+
+  const reset = useCallback(info => {
+    setValue("userid", info.userid);
+    setValue("name", info.name);
+    setValue("mobile", info.mobile);
+    setValue("email", info.email);
+    setValue("address", info.address);
+    setValue("tfa", info.tfa);
+  }, [setValue]);
 
   useEffect(() => {
     (async () => {
@@ -48,12 +55,7 @@ export default function UserInfo() {
           const params = new URLSearchParams({ uuid: location.state.uuid });
           const resp = await get('/system/user/info?' + params.toString());
           setUserInfo(resp);
-          setValue("userid", resp.userid);
-          setValue("name", resp.name);
-          setValue("mobile", resp.mobile);
-          setValue("email", resp.email);
-          setValue("address", resp.address);
-          setValue("tfa", resp.tfa);
+          reset(resp);
         }
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -61,15 +63,10 @@ export default function UserInfo() {
         setProgress(false);
       }
     })();
-  }, [location.state, enqueueSnackbar, setValue, setProgress]);
+  }, [location.state, enqueueSnackbar, setProgress, reset]);
 
   const onReset = () => {
-    setValue("userid", userInfo.userid);
-    setValue("name", userInfo.name);
-    setValue("mobile", userInfo.mobile);
-    setValue("email", userInfo.email);
-    setValue("address", userInfo.address);
-    setValue("tfa", userInfo.tfa);
+    reset(userInfo);
   }
 
   const onSubmit = async data => {

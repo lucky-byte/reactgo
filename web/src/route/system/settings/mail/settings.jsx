@@ -105,13 +105,13 @@ export default function MailSettings() {
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell align="center">{mta.name}</TableCell>
                 <TableCell align="center">
-                  {mta.host}:{mta.port}/{mta.ssl ? 'ssl' : 'startTLS'}
+                  {mta.host}:{mta.port}/{mta.ssl ? 'SSL' : 'StartTLS'}
                 </TableCell>
                 <TableCell align="center">{mta.sender}</TableCell>
                 <TableCell align="center">{mta.nsent}</TableCell>
                 <TableCell align="center" padding="checkbox">
                   <MenuButton uuid={mta.uuid} name={mta.name}
-                    requestRefresh={setRefresh}
+                    requestRefresh={() => setRefresh(true)}
                   />
                 </TableCell>
               </TableRow>

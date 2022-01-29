@@ -11,12 +11,14 @@ func Attach(up *echo.Group) {
 	group := up.Group("/settings", acl.AllowRead(code))
 
 	group.GET("/mail", mailConfig)
+	group.GET("/mail/info", mailInfo)
 	group.GET("/sms", smsConfig)
 	group.GET("/secure", secureConfig)
 
-	group.Use(acl.AllowWrite(code)) // 写权限
+	group.Use(acl.AllowWrite(code)) // Write 权限
 
 	group.PUT("/mail/prefix", mailPrefix)
+	group.PUT("/mail/modify", mailModify)
 
 	group.PUT("/sms/appid", smsAppid)
 	group.PUT("/sms/secretid", smsSecretId)

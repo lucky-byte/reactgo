@@ -108,18 +108,20 @@ func mailAdd(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	ql = `insert into mtas (
-		uuid, name, host, port, ssl, sender, replyto, username, passwd,
-		cc, bcc, sortno
-	) values (
-		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-	)`
+	ql = `
+		insert into mtas (
+			uuid, name, host, port, ssl, sender, replyto, username, passwd,
+			cc, bcc, sortno
+		) values (
+			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+		)
+	`
 	err = db.ExecOne(ql, uuid.NewString(),
 		name, host, port, ssl, sender, replyto, username, password,
 		ccc, bcc, sortno+1,
 	)
 	if err != nil {
-		cc.ErrLog(err).Error("更新邮件配置错")
+		cc.ErrLog(err).Error("添加邮件配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)
@@ -139,6 +141,90 @@ func mailDel(c echo.Context) error {
 
 	if err := db.ExecOne(ql, uuid); err != nil {
 		cc.ErrLog(err).Error("删除邮件传输代理错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.NoContent(http.StatusOK)
+}
+
+// 查询邮件传输代理信息
+func mailInfo(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var uuid string
+
+	err := echo.QueryParamsBinder(c).MustString("uuid", &uuid).BindError()
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	ql := `select * from mtas where uuid = ?`
+	var result db.MTAs
+
+	if err := db.SelectOne(ql, &result, uuid); err != nil {
+		cc.ErrLog(err).Error("查询邮件传输代理错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"uuid":     result.UUID,
+		"name":     result.Name,
+		"host":     result.Host,
+		"port":     result.Port,
+		"ssl":      result.SSL,
+		"sender":   result.Sender,
+		"replyto":  result.ReplyTo,
+		"username": result.Username,
+		"passwd":   result.Passwd,
+		"cc":       result.CC,
+		"bcc":      result.BCC,
+	})
+}
+
+// 修改邮件传输代理
+func mailModify(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var uuid2, name, host, sender, username, password, replyto, ccc, bcc string
+	var port int
+	var ssl bool
+
+	err := echo.FormFieldBinder(c).
+		MustString("uuid", &uuid2).
+		MustString("name", &name).
+		MustString("host", &host).
+		MustInt("port", &port).
+		MustBool("ssl", &ssl).
+		MustString("sender", &sender).
+		MustString("password", &password).
+		String("username", &username).
+		String("replyto", &replyto).
+		String("cc", &ccc).
+		String("bcc", &bcc).BindError()
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	// 检查地址格式
+	if _, err = mail.ParseAddress(sender); err != nil {
+		cc.ErrLog(err).Errorf("解析发件人地址(%s)错误", sender)
+		return c.String(http.StatusBadRequest, "发件人地址错误")
+	}
+	if len(replyto) > 0 {
+		if _, err = mail.ParseAddress(replyto); err != nil {
+			cc.ErrLog(err).Errorf("解析回复地址(%s)错误", replyto)
+			return c.String(http.StatusBadRequest, "回复地址错误")
+		}
+	}
+	ql := `
+		update mtas set
+			name = ?, host = ?, port = ?, ssl = ?, sender = ?,
+			replyto = ?, username = ?, passwd = ?,
+			cc = ?, bcc = ?
+		where uuid = ?
+	`
+	err = db.ExecOne(ql,
+		name, host, port, ssl, sender, replyto, username, password,
+		ccc, bcc, uuid2,
+	)
+	if err != nil {
+		cc.ErrLog(err).Error("更新邮件配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)
