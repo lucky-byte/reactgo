@@ -15,7 +15,7 @@ func smsConfig(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	ql := `select * from sms_settings`
-	var result db.SmsSettings
+	var result db.SmsSetting
 
 	err := db.SelectOne(ql, &result)
 	if err != nil {

@@ -15,14 +15,14 @@ func mailConfig(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	ql := `select * from settings`
-	var settings db.Settings
+	var setting db.Setting
 
-	if err := db.SelectOne(ql, &settings); err != nil {
+	if err := db.SelectOne(ql, &setting); err != nil {
 		cc.ErrLog(err).Error("查询系统设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	ql = `select * from mtas order by sortno`
-	var result []db.MTAs
+	var result []db.MTA
 
 	if err := db.Select(ql, &result); err != nil {
 		cc.ErrLog(err).Error("查询邮件配置错")
@@ -43,7 +43,7 @@ func mailConfig(c echo.Context) error {
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"mail_prefix": settings.MailPrefix,
+		"mail_prefix": setting.MailPrefix,
 		"mtas":        mtas,
 	})
 }
@@ -157,7 +157,7 @@ func mailInfo(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `select * from mtas where uuid = ?`
-	var result db.MTAs
+	var result db.MTA
 
 	if err := db.SelectOne(ql, &result, uuid); err != nil {
 		cc.ErrLog(err).Error("查询邮件传输代理错")

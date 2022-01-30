@@ -12,7 +12,7 @@ func secureConfig(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	ql := `select * from settings`
-	var result db.Settings
+	var result db.Setting
 
 	if err := db.SelectOne(ql, &result); err != nil {
 		cc.ErrLog(err).Error("查询系统设置错")

@@ -68,8 +68,8 @@ type ACLAllow struct {
 	Admin bool   `db:"admin"` // Admin
 }
 
-// Settings
-type Settings struct {
+// Setting
+type Setting struct {
 	UUID          string `db:"uuid"`           // uuid
 	MailPrefix    string `db:"mail_prefix"`    // 邮件标题前缀
 	ResetPass     bool   `db:"resetpass"`      // 找回密码
@@ -77,7 +77,7 @@ type Settings struct {
 }
 
 // 短信配置
-type SmsSettings struct {
+type SmsSetting struct {
 	AppId     string `db:"appid"`      // appid
 	SecretId  string `db:"secret_id"`  // secret id
 	SecretKey string `db:"secret_key"` // secret key
@@ -86,7 +86,7 @@ type SmsSettings struct {
 }
 
 // 邮件 mta
-type MTAs struct {
+type MTA struct {
 	UUID     string `db:"uuid"`     // uuid
 	Name     string `db:"name"`     // 名称
 	Host     string `db:"host"`     // 主机

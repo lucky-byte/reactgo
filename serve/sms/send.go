@@ -35,30 +35,30 @@ const (
 )
 
 // 查询短信配置
-func getSettings() (*db.SmsSettings, error) {
+func getSettings() (*db.SmsSetting, error) {
 	ql := `select * from sms_settings`
-	var settings db.SmsSettings
+	var setting db.SmsSetting
 
-	if err := db.SelectOne(ql, &settings); err != nil {
+	if err := db.SelectOne(ql, &setting); err != nil {
 		return nil, errors.Wrap(err, "查询短信配置错")
 	}
-	if len(settings.AppId) == 0 {
+	if len(setting.AppId) == 0 {
 		return nil, fmt.Errorf("未配置 SDK AppId")
 	}
-	if len(settings.SecretId) == 0 {
+	if len(setting.SecretId) == 0 {
 		return nil, fmt.Errorf("未配置 Secret Id")
 	}
-	if len(settings.SecretKey) == 0 {
+	if len(setting.SecretKey) == 0 {
 		return nil, fmt.Errorf("未配置 Secret Key")
 	}
-	if len(settings.Sign) == 0 {
+	if len(setting.Sign) == 0 {
 		return nil, fmt.Errorf("未配置短信签名")
 	}
-	return &settings, nil
+	return &setting, nil
 }
 
 // 获取短信正文模板编号
-func msgid(settings *db.SmsSettings, n int) (string, error) {
+func msgid(settings *db.SmsSetting, n int) (string, error) {
 	ids := []string{"", settings.MsgID1}
 
 	if n > len(ids) {
@@ -82,7 +82,7 @@ func hmacsha256(s, key string) string {
 }
 
 // 计算 Authorization 签名
-func authorization(r []byte, t int64, settings *db.SmsSettings) string {
+func authorization(r []byte, t int64, settings *db.SmsSetting) string {
 	h := fmt.Sprintf("content-type:application/json\nhost:%s\n", host)
 	i := fmt.Sprintf("POST\n/\n\n%s\n%s\n%s", h, headers, hex256(r))
 
