@@ -31,6 +31,7 @@ import (
 	"github.com/lucky-byte/bdb/serve/ctx"
 	"github.com/lucky-byte/bdb/serve/db"
 	"github.com/lucky-byte/bdb/serve/image"
+	"github.com/lucky-byte/bdb/serve/mailfs"
 	"github.com/lucky-byte/bdb/serve/route/index"
 	"github.com/lucky-byte/bdb/serve/xlog"
 )
@@ -42,6 +43,7 @@ var Name, Version, BuildDate, BuildYear string
 var (
 	configFile = flag.String("config", "", "配置`文件路径`")
 	webfs      = flag.String("webfs", "embed", "WEB资产, 可以是'embed'或者'osdir'")
+	mailFS     = flag.String("mailfs", "embed", "邮件模板, 可以是'embed'或者'osdir'")
 	version    = flag.Bool("version", false, "打印版本信息")
 	addUser    = flag.Bool("adduser", false, "添加第一个管理员")
 )
@@ -85,6 +87,8 @@ func main() {
 		return
 	}
 	debug := conf.Debug()
+
+	mailfs.SetFSType(*mailFS)
 
 	// Ensure log path exists
 	logpath := conf.LogPath()

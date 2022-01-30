@@ -1,0 +1,13 @@
+{
+  "name": "template",
+  "version": "1.0.0",
+  "description": "Email template",
+  "private": true,
+  "scripts": {
+    "compile": "mjml --read mjml/*.mjml -o html",
+    "watch": "mjml --watch mjml/*.mjml -o html"
+  },
+  "dependencies": {
+    "mjml": "^4.11.0"
+  }
+}

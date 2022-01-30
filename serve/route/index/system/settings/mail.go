@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/lucky-byte/bdb/serve/ctx"
 	"github.com/lucky-byte/bdb/serve/db"
-	"github.com/lucky-byte/bdb/serve/email"
+	"github.com/lucky-byte/bdb/serve/mailfs"
 )
 
 // 查询邮件服务配置
@@ -272,8 +272,14 @@ func mailTest(c echo.Context) error {
 		cc.ErrLog(err).Error("查询邮件配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	// 构造邮件
-	m := email.TextMessage("测试邮件", "这是一封测试邮件，成功接收表明服务器配置正确。")
+	// 生成邮件
+	m, err := mailfs.Message("测试邮件", "test", map[string]interface{}{
+		"MTAName": mta.Name,
+	})
+	if err != nil {
+		cc.ErrLog(err).Error("从模板生成邮件错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
 	m.AddTO(addr)
 
 	// 发送邮件

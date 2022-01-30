@@ -48,25 +48,6 @@ type Message struct {
 	hasInline   bool
 }
 
-func (m *Message) attach(file string, inline bool, cid string) error {
-	data, err := os.ReadFile(file)
-	if err != nil {
-		return err
-	}
-	_, filename := filepath.Split(file)
-
-	m.Attachments[filename] = &Attachment{
-		Filename:  filename,
-		Data:      data,
-		Inline:    inline,
-		ContentId: cid,
-	}
-	if inline {
-		m.hasInline = true
-	}
-	return nil
-}
-
 // AddTO add a recipient
 func (m *Message) AddTO(address *mail.Address) []*mail.Address {
 	m.To = append(m.To, address)
@@ -86,11 +67,33 @@ func (m *Message) AddBCC(address *mail.Address) []*mail.Address {
 }
 
 // AttachBuffer attaches a binary attachment.
-func (m *Message) AttachBuffer(filename string, buf []byte, inline bool) error {
+func (m *Message) AttachBuffer(filename string, buf []byte, inline bool, cid string) {
 	m.Attachments[filename] = &Attachment{
-		Filename: filename,
-		Data:     buf,
-		Inline:   inline,
+		Filename:  filename,
+		Data:      buf,
+		Inline:    inline,
+		ContentId: cid,
+	}
+	if inline {
+		m.hasInline = true
+	}
+}
+
+func (m *Message) attach(file string, inline bool, cid string) error {
+	data, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+	_, filename := filepath.Split(file)
+
+	m.Attachments[filename] = &Attachment{
+		Filename:  filename,
+		Data:      data,
+		Inline:    inline,
+		ContentId: cid,
+	}
+	if inline {
+		m.hasInline = true
 	}
 	return nil
 }

@@ -35,12 +35,12 @@ build-dev: web
 
 # startup development server with default args
 dev: build-dev
-	./${APPNAME}-dev -config .config/config.yaml -webfs osdir
+	./${APPNAME}-dev -config .config/config.yaml -webfs osdir -mailfs osdir
 
 # startup development server with customized args
 run:
 	go run -ldflags='$(LDFLAGS)' -tags '${TAGS} dev' . \
-		-config .config/config.yaml -webfs osdir
+		-config .config/config.yaml -webfs osdir -mailfs osdir
 
 # run test
 test:
