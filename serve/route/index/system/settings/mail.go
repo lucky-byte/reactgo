@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/lucky-byte/bdb/serve/ctx"
 	"github.com/lucky-byte/bdb/serve/db"
+	"github.com/lucky-byte/bdb/serve/email"
 )
 
 // 查询邮件服务配置
@@ -81,7 +82,7 @@ func mailAdd(c echo.Context) error {
 		MustInt("port", &port).
 		MustBool("ssl", &ssl).
 		MustString("sender", &sender).
-		MustString("password", &password).
+		String("password", &password).
 		String("username", &username).
 		String("replyto", &replyto).
 		String("cc", &ccc).
@@ -193,7 +194,7 @@ func mailModify(c echo.Context) error {
 		MustInt("port", &port).
 		MustBool("ssl", &ssl).
 		MustString("sender", &sender).
-		MustString("password", &password).
+		String("password", &password).
 		String("username", &username).
 		String("replyto", &replyto).
 		String("cc", &ccc).
@@ -269,4 +270,38 @@ func mailSort(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 	return c.String(http.StatusBadRequest, "操作无效")
+}
+
+// 测试
+func mailTest(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var uuid2, address string
+
+	err := echo.FormFieldBinder(c).
+		MustString("uuid", &uuid2).
+		MustString("email", &address).BindError()
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	addr, err := mail.ParseAddress(address)
+	if err != nil {
+		cc.ErrLog(err).Error("解析邮件地址错")
+		return c.String(http.StatusBadRequest, "解析邮件地址错")
+	}
+	ql := `select * from mtas where uuid = ?`
+	var mta db.MTA
+
+	if err = db.SelectOne(ql, &mta, uuid2); err != nil {
+		cc.ErrLog(err).Error("查询邮件配置错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	m := email.TextMessage("测试邮件", "这是一封测试邮件")
+	m.AddTO(addr)
+
+	if err = m.SendWithMta(&mta); err != nil {
+		cc.ErrLog(err).Error("发送邮件错")
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusOK)
 }

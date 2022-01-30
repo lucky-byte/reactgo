@@ -131,10 +131,10 @@ export default function MailAdd() {
                   },
                 })}
               />
-              <TextField label='登录密码' variant='standard' fullWidth required
+              <TextField label='登录密码' variant='standard' fullWidth
                 autoComplete='new-password'
                 type={passwordVisible ? 'text' : 'password'}
-                placeholder='服务器登录密码'
+                placeholder='服务器登录密码，如果没有则不填'
                 InputProps={{
                   endAdornment:
                     <InputAdornment position='end'>
@@ -150,7 +150,6 @@ export default function MailAdd() {
                 helperText={errors?.password?.message}
                 error={errors?.password}
                 {...register('password', {
-                  required: "不能为空",
                   maxLength: {
                     value: 64, message: '超出最大长度'
                   },

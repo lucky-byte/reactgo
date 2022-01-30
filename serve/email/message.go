@@ -283,52 +283,99 @@ func (m *Message) Send() error {
 
 	// try all of mtas one by one, until meet one which can send the mail
 	for _, mta := range mtas {
-		st := time.Now()
+		// st := time.Now()
 
-		// add reply to address
-		if len(m.ReplyTo) == 0 && len(mta.ReplyTo) > 0 {
-			m.ReplyTo = mta.ReplyTo
-		}
-		// 添加抄送地址
-		if len(mta.CC) > 0 {
-			arr := strings.Split(mta.CC, ",")
-			for _, cc := range arr {
-				addr, err := mail.ParseAddress(cc)
-				if err != nil {
-					return fmt.Errorf("抄送地址 '%s' of '%s' 无效", cc, mta.Name)
-				}
-				m.Cc = append(m.Cc, addr)
-			}
-		}
-		// 添加密送地址
-		if len(mta.BCC) > 0 {
-			arr := strings.Split(mta.BCC, ",")
-			for _, bcc := range arr {
-				addr, err := mail.ParseAddress(bcc)
-				if err != nil {
-					return fmt.Errorf("密送地址 '%s' of '%s' 无效", bcc, mta.Name)
-				}
-				m.Bcc = append(m.Bcc, addr)
-			}
-		}
+		// // add reply to address
+		// if len(m.ReplyTo) == 0 && len(mta.ReplyTo) > 0 {
+		// 	m.ReplyTo = mta.ReplyTo
+		// }
+		// // 添加抄送地址
+		// if len(mta.CC) > 0 {
+		// 	arr := strings.Split(mta.CC, ",")
+		// 	for _, cc := range arr {
+		// 		addr, err := mail.ParseAddress(cc)
+		// 		if err != nil {
+		// 			return fmt.Errorf("抄送地址 '%s' of '%s' 无效", cc, mta.Name)
+		// 		}
+		// 		m.Cc = append(m.Cc, addr)
+		// 	}
+		// }
+		// // 添加密送地址
+		// if len(mta.BCC) > 0 {
+		// 	arr := strings.Split(mta.BCC, ",")
+		// 	for _, bcc := range arr {
+		// 		addr, err := mail.ParseAddress(bcc)
+		// 		if err != nil {
+		// 			return fmt.Errorf("密送地址 '%s' of '%s' 无效", bcc, mta.Name)
+		// 		}
+		// 		m.Bcc = append(m.Bcc, addr)
+		// 	}
+		// }
 		// 如果发送失败，则尝试下一个
-		if err := m.send(&mta); err != nil {
+		// if err := m.send(&mta); err != nil {
+		// 	xlog.X.Warnf("通过 '%s' 发送邮件错: %v", mta.Name, err)
+		// 	continue
+		// }
+		if err := m.SendWithMta(&mta); err != nil {
 			xlog.X.Warnf("通过 '%s' 发送邮件错: %v", mta.Name, err)
 			continue
 		}
 		sent = true
 
-		xlog.X.Infof("邮件通过 '%s' 发送成功, 耗费 %d 毫秒",
-			mta.Name, time.Since(st).Milliseconds(),
-		)
+		// xlog.X.Infof("邮件通过 '%s' 发送成功, 耗费 %d 毫秒",
+		// 	mta.Name, time.Since(st).Milliseconds(),
+		// )
 		// 更新邮件发送量
-		if err = updateSent(mta.UUID); err != nil {
-			xlog.X.WithError(err).Warn("更新邮件发送量错")
-		}
+		// if err = updateSent(mta.UUID); err != nil {
+		// 	xlog.X.WithError(err).Warn("更新邮件发送量错")
+		// }
 		break
 	}
 	if !sent {
 		return fmt.Errorf("尝试了所有 %d 个 MTA, 但是没有一个可以发送邮件", len(mtas))
+	}
+	return nil
+}
+
+func (m *Message) SendWithMta(mta *db.MTA) error {
+	st := time.Now()
+
+	// 设置回复地址
+	if len(m.ReplyTo) == 0 && len(mta.ReplyTo) > 0 {
+		m.ReplyTo = mta.ReplyTo
+	}
+	// 添加抄送地址
+	if len(mta.CC) > 0 {
+		arr := strings.Split(mta.CC, ",")
+		for _, cc := range arr {
+			addr, err := mail.ParseAddress(cc)
+			if err != nil {
+				return fmt.Errorf("抄送地址 '%s' of '%s' 无效", cc, mta.Name)
+			}
+			m.Cc = append(m.Cc, addr)
+		}
+	}
+	// 添加密送地址
+	if len(mta.BCC) > 0 {
+		arr := strings.Split(mta.BCC, ",")
+		for _, bcc := range arr {
+			addr, err := mail.ParseAddress(bcc)
+			if err != nil {
+				return fmt.Errorf("密送地址 '%s' of '%s' 无效", bcc, mta.Name)
+			}
+			m.Bcc = append(m.Bcc, addr)
+		}
+	}
+	// 发送邮件
+	if err := m.send(mta); err != nil {
+		return err
+	}
+	xlog.X.Infof("邮件通过 '%s' 发送成功, 耗费 %d 毫秒", mta.Name,
+		time.Since(st).Milliseconds(),
+	)
+	// 更新邮件发送量
+	if err := updateSent(mta.UUID); err != nil {
+		xlog.X.WithError(err).Warn("更新邮件发送量错")
 	}
 	return nil
 }
