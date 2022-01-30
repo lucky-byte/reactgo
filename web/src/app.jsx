@@ -45,7 +45,10 @@ export default function App() {
           <ConfirmProvider defaultOptions={{
             title: '请确认',
             cancellationText: '取消',
-            confirmationButtonProps: { variant: 'contained' },
+            confirmationButtonProps: {
+              variant: 'contained', sx: { mr: 2, mb: 1 }
+            },
+            cancellationButtonProps: { sx: { mb: 1 } },
             dialogProps: { maxWidth: 'xs' },
           }}>
             <BrowserRouter>

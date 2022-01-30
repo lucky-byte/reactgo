@@ -90,7 +90,7 @@ insert into sms_settings (appid) values ('');
 
 create table if not exists mtas (
   uuid        varchar(36)     primary key not null,
-  name        varchar(32)     not null,
+  name        varchar(32)     not null unique,
   host        varchar(128)    not null,
   port        int             not null default 465,
   ssl         boolean         not null default true,

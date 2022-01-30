@@ -1,6 +1,9 @@
 package settings
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"net/mail"
 
@@ -246,7 +249,7 @@ func mailSort(c echo.Context) error {
 	return c.String(http.StatusBadRequest, "操作无效")
 }
 
-// 测试
+// 发送测试邮件
 func mailTest(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -287,5 +290,129 @@ func mailTest(c echo.Context) error {
 		cc.ErrLog(err).Error("发送邮件错")
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
+	return c.NoContent(http.StatusOK)
+}
+
+// 导出
+func mailExport(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	ql := `select * from mtas order by sortno`
+	var result []db.MTA
+
+	if err := db.Select(ql, &result); err != nil {
+		cc.ErrLog(err).Error("查询邮件配置错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	var mtas []map[string]interface{}
+
+	for _, v := range result {
+		mtas = append(mtas, map[string]interface{}{
+			"name":     v.Name,
+			"host":     v.Host,
+			"port":     v.Port,
+			"ssl":      v.SSL,
+			"sender":   v.Sender,
+			"replyto":  v.ReplyTo,
+			"username": v.Username,
+			"passwd":   v.Passwd,
+			"cc":       v.CC,
+			"bcc":      v.BCC,
+			"prefix":   v.Prefix,
+			"sortno":   v.SortNo,
+			"nsent":    v.NSent,
+		})
+	}
+	b, err := json.Marshal(mtas)
+	if err != nil {
+		cc.ErrLog(err).Error("json marshal 错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return cc.Download(b, "mail-config.json")
+}
+
+// 导入
+func mailImport(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		cc.ErrLog(err).Error("读上传文件错")
+		return c.NoContent(http.StatusBadRequest)
+	}
+	f, err := file.Open()
+	if err != nil {
+		cc.ErrLog(err).Error("读上传文件错")
+		return c.NoContent(http.StatusBadRequest)
+	}
+	defer f.Close()
+
+	b, err := io.ReadAll(f)
+	if err != nil {
+		cc.ErrLog(err).Error("读上传文件错")
+		return c.NoContent(http.StatusBadRequest)
+	}
+	var result []db.MTA
+
+	if err = json.Unmarshal(b, &result); err != nil {
+		cc.ErrLog(err).Error("解析上传文件错")
+		return c.String(http.StatusBadRequest, "解析文件错")
+	}
+	tx, err := db.Default().Beginx()
+	if err != nil {
+		cc.ErrLog(err).Error("启动数据库事务错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	// 查询最大 sortno
+	ql := `select coalesce(max(sortno), 0) from mtas`
+	var sortno int
+
+	if err := tx.Get(&sortno, tx.Rebind(ql)); err != nil {
+		cc.ErrLog(err).Error("查询邮件配置错")
+		tx.Rollback()
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	for i, v := range result {
+		if len(v.Name) == 0 || len(v.Host) == 0 || v.Port == 0 || len(v.Sender) == 0 {
+			tx.Rollback()
+			return c.String(http.StatusBadRequest, fmt.Sprintf(
+				"第 %d 条记录不完整，缺少 name, host, port 或者 sender", i,
+			))
+		}
+		// 检查名称是否存在
+		ql := `select count(*) from mtas where name = ?`
+		var count int
+
+		if err := tx.Get(&count, tx.Rebind(ql), v.Name); err != nil {
+			cc.ErrLog(err).Error("查询邮件配置错")
+			tx.Rollback()
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		// 如果存在则忽略
+		if count > 0 {
+			continue
+		}
+		// 添加记录
+		ql = `
+			insert into mtas (
+				uuid, name, host, port, ssl, sender, replyto, username, passwd,
+				cc, bcc, prefix, nsent, sortno
+			) values (
+				?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+			)
+		`
+		_, err = tx.Exec(tx.Rebind(ql), uuid.NewString(),
+			v.Name, v.Host, v.Port, v.SSL, v.Sender, v.ReplyTo,
+			v.Username, v.Passwd, v.CC, v.BCC, v.Prefix, v.NSent, sortno+1,
+		)
+		if err != nil {
+			cc.ErrLog(err).Error("添加邮件配置错")
+			tx.Rollback()
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		sortno += 1
+	}
+	tx.Commit()
+
 	return c.NoContent(http.StatusOK)
 }

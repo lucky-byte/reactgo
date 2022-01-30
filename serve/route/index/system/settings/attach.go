@@ -31,6 +31,8 @@ func Attach(up *echo.Group) {
 
 	group.POST("/mail/add", mailAdd)
 	group.DELETE("/mail/delete", mailDel)
+	group.GET("/mail/export", mailExport)
+	group.POST("/mail/import", mailImport)
 
 	group.POST("/sms/test", smsTest)
 

@@ -29,16 +29,21 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContentText from '@mui/material/DialogContentText';
+import TextField from "@mui/material/TextField";
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
+import { saveAs } from 'file-saver';
 import OutlinedPaper from '~/comp/outlined-paper';
 import userState from '~/state/user';
 import { get, put, post, del } from "~/rest";
+import { InputAdornment } from "@mui/material";
 
 export default function MailSettings() {
   const { enqueueSnackbar } = useSnackbar();
+  const confirm = useConfirm();
   const [mtas, setMtas] = useState([]);
   const [refresh, setRefresh] = useState(true);
+  const [importOpen, setImportOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -55,6 +60,31 @@ export default function MailSettings() {
     })();
   }, [enqueueSnackbar, refresh]);
 
+  // 导入
+  const onImport = () => {
+    setImportOpen(true);
+  }
+
+  // 导出
+  const onExport = async () => {
+    try {
+      await confirm({
+        description: `导出的文件将包含账号、密码等敏感信息，导出后请妥善保管。`,
+        confirmationText: '导出',
+      });
+      const resp = await get('/system/settings/mail/export');
+      const blob = new Blob([JSON.stringify(resp, null, 2)], {
+        type: "text/plain;charset=utf-8"
+      });
+      saveAs(blob, "mail-config.json");
+      enqueueSnackbar('导出成功', { variant: 'success' });
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
   return (
     <Stack>
       <Typography sx={{ mt: 3 }} variant='subtitle1'>邮件传输代理:</Typography>
@@ -66,9 +96,11 @@ export default function MailSettings() {
         请注意: 公共的（尤其是免费的）邮件服务器（例如QQ邮箱）有发送频率限制，
         如果系统需要发送大量邮件，需使用专用的邮件服务，或配置自己的邮件传输代理。
       </FormHelperText>
-      <Button sx={{ alignSelf: 'flex-end', mb: 1 }} component={Link} to='add'>
-        添加
-      </Button>
+      <Stack direction='row' justifyContent='flex-end' sx={{ mb: 1 }}>
+        <Button component={Link} to='add'>添加</Button>
+        <Button onClick={onImport}>导入</Button>
+        <Button onClick={onExport}>导出</Button>
+      </Stack>
       <TableContainer component={OutlinedPaper}>
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
@@ -85,11 +117,9 @@ export default function MailSettings() {
               <TableRow key={mta.uuid}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell align="center">{mta.name}</TableCell>
-                <TableCell align="center">
-                  {mta.host}:{mta.port}/{mta.ssl ? 'SSL' : 'StartTLS'}
-                </TableCell>
+                <TableCell align="center">{mta.host}:{mta.port}</TableCell>
                 <TableCell align="center">{mta.sender}</TableCell>
-                <TableCell align="center">{mta.nsent},{mta.sortno}</TableCell>
+                <TableCell align="center">{mta.nsent}</TableCell>
                 <TableCell align="center" padding="checkbox">
                   <MenuButton uuid={mta.uuid} name={mta.name} sortno={mta.sortno}
                     requestRefresh={() => setRefresh(true)}
@@ -100,6 +130,9 @@ export default function MailSettings() {
           </TableBody>
         </Table>
       </TableContainer>
+      <ImportDialog open={importOpen} onClose={() => setImportOpen(false)}
+        requestRefresh={() => setRefresh(true)}
+      />
     </Stack>
   )
 }
@@ -213,6 +246,7 @@ function MenuButton(props) {
   )
 }
 
+// 发送测试邮件
 function TestDialog(props) {
   const { enqueueSnackbar } = useSnackbar();
   const user = useRecoilValue(userState);
@@ -225,7 +259,7 @@ function TestDialog(props) {
       setDisabled(true);
 
       await post('/system/settings/mail/test', new URLSearchParams({
-        uuid, email: user.email,
+        uuid, email: user?.email,
       }));
       enqueueSnackbar('邮件已发送', { variant: 'success' });
       onClose();
@@ -245,13 +279,101 @@ function TestDialog(props) {
           点击「发送」将发送一封测试邮件到下面的邮箱地址，成功收到邮件表明配置正确。
         </FormHelperText>
         <Paper variant="outlined" sx={{ p: 1, mt: 1 }}>
-          <Typography variant="body2">{user.email}</Typography>
+          <Typography variant="body2">{user?.email}</Typography>
         </Paper>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={onClose}>取消</Button>
         <Button variant="contained" disabled={disabled} onClick={onConfirm}>
           发送
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
+// 导入
+function ImportDialog(props) {
+  const { enqueueSnackbar } = useSnackbar();
+  const [file, setFile] = useState(null);
+  const [filename, setFilename] = useState('');
+  const [disabled, setDisabled] = useState(false);
+
+  const { open, onClose, requestRefresh } = props;
+
+  const onDialogClose = () => {
+    setFile(null);
+    setFilename('');
+    onClose();
+  }
+
+  // 选择文件改变
+  const onFileChange = e => {
+    if (!e.target.files || e.target.files.length === 0) {
+      setFile(null);
+      return setFilename('');
+    }
+    const file = e.target.files[0];
+
+    if (file.size > 1024 * 10) {
+      return enqueueSnackbar('文件大小超出范围', { variant: 'error' });
+    }
+    setFile(file);
+    setFilename(file.name);
+  }
+
+  // 确定导入
+  const onConfirm = async () => {
+    if (!file) {
+      return enqueueSnackbar('请选择导入文件', { variant: 'warning' });
+    }
+    try {
+      setDisabled(true);
+
+      const form = new FormData();
+      form.append("file", file);
+
+      await post('/system/settings/mail/import', form);
+
+      enqueueSnackbar('导入成功', { variant: 'success' });
+      onDialogClose();
+      requestRefresh();
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    } finally {
+      setDisabled(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onClose={onDialogClose} maxWidth='xs'>
+      <DialogTitle>导入配置</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          导入文件格式必须与导出的文件格式一致。
+          如果你之前没有导出文件，请不要导入，除非你非常清楚自己在做什么。
+        </DialogContentText>
+        <input accept="application/json" id="import-file" type="file" hidden
+          onChange={onFileChange}
+        />
+        <TextField fullWidth disabled focused sx={{ mt: 3 }}
+          label='导入文件'
+          placeholder="请选择"
+          value={filename}
+          InputProps={{
+            endAdornment:
+              <InputAdornment position="end">
+                <label htmlFor="import-file">
+                  <Button variant="text" component="span">选择文件</Button>
+                </label>
+              </InputAdornment>
+          }}
+        />
+      </DialogContent>
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button onClick={onDialogClose}>取消</Button>
+        <Button variant="contained" disabled={disabled} onClick={onConfirm}>
+          导入
         </Button>
       </DialogActions>
     </Dialog>

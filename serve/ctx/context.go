@@ -1,6 +1,9 @@
 package ctx
 
 import (
+	"io/ioutil"
+	"net/http"
+	"os"
 	"strings"
 
 	"github.com/lucky-byte/bdb/serve/config"
@@ -83,6 +86,26 @@ func (c *Context) AllowAdmin(code int) bool {
 		}
 	}
 	return false
+}
+
+// 文件下载
+func (c *Context) Download(b []byte, filename string) error {
+	tmpfile, err := ioutil.TempFile(os.TempDir(), "download-*.json")
+	if err != nil {
+		c.ErrLog(err).Error("创建临时文件错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	defer os.Remove(tmpfile.Name())
+
+	if _, err = tmpfile.Write(b); err != nil {
+		c.ErrLog(err).Error("写入临时文件错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	if err = tmpfile.Close(); err != nil {
+		c.ErrLog(err).Error("关闭临时文件错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.Attachment(tmpfile.Name(), filename)
 }
 
 func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {

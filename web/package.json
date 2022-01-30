@@ -21,6 +21,7 @@
     "@testing-library/user-event": "^13.2.1",
     "autoprefixer": "^10.4.2",
     "dayjs": "^1.10.7",
+    "file-saver": "^2.0.5",
     "material-ui-confirm": "^3.0.3",
     "notistack": "^2.0.3",
     "postcss": "^8.4.5",
