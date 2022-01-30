@@ -23,3 +23,10 @@ func prefix() (string, error) {
 	}
 	return result.MailPrefix, nil
 }
+
+// 更新邮件发送量
+func updateSent(uuid string) error {
+	ql := `update mtas set nsent = nsent + 1 where uuid = ?`
+
+	return db.ExecOne(ql, uuid)
+}

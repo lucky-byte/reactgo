@@ -266,10 +266,8 @@ func (m *Message) bytes(sender *mail.Address) []byte {
 	return buf.Bytes()
 }
 
-// Send email with smtp protocol.
+// 通过 SMTP 协议发送邮件
 func (m *Message) Send() error {
-	sent := false
-
 	prefix, err := prefix()
 	if err != nil {
 		return errors.Wrap(err, "查询邮件标题前缀错")
@@ -281,8 +279,9 @@ func (m *Message) Send() error {
 	if err != nil {
 		return errors.Wrap(err, "查询邮件配置错")
 	}
-	// try all of mtas one by one, until meet someone which can send the mail
-	// for _, mta := range mailConfig.Mtas {
+	sent := false
+
+	// try all of mtas one by one, until meet one which can send the mail
 	for _, mta := range mtas {
 		st := time.Now()
 
@@ -290,7 +289,7 @@ func (m *Message) Send() error {
 		if len(m.ReplyTo) == 0 && len(mta.ReplyTo) > 0 {
 			m.ReplyTo = mta.ReplyTo
 		}
-		// add cc addresses
+		// 添加抄送地址
 		if len(mta.CC) > 0 {
 			arr := strings.Split(mta.CC, ",")
 			for _, cc := range arr {
@@ -301,7 +300,7 @@ func (m *Message) Send() error {
 				m.Cc = append(m.Cc, addr)
 			}
 		}
-		// add bcc addresses
+		// 添加密送地址
 		if len(mta.BCC) > 0 {
 			arr := strings.Split(mta.BCC, ",")
 			for _, bcc := range arr {
@@ -312,15 +311,20 @@ func (m *Message) Send() error {
 				m.Bcc = append(m.Bcc, addr)
 			}
 		}
+		// 如果发送失败，则尝试下一个
 		if err := m.send(&mta); err != nil {
-			xlog.X.Warnf("send mail with '%s' error: %v", mta.Name, err)
+			xlog.X.Warnf("通过 '%s' 发送邮件错: %v", mta.Name, err)
 			continue
 		}
 		sent = true
 
-		xlog.X.Infof("mail has been sent with '%s', take %dms",
+		xlog.X.Infof("邮件通过 '%s' 发送成功, 耗费 %d 毫秒",
 			mta.Name, time.Since(st).Milliseconds(),
 		)
+		// 更新邮件发送量
+		if err = updateSent(mta.UUID); err != nil {
+			xlog.X.WithError(err).Warn("更新邮件发送量错")
+		}
 		break
 	}
 	if !sent {
@@ -332,14 +336,14 @@ func (m *Message) Send() error {
 // send with smtp
 func (m *Message) send(mta *db.MTA) error {
 	if len(mta.Host) == 0 {
-		return fmt.Errorf("mta '%s' host is empty", mta.Name)
+		return fmt.Errorf("MTA '%s' 的 host 为空", mta.Name)
 	}
 	if len(mta.Sender) == 0 {
-		return fmt.Errorf("mta '%s' sender is empty", mta.Name)
+		return fmt.Errorf("MTA '%s' 的 sender 为空", mta.Name)
 	}
 	from, err := mail.ParseAddress(mta.Sender)
 	if err != nil {
-		return fmt.Errorf("parse sender address '%s' error: %v", mta.Sender, err)
+		return fmt.Errorf("解析发件人地址 '%s' 错: %v", mta.Sender, err)
 	}
 	to := addrs2strings(false, m.To, m.Cc, m.Bcc)
 
