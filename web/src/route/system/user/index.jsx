@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import NotFound from "../../notfound";
+import NotFound from "~/route/notfound";
 import UserList from "./list";
 import UserAdd from "./add";
 import UserInfo from "./info";

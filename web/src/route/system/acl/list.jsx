@@ -26,10 +26,10 @@ import BlockIcon from '@mui/icons-material/Block';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
-import InplaceInput from '../../../comp/inplace-input';
-import titleState from "../../../state/title";
-import progressState from "../../../state/progress";
-import { get, post, del, put } from '../../../rest';
+import InplaceInput from '~/comp/inplace-input';
+import titleState from "~/state/title";
+import progressState from "~/state/progress";
+import { get, post, del, put } from '~/rest';
 
 export default function AclList() {
   const navigate = useNavigate();

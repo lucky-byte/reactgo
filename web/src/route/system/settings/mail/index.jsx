@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import NotFound from "../../../notfound";
+import NotFound from "~/route/notfound";
 import MailAdd from "./add";
 import MailModify from "./modify";
 import MailSettings from "./settings";

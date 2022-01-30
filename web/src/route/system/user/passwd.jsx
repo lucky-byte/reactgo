@@ -14,8 +14,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import titleState from "../../../state/title";
-import { put } from '../../../rest';
+import titleState from "~/state/title";
+import { put } from '~/rest';
 
 export default function UserPassword() {
   const location = useLocation();

@@ -17,8 +17,8 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import progressState from "../../../../state/progress";
-import { get, put } from '../../../../rest';
+import progressState from "~/state/progress";
+import { get, put } from '~/rest';
 
 export default function MailModify() {
   const navigate = useNavigate();
@@ -87,7 +87,7 @@ export default function MailModify() {
 
   return (
     <Stack sx={{ mt: 4 }}>
-      <Stack direction='row' alignItems='center'>
+      <Stack direction='row' alignItems='center' spacing={1}>
         <IconButton component={RouteLink} to='..'>
           <ArrowBackIcon color='primary' />
         </IconButton>

@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import NotFound from "../../notfound";
+import NotFound from "~/route/notfound";
 import AclAdd from "./add";
 import AclAllows from "./allows";
 import AclList from "./list";

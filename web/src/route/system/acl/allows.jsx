@@ -17,11 +17,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
-import OutlinedPaper from "../../../comp/outlined-paper";
-import urlCodes from "../../sidebar/codes";
-import titleState from "../../../state/title";
-import progressState from '../../../state/progress';
-import { post, get, put } from '../../../rest';
+import OutlinedPaper from "~/comp/outlined-paper";
+import urlCodes from "~/route/sidebar/codes";
+import titleState from "~/state/title";
+import progressState from '~/state/progress';
+import { post, get, put } from '~/rest';
 
 export default function AclAllows() {
   const location = useLocation();

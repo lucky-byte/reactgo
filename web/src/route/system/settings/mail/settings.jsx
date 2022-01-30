@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -20,13 +21,22 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import VerticalAlignTopIcon from '@mui/icons-material/VerticalAlignTop';
 import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom';
 import EditIcon from '@mui/icons-material/Edit';
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Divider from "@mui/material/Divider";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContentText from '@mui/material/DialogContentText';
+import TextField from '@mui/material/TextField';
+import isEmail from 'validator/lib/isEmail';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
-import InplaceInput from '../../../../comp/inplace-input';
-import OutlinedPaper from '../../../../comp/outlined-paper';
-import { get, put, del } from "../../../../rest";
+import InplaceInput from '~/comp/inplace-input';
+import OutlinedPaper from '~/comp/outlined-paper';
+import userState from '~/state/user';
+import { get, put, post, del } from "~/rest";
 
 export default function MailSettings() {
   const { enqueueSnackbar } = useSnackbar();
@@ -131,6 +141,7 @@ function MenuButton(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [testOpen, setTestOpen] = useState(false);
 
   const { uuid, name, sortno, requestRefresh } = props;
 
@@ -159,6 +170,11 @@ function MenuButton(props) {
   const onModify = () => {
     onClose();
     navigate('modify', { state: { uuid }});
+  }
+
+  const onTest = () => {
+    onClose();
+    setTestOpen(true);
   }
 
   const onDelete = async () => {
@@ -207,6 +223,13 @@ function MenuButton(props) {
           <ListItemText>修改</ListItemText>
         </MenuItem>
         <Divider />
+        <MenuItem onClick={onTest}>
+          <ListItemIcon>
+            <ForwardToInboxIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>发送测试邮件</ListItemText>
+        </MenuItem>
+        <Divider />
         <MenuItem onClick={onDelete}>
           <ListItemIcon>
             <RemoveCircleOutlineIcon fontSize="small" color='error' />
@@ -214,6 +237,60 @@ function MenuButton(props) {
           <ListItemText>删除</ListItemText>
         </MenuItem>
       </Menu>
+      <TestDialog open={testOpen} onClose={() => setTestOpen(false)}
+        uuid={uuid} name={name}
+      />
     </div>
+  )
+}
+
+function TestDialog(props) {
+  const { enqueueSnackbar } = useSnackbar();
+  const user = useRecoilValue(userState);
+  const [email, setEmail] = useState('');
+
+  const { open, onClose, name, uuid } = props;
+
+  const onConfirm = async () => {
+    try {
+      if (!isEmail(email)) {
+        return enqueueSnackbar('请输入正确邮箱地址', { variant: 'warning' });
+      }
+      await post('/system/settings/mail/test', new URLSearchParams({
+        uuid, email,
+      }));
+      enqueueSnackbar('短信已发送', { variant: 'success' });
+      setEmail('');
+      onClose();
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth='xs'>
+      <DialogTitle>发送测试邮件</DialogTitle>
+      <DialogContent>
+        <DialogContentText>{name}</DialogContentText>
+        <FormHelperText>一封测试邮件将发送到 {user.email}。</FormHelperText>
+        <Paper variant="outlined" sx={{ p: 2, mt: 3 }}>
+          <TextField
+            autoFocus
+            type="email"
+            label="邮箱地址"
+            fullWidth
+            variant="standard"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            inputProps={{ maxLength: 64 }}
+            helperText='测试邮件将发送到该邮箱地址'
+          />
+        </Paper>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button onClick={onClose}>取消</Button>
+        <Button variant="contained" onClick={onConfirm}>发送</Button>
+      </DialogActions>
+    </Dialog>
   )
 }

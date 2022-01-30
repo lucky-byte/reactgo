@@ -14,9 +14,9 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { grey } from '@mui/material/colors';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import titleState from "../../../state/title";
-import progressState from '../../../state/progress';
-import { get, put } from '../../../rest';
+import titleState from "~/state/title";
+import progressState from '~/state/progress';
+import { get, put } from '~/rest';
 
 export default function UserACL() {
   const location = useLocation();

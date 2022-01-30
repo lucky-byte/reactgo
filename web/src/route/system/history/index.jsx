@@ -17,10 +17,10 @@ import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
-import SearchInput from '../../../comp/search-input';
-import OutlinedPaper from '../../../comp/outlined-paper';
-import titleState from "../../../state/title";
-import { post } from '../../../rest';
+import SearchInput from '~/comp/search-input';
+import OutlinedPaper from '~/comp/outlined-paper';
+import titleState from "~/state/title";
+import { post } from '~/rest';
 
 export default function History() {
   const setTitle = useSetRecoilState(titleState);

@@ -11,8 +11,8 @@ import FormHelperText from "@mui/material/FormHelperText";
 import Button from "@mui/material/Button";
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
-import userState from "../state/user";
-import { post, put } from "../rest";
+import userState from "~/state/user";
+import { post, put } from "~/rest";
 
 export default function SignIn2FA() {
   const navigate = useNavigate();

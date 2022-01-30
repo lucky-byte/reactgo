@@ -7,7 +7,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from "@mui/material/Typography";
-import codeState from "../../state/code";
+import codeState from "~/state/code";
 import urlCodes from './codes';
 
 export default function Item(props) {

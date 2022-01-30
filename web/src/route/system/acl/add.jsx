@@ -11,8 +11,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import titleState from "../../../state/title";
-import { post } from '../../../rest';
+import titleState from "~/state/title";
+import { post } from '~/rest';
 
 export default function AclAdd() {
   const navigate = useNavigate();

@@ -10,10 +10,10 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import List from '@mui/material/List';
-import userState from "../../state/user";
-import codeState from "../../state/code";
-import LuckyByte from '../../img/lucky-byte.png';
-import LuckyByteDark from '../../img/lucky-byte-dark.png';
+import userState from "~/state/user";
+import codeState from "~/state/code";
+import LuckyByte from '~/img/lucky-byte.png';
+import LuckyByteDark from '~/img/lucky-byte-dark.png';
 import menus from "./menus";
 import Item from './item';
 

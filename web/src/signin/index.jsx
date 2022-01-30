@@ -17,10 +17,10 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
-import LuckyByte from '../img/lucky-byte.png';
-import LuckyByteDark from '../img/lucky-byte-dark.png';
-import userState from "../state/user";
-import { put } from "../rest";
+import LuckyByte from '~/img/lucky-byte.png';
+import LuckyByteDark from '~/img/lucky-byte-dark.png';
+import userState from "~/state/user";
+import { put } from "~/rest";
 
 export default function SignIn() {
   const theme = useTheme();

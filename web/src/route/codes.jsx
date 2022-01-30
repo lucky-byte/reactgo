@@ -9,9 +9,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import titleState from "../state/title";
+import titleState from "~/state/title";
+import SearchBar from '~/comp/search-bar';
 import codes from './sidebar/codes';
-import SearchBar from '../comp/search-bar';
 
 export default function Codes() {
   const setTitle = useSetRecoilState(titleState);

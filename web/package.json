@@ -21,7 +21,6 @@
     "@testing-library/user-event": "^13.2.1",
     "autoprefixer": "^10.4.2",
     "dayjs": "^1.10.7",
-    "gen-flow-files": "^0.5.0",
     "material-ui-confirm": "^3.0.3",
     "notistack": "^2.0.3",
     "postcss": "^8.4.5",
@@ -38,11 +37,17 @@
     "validator": "^13.7.0",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "babel-plugin-root-import": "^6.6.0",
+    "customize-cra": "^1.0.0",
+    "gen-flow-files": "^0.5.0",
+    "react-app-rewired": "^2.1.11"
+  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "start": "react-app-rewired start",
+    "build": "GENERATE_SOURCEMAP=false react-app-rewired build",
     "build-map": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject",
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   },

@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import { post } from '../../../../rest';
+import { post } from '~/rest';
 
 export default function MailAdd() {
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ export default function MailAdd() {
 
   return (
     <Stack sx={{ mt: 4 }}>
-      <Stack direction='row' alignItems='center'>
+      <Stack direction='row' alignItems='center' spacing={1}>
         <IconButton component={RouteLink} to='..'>
           <ArrowBackIcon color='primary' />
         </IconButton>

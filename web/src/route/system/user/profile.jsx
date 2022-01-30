@@ -18,9 +18,9 @@ import OutlinedPaper from '../../../comp/outlined-paper';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
-import titleState from "../../../state/title";
-import progressState from '../../../state/progress';
-import { get } from '../../../rest';
+import titleState from "~/state/title";
+import progressState from '~/state/progress';
+import { get } from '~/rest';
 
 const ContentCell = styled(TableCell)(({ theme }) => ({
   borderLeft: '1px solid #8884',

@@ -6,8 +6,8 @@ import Switch from '@mui/material/Switch';
 import FormHelperText from "@mui/material/FormHelperText";
 import Divider from "@mui/material/Divider";
 import { useSnackbar } from 'notistack';
-import InplaceInput from '../../../comp/inplace-input';
-import { get, put } from "../../../rest";
+import InplaceInput from '~/comp/inplace-input';
+import { get, put } from "~/rest";
 
 export default function Secure() {
   const { enqueueSnackbar } = useSnackbar();

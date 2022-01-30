@@ -33,12 +33,12 @@ import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
-import titleState from "../../../state/title";
-import progressState from "../../../state/progress";
-import SearchInput from '../../../comp/search-input';
-import OutlinedPaper from '../../../comp/outlined-paper';
-import usePageData from '../../../hook/pagedata';
-import { post, del, get } from '../../../rest';
+import titleState from "~/state/title";
+import progressState from "~/state/progress";
+import SearchInput from '~/comp/search-input';
+import OutlinedPaper from '~/comp/outlined-paper';
+import usePageData from '~/hook/pagedata';
+import { post, del, get } from '~/rest';
 
 export default function UserList() {
   const navigate = useNavigate();

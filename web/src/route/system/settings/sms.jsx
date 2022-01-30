@@ -24,9 +24,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import isInt from 'validator/lib/isInt';
-import InplaceInput from '../../../comp/inplace-input';
-import OutlinedPaper from '../../../comp/outlined-paper';
-import { get, put, post } from "../../../rest";
+import InplaceInput from '~/comp/inplace-input';
+import OutlinedPaper from '~/comp/outlined-paper';
+import { get, put, post } from "~/rest";
 
 export default function SMS() {
   const { enqueueSnackbar } = useSnackbar();
