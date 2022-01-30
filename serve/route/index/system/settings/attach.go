@@ -17,7 +17,6 @@ func Attach(up *echo.Group) {
 
 	group.Use(acl.AllowWrite(code)) // Write 权限
 
-	group.PUT("/mail/prefix", mailPrefix)
 	group.PUT("/mail/modify", mailModify)
 	group.PUT("/mail/sort", mailSort)
 	group.POST("/mail/test", mailTest)

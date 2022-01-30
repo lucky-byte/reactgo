@@ -31,14 +31,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContentText from '@mui/material/DialogContentText';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
-import InplaceInput from '~/comp/inplace-input';
 import OutlinedPaper from '~/comp/outlined-paper';
 import userState from '~/state/user';
 import { get, put, post, del } from "~/rest";
 
 export default function MailSettings() {
   const { enqueueSnackbar } = useSnackbar();
-  const [prefix, setPrefix] = useState('');
   const [mtas, setMtas] = useState([]);
   const [refresh, setRefresh] = useState(true);
 
@@ -47,7 +45,6 @@ export default function MailSettings() {
       try {
         if (refresh) {
           const resp = await get('/system/settings/mail');
-          setPrefix(resp.mail_prefix);
           setMtas(resp.mtas || []);
         }
       } catch (err) {
@@ -58,34 +55,8 @@ export default function MailSettings() {
     })();
   }, [enqueueSnackbar, refresh]);
 
-  const onChangePrefix = async v => {
-    try {
-      await put('/system/settings/mail/prefix', new URLSearchParams({
-        prefix: v
-      }));
-      setPrefix(v);
-      enqueueSnackbar('更新成功', { variant: 'success' });
-    } catch (err) {
-      enqueueSnackbar(err.message);
-    }
-  }
-
   return (
     <Stack>
-      <FormHelperText sx={{ mt: 3 }}>
-        标题前缀自动添加到每封邮件的标题之前，通常是公司或产品的名称，
-        例如 [XX公司]、[XX产品]，可以为空。
-      </FormHelperText>
-      <Paper variant="outlined" sx={{ p: 2 }}>
-        <Stack direction='row' alignItems='center'>
-          <Typography sx={{ minWidth: 100 }} variant='subtitle2'>
-            邮件标题前缀:
-          </Typography>
-          <InplaceInput text={prefix || ''} onConfirm={onChangePrefix}
-            color='primary' sx={{ flex: 1 }}
-          />
-        </Stack>
-      </Paper>
       <Typography sx={{ mt: 3 }} variant='subtitle1'>邮件传输代理:</Typography>
       <FormHelperText sx={{ mb: 0 }}>
         任何支持 SMTP 协议的邮件服务器，例如 QQ 邮箱、GMail、Outlook 等都可以使用，
@@ -118,7 +89,7 @@ export default function MailSettings() {
                   {mta.host}:{mta.port}/{mta.ssl ? 'SSL' : 'StartTLS'}
                 </TableCell>
                 <TableCell align="center">{mta.sender}</TableCell>
-                <TableCell align="centee">{mta.sortno}</TableCell>
+                <TableCell align="center">{mta.nsent},{mta.sortno}</TableCell>
                 <TableCell align="center" padding="checkbox">
                   <MenuButton uuid={mta.uuid} name={mta.name} sortno={mta.sortno}
                     requestRefresh={() => setRefresh(true)}

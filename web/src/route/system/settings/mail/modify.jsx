@@ -47,6 +47,7 @@ export default function MailModify() {
     setValue("username", info.username);
     setValue("password", info.passwd);
     setValue("replyto", info.replyto);
+    setValue("prefix", info.prefix);
     setValue("cc", info.cc);
     setValue("bcc", info.bcc);
   }, [setValue]);
@@ -204,6 +205,23 @@ export default function MailModify() {
                   },
                 })}
               />
+            </Stack>
+            <Stack>
+              <TextField label='标题前缀' variant='standard' fullWidth
+                focused autoComplete='off'
+                placeholder='邮件标题前缀，可以不填'
+                helperText={errors?.prefix?.message}
+                error={errors?.prefix}
+                {...register('prefix', {
+                  maxLength: {
+                    value: 32, message: '超出最大长度'
+                  },
+                })}
+              />
+              <FormHelperText>
+                标题前缀自动添加到每封邮件的标题之前，通常是公司或产品的名称，
+                例如 [XX公司]、[XX产品]，可以为空。
+              </FormHelperText>
             </Stack>
             <Stack>
               <TextField label='回复地址' variant='standard' fullWidth

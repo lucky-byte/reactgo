@@ -15,14 +15,7 @@ import (
 func mailConfig(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	ql := `select * from settings`
-	var setting db.Setting
-
-	if err := db.SelectOne(ql, &setting); err != nil {
-		cc.ErrLog(err).Error("查询系统设置错")
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	ql = `select * from mtas order by sortno`
+	ql := `select * from mtas order by sortno`
 	var result []db.MTA
 
 	if err := db.Select(ql, &result); err != nil {
@@ -43,36 +36,14 @@ func mailConfig(c echo.Context) error {
 			"nsent":  v.NSent,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"mail_prefix": setting.MailPrefix,
-		"mtas":        mtas,
-	})
-}
-
-// 修改标题前缀
-func mailPrefix(c echo.Context) error {
-	cc := c.(*ctx.Context)
-
-	var prefix string
-
-	err := echo.FormFieldBinder(c).String("prefix", &prefix).BindError()
-	if err != nil {
-		cc.ErrLog(err).Error("请求无效")
-		return c.NoContent(http.StatusBadRequest)
-	}
-	ql := `update settings set mail_prefix = ?`
-
-	if err = db.ExecOne(ql, prefix); err != nil {
-		cc.ErrLog(err).Error("更新系统设置错")
-	}
-	return c.NoContent(http.StatusOK)
+	return c.JSON(http.StatusOK, echo.Map{"mtas": mtas})
 }
 
 // 添加邮件传输代理
 func mailAdd(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var name, host, sender, username, password, replyto, ccc, bcc string
+	var name, host, sender, username, password, prefix, replyto, ccc, bcc string
 	var port int
 	var ssl bool
 
@@ -84,6 +55,7 @@ func mailAdd(c echo.Context) error {
 		MustString("sender", &sender).
 		String("password", &password).
 		String("username", &username).
+		String("prefix", &prefix).
 		String("replyto", &replyto).
 		String("cc", &ccc).
 		String("bcc", &bcc).BindError()
@@ -111,15 +83,15 @@ func mailAdd(c echo.Context) error {
 
 	ql = `
 		insert into mtas (
-			uuid, name, host, port, ssl, sender, replyto, username, passwd,
-			cc, bcc, sortno
+			uuid, name, host, port, ssl, sender, prefix, replyto,
+			username, passwd, cc, bcc, sortno
 		) values (
 			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 		)
 	`
 	err = db.ExecOne(ql, uuid.NewString(),
-		name, host, port, ssl, sender, replyto, username, password,
-		ccc, bcc, sortno+1,
+		name, host, port, ssl, sender, prefix, replyto,
+		username, password, ccc, bcc, sortno+1,
 	)
 	if err != nil {
 		cc.ErrLog(err).Error("添加邮件配置错")
@@ -132,15 +104,15 @@ func mailAdd(c echo.Context) error {
 func mailDel(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var uuid string
+	var mta_uuid string
 
-	err := echo.QueryParamsBinder(c).MustString("uuid", &uuid).BindError()
+	err := echo.QueryParamsBinder(c).MustString("uuid", &mta_uuid).BindError()
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `delete from mtas where uuid = ?`
 
-	if err := db.ExecOne(ql, uuid); err != nil {
+	if err := db.ExecOne(ql, mta_uuid); err != nil {
 		cc.ErrLog(err).Error("删除邮件传输代理错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -151,16 +123,16 @@ func mailDel(c echo.Context) error {
 func mailInfo(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var uuid string
+	var mta_uuid string
 
-	err := echo.QueryParamsBinder(c).MustString("uuid", &uuid).BindError()
+	err := echo.QueryParamsBinder(c).MustString("uuid", &mta_uuid).BindError()
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `select * from mtas where uuid = ?`
 	var result db.MTA
 
-	if err := db.SelectOne(ql, &result, uuid); err != nil {
+	if err := db.SelectOne(ql, &result, mta_uuid); err != nil {
 		cc.ErrLog(err).Error("查询邮件传输代理错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -171,6 +143,7 @@ func mailInfo(c echo.Context) error {
 		"port":     result.Port,
 		"ssl":      result.SSL,
 		"sender":   result.Sender,
+		"prefix":   result.Prefix,
 		"replyto":  result.ReplyTo,
 		"username": result.Username,
 		"passwd":   result.Passwd,
@@ -183,12 +156,12 @@ func mailInfo(c echo.Context) error {
 func mailModify(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var uuid2, name, host, sender, username, password, replyto, ccc, bcc string
+	var mta_uuid, name, host, sender, username, password, prefix, replyto, ccc, bcc string
 	var port int
 	var ssl bool
 
 	err := echo.FormFieldBinder(c).
-		MustString("uuid", &uuid2).
+		MustString("uuid", &mta_uuid).
 		MustString("name", &name).
 		MustString("host", &host).
 		MustInt("port", &port).
@@ -196,6 +169,7 @@ func mailModify(c echo.Context) error {
 		MustString("sender", &sender).
 		String("password", &password).
 		String("username", &username).
+		String("prefix", &prefix).
 		String("replyto", &replyto).
 		String("cc", &ccc).
 		String("bcc", &bcc).BindError()
@@ -216,13 +190,13 @@ func mailModify(c echo.Context) error {
 	ql := `
 		update mtas set
 			name = ?, host = ?, port = ?, ssl = ?, sender = ?,
-			replyto = ?, username = ?, passwd = ?,
+			prefix = ?, replyto = ?, username = ?, passwd = ?,
 			cc = ?, bcc = ?
 		where uuid = ?
 	`
 	err = db.ExecOne(ql,
-		name, host, port, ssl, sender, replyto, username, password,
-		ccc, bcc, uuid2,
+		name, host, port, ssl, sender, prefix, replyto, username, password,
+		ccc, bcc, mta_uuid,
 	)
 	if err != nil {
 		cc.ErrLog(err).Error("更新邮件配置错")
@@ -235,11 +209,11 @@ func mailModify(c echo.Context) error {
 func mailSort(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var uuid2, dir string
+	var mta_uuid, dir string
 	var sortno int
 
 	err := echo.FormFieldBinder(c).
-		MustString("uuid", &uuid2).
+		MustString("uuid", &mta_uuid).
 		MustString("dir", &dir).
 		MustInt("sortno", &sortno).BindError()
 	if err != nil {
@@ -251,7 +225,7 @@ func mailSort(c echo.Context) error {
 			update mtas set sortno = (select min(sortno) from mtas) - 1
 			where uuid = ?
 		`
-		if err = db.ExecOne(ql, uuid2); err != nil {
+		if err = db.ExecOne(ql, mta_uuid); err != nil {
 			cc.ErrLog(err).Error("排序错误")
 			return c.NoContent(http.StatusInternalServerError)
 		}
@@ -263,7 +237,7 @@ func mailSort(c echo.Context) error {
 			update mtas set sortno = (select max(sortno) from mtas) + 1
 			where uuid = ?
 		`
-		if err = db.ExecOne(ql, uuid2); err != nil {
+		if err = db.ExecOne(ql, mta_uuid); err != nil {
 			cc.ErrLog(err).Error("排序错误")
 			return c.NoContent(http.StatusInternalServerError)
 		}
@@ -276,29 +250,33 @@ func mailSort(c echo.Context) error {
 func mailTest(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var uuid2, address string
+	var mta_uuid, address string
 
 	err := echo.FormFieldBinder(c).
-		MustString("uuid", &uuid2).
+		MustString("uuid", &mta_uuid).
 		MustString("email", &address).BindError()
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	// 解析收件地址
 	addr, err := mail.ParseAddress(address)
 	if err != nil {
 		cc.ErrLog(err).Error("解析邮件地址错")
 		return c.String(http.StatusBadRequest, "解析邮件地址错")
 	}
+	// 查询 MTA 信息
 	ql := `select * from mtas where uuid = ?`
 	var mta db.MTA
 
-	if err = db.SelectOne(ql, &mta, uuid2); err != nil {
+	if err = db.SelectOne(ql, &mta, mta_uuid); err != nil {
 		cc.ErrLog(err).Error("查询邮件配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	m := email.TextMessage("测试邮件", "这是一封测试邮件")
+	// 构造邮件
+	m := email.TextMessage("测试邮件", "这是一封测试邮件，成功接收表明服务器配置正确。")
 	m.AddTO(addr)
 
+	// 发送邮件
 	if err = m.SendWithMta(&mta); err != nil {
 		cc.ErrLog(err).Error("发送邮件错")
 		return c.String(http.StatusInternalServerError, err.Error())

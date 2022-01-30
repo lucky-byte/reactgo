@@ -157,6 +157,23 @@ export default function MailAdd() {
               />
             </Stack>
             <Stack>
+              <TextField label='标题前缀' variant='standard' fullWidth
+                autoComplete='off'
+                placeholder='邮件标题前缀，可以不填'
+                helperText={errors?.prefix?.message}
+                error={errors?.prefix}
+                {...register('prefix', {
+                  maxLength: {
+                    value: 32, message: '超出最大长度'
+                  },
+                })}
+              />
+              <FormHelperText>
+                标题前缀自动添加到每封邮件的标题之前，通常是公司或产品的名称，
+                例如 [XX公司]、[XX产品]，可以为空。
+              </FormHelperText>
+            </Stack>
+            <Stack>
               <TextField label='回复地址' variant='standard' fullWidth
                 autoComplete='email'
                 placeholder='邮件回复地址，可以不填'

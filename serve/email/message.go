@@ -40,6 +40,7 @@ type Message struct {
 	Bcc         []*mail.Address
 	ReplyTo     string
 	Subject     string
+	prefix      string
 	Body        string
 	BodyType    string
 	Headers     []Header
@@ -128,9 +129,12 @@ func (m *Message) bytes(sender *mail.Address) []byte {
 			"Cc: %s\r\n", strings.Join(addrs2strings(true, m.Cc), ","),
 		))
 	}
-
-	var coder = base64.StdEncoding
-	var subject = "=?UTF-8?B?" + coder.EncodeToString([]byte(m.Subject)) + "?="
+	s := m.Subject
+	if len(m.prefix) > 0 {
+		s = fmt.Sprintf("%s %s", m.prefix, m.Subject)
+	}
+	coder := base64.StdEncoding
+	subject := "=?UTF-8?B?" + coder.EncodeToString([]byte(s)) + "?="
 	buf.WriteString(fmt.Sprintf("Subject: %s\r\n", subject))
 
 	if len(m.ReplyTo) > 0 {
@@ -268,67 +272,22 @@ func (m *Message) bytes(sender *mail.Address) []byte {
 
 // 通过 SMTP 协议发送邮件
 func (m *Message) Send() error {
-	prefix, err := prefix()
-	if err != nil {
-		return errors.Wrap(err, "查询邮件标题前缀错")
-	}
-	if len(prefix) > 0 {
-		m.Subject = fmt.Sprintf("%s %s", prefix, m.Subject)
-	}
 	mtas, err := mtas()
 	if err != nil {
 		return errors.Wrap(err, "查询邮件配置错")
+	}
+	if len(mtas) == 0 {
+		return fmt.Errorf("没有配置 MTA")
 	}
 	sent := false
 
 	// try all of mtas one by one, until meet one which can send the mail
 	for _, mta := range mtas {
-		// st := time.Now()
-
-		// // add reply to address
-		// if len(m.ReplyTo) == 0 && len(mta.ReplyTo) > 0 {
-		// 	m.ReplyTo = mta.ReplyTo
-		// }
-		// // 添加抄送地址
-		// if len(mta.CC) > 0 {
-		// 	arr := strings.Split(mta.CC, ",")
-		// 	for _, cc := range arr {
-		// 		addr, err := mail.ParseAddress(cc)
-		// 		if err != nil {
-		// 			return fmt.Errorf("抄送地址 '%s' of '%s' 无效", cc, mta.Name)
-		// 		}
-		// 		m.Cc = append(m.Cc, addr)
-		// 	}
-		// }
-		// // 添加密送地址
-		// if len(mta.BCC) > 0 {
-		// 	arr := strings.Split(mta.BCC, ",")
-		// 	for _, bcc := range arr {
-		// 		addr, err := mail.ParseAddress(bcc)
-		// 		if err != nil {
-		// 			return fmt.Errorf("密送地址 '%s' of '%s' 无效", bcc, mta.Name)
-		// 		}
-		// 		m.Bcc = append(m.Bcc, addr)
-		// 	}
-		// }
-		// 如果发送失败，则尝试下一个
-		// if err := m.send(&mta); err != nil {
-		// 	xlog.X.Warnf("通过 '%s' 发送邮件错: %v", mta.Name, err)
-		// 	continue
-		// }
 		if err := m.SendWithMta(&mta); err != nil {
 			xlog.X.Warnf("通过 '%s' 发送邮件错: %v", mta.Name, err)
 			continue
 		}
 		sent = true
-
-		// xlog.X.Infof("邮件通过 '%s' 发送成功, 耗费 %d 毫秒",
-		// 	mta.Name, time.Since(st).Milliseconds(),
-		// )
-		// 更新邮件发送量
-		// if err = updateSent(mta.UUID); err != nil {
-		// 	xlog.X.WithError(err).Warn("更新邮件发送量错")
-		// }
 		break
 	}
 	if !sent {
@@ -337,8 +296,12 @@ func (m *Message) Send() error {
 	return nil
 }
 
+// 通过指定代理发送邮件
 func (m *Message) SendWithMta(mta *db.MTA) error {
 	st := time.Now()
+
+	// 邮件前缀
+	m.prefix = mta.Prefix
 
 	// 设置回复地址
 	if len(m.ReplyTo) == 0 && len(mta.ReplyTo) > 0 {

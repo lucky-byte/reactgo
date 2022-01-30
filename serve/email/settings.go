@@ -13,17 +13,6 @@ func mtas() ([]db.MTA, error) {
 	return result, nil
 }
 
-// 查询邮件标题前缀
-func prefix() (string, error) {
-	ql := `select mail_prefix from settings`
-	var result db.Setting
-
-	if err := db.SelectOne(ql, &result); err != nil {
-		return "", err
-	}
-	return result.MailPrefix, nil
-}
-
 // 更新邮件发送量
 func updateSent(uuid string) error {
 	ql := `update mtas set nsent = nsent + 1 where uuid = ?`

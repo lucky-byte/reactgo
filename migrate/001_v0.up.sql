@@ -2,7 +2,6 @@ begin;
 
 create table if not exists settings (
   uuid            boolean         primary key default true,
-  mail_prefix     varchar(64)     default '',
   resetpass       boolean         default false,
   token_duration  int             default 1440
 );
@@ -101,6 +100,7 @@ create table if not exists mtas (
   passwd      varchar(128),
   cc          text,
   bcc         text,
+  prefix      varchar(128)    default '',
   sortno      int             unique,
   nsent       int             default 0
 );

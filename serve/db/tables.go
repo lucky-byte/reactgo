@@ -71,7 +71,6 @@ type ACLAllow struct {
 // Setting
 type Setting struct {
 	UUID          string `db:"uuid"`           // uuid
-	MailPrefix    string `db:"mail_prefix"`    // 邮件标题前缀
 	ResetPass     bool   `db:"resetpass"`      // 找回密码
 	TokenDuration int    `db:"token_duration"` // 会话持续时间
 }
@@ -85,7 +84,7 @@ type SmsSetting struct {
 	MsgID1    string `db:"msgid1"`     // 验证码模板ID
 }
 
-// 邮件 mta
+// 邮件 MTA
 type MTA struct {
 	UUID     string `db:"uuid"`     // uuid
 	Name     string `db:"name"`     // 名称
@@ -93,6 +92,7 @@ type MTA struct {
 	Port     int    `db:"port"`     // 端口
 	SSL      bool   `db:"ssl"`      // SSL 模式
 	Sender   string `db:"sender"`   // 发送地址
+	Prefix   string `db:"prefix"`   // 标题前缀
 	ReplyTo  string `db:"replyto"`  // 回复地址
 	Username string `db:"username"` // 认证用户名
 	Passwd   string `db:"passwd"`   // 密码
