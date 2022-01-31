@@ -3,7 +3,6 @@ package user
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 
@@ -29,12 +28,8 @@ func updateinfo(c echo.Context) error {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
-	// 清除前后空白字符
-	userid = strings.TrimSpace(userid)
-	name = strings.TrimSpace(name)
-	email = strings.TrimSpace(email)
-	mobile = strings.TrimSpace(mobile)
-	address = strings.TrimSpace(address)
+	// 删除前后空白字符
+	cc.Trim(&userid, &name, &email, &mobile, &address)
 
 	// 查询 userid 是否冲突
 	ql := `select count(*) from users where userid = ? and uuid <> ?`

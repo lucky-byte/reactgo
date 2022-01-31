@@ -20,6 +20,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import VerticalAlignTopIcon from '@mui/icons-material/VerticalAlignTop';
 import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
@@ -69,7 +70,7 @@ export default function MailSettings() {
   const onExport = async () => {
     try {
       await confirm({
-        description: `导出的文件将包含账号、密码等敏感信息，导出后请妥善保管。`,
+        description: `导出的文件中将包含账号、密码、等敏感信息，请妥善保管。`,
         confirmationText: '导出',
       });
       const resp = await get('/system/settings/mail/export');
@@ -98,8 +99,8 @@ export default function MailSettings() {
       </FormHelperText>
       <Stack direction='row' justifyContent='flex-end' sx={{ mb: 1 }}>
         <Button component={Link} to='add'>添加</Button>
-        <Button onClick={onImport}>导入</Button>
-        <Button onClick={onExport}>导出</Button>
+        <Button color="warning" onClick={onImport}>导入</Button>
+        <Button color="warning" onClick={onExport}>导出</Button>
       </Stack>
       <TableContainer component={OutlinedPaper}>
         <Table sx={{ minWidth: 650 }}>
@@ -169,6 +170,11 @@ function MenuButton(props) {
     }
   }
 
+  const onInfo = () => {
+    onClose();
+    navigate('info', { state: { uuid }});
+  }
+
   const onModify = () => {
     onClose();
     navigate('modify', { state: { uuid }});
@@ -202,7 +208,7 @@ function MenuButton(props) {
   return (
     <div>
       <IconButton onClick={onOpen}>
-        <MoreVertIcon />
+        <MoreVertIcon color="primary" />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
         <MenuItem onClick={() => onSort('top')}>
@@ -218,6 +224,12 @@ function MenuButton(props) {
           <ListItemText>移到最后</ListItemText>
         </MenuItem>
         <Divider />
+        <MenuItem onClick={onInfo}>
+          <ListItemIcon>
+            <ListAltIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>详细信息</ListItemText>
+        </MenuItem>
         <MenuItem onClick={onModify}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
@@ -307,7 +319,7 @@ function ImportDialog(props) {
     onClose();
   }
 
-  // 选择文件改变
+  // 改变导入文件
   const onFileChange = e => {
     if (!e.target.files || e.target.files.length === 0) {
       setFile(null);
@@ -350,8 +362,7 @@ function ImportDialog(props) {
       <DialogTitle>导入配置</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          导入文件格式必须与导出的文件格式一致。
-          如果你之前没有导出文件，请不要导入，除非你非常清楚自己在做什么。
+          导入文件格式必须与导出的文件格式一致。一般的操作流程是先导出文件备份，后续在需要的时候再导入之前备份的文件。
         </DialogContentText>
         <input accept="application/json" id="import-file" type="file" hidden
           onChange={onFileChange}
@@ -369,6 +380,9 @@ function ImportDialog(props) {
               </InputAdornment>
           }}
         />
+        <FormHelperText>
+          导入文件中<strong>名称</strong>相同的记录会被忽略。
+        </FormHelperText>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={onDialogClose}>取消</Button>

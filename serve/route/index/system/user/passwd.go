@@ -22,6 +22,9 @@ func passwd(c echo.Context) error {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
+	// 删除前后空白字符
+	cc.Trim(&password)
+
 	// 更新信息
 	passwdHash, err := secure.DefaultPHC().Hash(password)
 	if err != nil {

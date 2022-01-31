@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useSetRecoilState } from "recoil";
-import { styled } from '@mui/material/styles';
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Stack from '@mui/material/Stack';
@@ -10,26 +9,17 @@ import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import OutlinedPaper from '../../../comp/outlined-paper';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
+import OutlinedPaper from '~/comp/outlined-paper';
 import titleState from "~/state/title";
 import progressState from '~/state/progress';
 import { get } from '~/rest';
-
-const ContentCell = styled(TableCell)(({ theme }) => ({
-  borderLeft: '1px solid #8884',
-  borderRight: '1px solid #8884',
-  [`&.${tableCellClasses.body}`]: {
-    fontWeight: 'bold',
-    color: theme.palette.primary.main,
-  },
-}));
 
 export default function UserProfile() {
   const location = useLocation();
@@ -88,54 +78,68 @@ function BaseInfoTable(props) {
   return (
     <TableContainer component={OutlinedPaper}>
       <Table>
-        <TableBody>
+        <TableBody sx={{ 'td': { borderColor: '#8884' } }}>
           <TableRow>
             <TableCell>登录名</TableCell>
-            <ContentCell>{profile.userid}</ContentCell>
+            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
+              {profile.userid}
+            </TableCell>
             <TableCell>姓名</TableCell>
-            <ContentCell>{profile.name}</ContentCell>
+            <TableCell sx={{ borderLeft: '1px solid' }}>
+              {profile.name}
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>手机号</TableCell>
-            <ContentCell>{profile.mobile}</ContentCell>
+            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
+              {profile.mobile}
+            </TableCell>
             <TableCell>邮箱地址</TableCell>
-            <ContentCell>{profile.email}</ContentCell>
+            <TableCell sx={{ borderLeft: '1px solid' }}>
+              {profile.email}
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>联系地址</TableCell>
-            <ContentCell colSpan={3}>{profile.address}</ContentCell>
+            <TableCell colSpan={3} sx={{ borderLeft: '1px solid' }}>
+              {profile.address}
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>创建时间</TableCell>
-            <ContentCell>
+            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
               {dayjs(profile.create_at).format('YYYY/MM/DD HH:mm:ss')}
-            </ContentCell>
+            </TableCell>
             <TableCell>最后更新时间</TableCell>
-            <ContentCell>
+            <TableCell sx={{ borderLeft: '1px solid' }}>
               {dayjs(profile.update_at).format('YYYY/MM/DD HH:mm:ss')}
-            </ContentCell>
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>最后登录时间</TableCell>
-            <ContentCell>
+            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
               {dayjs(profile.signin_at).format('YYYY/MM/DD HH:mm:ss')}
-            </ContentCell>
+            </TableCell>
             <TableCell>登录次数</TableCell>
-            <ContentCell>{profile.n_signin}</ContentCell>
+            <TableCell sx={{ borderLeft: '1px solid' }}>
+              {profile.n_signin}
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>状态</TableCell>
-            <ContentCell>
+            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
               {profile.deleted ? '已删除' : profile.disabled ? '已禁用' : '正常'}
-            </ContentCell>
+            </TableCell>
             <TableCell>需验证码登录</TableCell>
-            <ContentCell>{profile.tfa ? '是' : '否'}</ContentCell>
+            <TableCell sx={{ borderLeft: '1px solid' }}>
+              {profile.tfa ? '是' : '否'}
+            </TableCell>
           </TableRow>
-          <TableRow>
+          <TableRow sx={{ borderBottom: 0 }}>
             <TableCell>访问控制</TableCell>
-            <ContentCell colSpan={3}>
+            <TableCell colSpan={3} sx={{ borderLeft: '1px solid' }}>
               {profile.acl?.name}（{profile.acl?.summary}）
-            </ContentCell>
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>

@@ -248,7 +248,7 @@ function MenuButton(props) {
   return (
     <div>
       <IconButton onClick={onOpen}>
-        <MoreVertIcon />
+        <MoreVertIcon color='primary' />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
         <MenuItem onClick={onModify}>修改模板编号</MenuItem>

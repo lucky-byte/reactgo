@@ -108,6 +108,12 @@ func (c *Context) Download(b []byte, filename string) error {
 	return c.Attachment(tmpfile.Name(), filename)
 }
 
+func (c *Context) Trim(args ...*string) {
+	for _, v := range args {
+		*v = strings.TrimSpace(*v)
+	}
+}
+
 func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {

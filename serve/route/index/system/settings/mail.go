@@ -65,6 +65,9 @@ func mailAdd(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	// 删除前后空白字符
+	cc.Trim(&name, &host, &sender, &username, &prefix, &replyto, &ccc, &bcc)
+
 	// 检查地址格式
 	if _, err = mail.ParseAddress(sender); err != nil {
 		cc.ErrLog(err).Errorf("解析发件人地址(%s)错误", sender)
@@ -89,7 +92,7 @@ func mailAdd(c echo.Context) error {
 			uuid, name, host, port, ssl, sender, prefix, replyto,
 			username, passwd, cc, bcc, sortno
 		) values (
-			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 		)
 	`
 	err = db.ExecOne(ql, uuid.NewString(),
@@ -152,6 +155,8 @@ func mailInfo(c echo.Context) error {
 		"passwd":   result.Passwd,
 		"cc":       result.CC,
 		"bcc":      result.BCC,
+		"sortno":   result.SortNo,
+		"nsent":    result.NSent,
 	})
 }
 
@@ -179,6 +184,9 @@ func mailModify(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	// 删除前后空白字符
+	cc.Trim(&name, &host, &sender, &username, &prefix, &replyto, &ccc, &bcc)
+
 	// 检查地址格式
 	if _, err = mail.ParseAddress(sender); err != nil {
 		cc.ErrLog(err).Errorf("解析发件人地址(%s)错误", sender)

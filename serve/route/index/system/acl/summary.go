@@ -20,6 +20,8 @@ func summary(c echo.Context) error {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
+	cc.Trim(&summary)
+
 	ql := `
 		update acl set summary = ?, update_at = current_timestamp
 		where uuid = ?

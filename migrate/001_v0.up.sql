@@ -105,4 +105,14 @@ create table if not exists mtas (
   nsent       int             default 0
 );
 
+create table if not exists notifications (
+  uuid        varchar(36)     primary key not null,
+  create_at   timestamp       not null default current_timestamp,
+  to          varchar(36)     not null default '',
+  level       int             not null,
+  title       varchar(64)     not null,
+  message     text            not null,
+  fresh       boolean         not null default true
+);
+
 commit;

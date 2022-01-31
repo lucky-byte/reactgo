@@ -28,10 +28,10 @@ const menus = [{
     icon: SettingsIcon,
   }, {
     code: 1400,
-    icon: AccessAlarmIcon,
+    icon: NotificationsIcon,
   }, {
     code: 1500,
-    icon: NotificationsIcon,
+    icon: AccessAlarmIcon,
   }],
 }]
 

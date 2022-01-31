@@ -25,6 +25,8 @@ func add(c echo.Context) error {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
+	cc.Trim(&name, &summary)
+
 	ql := `select count(*) from acl where name = ?`
 	var count int
 
