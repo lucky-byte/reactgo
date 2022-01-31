@@ -26,7 +26,7 @@ import titleState from "~/state/title";
 import progressState from '~/state/progress';
 import { get, post } from '~/rest';
 
-export default function UserAdd() {
+export default function TaskAdd() {
   const navigate = useNavigate();
   const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
@@ -56,13 +56,6 @@ export default function UserAdd() {
       }
     })();
   }, [enqueueSnackbar, setProgress]);
-
-  const onNewPassword = () => {
-    const str = Math.random().toString(36);
-    const passwd = str.split('.')[1];
-    setValue('password', passwd);
-    setValue('password2', passwd);
-  }
 
   const onSubmit = async data => {
     if (data.password !== data.password2) {

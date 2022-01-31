@@ -21,7 +21,7 @@ import titleState from "~/state/title";
 import progressState from "~/state/progress";
 import { get, put } from "~/rest";
 
-export default function UserInfo() {
+export default function UserModify() {
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();

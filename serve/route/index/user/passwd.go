@@ -23,6 +23,7 @@ func passwd(c echo.Context) error {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
+	cc.Trim(&oldPassword, &newPassword)
 
 	// 验证原登录密码
 	phc, err := secure.ParsePHC(user.Passwd)

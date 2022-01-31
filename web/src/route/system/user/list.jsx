@@ -218,9 +218,9 @@ function UserMenuIconButton(props) {
   };
 
   // 修改资料
-  const onInfoClick = () => {
+  const onModifyClick = () => {
     setAnchorEl(null);
-    navigate('info', { state: { uuid: user.uuid } });
+    navigate('modify', { state: { uuid: user.uuid } });
   };
 
   // 修改密码
@@ -299,7 +299,7 @@ function UserMenuIconButton(props) {
           <ListItemText>详细资料</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem disabled={user.disabled || user.deleted} onClick={onInfoClick}>
+        <MenuItem disabled={user.disabled || user.deleted} onClick={onModifyClick}>
           <ListItemIcon>
             <ManageAccountsIcon fontSize="small" />
           </ListItemIcon>

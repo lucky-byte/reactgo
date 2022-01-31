@@ -19,11 +19,11 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 import KeyIcon from '@mui/icons-material/Key';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import SecurityIcon from '@mui/icons-material/Security';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import Link from "@mui/material/Link";
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -36,8 +36,6 @@ import Slide from '@mui/material/Slide';
 import Portal from '@mui/material/Portal';
 import LinearProgress from '@mui/material/LinearProgress';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import titleState from "~/state/title";
@@ -45,7 +43,7 @@ import userState from "~/state/user";
 import sidebarState from "~/state/sidebar";
 import progressState from "~/state/progress";
 import codeState from "~/state/code";
-import { get, put } from "~/rest";
+import { get } from "~/rest";
 import LuckyByte from '~/img/lucky-byte.png';
 import LuckyByteDark from '~/img/lucky-byte-dark.png';
 import { useColorModeContent } from "~/app";
@@ -55,6 +53,7 @@ import NotFound from "./notfound";
 import Codes from "./codes";
 import Dashboard from "./dashboard";
 import System from "./system";
+import User from "./user";
 
 export default function Index() {
   const location = useLocation();
@@ -108,8 +107,9 @@ export default function Index() {
         <Box sx={{ maxHeight: '100%', overflow: 'scroll' }}>
           <Routes>
             <Route path='/' element={<Dashboard />} />
+            <Route path='user/*' element={<User />} />
             <Route path='system/*' element={<System />} />
-            <Route path='/codes' element={<Codes />} />
+            <Route path='codes' element={<Codes />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Box>
@@ -128,7 +128,6 @@ function Appbar(params) {
   const [anchorEl, setAnchorEl] = useState(null);
   const sidebarOpen = Boolean(anchorEl);
   const { enqueueSnackbar } = useSnackbar();
-  const [passwordOpen, setPasswordOpen] = useState(false);
   const [navigatorOpen, setNavigatorOpen] = useState(false);
 
   useHotkeys('ctrl+k, cmd+k', () => { setNavigatorOpen(true); }, {
@@ -189,10 +188,22 @@ function Appbar(params) {
     setAnchorEl(null);
   };
 
+  // 个人资料
+  const onProfile = () => {
+    onUserMenuClose();
+    navigate('user/profile');
+  }
+
   // 修改密码
   const onChangePassword = () => {
     setAnchorEl(null);
-    setPasswordOpen(true);
+    navigate('user/password');
+  }
+
+  // 安全设置
+  const onSecurity = () => {
+    onUserMenuClose();
+    navigate('user/security');
   }
 
   // 退出登录
@@ -235,11 +246,23 @@ function Appbar(params) {
           {user?.name || user?.userid}
         </Button>
         <Menu anchorEl={anchorEl} open={sidebarOpen} onClose={onUserMenuClose}>
+          <MenuItem onClick={onProfile}>
+            <ListItemIcon>
+              <AccountCircleIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>个人资料</ListItemText>
+          </MenuItem>
           <MenuItem onClick={onChangePassword}>
             <ListItemIcon>
               <KeyIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>修改密码</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={onSecurity}>
+            <ListItemIcon>
+              <SecurityIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>安全设置</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem onClick={onLogout}>
@@ -250,103 +273,8 @@ function Appbar(params) {
           </MenuItem>
         </Menu>
       </Toolbar>
-      <PasswordDialog open={passwordOpen} setOpen={setPasswordOpen} />
       <QuickNavigator open={navigatorOpen} setOpen={setNavigatorOpen} />
     </AppBar>
-  )
-}
-
-// 修改密码
-function PasswordDialog(props) {
-  const { enqueueSnackbar } = useSnackbar();
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [newPassword2, setNewPassword2] = useState('');
-  const [oldPasswordHide, setOldPasswordHide] = useState(true);
-  const [newPasswordHide, setNewPasswordHide] = useState(true);
-  const [newPassword2Hide, setNewPassword2Hide] = useState(true);
-
-  const handleClose = () => {
-    setOldPassword('');
-    setNewPassword('');
-    setNewPassword2('');
-    props.setOpen(false);
-  }
-
-  const onChangeClick = async () => {
-    if (newPassword !== newPassword2) {
-      return enqueueSnackbar('2次输入的新密码不一致', { variant: 'warning' });
-    }
-    if (oldPassword === newPassword) {
-      return enqueueSnackbar('新旧密码不能相同', { variant: 'warning' });
-    }
-    try {
-      await put('/user/passwd', new URLSearchParams({ oldPassword, newPassword }));
-      enqueueSnackbar('修改成功', { variant: 'success' });
-      handleClose();
-    } catch (err) {
-      enqueueSnackbar(err.message, { variant: 'error' });
-    }
-  }
-
-  return (
-    <Dialog open={props.open} onClose={handleClose} maxWidth='xs'>
-      <DialogTitle>修改密码</DialogTitle>
-      <DialogContent sx={{ px: 4 }}>
-        <TextField fullWidth
-          label="原登录密码" variant="standard"
-          type={oldPasswordHide ? 'password' : 'text'}
-          value={oldPassword}
-          onChange={(e) => { setOldPassword(e.target.value); }}
-          InputProps={{
-            endAdornment:
-              <InputAdornment position="end">
-                <IconButton size='small' onClick={() => {
-                  setOldPasswordHide(!oldPasswordHide);
-                }}>
-                  {oldPasswordHide ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                </IconButton>
-              </InputAdornment>,
-          }}
-        />
-        <TextField sx={{mt:2}} fullWidth
-          label="新登录密码" variant="standard"
-          type={newPasswordHide ? 'password' : 'text'}
-          value={newPassword}
-          onChange={(e) => { setNewPassword(e.target.value); }}
-          InputProps={{
-            endAdornment:
-              <InputAdornment position="end">
-                <IconButton size='small' onClick={() => {
-                  setNewPasswordHide(!newPasswordHide);
-                }}>
-                  {newPasswordHide ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                </IconButton>
-              </InputAdornment>,
-          }}
-        />
-        <TextField sx={{mt:2}} fullWidth
-          label="确认新登录密码" variant="standard"
-          type={newPassword2Hide ? 'password' : 'text'}
-          value={newPassword2}
-          onChange={(e) => { setNewPassword2(e.target.value); }}
-          InputProps={{
-            endAdornment:
-              <InputAdornment position="end">
-                <IconButton size='small' onClick={() => {
-                  setNewPassword2Hide(!newPassword2Hide);
-                }}>
-                  {newPassword2Hide ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                </IconButton>
-              </InputAdornment>,
-          }}
-        />
-      </DialogContent>
-      <DialogActions sx={{ px: 4, py: 3 }}>
-        <Button color="secondary" onClick={handleClose}>取消</Button>
-        <Button variant="contained" onClick={onChangeClick}>修改</Button>
-      </DialogActions>
-    </Dialog>
   )
 }
 
