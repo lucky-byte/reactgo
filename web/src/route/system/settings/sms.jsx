@@ -170,7 +170,7 @@ export default function SMS() {
           />
         </Stack>
       </Paper>
-      <Typography sx={{ mt: 3 }} variant='subtitle1'>正文模板:</Typography>
+      <Typography sx={{ mt: 3 }} variant='subtitle1'>正文模板</Typography>
       <FormHelperText sx={{ mb: 0 }}>
         按照下表提供的内容，在腾讯短信
         <Link component='a'

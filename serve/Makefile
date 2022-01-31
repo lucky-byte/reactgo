@@ -42,6 +42,14 @@ run:
 	go run -ldflags='$(LDFLAGS)' -tags '${TAGS} dev' . \
 		-config .config/config.yaml -webfs osdir -mailfs osdir
 
+# build a linux amd64 executable
+linux: web
+	GOOS=linux GOARCH=amd64 \
+	go build -ldflags='$(LDFLAGS)' -tags '${TAGS}' -o ${APPNAME}-linux-amd64
+
+	GOOS=linux GOARCH=amd64 \
+	go build -ldflags='$(LDFLAGS)' -tags '${TAGS} dev' -o ${APPNAME}-linux-amd64-dev
+
 # run test
 test:
 	go test $(arg) ./test/...
@@ -50,4 +58,4 @@ test:
 clean:
 	go clean
 
-.PHONY: web build build-dev dev test all clean
+.PHONY: web build build-dev dev test all clean linux

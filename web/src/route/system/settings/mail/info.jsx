@@ -121,7 +121,7 @@ function BaseInfoTable(props) {
               {mta.bcc}
             </TableCell>
           </TableRow>
-          <TableRow sx={{ borderBottom: 0 }}>
+          <TableRow sx={{ td: { borderBottom: 0 } }}>
             <TableCell>序号</TableCell>
             <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
               {mta.sortno}

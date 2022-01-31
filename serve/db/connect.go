@@ -11,9 +11,8 @@ import (
 )
 
 const (
-	DriverSqlite = "sqlite"
-	DriverPgx    = "pgx"
-	DriverMySQL  = "mysql"
+	DriverPgx   = "pgx"
+	DriverMySQL = "mysql"
 )
 
 // mainDB is global database connection pool
@@ -25,12 +24,6 @@ func Connect(driver string, dsn string) {
 		xlog.X.Debug("Repeat connection to the database")
 		return
 	}
-	// Rename sqlite3 to sqlite to prevent using the original sqlite driver
-	if driver == "sqlite3" {
-		driver = DriverSqlite
-	}
-	sqliteRegister(dsn)
-
 	mainDB = sqlx.MustConnect(driver, dsn)
 
 	mainDB.SetMaxOpenConns(100)

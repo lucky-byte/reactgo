@@ -88,7 +88,7 @@ export default function MailSettings() {
 
   return (
     <Stack>
-      <Typography sx={{ mt: 3 }} variant='subtitle1'>邮件传输代理:</Typography>
+      <Typography sx={{ mt: 3 }} variant='subtitle1'>邮件传输代理</Typography>
       <FormHelperText sx={{ mb: 0 }}>
         任何支持 SMTP 协议的邮件服务器，例如 QQ 邮箱、GMail、Outlook 等都可以使用，
         前提是你需要一个有效的账号，例如你的 QQ 邮箱账号。
@@ -211,6 +211,13 @@ function MenuButton(props) {
         <MoreVertIcon color="primary" />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
+        <MenuItem onClick={onInfo}>
+          <ListItemIcon>
+            <ListAltIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>详细信息</ListItemText>
+        </MenuItem>
+        <Divider />
         <MenuItem onClick={() => onSort('top')}>
           <ListItemIcon>
             <VerticalAlignTopIcon fontSize="small" />
@@ -224,12 +231,6 @@ function MenuButton(props) {
           <ListItemText>移到最后</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={onInfo}>
-          <ListItemIcon>
-            <ListAltIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>详细信息</ListItemText>
-        </MenuItem>
         <MenuItem onClick={onModify}>
           <ListItemIcon>
             <EditIcon fontSize="small" />

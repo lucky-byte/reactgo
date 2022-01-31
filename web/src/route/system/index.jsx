@@ -4,6 +4,7 @@ import User from "./user";
 import Acl from "./acl";
 import History from "./history";
 import Settings from "./settings";
+import Task from "./task";
 
 export default function System() {
   return (
@@ -12,6 +13,7 @@ export default function System() {
       <Route path='acl/*' element={<Acl />} />
       <Route path='history/*' element={<History />} />
       <Route path='settings/*' element={<Settings />} />
+      <Route path='task/*' element={<Task />} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

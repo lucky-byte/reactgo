@@ -23,10 +23,10 @@ func Load(filepath string) (*ViperConfig, error) {
 	if len(filepath) > 0 {
 		vp.SetConfigFile(filepath)
 	} else {
-		vp.SetConfigName("rgo")
+		vp.SetConfigName("reactgo")
 		vp.AddConfigPath(".")
 	}
-	vp.SetEnvPrefix("rgo")
+	vp.SetEnvPrefix("reactgo")
 
 	replacer := strings.NewReplacer(".", "_", "-", "_")
 	vp.SetEnvKeyReplacer(replacer)

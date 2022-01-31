@@ -13,7 +13,7 @@
 
 # Generated binary executable
 reactgo
-reactgo-dev
+reactgo-*
 
 # Web front end generated files
 web
