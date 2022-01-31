@@ -5,10 +5,10 @@ import (
 	"runtime"
 	"strconv"
 
+	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 
-	"github.com/lucky-byte/bdb/serve/config"
-	"github.com/sirupsen/logrus"
+	"github.com/lucky-byte/reactgo/serve/config"
 )
 
 // common field names

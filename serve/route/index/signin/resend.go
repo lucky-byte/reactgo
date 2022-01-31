@@ -5,9 +5,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/bdb/serve/ctx"
-	"github.com/lucky-byte/bdb/serve/route/index/auth"
-	"github.com/lucky-byte/bdb/serve/sms"
+	"github.com/lucky-byte/reactgo/serve/ctx"
+	"github.com/lucky-byte/reactgo/serve/route/index/auth"
+	"github.com/lucky-byte/reactgo/serve/sms"
 )
 
 // 重新发送短信验证码

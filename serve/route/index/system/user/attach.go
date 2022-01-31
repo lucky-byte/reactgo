@@ -2,7 +2,8 @@ package user
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/lucky-byte/bdb/serve/route/index/acl"
+
+	"github.com/lucky-byte/reactgo/serve/route/index/acl"
 )
 
 func Attach(up *echo.Group) {

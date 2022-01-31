@@ -9,8 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/mssola/user_agent"
 
-	"github.com/lucky-byte/bdb/serve/ctx"
-	"github.com/lucky-byte/bdb/serve/db"
+	"github.com/lucky-byte/reactgo/serve/ctx"
+	"github.com/lucky-byte/reactgo/serve/db"
 )
 
 // 查询登录历史列表

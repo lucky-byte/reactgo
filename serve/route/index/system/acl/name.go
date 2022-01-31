@@ -6,8 +6,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/bdb/serve/ctx"
-	"github.com/lucky-byte/bdb/serve/db"
+	"github.com/lucky-byte/reactgo/serve/ctx"
+	"github.com/lucky-byte/reactgo/serve/db"
 )
 
 func name(c echo.Context) error {

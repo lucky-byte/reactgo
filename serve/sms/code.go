@@ -8,7 +8,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/lucky-byte/bdb/serve/xlog"
+
+	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 // 已发送的短信验证码，内存缓存，重启后失效

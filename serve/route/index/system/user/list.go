@@ -8,8 +8,8 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/bdb/serve/ctx"
-	"github.com/lucky-byte/bdb/serve/db"
+	"github.com/lucky-byte/reactgo/serve/ctx"
+	"github.com/lucky-byte/reactgo/serve/db"
 )
 
 // 查询用户列表

@@ -6,7 +6,8 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/lucky-byte/bdb/serve/email"
+
+	"github.com/lucky-byte/reactgo/serve/email"
 )
 
 func Message(subject, name string, data map[string]interface{}) (*email.Message, error) {

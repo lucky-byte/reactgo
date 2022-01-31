@@ -9,9 +9,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/lucky-byte/bdb/serve/ctx"
-	"github.com/lucky-byte/bdb/serve/db"
-	"github.com/lucky-byte/bdb/serve/mailfs"
+
+	"github.com/lucky-byte/reactgo/serve/ctx"
+	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/mailfs"
 )
 
 // 查询邮件服务配置

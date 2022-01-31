@@ -120,11 +120,13 @@ create table if not exists tasks (
   create_at   timestamp       not null default current_timestamp,
   update_at   timestamp       not null default current_timestamp,
   name        varchar(64)     not null,
+  summary     varchar(256)    not null,
   cron        varchar(64)     not null,
   engine      int             not null,
   path        varchar(256)    not null,
   nfire       int             not null default 0,
-  fire_at     timestamp       not null default current_timestamp,
+  last_fire   timestamp       not null default current_timestamp,
+  disabled    boolean         not null default false,
   note        text
 );
 

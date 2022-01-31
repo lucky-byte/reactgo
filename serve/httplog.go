@@ -5,11 +5,11 @@ import (
 	"io"
 	"path"
 
-	"github.com/lucky-byte/bdb/serve/xlog"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"gopkg.in/natefinch/lumberjack.v2"
+
+	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 type terminalWriter struct {
@@ -32,7 +32,7 @@ func (w terminalWriter) Write(bytes []byte) (int, error) {
 // http access log save to file http.log
 func httpLogMiddleware(debug bool, logpath string) echo.MiddlewareFunc {
 	rotate_http_logger := &lumberjack.Logger{
-		Filename:  path.Join(logpath, "bdb-http.log"),
+		Filename:  path.Join(logpath, "reactgo-http.log"),
 		MaxSize:   20,
 		Compress:  true,
 		LocalTime: true,

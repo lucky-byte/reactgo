@@ -6,10 +6,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/bdb/serve/ctx"
-	"github.com/lucky-byte/bdb/serve/db"
-	"github.com/lucky-byte/bdb/serve/route/index/auth"
-	"github.com/lucky-byte/bdb/serve/sms"
+	"github.com/lucky-byte/reactgo/serve/ctx"
+	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/route/index/auth"
+	"github.com/lucky-byte/reactgo/serve/sms"
 )
 
 func tfa(c echo.Context) error {

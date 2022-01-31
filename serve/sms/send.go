@@ -14,9 +14,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lucky-byte/bdb/serve/db"
-	"github.com/lucky-byte/bdb/serve/xlog"
 	"github.com/pkg/errors"
+
+	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 // 短信正文模板 ID 常数

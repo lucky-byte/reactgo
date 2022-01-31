@@ -1,6 +1,6 @@
 package email
 
-import "github.com/lucky-byte/bdb/serve/db"
+import "github.com/lucky-byte/reactgo/serve/db"
 
 // 查询所有邮件传输代理
 func mtas() ([]db.MTA, error) {

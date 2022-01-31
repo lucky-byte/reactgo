@@ -3,10 +3,10 @@ package index
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/bdb/serve/route/index/auth"
-	"github.com/lucky-byte/bdb/serve/route/index/signin"
-	"github.com/lucky-byte/bdb/serve/route/index/system"
-	"github.com/lucky-byte/bdb/serve/route/index/user"
+	"github.com/lucky-byte/reactgo/serve/route/index/auth"
+	"github.com/lucky-byte/reactgo/serve/route/index/signin"
+	"github.com/lucky-byte/reactgo/serve/route/index/system"
+	"github.com/lucky-byte/reactgo/serve/route/index/user"
 )
 
 func Attach(up *echo.Echo) {

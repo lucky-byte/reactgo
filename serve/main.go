@@ -27,13 +27,13 @@ import (
 	"golang.org/x/net/http2"
 	"gopkg.in/natefinch/lumberjack.v2"
 
-	"github.com/lucky-byte/bdb/serve/config"
-	"github.com/lucky-byte/bdb/serve/ctx"
-	"github.com/lucky-byte/bdb/serve/db"
-	"github.com/lucky-byte/bdb/serve/image"
-	"github.com/lucky-byte/bdb/serve/mailfs"
-	"github.com/lucky-byte/bdb/serve/route/index"
-	"github.com/lucky-byte/bdb/serve/xlog"
+	"github.com/lucky-byte/reactgo/serve/config"
+	"github.com/lucky-byte/reactgo/serve/ctx"
+	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/mailfs"
+	"github.com/lucky-byte/reactgo/serve/route/index"
+	"github.com/lucky-byte/reactgo/serve/task"
+	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 // take from -X compile option
@@ -44,6 +44,7 @@ var (
 	configFile = flag.String("config", "", "配置`文件路径`")
 	webfs      = flag.String("webfs", "embed", "WEB资产, 可以是'embed'或者'osdir'")
 	mailFS     = flag.String("mailfs", "embed", "邮件模板, 可以是'embed'或者'osdir'")
+	cron       = flag.Bool("cron", true, "启动任务调度器")
 	version    = flag.Bool("version", false, "打印版本信息")
 	addUser    = flag.Bool("adduser", false, "添加第一个管理员")
 )
@@ -88,6 +89,7 @@ func main() {
 	}
 	debug := conf.Debug()
 
+	// 设置邮件模板文件系统类型
 	mailfs.SetFSType(*mailFS)
 
 	// Ensure log path exists
@@ -128,7 +130,7 @@ func main() {
 	// Rotate log file
 	// Echo's log and Go's log save to file misc.log
 	rotate_logger_msic := &lumberjack.Logger{
-		Filename:  path.Join(logpath, "bdb-misc.log"),
+		Filename:  path.Join(logpath, "reactgo-misc.log"),
 		MaxSize:   20,
 		Compress:  true,
 		LocalTime: true,
@@ -196,11 +198,16 @@ func main() {
 	}
 
 	index.Attach(engine)
-	image.Attach(engine)
 
 	// Startup server in a goroutine so main goroutine won't block
 	go startup(conf)
 
+	// 启动任务调度
+	if *cron {
+		if err = task.Startup(); err != nil {
+			xlog.X.WithError(err).Fatal("启动任务调度失败")
+		}
+	}
 	// Catch signal to graceful showdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
@@ -217,6 +224,7 @@ func main() {
 		xlog.X.WithError(err).Fatal("Server forced to shutdown")
 	}
 	db.Disconnect()
+	task.Stop()
 }
 
 func startup(conf *config.ViperConfig) {

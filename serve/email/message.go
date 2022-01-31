@@ -14,9 +14,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/lucky-byte/bdb/serve/db"
-	"github.com/lucky-byte/bdb/serve/xlog"
 	"github.com/pkg/errors"
+
+	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 // Attachment represents an email attachment.

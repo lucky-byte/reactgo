@@ -6,9 +6,9 @@ package secure
 import (
 	"os"
 
-	"github.com/lucky-byte/bdb/serve/xlog"
-
 	"gopkg.in/yaml.v3"
+
+	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 type SConfiguration struct {

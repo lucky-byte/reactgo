@@ -3,10 +3,10 @@ package system
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/bdb/serve/route/index/system/acl"
-	"github.com/lucky-byte/bdb/serve/route/index/system/history"
-	"github.com/lucky-byte/bdb/serve/route/index/system/settings"
-	"github.com/lucky-byte/bdb/serve/route/index/system/user"
+	"github.com/lucky-byte/reactgo/serve/route/index/system/acl"
+	"github.com/lucky-byte/reactgo/serve/route/index/system/history"
+	"github.com/lucky-byte/reactgo/serve/route/index/system/settings"
+	"github.com/lucky-byte/reactgo/serve/route/index/system/user"
 )
 
 func Attach(up *echo.Group) {

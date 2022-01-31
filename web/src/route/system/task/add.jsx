@@ -90,9 +90,9 @@ export default function UserAdd() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={4}>
               <Stack direction='row' spacing={3}>
-                <TextField label='名称' variant='standard' fullWidth required
+                <TextField label='任务名称' variant='standard' fullWidth required
                   autoFocus
-                  placeholder='系统登录名，可使用任何字符，建议使用字母和数字'
+                  placeholder='定时任务名称'
                   helperText={errors?.name?.message}
                   error={errors?.name}
                   {...register('name', {
@@ -102,11 +102,14 @@ export default function UserAdd() {
                     },
                   })}
                 />
-                <TextField label='真实姓名' variant='standard' fullWidth required
-                  placeholder='用户真实姓名'
-                  helperText={errors?.name?.message}
-                  error={errors?.name}
-                  {...register('name', {
+                <TextField label='调度表达式' variant='standard' fullWidth required
+                  placeholder='CRON 表达式'
+                  helperText={errors?.cron?.message}
+                  error={errors?.cron}
+                  inputProps={{
+                    fontFamily: 'monospace',
+                  }}
+                  {...register('cron', {
                     required: "不能为空",
                     maxLength: {
                       value: 64, message: '超出最大长度'
@@ -185,27 +188,6 @@ export default function UserAdd() {
                   },
                 })}
               />
-              <Stack>
-                <FormControlLabel
-                  label="开启2FA（登录必须验证短信验证码，需正确配置系统短信服务）"
-                  control={
-                    <Switch defaultChecked {...register('tfa')} />
-                  }
-                />
-                <FormControlLabel sx={{ mt: 1 }}
-                  label={
-                    <Stack spacing={0}>
-                      <Typography>将登录信息（网址、登录名及密码）发送到用户邮箱</Typography>
-                      <FormHelperText sx={{ mt: 0, color: 'orangered' }}>
-                        邮件中将包含所有登录需要的信息，请务必确认录入的邮箱地址正确，并属于该用户
-                      </FormHelperText>
-                    </Stack>
-                  }
-                  control={
-                    <Switch defaultChecked {...register('sendmail')} />
-                  }
-                />
-              </Stack>
               <Stack direction='row' spacing={2} justifyContent='flex-end'>
                 <Button color='secondary' disabled={isSubmitting}
                   onClick={() => { navigate('..') }}>

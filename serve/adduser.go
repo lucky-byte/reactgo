@@ -14,9 +14,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sethvargo/go-password/password"
 
-	"github.com/lucky-byte/bdb/serve/config"
-	"github.com/lucky-byte/bdb/serve/db"
-	"github.com/lucky-byte/bdb/serve/secure"
+	"github.com/lucky-byte/reactgo/serve/config"
+	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/secure"
 )
 
 // fatal same as fmt.Fatal(), print error message and exit
