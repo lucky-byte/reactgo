@@ -71,6 +71,7 @@ export default function SignIn() {
         name: resp.name,
         email: resp.email,
         mobile: resp.mobile,
+        address: resp.address,
         allows: resp.allows,
       });
       localStorage.setItem('token', resp.token);

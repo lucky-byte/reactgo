@@ -21,6 +21,7 @@ import Divider from '@mui/material/Divider';
 import KeyIcon from '@mui/icons-material/Key';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SecurityIcon from '@mui/icons-material/Security';
+import SupportIcon from '@mui/icons-material/Support';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -50,6 +51,7 @@ import { useColorModeContent } from "~/app";
 import Sidebar from "./sidebar";
 import urlCodes from "./sidebar/codes";
 import NotFound from "./notfound";
+import About from "./about";
 import Codes from "./codes";
 import Dashboard from "./dashboard";
 import System from "./system";
@@ -110,6 +112,7 @@ export default function Index() {
             <Route path='user/*' element={<User />} />
             <Route path='system/*' element={<System />} />
             <Route path='codes' element={<Codes />} />
+            <Route path='about' element={<About />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Box>
@@ -161,6 +164,7 @@ function Appbar(params) {
             name: resp.name,
             mobile: resp.mobile,
             email: resp.email,
+            address: resp.address,
             allows: resp.allows,
           });
         } catch (err) {
@@ -204,6 +208,12 @@ function Appbar(params) {
   const onSecurity = () => {
     onUserMenuClose();
     navigate('user/security');
+  }
+
+  // 关于
+  const onAbout = () => {
+    onUserMenuClose();
+    navigate('/about');
   }
 
   // 退出登录
@@ -263,6 +273,13 @@ function Appbar(params) {
               <SecurityIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>安全设置</ListItemText>
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={onAbout}>
+            <ListItemIcon>
+              <SupportIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>关于</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem onClick={onLogout}>
