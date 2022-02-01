@@ -10,6 +10,7 @@ import { ConfirmProvider } from 'material-ui-confirm';
 import SignIn from "./signin";
 import SignIn2FA from "./signin/2fa";
 import Index from "./route";
+import Privacy from "./privacy";
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
 export const useColorModeContent = () => useContext(ColorModeContext);
@@ -53,6 +54,7 @@ export default function App() {
           }}>
             <BrowserRouter>
               <Routes>
+                <Route path='/privacy' element={<Privacy />} />
                 <Route path='/signin' element={<SignIn />} />
                 <Route path='/signin/2fa' element={<SignIn2FA />} />
                 <Route path='/*' element={<Index />} />

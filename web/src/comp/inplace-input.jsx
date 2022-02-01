@@ -78,7 +78,8 @@ export default function InplaceInput(props) {
           inputProps={{
             style: {
               fontSize: props.fontSize,
-            }
+            },
+            maxLength: props.maxLength,
           }}
         />
       </Stack>
@@ -123,6 +124,7 @@ InplaceInput.propTypes = {
   fullWidth: PropTypes.bool,
   placeholder: PropTypes.string,
   color: PropTypes.string,
+  maxLength: PropTypes.number,
 }
 
 InplaceInput.defaultProps = {
@@ -133,4 +135,5 @@ InplaceInput.defaultProps = {
   fullWidth: true,
   placeholder: '空',
   color: '',
+  maxLength: 1000,
 }

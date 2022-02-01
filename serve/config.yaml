@@ -64,3 +64,15 @@ database:
   # 数据源，参考驱动文档
   #
   dsn: postgres://localhost/demo
+
+# 任务配置
+#
+task:
+  # 执行文件路径
+  #
+  path: ../jobs
+
+  # 环境变量
+  env:
+    # 数据库连接参数
+    dsn: postgres://localhost/demo

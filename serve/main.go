@@ -62,6 +62,9 @@ func init() {
 //go:embed web
 var embededWebFS embed.FS
 
+//go:embed privacy.md
+var privacy_text string
+
 // Web assets directory, can be overwrite by configuration
 var web_directory = "./web"
 
@@ -197,6 +200,9 @@ func main() {
 		engine.Static("/", web_directory)
 	}
 
+	// 隐私政策
+	engine.GET("/privacy", privacy)
+
 	index.Attach(engine)
 
 	// Startup server in a goroutine so main goroutine won't block
@@ -204,7 +210,7 @@ func main() {
 
 	// 启动任务调度
 	if *cron {
-		if err = task.Startup(); err != nil {
+		if err = task.Startup(conf.TaskPath()); err != nil {
 			xlog.X.WithError(err).Fatal("启动任务调度失败")
 		}
 	}

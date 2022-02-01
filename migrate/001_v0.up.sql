@@ -108,6 +108,7 @@ create table if not exists mtas (
 create table if not exists notifications (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
+  category    int             not null default 1,
   to          varchar(36)     not null default '',
   level       int             not null,
   title       varchar(64)     not null,
@@ -124,8 +125,9 @@ create table if not exists tasks (
   cron        varchar(64)     not null,
   engine      int             not null,
   path        varchar(256)    not null,
-  nfire       int             not null default 0,
   last_fire   timestamp       not null default current_timestamp,
+  nfire       int             not null default 0,
+  nfailed     int             not null default 0,
   disabled    boolean         not null default false,
   note        text
 );

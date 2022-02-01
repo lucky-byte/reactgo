@@ -42,8 +42,10 @@ func passwd(c echo.Context) error {
 		cc.ErrLog(err).Error("修改密码失败")
 		return c.String(http.StatusForbidden, "修改密码失败")
 	}
-	ql := `update users set passwd = ? where uuid = ?`
-
+	ql := `
+		update users set passwd = ?, update_at = current_timestamp
+		where uuid = ?
+	`
 	if err = db.ExecOne(ql, passwdHash, user.UUID); err != nil {
 		cc.ErrLog(err).Error("修改密码失败")
 		return c.String(http.StatusForbidden, "修改密码失败")

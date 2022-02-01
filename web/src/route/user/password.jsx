@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouteLink } from 'react-router-dom';
 import { useSetRecoilState } from "recoil";
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
@@ -57,7 +58,7 @@ export default function UserPassword() {
   return (
     <Container as='main' maxWidth='xs' sx={{ mb: 4 }}>
       <Paper elevation={4} sx={{ px: 4, py: 3, mt: 4 }}>
-        <Typography sx={{ mb: 2 }} variant='subtitle1'>修改登录密码</Typography>
+        <Typography sx={{ mb: 3 }} variant='h6'>修改登录密码</Typography>
         <TextField fullWidth autoFocus
           label="原登录密码" variant="standard"
           type={oldPasswordHide ? 'password' : 'text'}
@@ -106,10 +107,14 @@ export default function UserPassword() {
               </InputAdornment>,
           }}
         />
-        <Button variant="contained" fullWidth sx={{ mt: 4 }} size='large'
-          disabled={disabled} onClick={onChangeClick}>
-          修改
-        </Button>
+        <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 4 }}>
+          <Button color='secondary' LinkComponent={RouteLink} to='..'>
+            取消
+          </Button>
+          <Button variant="contained" disabled={disabled} onClick={onChangeClick}>
+            修改
+          </Button>
+        </Stack>
       </Paper>
     </Container>
   )
