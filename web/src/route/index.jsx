@@ -165,6 +165,7 @@ function Appbar(params) {
             mobile: resp.mobile,
             email: resp.email,
             address: resp.address,
+            secretcode_isset: resp.secretcode_isset,
             allows: resp.allows,
           });
         } catch (err) {

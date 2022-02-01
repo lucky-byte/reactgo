@@ -7,10 +7,10 @@ import UserSecurity from "./security";
 export default function User() {
   return (
     <Routes>
+      <Route path='/' element={<UserProfile />} />
       <Route path='profile' element={<UserProfile />} />
       <Route path='password' element={<UserPassword />} />
-      <Route path='security' element={<UserSecurity />} />
-      <Route path='/' element={<UserProfile />} />
+      <Route path='security/*' element={<UserSecurity />} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

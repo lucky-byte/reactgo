@@ -10,4 +10,5 @@ func Attach(up *echo.Group) {
 	group.GET("/info", info)
 	group.PUT("/passwd", passwd)
 	group.PUT("/address", address)
+	group.PUT("/secretcode", secretcode)
 }

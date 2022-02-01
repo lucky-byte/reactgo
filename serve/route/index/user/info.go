@@ -23,11 +23,12 @@ func info(c echo.Context) error {
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"userid":  user.UserId,
-		"name":    user.Name,
-		"email":   user.Email,
-		"mobile":  user.Mobile,
-		"address": user.Address.String,
-		"allows":  allows,
+		"userid":           user.UserId,
+		"name":             user.Name,
+		"email":            user.Email,
+		"mobile":           user.Mobile,
+		"address":          user.Address.String,
+		"secretcode_isset": len(user.SecretCode) > 0,
+		"allows":           allows,
 	})
 }

@@ -17,21 +17,22 @@ type Image struct {
 
 // Users
 type User struct {
-	UUID     string         `db:"uuid"`      // uuid
-	CreateAt time.Time      `db:"create_at"` // create time
-	UpdateAt time.Time      `db:"update_at"` // update time
-	SigninAt time.Time      `db:"signin_at"` // last sign in time
-	Disabled bool           `db:"disabled"`  // disabled
-	Deleted  bool           `db:"deleted"`   // deleted
-	UserId   string         `db:"userid"`    // userid
-	Passwd   string         `db:"passwd"`    // password
-	Name     string         `db:"name"`      // user name
-	Email    string         `db:"email"`     // email
-	Mobile   string         `db:"mobile"`    // mobile
-	Address  sql.NullString `db:"address"`   // address
-	TFA      bool           `db:"tfa"`       // 2fa
-	ACL      string         `db:"acl"`       // acl
-	NSignin  int            `db:"n_signin"`  // signin count in total
+	UUID       string         `db:"uuid"`       // uuid
+	CreateAt   time.Time      `db:"create_at"`  // create time
+	UpdateAt   time.Time      `db:"update_at"`  // update time
+	SigninAt   time.Time      `db:"signin_at"`  // last sign in time
+	Disabled   bool           `db:"disabled"`   // disabled
+	Deleted    bool           `db:"deleted"`    // deleted
+	UserId     string         `db:"userid"`     // userid
+	Passwd     string         `db:"passwd"`     // password
+	Name       string         `db:"name"`       // user name
+	Email      string         `db:"email"`      // email
+	Mobile     string         `db:"mobile"`     // mobile
+	Address    sql.NullString `db:"address"`    // address
+	TFA        bool           `db:"tfa"`        // 2fa
+	ACL        string         `db:"acl"`        // 访问控制
+	SecretCode string         `db:"secretcode"` // 安全操作码
+	NSignin    int            `db:"n_signin"`   // signin count in total
 }
 
 // Signin history

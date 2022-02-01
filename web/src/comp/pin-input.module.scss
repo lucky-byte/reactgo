@@ -1,0 +1,68 @@
+$black: #333333;
+$blue: #686de0;
+$gray: #d3d3d3;
+$green: #6ab04c;
+$red: #dc3545;
+$white: #ffffff;
+
+code {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+}
+
+// .container {
+// 	display: grid;
+// 	grid-auto-columns: max-content;
+// 	grid-auto-flow: column;
+// 	justify-content: center;
+// }
+
+.pininput {
+	background-color: rgb(248, 249, 250);
+	border: 1px solid rgb(204, 204, 204);
+	border-radius: 0.3rem;
+	font-size: 2rem;
+	margin: 0.25rem;
+	height: 3rem;
+	width: 3rem;
+	outline: none;
+	text-align: center;
+	transition-duration: 250ms;
+	transition-property: background, color, border, box-shadow, transform;
+
+	&:focus {
+		border-color: rgb(0, 123, 255);
+		outline: none;
+		transform: scale(1.05);
+	}
+
+	&:invalid {
+		animation: shake 3 linear 75ms;
+		border-color: rgb(220, 53, 69);
+		box-shadow: 0 0 0.25rem rgba(220, 53, 69, 0.5);
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+}
+
+// swd-pin-field[completed] .pininput {
+// 	border-color: rgb(40, 167, 69);
+// 	background-color: rgba(40, 167, 69, 0.1);
+
+// 	&:valid {
+// 		color: $green;
+// 	}
+// }
+
+@keyframes shake {
+	from {
+		transform: scale(1.05) translateY(-5%);
+	}
+
+	to {
+		transform: scale(1.05) translateY(5%);
+	}
+}
