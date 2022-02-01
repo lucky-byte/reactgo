@@ -158,9 +158,16 @@ export default function SignIn() {
       </Typography>
       <FormHelperText sx={{ mt: 1 }}>
         版权所有 &copy; {new Date().getFullYear()}
-        {process.env.REACT_APP_COMPANY_NAME},
-        保留所有权利。
+        {process.env.REACT_APP_COMPANY_NAME}，保留所有权利。
       </FormHelperText>
+      {process.env.REACT_APP_ICP &&
+        <FormHelperText sx={{ mt: 1 }}>
+          <Link component='a' href={process.env.REACT_APP_ICP_LINK}
+            target='_blank' underline='hover'>
+            {process.env.REACT_APP_ICP}
+          </Link>
+        </FormHelperText>
+      }
     </Container>
   )
 }
