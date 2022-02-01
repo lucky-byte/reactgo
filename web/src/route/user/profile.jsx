@@ -96,7 +96,7 @@ export default function UserProfile() {
           <FormHelperText>
             访问设备通过浏览器设置的 User Agent 识别，系统仅使用这些信息增强安全，
             不与任何第三方共享，详情请参考
-            <Link component='a' href='/privace' target='_blank' underline='hover'>
+            <Link component='a' href='/privacy' target='_blank' underline='hover'>
               《隐私政策》
             </Link>
           </FormHelperText>
@@ -106,7 +106,7 @@ export default function UserProfile() {
           <FormHelperText>
             IP 地址通过网络连接获取，地理位置通过 IP 查询而来，这些信息用于增强安全，
             不与任何第三方分享，详情请参考
-            <Link component='a' href='/privace' target='_blank' underline='hover'>
+            <Link component='a' href='/privacy' target='_blank' underline='hover'>
               《隐私政策》
             </Link>
           </FormHelperText>

@@ -36,10 +36,10 @@ import (
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
-// take from -X compile option
+// 从 -X 编译器选项获取
 var Name, Version, BuildDate, BuildYear string
 
-// Command line options
+// 命令行选项
 var (
 	configFile = flag.String("config", "", "配置`文件路径`")
 	webfs      = flag.String("webfs", "embed", "WEB资产, 可以是'embed'或者'osdir'")
@@ -62,30 +62,30 @@ func init() {
 //go:embed web
 var embededWebFS embed.FS
 
-//go:embed privacy.md
-var privacy_text string
+//go:embed privacy.html
+var privacy_html string
 
-// Web assets directory, can be overwrite by configuration
+// WEB 静态文件目录，可以通过配置修改
 var web_directory = "./web"
 
-// Echo's http engine
+// HTTP 引擎
 var engine *echo.Echo
 
 func main() {
-	// Parse command line options
+	// 解析命令行选项
 	flag.Parse()
 
-	// Print version information
+	// 打印版本信息
 	if *version {
 		printVersion()
 		os.Exit(0)
 	}
-	// Load configuration
+	// 从文件中加载配置
 	conf, err := config.Load(*configFile)
 	if err != nil {
 		log.Fatalf("Failed to load configration: %v", err)
 	}
-	// Add console user and quit
+	// 添加用户，然后退出
 	if *addUser {
 		addConsoleUser(conf)
 		return
@@ -95,15 +95,15 @@ func main() {
 	// 设置邮件模板文件系统类型
 	mailfs.SetFSType(*mailFS)
 
-	// Ensure log path exists
+	// 确保日志文件存在
 	logpath := conf.LogPath()
 	if err = os.MkdirAll(logpath, 0755); err != nil {
 		log.Fatalf("Failed to mkdir '%s': %v", logpath, err)
 	}
-	// Setup xlog
+	// 设置 xlog
 	xlog.Setup(debug, conf)
 
-	// Connect to database, will panic if connect failed
+	// 连接数据库，如果失败将会 panic
 	db.Connect(conf.DatabaseDriver(), conf.DatabaseDSN())
 
 	engine = echo.New()
@@ -111,14 +111,14 @@ func main() {
 	engine.HideBanner = true
 	engine.HTTPErrorHandler = httpErrorHandler
 
-	// Base middleware
+	// 基础中间件
 	engine.Use(middleware.Recover())
 	engine.Use(middleware.RequestID())
 
-	// Limit request body size
+	// 限制请求报文大小
 	engine.Use(middleware.BodyLimit("10M"))
 
-	// csrf token
+	// CSRF token
 	engine.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookieName:     "csrf",
 		CookiePath:     "/",
@@ -130,8 +130,8 @@ func main() {
 		},
 	}))
 
-	// Rotate log file
-	// Echo's log and Go's log save to file misc.log
+	// 回滚日志文件
+	// Echo 的日志和 Go log 的日志将保存到 misc.log 文件中
 	rotate_logger_msic := &lumberjack.Logger{
 		Filename:  path.Join(logpath, "reactgo-misc.log"),
 		MaxSize:   20,
@@ -139,7 +139,7 @@ func main() {
 		LocalTime: true,
 	}
 
-	// log format
+	// 日志格式
 	log.SetFlags(log.Lshortfile | log.Ldate | log.Lmicroseconds)
 	engine.Logger.SetHeader("${time_rfc3339_nano} ${level} ${short_file}:${line}")
 
@@ -154,13 +154,13 @@ func main() {
 		engine.Logger.SetLevel(echo_log.INFO)
 	}
 
-	// Setup http log
+	// 设置 HTTP 日志
 	engine.Use(httpLogMiddleware(debug, logpath))
 
-	// Customized context
+	// 自定义 Context
 	engine.Use(ctx.Middleware(conf))
 
-	// Serve web static assets
+	// WEB 静态文件
 	engine.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Skipper: func(c echo.Context) bool {
 			if strings.ToUpper(c.Request().Method) == "GET" {
@@ -176,9 +176,9 @@ func main() {
 			return true
 		},
 	}))
-	// the executable has web assets embeded in with go:embed
-	// if -webfs option is set to osdir, then use external web assets instead of
-	// embeded assets
+	// 执行文件中通过 gl:embed 打包了 WEB 静态文件
+	// 如果命令行选项 -webfs 设置为 osdir，那么使用文件系统中的 WEB 静态文件，
+	// 而不是打包的静态文件，如果 -webfs 设置为 embed，则使用打包的静态文件
 	if *webfs == "embed" {
 		fsys, err := fs.Sub(embededWebFS, "web")
 		if err != nil {
@@ -201,11 +201,14 @@ func main() {
 	}
 
 	// 隐私政策
-	engine.GET("/privacy", privacy)
+	engine.GET("/privacy", func(c echo.Context) error {
+		return c.HTML(http.StatusOK, privacy_html)
+	})
 
+	// 路由
 	index.Attach(engine)
 
-	// Startup server in a goroutine so main goroutine won't block
+	// 在 goroutine 中启动服务器，这样主 goroutine 不会阻塞
 	go startup(conf)
 
 	// 启动任务调度
@@ -214,7 +217,7 @@ func main() {
 			xlog.X.WithError(err).Fatal("启动任务调度失败")
 		}
 	}
-	// Catch signal to graceful showdown
+	// 捕获系统信号，优雅的退出
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 
@@ -222,7 +225,7 @@ func main() {
 
 	xlog.X.Infof("received signal %s", s.String())
 
-	// Stop the server when signal arrived
+	// 当收到信号时停止服务器
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

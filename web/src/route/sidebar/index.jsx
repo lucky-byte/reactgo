@@ -12,8 +12,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import List from '@mui/material/List';
 import userState from "~/state/user";
 import codeState from "~/state/code";
-import LuckyByte from '~/img/lucky-byte.png';
-import LuckyByteDark from '~/img/lucky-byte-dark.png';
+import Banner from '~/img/banner.png';
+import BannerDark from '~/img/banner-dark.png';
 import menus from "./menus";
 import Item from './item';
 
@@ -22,7 +22,7 @@ export default function Sidebar() {
   const user = useRecoilValue(userState);
   const [visibleMenus, setVisibleMenus] = useState([]);
 
-  const Logo = theme.palette.mode === 'dark' ? LuckyByteDark : LuckyByte;
+  const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
 
   useEffect(() => {
     if (user?.allows) {

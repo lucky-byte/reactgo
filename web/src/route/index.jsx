@@ -44,8 +44,8 @@ import sidebarState from "~/state/sidebar";
 import progressState from "~/state/progress";
 import codeState from "~/state/code";
 import { get } from "~/rest";
-import LuckyByte from '~/img/lucky-byte.png';
-import LuckyByteDark from '~/img/lucky-byte-dark.png';
+import Banner from '~/img/banner.png';
+import BannerDark from '~/img/banner-dark.png';
 import { useColorModeContent } from "~/app";
 import Sidebar from "./sidebar";
 import urlCodes from "./sidebar/codes";
@@ -137,7 +137,7 @@ function Appbar(params) {
     enableOnTags: ['INPUT'],
   });
 
-  const Logo = theme.palette.mode === 'dark' ? LuckyByteDark : LuckyByte;
+  const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
 
   useEffect(() => { document.title = title; }, [title])
 

@@ -11,14 +11,15 @@ import FormHelperText from "@mui/material/FormHelperText";
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
 import IconButton from "@mui/material/IconButton";
 import PersonIcon from '@mui/icons-material/Person';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
-import LuckyByte from '~/img/lucky-byte.png';
-import LuckyByteDark from '~/img/lucky-byte-dark.png';
+import Banner from '~/img/banner.png';
+import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
 import { put } from "~/rest";
 
@@ -32,7 +33,7 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const setUser = useSetRecoilState(userState);
 
-  const Logo = theme.palette.mode === 'dark' ? LuckyByteDark : LuckyByte;
+  const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
 
   const onUsernameChange = e => {
     setUsername(e.target.value);
@@ -149,8 +150,15 @@ export default function SignIn() {
           登录
         </Button>
       </Paper>
-      <FormHelperText sx={{ mt: 2 }}>
-        &copy; 2022 LuckyByte, All rights reserved.
+      <Typography variant='body2' sx={{ mt: 2 }}>
+        <Link component='a' href='/privacy' target='_blank' underline='hover'>
+          隐私政策
+        </Link>
+      </Typography>
+      <FormHelperText sx={{ mt: 1 }}>
+        版权所有 &copy; {new Date().getFullYear()}
+        {process.env.REACT_APP_COMPANY_NAME},
+        保留所有权利。
       </FormHelperText>
     </Container>
   )
