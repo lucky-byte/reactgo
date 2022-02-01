@@ -30,10 +30,12 @@ import Divider from '@mui/material/Divider';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import KeyIcon from '@mui/icons-material/Key';
+import KeyOffIcon from '@mui/icons-material/KeyOff';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
 import titleState from "~/state/title";
+import userState from "~/state/user";
 import progressState from "~/state/progress";
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
@@ -201,6 +203,7 @@ export default function UserList() {
 function UserMenuIconButton(props) {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const [currentUser, setCurrentUser] = useRecoilState(userState);
   const confirm = useConfirm();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -234,6 +237,32 @@ function UserMenuIconButton(props) {
     setAnchorEl(null);
     navigate('acl', { state: { uuid: user.uuid, name: user.name, acl: user.acl } });
   };
+
+  // 清除安全操作码
+  const onClearSecretCodeClick = async () => {
+    try {
+      setAnchorEl(null);
+
+      await confirm({
+        description: `确定要清除 ${user.name} 的安全操作码吗？`,
+        confirmationText: '清除',
+        confirmationButtonProps: { color: 'warning' },
+        contentProps: { p: 8 },
+      });
+      await post('/system/user/clearsecretcode',
+        new URLSearchParams({ uuid: user.uuid })
+      );
+      enqueueSnackbar('已清除', { variant: 'success' });
+
+      if (currentUser.userid === user.userid) {
+        setCurrentUser({ ...currentUser, secretcode_isset: false });
+      }
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
 
   // 禁用/启用
   const onDisableClick = async () => {
@@ -316,6 +345,13 @@ function UserMenuIconButton(props) {
             <SecurityIcon fontSize="small" color='info' />
           </ListItemIcon>
           <ListItemText>访问控制</ListItemText>
+        </MenuItem>
+        <MenuItem disabled={user.disabled || user.deleted}
+          onClick={onClearSecretCodeClick}>
+          <ListItemIcon>
+            <KeyOffIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>清除安全操作码</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem disabled={user.deleted} onClick={onDisableClick}>

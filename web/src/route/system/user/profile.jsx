@@ -135,10 +135,16 @@ function BaseInfoTable(props) {
               {profile.tfa ? '是' : '否'}
             </TableCell>
           </TableRow>
-          <TableRow sx={{ td: { borderBottom: 0 } }}>
+          <TableRow>
             <TableCell>访问控制</TableCell>
             <TableCell colSpan={3} sx={{ borderLeft: '1px solid' }}>
               {profile.acl?.name}（{profile.acl?.summary}）
+            </TableCell>
+          </TableRow>
+          <TableRow sx={{ td: { borderBottom: 0 } }}>
+            <TableCell>安全操作码</TableCell>
+            <TableCell colSpan={3} sx={{ borderLeft: '1px solid' }}>
+              {profile.secretcode_isset ? '已设置' : '未设置'}
             </TableCell>
           </TableRow>
         </TableBody>

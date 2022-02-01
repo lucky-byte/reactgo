@@ -21,12 +21,7 @@ func profile(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	// 查询用户信息
-	ql := `
-		select create_at, update_at, signin_at,
-			userid, name, email, mobile, address, n_signin,
-			tfa, acl, disabled, deleted
-		from users where uuid = ?
-	`
+	ql := `select * from users where uuid = ?`
 	var user db.User
 
 	if err = db.SelectOne(ql, &user, uuid); err != nil {
@@ -46,20 +41,21 @@ func profile(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"create_at": user.CreateAt,
-		"update_at": user.UpdateAt,
-		"signin_at": user.SigninAt,
-		"userid":    user.UserId,
-		"name":      user.Name,
-		"mobile":    user.Mobile,
-		"email":     user.Email,
-		"address":   user.Address.String,
-		"n_signin":  user.NSignin,
-		"tfa":       user.TFA,
-		"disabled":  user.Disabled,
-		"deleted":   user.Deleted,
-		"acl":       acl,
-		"history":   history,
+		"create_at":        user.CreateAt,
+		"update_at":        user.UpdateAt,
+		"signin_at":        user.SigninAt,
+		"userid":           user.UserId,
+		"name":             user.Name,
+		"mobile":           user.Mobile,
+		"email":            user.Email,
+		"address":          user.Address.String,
+		"n_signin":         user.NSignin,
+		"tfa":              user.TFA,
+		"secretcode_isset": len(user.SecretCode) > 0,
+		"disabled":         user.Disabled,
+		"deleted":          user.Deleted,
+		"acl":              acl,
+		"history":          history,
 	})
 }
 

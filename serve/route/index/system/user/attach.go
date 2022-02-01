@@ -24,6 +24,7 @@ func Attach(up *echo.Group) {
 	group.Use(acl.AllowAdmin(code))
 
 	group.POST("/add", add)
+	group.POST("/clearsecretcode", clearSecretCode)
 	group.POST("/disable", disable)
 	group.DELETE("/delete", del)
 }
