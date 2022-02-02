@@ -39,6 +39,8 @@ export default function SignIn() {
 
   const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
 
+  useEffect(() => { document.title = '请登录'; }, []);
+
   // 查询系统设置
   useEffect(() => {
     (async () => {
@@ -107,12 +109,12 @@ export default function SignIn() {
         return navigate('/signin/sms', { state: { smsid: resp.smsid } });
       }
       // 跳转到最近访问页面
-      let last_access = localStorage.getItem('last-access');
+      let last = localStorage.getItem('last-access');
       localStorage.removeItem('last-access');
-      if (last_access?.startsWith('/signin')) {
-        last_access = '/';
+      if (last?.startsWith('/signin') || last.startsWith('/resetpass')) {
+        last = '/';
       }
-      navigate(last_access || '/', { replace: true });
+      navigate(last || '/', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message, { variant: 'error' });
       setSubmitting(false);
@@ -128,11 +130,11 @@ export default function SignIn() {
   }
 
   return (
-    <Stack>
-      <Toolbar variant="dense">
-        <img src={Logo} alt='Logo' height='32px' />
+    <Stack as='main' role='main'>
+      <Toolbar>
+        <img src={Logo} alt='Logo' height='28px' />
       </Toolbar>
-      <Container as='main' role='main' maxWidth='xs'
+      <Container maxWidth='xs'
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 8, py: 3, px: 4, width: '100%' }}>
           <Typography as='h1' variant='h6' sx={{ mt: 1 }}>欢迎，请登录</Typography>

@@ -9,4 +9,6 @@ func Attach(engine *echo.Group) {
 
 	router.POST("/emailcode", emailcode)
 	router.PUT("/emailverify", emailverify)
+	router.PUT("/smsverify", smsVerify)
+	router.POST("/smsresend", smsResend)
 }

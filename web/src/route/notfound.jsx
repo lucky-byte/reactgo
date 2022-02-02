@@ -13,9 +13,9 @@ export default function NotFound() {
   useEffect(() => { setTitle('页面不存在'); }, [setTitle]);
 
   return (
-    <Stack alignItems='center'>
+    <Stack alignItems='center' spacing={1}>
       <Typography variant='body1' mt={8}>你访问的页面不存在</Typography>
-      <Stack direction='row' sx={{ mt: 0 }}>
+      <Stack direction='row' sx={{ mt: 0 }} spacing={2}>
         <Button onClick={() => { navigate('/') }} color="secondary">
           首页
         </Button>

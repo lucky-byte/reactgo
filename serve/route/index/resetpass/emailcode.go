@@ -53,12 +53,15 @@ func emailcode(c echo.Context) error {
 	if len(user.Mobile) == 0 {
 		return c.String(http.StatusForbidden, "用户未设置手机号")
 	}
+	if user.Disabled || user.Deleted {
+		return c.String(http.StatusForbidden, "该用户状态非正常")
+	}
 
 	// 发送验证码到邮箱
 	id, err := mailfs.SendCode(email, user.Name)
 	if err != nil {
 		cc.ErrLog(err).Error("发送验证邮件错")
-		return c.String(http.StatusInternalServerError, "发送验证码邮件错")
+		return c.String(http.StatusInternalServerError, "发送验证邮件错")
 	}
 	return c.JSON(http.StatusOK, echo.Map{"id": id})
 }

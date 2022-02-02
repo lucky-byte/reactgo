@@ -10,6 +10,8 @@ import { ConfirmProvider } from 'material-ui-confirm';
 import SignIn from "./signin";
 import SignInSMS from "./signin/sms";
 import ResetPass from "./resetpass";
+import ResetPassSMS from "./resetpass/sms";
+import ResetPassSuccess from "./resetpass/success";
 import Index from "./route";
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
@@ -57,6 +59,8 @@ export default function App() {
                 <Route path='/signin' element={<SignIn />} />
                 <Route path='/signin/sms' element={<SignInSMS />} />
                 <Route path='/resetpass' element={<ResetPass />} />
+                <Route path='/resetpass/sms' element={<ResetPassSMS />} />
+                <Route path='/resetpass/success' element={<ResetPassSuccess />} />
                 <Route path='/*' element={<Index />} />
               </Routes>
             </BrowserRouter>

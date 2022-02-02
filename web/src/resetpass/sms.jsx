@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useRecoilValue } from "recoil"
 import { useLocation, useNavigate } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
@@ -18,15 +17,16 @@ import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
-import userState from "~/state/user";
 import { post, put } from "~/rest";
 
-export default function SignInSMS() {
+export default function ResetPassSMS() {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useRecoilValue(userState);
   const { enqueueSnackbar } = useSnackbar();
+  const [username, setUsername] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [email, setEmail] = useState('');
   const [smsid, setSmsid] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -36,33 +36,29 @@ export default function SignInSMS() {
 
   useEffect(() => { document.title = '短信验证'; }, []);
 
+  // 获取路由参数
   useEffect(() => {
-    if (!location?.state?.smsid) {
-      return navigate('/signin', { replace: true });
+    if (!location?.state) {
+      return navigate('/resetpass', { replace: true });
     }
-    setSmsid(location.state.smsid);
+    setMobile(location.state?.mobile);
+    setSmsid(location.state?.smsid);
+    setUsername(location.state?.username);
+    setEmail(location.state?.email);
+  }, [navigate, location?.state]);
 
-    const token = localStorage.getItem('token');
-    if (!token || !user || !user.userid) {
-      return navigate('/signin', { replace: true });
-    }
-  }, [user, navigate, location?.state]);
-
+  // 更新计时器
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (time > 0) {
-        setTime(time - 1);
-      } else {
-        clearTimeout(timer);
-      }
-    }, 1000);
+    const timer = setTimeout(() => { setTime(time - 1); }, 1000);
     return () => { clearTimeout(timer); }
   }, [time]);
 
+  // 验证码改变
   const onCodeChange = e => {
     setCode(e.target.value);
   }
 
+  // 回车
   const onCodeKeyDown = e => {
     if (e.key === 'Enter') {
       onSubmit();
@@ -78,23 +74,11 @@ export default function SignInSMS() {
     try {
       setLoading(true);
 
-      const resp = await put('/signin/smsverify', new URLSearchParams({
-        mobile: user.mobile, smsid, code
+      await put('/resetpass/smsverify', new URLSearchParams({
+        username, mobile, smsid, code
       }));
-      if (!resp || !resp.token) {
-        return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
-      }
-      localStorage.setItem('token', resp.token);
-
       setLoading(false);
-
-      // 跳转到最近访问页面
-      let last = localStorage.getItem('last-access');
-      localStorage.removeItem('last-access');
-      if (last?.startsWith('/signin') || last?.startsWith('/resetpass')) {
-        last = '/';
-      }
-      navigate(last || '/', { replace: true });
+      navigate('/resetpass/success', { replace: true, state: { email } });
     } catch (err) {
       enqueueSnackbar(err.message);
     } finally {
@@ -105,8 +89,8 @@ export default function SignInSMS() {
   // 重新发送验证码
   const onReSendClick = async () => {
     try {
-      const resp = await post('/signin/smsresend', new URLSearchParams({
-        mobile: user.mobile
+      const resp = await post('/resetpass/smsresend', new URLSearchParams({
+        mobile, username,
       }));
       if (!resp.smsid) {
         throw new Error('响应数据无效');
@@ -131,8 +115,7 @@ export default function SignInSMS() {
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 6, py: 3, px: 4, width: '100%' }}>
           <Typography as='h1' variant='caption' sx={{ mt: 1 }}>
-            短信验证码已发送到手机号 ****{user?.mobile?.substring(7)}，
-            请输入短信中的验证码完成验证
+            短信验证码已发送到手机号 ****{mobile?.substring(7)}，请输入短信中的验证码完成验证
           </Typography>
           <FormControl fullWidth sx={{ mt: 3 }}>
             <TextField required autoFocus autoComplete="off"

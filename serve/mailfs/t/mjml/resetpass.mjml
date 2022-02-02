@@ -1,0 +1,26 @@
+<mjml lang="zh_CN">
+  <mj-head>
+    <mj-include path="./component/head.mjml" />
+  </mj-head>
+  <mj-body>
+    <mj-include path="./component/header.mjml" />
+    <mj-section padding-top="10px">
+      <mj-column>
+        <mj-text font-size="16px">Hey {{.name}}</mj-text>
+        <mj-text align='center'>您的密码已重置为</mj-text>
+        <mj-text align='center' font-size='32px' font-weight="bold"
+          font-family="Arial">
+          {{.password}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="5px">
+      <mj-column>
+        <mj-divider padding-bottom='0px' />
+        <mj-text font-size="12px" color="#888">
+          收到这封邮件是因为您正在找回登录密码。如果没有进行以上操作，请忽略此邮件。
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

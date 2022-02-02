@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate, Link as RouteLink } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";
+import Link from "@mui/material/Link";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -15,6 +17,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import KeyIcon from '@mui/icons-material/Key';
 import isEmail from 'validator/lib/isEmail';
 import { useSnackbar } from 'notistack';
+import { useHotkeys } from 'react-hotkeys-hook';
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import { put, post } from "~/rest";
@@ -31,6 +34,10 @@ export default function ResetPass() {
   const [submitting, setSubmitting] = useState(false);
 
   const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
+
+  useHotkeys('esc', () => { navigate('/signin'); }, { enableOnTags: ["INPUT"] });
+
+  useEffect(() => { document.title = '找回登录密码'; }, []);
 
   // 登录名改变
   const onUsernameChange = e => {
@@ -102,10 +109,14 @@ export default function ResetPass() {
       }));
       setSubmitting(false);
 
-      if (!resp || !resp.token) {
+      if (!resp?.smsid || !resp?.mobile) {
         throw new Error('服务器响应数据无效');
       }
-      navigate('/resetpass/sms', { state: { smsid: resp.smsid } });
+      navigate('/resetpass/sms', {
+        state: {
+          smsid: resp.smsid, mobile: resp.mobile, username, email,
+        }
+      });
     } catch (err) {
       enqueueSnackbar(err.message, { variant: 'error' });
       setSubmitting(false);
@@ -113,11 +124,19 @@ export default function ResetPass() {
   }
 
   return (
-    <Stack>
-      <Toolbar variant="dense">
-        <img src={Logo} alt='Logo' height='32px' />
+    <Stack as='main' role='main'>
+      <Toolbar>
+        <Box sx={{ flex: 1 }}>
+          <Link component='a' href='/signin'>
+            <img src={Logo} alt='Logo' height='28px' />
+          </Link>
+        </Box>
+        <Button variant='outlined' sx={{ mt: 1 }}
+          LinkComponent={RouteLink} to='/signin'>
+          登录
+        </Button>
       </Toolbar>
-      <Container as='main' role='main' maxWidth='xs'
+      <Container maxWidth='xs'
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 4, py: 3, px: 4, width: '100%' }}>
           <Typography as='h1' variant='h6' sx={{ mt: 1 }}>找回登录密码</Typography>
@@ -177,9 +196,6 @@ export default function ResetPass() {
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={code.length < 6 || submitting}>
             提交
-          </Button>
-          <Button fullWidth sx={{ mt: 1 }} LinkComponent={RouteLink} to='/signin'>
-            返回登录
           </Button>
         </Paper>
       </Container>

@@ -7,6 +7,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/mailfs"
 	"github.com/lucky-byte/reactgo/serve/sms"
 )
 
@@ -35,11 +36,20 @@ func emailverify(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "未查询到用户信息")
 	}
 
+	// 验证
+	if err = mailfs.VerifyCode(id, code, email); err != nil {
+		cc.ErrLog(err).Error("验证邮件验证码错")
+		return c.String(http.StatusBadRequest, "验证失败")
+	}
+
 	// 发送验证码
 	smsid, err := sms.SendCode(user.Mobile)
 	if err != nil {
 		cc.ErrLog(err).Error("发送短信验证码错")
 		return c.String(http.StatusInternalServerError, "发送短信验证码错")
 	}
-	return c.JSON(http.StatusOK, echo.Map{"smsid": smsid})
+	return c.JSON(http.StatusOK, echo.Map{
+		"mobile": user.Mobile,
+		"smsid":  smsid,
+	})
 }
