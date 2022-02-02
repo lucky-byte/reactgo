@@ -9,25 +9,25 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-func address(c echo.Context) error {
+func name(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 
-	var address string
+	var name string
 
-	err := echo.FormFieldBinder(c).MustString("address", &address).BindError()
+	err := echo.FormFieldBinder(c).MustString("name", &name).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
-	cc.Trim(&address)
+	cc.Trim(&name)
 
 	ql := `
-		update users set address = ?, update_at = current_timestamp
+		update users set name = ?, update_at = current_timestamp
 		where uuid = ?
 	`
-	if err = db.ExecOne(ql, address, user.UUID); err != nil {
-		cc.ErrLog(err).Error("修改地址失败")
+	if err = db.ExecOne(ql, name, user.UUID); err != nil {
+		cc.ErrLog(err).Error("修改姓名失败")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

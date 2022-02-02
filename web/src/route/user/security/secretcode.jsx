@@ -58,6 +58,9 @@ export default function SecretCode() {
   }
 
   const onOK = async () => {
+    if (!code1) {
+      return enqueueSnackbar('请输入安全码', { variant: 'warning' });
+    }
     if (code1 !== code2) {
       return enqueueSnackbar('两次输入不一致，请检查', { variant: 'warning' });
     }

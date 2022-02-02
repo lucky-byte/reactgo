@@ -27,6 +27,28 @@ export default function UserProfile() {
 
   useEffect(() => { setTitle('个人资料'); }, [setTitle]);
 
+  // 修改姓名
+  const onChangeName = async value => {
+    try {
+      await put('/user/name', new URLSearchParams({ name: value }));
+      setUser({ ...user, name: value, });
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  // 修改登录名
+  const onChangeUserid = async value => {
+    try {
+      await put('/user/userid', new URLSearchParams({ userid: value }));
+      setUser({ ...user, userid: value, });
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
   // 修改邮箱地址
   const onChangeEmail = async value => {
     enqueueSnackbar('暂不支持修改邮箱地址', { variant: 'info' });
@@ -56,12 +78,23 @@ export default function UserProfile() {
           <Stack spacing={2} width='100%'>
             <Stack direction='row'>
               <Stack sx={{ flex: 1 }}>
-                <Typography variant='h6'>{user?.name}</Typography>
-                <Typography>@{user?.userid}</Typography>
+                <InplaceInput variant='h6' sx={{ flex: 1 }} text={user?.name}
+                  onConfirm={onChangeName}
+                />
+                <Stack direction='row' alignItems='center'>
+                  <Typography sx={{ mr: '2px' }} color='primary' variant='subtitle2'>@</Typography>
+                  <InplaceInput sx={{ flex: 1 }} text={user?.userid}
+                    onConfirm={onChangeUserid}
+                  />
+                </Stack>
               </Stack>
               <Stack direction='row' spacing={2}>
-                <Button LinkComponent={RouteLink} to='/user/password'>修改密码</Button>
-                <Button LinkComponent={RouteLink} to='/user/security'>安全设置</Button>
+                <Button LinkComponent={RouteLink} to='/user/password'>
+                  修改密码
+                </Button>
+                <Button LinkComponent={RouteLink} to='/user/security'>
+                  安全设置
+                </Button>
               </Stack>
             </Stack>
             <Divider />

@@ -28,19 +28,19 @@ func passwd(c echo.Context) error {
 	// 验证原登录密码
 	phc, err := secure.ParsePHC(user.Passwd)
 	if err != nil {
-		cc.ErrLog(err).Error("修改密码失败")
-		return c.String(http.StatusForbidden, "修改密码失败")
+		cc.ErrLog(err).Error("验证原密码失败")
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	if err = phc.Verify(oldPassword); err != nil {
-		cc.ErrLog(err).Error("修改密码失败")
+		cc.ErrLog(err).Error("验证原密码失败")
 		return c.String(http.StatusForbidden, "原登录密码不匹配")
 	}
 
 	// 保存新密码
 	passwdHash, err := secure.DefaultPHC().Hash(newPassword)
 	if err != nil {
-		cc.ErrLog(err).Error("修改密码失败")
-		return c.String(http.StatusForbidden, "修改密码失败")
+		cc.ErrLog(err).Error("加密新密码失败")
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	ql := `
 		update users set passwd = ?, update_at = current_timestamp
@@ -48,7 +48,7 @@ func passwd(c echo.Context) error {
 	`
 	if err = db.ExecOne(ql, passwdHash, user.UUID); err != nil {
 		cc.ErrLog(err).Error("修改密码失败")
-		return c.String(http.StatusForbidden, "修改密码失败")
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)
 }

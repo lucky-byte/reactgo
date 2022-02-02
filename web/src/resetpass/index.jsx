@@ -23,7 +23,7 @@ import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
 import { put, get } from "~/rest";
 
-export default function SignIn() {
+export default function ResetPass() {
   const theme = useTheme();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -121,7 +121,7 @@ export default function SignIn() {
       <Paper elevation={3} sx={{ mt: 10, py: 3, px: 4, width: '100%' }}>
         <Stack sx={{ alignItems: 'center' }}>
           <img src={Logo} alt='Logo' height='36px' />
-          <Typography as='h1' variant='subtitle1' sx={{mt:1}}>请登录</Typography>
+          <Typography as='h1' variant='subtitle1' sx={{mt:1}}>找回登录密码</Typography>
         </Stack>
         <FormControl fullWidth sx={{mt:3}}>
           <TextField required label='登录名' placeholder="请输入登录名"

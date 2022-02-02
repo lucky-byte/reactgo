@@ -271,9 +271,9 @@ function UserMenuIconButton(props) {
 
       await confirm({
         description: user.disabled ?
-          `确定要恢复该账号吗？恢复后该账号可正常使用。`
+          `确定要恢复 ${user.name} 的账号吗？恢复后该账号可正常使用。`
           :
-          `确定要禁用该账号吗？禁用后该账号不可以继续使用，直到恢复为止。`,
+          `确定要禁用 ${user.name} 的账号吗？禁用后该账号不可以继续使用，直到恢复为止。`,
         confirmationText: user.disabled ? '恢复' : '禁用',
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
@@ -296,7 +296,7 @@ function UserMenuIconButton(props) {
       setAnchorEl(null);
 
       await confirm({
-        description: '确定要删除该用户吗？删除后不能恢复。',
+        description: `确定要删除用户 ${user.name} 吗？删除后不能恢复。`,
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
@@ -346,6 +346,7 @@ function UserMenuIconButton(props) {
           </ListItemIcon>
           <ListItemText>访问控制</ListItemText>
         </MenuItem>
+        <Divider />
         <MenuItem disabled={user.disabled || user.deleted}
           onClick={onClearSecretCodeClick}>
           <ListItemIcon>
