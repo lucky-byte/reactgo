@@ -6,10 +6,12 @@
     <mj-include path="./component/header.mjml" />
     <mj-section padding-top="10px">
       <mj-column>
-        <mj-text font-size="16px">Hey {{.name}}</mj-text>
-        <mj-text align='center'>您的密码已重置为</mj-text>
+        <mj-text align='center'>
+          {{.name}}，您的密码已重置，请使用新密码登录系统。
+        </mj-text>
+        <mj-text align='center' font-size="10px" color="#888">新密码</mj-text>
         <mj-text align='center' font-size='32px' font-weight="bold"
-          font-family="Arial">
+          font-family="Arial" padding-top="0px">
           {{.password}}
         </mj-text>
       </mj-column>

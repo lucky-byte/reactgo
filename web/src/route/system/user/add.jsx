@@ -225,7 +225,7 @@ export default function UserAdd() {
               />
               <Stack>
                 <FormControlLabel
-                  label="开启2FA（登录必须验证短信验证码，需正确配置系统短信服务）"
+                  label="登录时必须验证短信验证码（需正确配置系统短信服务）"
                   control={
                     <Switch defaultChecked {...register('tfa')} />
                   }

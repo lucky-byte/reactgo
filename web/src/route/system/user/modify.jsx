@@ -167,7 +167,7 @@ export default function UserModify() {
                   },
                 })}
               />
-              <FormControlLabel label="登录时需要验证短信验证码（非特殊情况必须开启）"
+              <FormControlLabel label="登录时必须验证短信验证码（非特殊情况必须开启）"
                 control={
                   <Controller
                     control={control}
