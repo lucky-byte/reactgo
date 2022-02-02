@@ -18,6 +18,7 @@ func settings(c echo.Context) error {
 
 	if err := db.SelectOne(ql, &resetpass); err != nil {
 		cc.ErrLog(err).Error("查询设置错")
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{"resetpass": resetpass})
 }

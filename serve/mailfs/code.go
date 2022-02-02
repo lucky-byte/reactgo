@@ -1,9 +1,10 @@
-package sms
+package mailfs
 
 import (
 	"crypto/rand"
 	"fmt"
 	"io"
+	"net/mail"
 	"sync"
 	"time"
 
@@ -12,13 +13,13 @@ import (
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
-// 已发送的短信验证码，内存缓存，重启后失效
+// 已发送的验证码，内存缓存，重启后失效
 var codeCache sync.Map
 
 type cacheEntry struct {
 	timestamp int64  // 发送时间
 	code      string // 验证码
-	mobile    string // 手机号
+	email     string // 邮箱地址
 	failed    int    // 验证失败次数
 }
 
@@ -39,8 +40,8 @@ func randomCode() string {
 	return string(b)
 }
 
-// 检查 1 分钟内是否有发送短信到手机号，如果有则返回失败，避免发送太频繁
-func isTooFrequency(mobile string) bool {
+// 检查 1 分钟内是否有发送短信到邮箱，如果有则返回失败，避免发送太频繁
+func isTooFrequency(email string) bool {
 	ret := false
 
 	t := time.Now().Unix()
@@ -51,8 +52,8 @@ func isTooFrequency(mobile string) bool {
 			xlog.X.Error("验证码缓存内容无效")
 			return false
 		}
-		if entry.mobile == mobile {
-			if t-entry.timestamp < 60 { // 1分钟内不能重复发送验证码到同一个手机号
+		if entry.email == email {
+			if t-entry.timestamp < 60 { // 1分钟内不能重复发送验证码到同一个邮箱地址
 				ret = true
 				return false
 			}
@@ -62,33 +63,48 @@ func isTooFrequency(mobile string) bool {
 	return ret
 }
 
-// 发送短信验证码
-func SendCode(mobile string) (string, error) {
-	if isTooFrequency(mobile) {
+// 发送验证码
+func SendCode(email string, name string) (string, error) {
+	if isTooFrequency(email) {
 		return "", fmt.Errorf("发送太频繁，请等待一分钟后再重试")
 	}
 	code := randomCode()
-	smsid := uuid.NewString()
+	id := uuid.NewString()
 
-	err := Send([]string{mobile}, IDVerifyCode, []string{code})
+	// 生成邮件
+	m, err := Message("验证码: "+code, "code", map[string]interface{}{
+		"name": name,
+		"code": code,
+	})
 	if err != nil {
 		return "", err
 	}
+	addr, err := mail.ParseAddress(email)
+	if err != nil {
+		return "", err
+	}
+	m.AddTO(addr)
+
+	// 发送邮件
+	if err = m.Send(); err != nil {
+		return "", err
+	}
 	// 保存验证码后续验证
-	codeCache.Store(smsid, &cacheEntry{
+	codeCache.Store(id, &cacheEntry{
 		timestamp: time.Now().Unix(),
 		code:      code,
-		mobile:    mobile,
+		email:     email,
 		failed:    0,
 	})
-	return smsid, nil
+	return id, nil
 }
 
-// 验证短信验证码
-func VerifyCode(smsid string, code string, mobile string) error {
-	defer clean()
+// 验证验证码
+func VerifyCode(id string, code string, email string) error {
+	defer clean() // 清理过期记录
 
-	v, ok := codeCache.Load(smsid)
+	// 获取缓存记录
+	v, ok := codeCache.Load(id)
 	if !ok {
 		return fmt.Errorf("记录不存在")
 	}
@@ -97,8 +113,8 @@ func VerifyCode(smsid string, code string, mobile string) error {
 		xlog.X.Error("验证码缓存内容无效")
 		return fmt.Errorf("系统内部错")
 	}
-	// 5 分钟内有效
-	if time.Now().Unix()-entry.timestamp > 60*5 {
+	// 30 分钟内有效
+	if time.Now().Unix()-entry.timestamp > 60*30 {
 		return fmt.Errorf("验证超时，请重新获取验证码")
 	}
 	// 超出最多验证失败次数
@@ -106,9 +122,9 @@ func VerifyCode(smsid string, code string, mobile string) error {
 		return fmt.Errorf("验证失败次数超限，请重新获取验证码")
 	}
 	// 验证是否匹配，如果不匹配增加失败次数
-	if code != entry.code || mobile != entry.mobile {
+	if code != entry.code || email != entry.email {
 		entry.failed += 1
-		codeCache.Store(smsid, entry)
+		codeCache.Store(id, entry)
 		return fmt.Errorf("验证失败，验证码不匹配")
 	}
 	return nil
@@ -118,7 +134,7 @@ func VerifyCode(smsid string, code string, mobile string) error {
 func clean() {
 	codeCache.Range(func(key, value interface{}) bool {
 		if entry, ok := value.(*cacheEntry); ok {
-			if time.Now().Unix()-entry.timestamp > 60*5 {
+			if time.Now().Unix()-entry.timestamp > 60*30 {
 				codeCache.Delete(key)
 			}
 		}

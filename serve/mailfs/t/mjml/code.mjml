@@ -6,17 +6,20 @@
     <mj-include path="./component/header.mjml" />
     <mj-section padding-top="10px">
       <mj-column>
-        <mj-text font-size="16px">Hey</mj-text>
-        <mj-text>
-          这是一封测试邮件，收到此邮件表明邮件传输代理 {{.MTAName}} 配置正确。
+        <mj-text font-size="16px">Hey {{.name}}</mj-text>
+        <mj-text align='center'>您的验证码是</mj-text>
+        <mj-text align='center' font-size='32px' font-weight="bold"
+          font-family="Arial">
+          {{.code}}
         </mj-text>
+        <mj-text align='center'>30分钟内有效</mj-text>
       </mj-column>
     </mj-section>
     <mj-section padding-top="5px">
       <mj-column>
         <mj-divider padding-bottom='0px' />
         <mj-text font-size="12px" color="#888">
-          收到这封邮件是因为您在系统中请求发送测试邮件。如果没有进行以上操作，说明您的邮箱正被其他人使用，请尽快更改邮箱密码。
+          收到这封邮件是因为您正在通过邮箱获取验证码。如果没有进行以上操作，请忽略此邮件。
         </mj-text>
       </mj-column>
     </mj-section>

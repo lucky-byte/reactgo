@@ -50,6 +50,7 @@ func signin(c echo.Context) error {
 		cc.ErrLog(err).WithField("userid", username).Error("登录失败")
 		return c.String(http.StatusForbidden, "登录名或密码错误")
 	}
+	// 查询会话保持时间
 	ql = `select token_duration from settings`
 	var duration time.Duration
 
@@ -60,7 +61,7 @@ func signin(c echo.Context) error {
 	newJwt := auth.NewAuthJWT(user.UUID, true, duration*time.Minute)
 	smsid := ""
 
-	// 需要2步认证
+	// 需要短信认证
 	if user.TFA {
 		// 发送短信验证码
 		if smsid, err = sms.SendCode(user.Mobile); err != nil {
