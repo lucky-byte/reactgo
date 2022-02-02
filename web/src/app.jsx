@@ -8,7 +8,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ConfirmProvider } from 'material-ui-confirm';
 import SignIn from "./signin";
-import SignIn2FA from "./signin/2fa";
+import SignInSMS from "./signin/sms";
 import ResetPass from "./resetpass";
 import Index from "./route";
 
@@ -55,7 +55,7 @@ export default function App() {
             <BrowserRouter>
               <Routes>
                 <Route path='/signin' element={<SignIn />} />
-                <Route path='/signin/2fa' element={<SignIn2FA />} />
+                <Route path='/signin/sms' element={<SignInSMS />} />
                 <Route path='/resetpass' element={<ResetPass />} />
                 <Route path='/*' element={<Index />} />
               </Routes>

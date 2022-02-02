@@ -9,6 +9,6 @@ func Attach(engine *echo.Group) {
 
 	router.GET("/settings", settings)
 	router.PUT("/", signin)
-	router.PUT("/2fa", tfa)
-	router.POST("/resend", resend)
+	router.PUT("/smsverify", smsVerify)
+	router.POST("/smsresend", smsResend)
 }

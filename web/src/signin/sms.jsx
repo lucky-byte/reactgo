@@ -14,7 +14,7 @@ import { useSnackbar } from 'notistack';
 import userState from "~/state/user";
 import { post, put } from "~/rest";
 
-export default function SignIn2FA() {
+export default function SignInSMS() {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useRecoilValue(userState);
@@ -66,7 +66,7 @@ export default function SignIn2FA() {
     try {
       setLoading(true);
 
-      const resp = await put('/signin/2fa', new URLSearchParams({
+      const resp = await put('/signin/smsverify', new URLSearchParams({
         mobile: user.mobile, smsid, code
       }));
       if (!resp || !resp.token) {
@@ -93,7 +93,7 @@ export default function SignIn2FA() {
   // 重新发送验证码
   const onReSendClick = async () => {
     try {
-      const resp = await post('/signin/resend', new URLSearchParams({
+      const resp = await post('/signin/smsresend', new URLSearchParams({
         mobile: user.mobile
       }));
       if (!resp.smsid) {

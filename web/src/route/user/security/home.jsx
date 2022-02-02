@@ -33,7 +33,7 @@ export default function UserSecurityHome() {
         <Typography variant='h6' sx={{ mt: 4 }}>安全操作码</Typography>
         <FormHelperText>
           安全操作码是只有您本人知晓的 6 位数字，
-          在执行危险操作时，如果设置了安全操作码，系统将进行验证，以确保是您本人操作
+          在执行带有风险的操作时，设置安全操作码可以提供更多的安全保护
         </FormHelperText>
         <Paper variant='outlined' sx={{ p: 2, mt: 1 }}>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
@@ -50,8 +50,8 @@ export default function UserSecurityHome() {
         </Paper>
         <Typography variant='h6' sx={{ mt: 4 }}>多因素认证</Typography>
         <FormHelperText>
-          在进行身份认证时，除了验证密码外，还可以添加第二个认证因子，这样即使密码泄漏，
-          如果没有第二个因子，也无法登录您的账户
+          在进行身份认证时，除了验证密码外，还可以添加第二个认证因子，即使密码泄漏，
+          如果没有第二个认证因子，也无法登录您的账户
         </FormHelperText>
         <Paper variant='outlined' sx={{ p: 2, mt: 1 }}>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>

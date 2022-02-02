@@ -81,8 +81,8 @@ export default function UserProfile() {
                 <InplaceInput variant='h6' sx={{ flex: 1 }} text={user?.name}
                   onConfirm={onChangeName}
                 />
-                <Stack direction='row' alignItems='center'>
-                  <Typography sx={{ mr: '2px' }} color='primary' variant='subtitle2'>@</Typography>
+                <Stack direction='row' alignItems='baseline'>
+                  <Typography sx={{ mr: '2px' }} color='primary'>@</Typography>
                   <InplaceInput sx={{ flex: 1 }} text={user?.userid}
                     onConfirm={onChangeUserid}
                   />
