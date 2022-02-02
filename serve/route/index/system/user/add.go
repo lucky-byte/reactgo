@@ -3,12 +3,14 @@ package user
 import (
 	"fmt"
 	"net/http"
+	"net/mail"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/mailfs"
 	"github.com/lucky-byte/reactgo/serve/secure"
 )
 
@@ -66,6 +68,32 @@ func add(c echo.Context) error {
 	if err != nil {
 		cc.ErrLog(err).Error("添加用户错")
 		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	if sendmail {
+		// 生成邮件
+		m, err := mailfs.Message("登录信息", "signin", map[string]interface{}{
+			"name":     name,
+			"userid":   userid,
+			"password": password,
+			"url":      cc.Config().ServerHttpURL(),
+		})
+		if err != nil {
+			cc.ErrLog(err).Error("创建邮件错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		addr, err := mail.ParseAddress(email)
+		if err != nil {
+			cc.ErrLog(err).Error("解析用户邮箱错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		m.AddTO(addr)
+
+		// 发送邮件
+		if err = m.Send(); err != nil {
+			cc.ErrLog(err).Error("发送邮件错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
 	}
 	return c.NoContent(http.StatusOK)
 }
