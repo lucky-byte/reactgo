@@ -25,7 +25,11 @@ export default function PinInput(props) {
   }, [props.disabled]);
 
   // 设置焦点
-  useEffect(() => { ref.current.inputs[0].focus(); }, [props.focus]);
+  useEffect(() => {
+    if (props.focus) {
+      ref.current.inputs[0].focus();
+    }
+  }, [props.focus]);
 
   // 清除
   useEffect(() => {
@@ -38,6 +42,7 @@ export default function PinInput(props) {
       className={styles.pininput}
       autoComplete="new-password" type='password'
       placeholder='○' length={6} validate='0123456789'
+      onChange={props.onChange}
       onComplete={props.onComplete}
     />
   )
@@ -47,7 +52,8 @@ PinInput.propTypes = {
   hide: PropTypes.bool.isRequired,
   disabled: PropTypes.bool,
   focus: PropTypes.bool,
-  clear: PropTypes.bool,
+  clear: PropTypes.any,
+  onChange: PropTypes.func,
   onComplete: PropTypes.func.isRequired,
 }
 
@@ -56,4 +62,5 @@ PinInput.defaultProps = {
   disabled: false,
   focus: false,
   clear: false,
+  onChange: () => {},
 }

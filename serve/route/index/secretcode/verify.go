@@ -21,8 +21,13 @@ func verify(c echo.Context) error {
 	}
 	user := cc.User()
 
+	// 如果没有设置安全操作码，直接返回成功
+	if len(user.SecretCode) == 0 {
+		return c.String(http.StatusOK, "notoken")
+	}
+
 	// 验证
-	phc, err := secure.ParsePHC(user.Passwd)
+	phc, err := secure.ParsePHC(user.SecretCode)
 	if err != nil {
 		cc.ErrLog(err).WithField("userid", user.UserId).Error("解析安全操作码错")
 		return c.String(http.StatusForbidden, "验证失败")

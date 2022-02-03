@@ -53,9 +53,19 @@ export default function UserProfile() {
 
   // 修改邮箱地址
   const onChangeEmail = async value => {
-    console.log(secretCode)
-    await secretCode();
-    enqueueSnackbar('暂不支持修改邮箱地址', { variant: 'info' });
+    try {
+      const token = await secretCode();
+
+      await put('/user/email', new URLSearchParams({
+        secretcode_token: token, email: value
+      }));
+      setUser({ ...user, email: value, });
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
   }
 
   // 修改手机号

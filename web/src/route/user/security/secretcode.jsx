@@ -25,13 +25,14 @@ export default function SecretCode() {
   const setTitle = useSetRecoilState(titleState);
   const [user, setUser] = useRecoilState(userState);
   const [code1, setCode1] = useState('');
+  const [code1Focus, setCode1Focus] = useState(true);
   const [code1Disabled, setCode1Disabled] = useState(false);
   const [code2, setCode2] = useState('');
   const [code2Visible, setCode2Visible] = useState(false);
   const [code2Focus, setCode2Focus] = useState(false);
   const [code2Disabled, setCode2Disabled] = useState(false);
   const [hide, setHide] = useState(true);
-  const [clear, setClear] = useState(false);
+  const [clear, setClear] = useState(Math.random());
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => { setTitle('设置安全操作码'); }, [setTitle]);
@@ -40,21 +41,24 @@ export default function SecretCode() {
   const onCodeComplete1 = code => {
     setCode1(code);
     setCode1Disabled(true);
+    setCode1Focus(false);
     setCode2Visible(true);
-    setCode2Focus(!code2Focus);
+    setCode2Focus(true);
   }
 
   const onCodeComplete2 = code => {
     setCode2(code);
+    setCode2Focus(false);
   }
 
   const onReset = () => {
     setCode1('');
     setCode2('');
-    setClear(!clear);
+    setClear(Math.random());
     setCode2Visible(false);
     setCode1Disabled(false);
     setCode2Disabled(false);
+    setCode1Focus(true);
   }
 
   const onOK = async () => {
@@ -98,8 +102,8 @@ export default function SecretCode() {
         </Stack>
         <Stack alignItems='center' sx={{ mt: 4 }} spacing={2}>
           <Typography>请输入安全操作码</Typography>
-          <PinInput hide={hide} disabled={code1Disabled} focus clear={clear}
-            onComplete={onCodeComplete1}
+          <PinInput hide={hide} disabled={code1Disabled} focus={code1Focus}
+            clear={clear} onComplete={onCodeComplete1}
           />
           <Collapse in={code2Visible}>
             <Typography sx={{ textAlign: 'center', mt: 3, mb: 2 }}>
@@ -123,7 +127,7 @@ export default function SecretCode() {
             </Button>
             <Button onClick={onReset} disabled={submitting}>重置</Button>
             <Button variant='contained' disabled={submitting} onClick={onOK}>
-              确定
+              设置安全操作码
             </Button>
           </Stack>
         </Stack>

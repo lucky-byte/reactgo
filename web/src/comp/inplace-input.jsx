@@ -113,10 +113,10 @@ export default function InplaceInput(props) {
 }
 
 InplaceInput.propTypes = {
+  onConfirm: PropTypes.func.isRequired,
   text: PropTypes.oneOfType([
     PropTypes.string, PropTypes.number,
-  ]).isRequired,
-  onConfirm: PropTypes.func.isRequired,
+  ]),
   variant: PropTypes.string,
   multiline: PropTypes.bool,
   sx: PropTypes.object,
