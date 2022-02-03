@@ -59,7 +59,8 @@ func list(c echo.Context) error {
 
 	// 查询用户列表
 	b = db.From(t).
-		Select(t.Col("*"), goqu.I("acl.name").As("acl_name")).
+		Select(t.Col("*"), goqu.I("acl.code").As("acl_code"),
+			goqu.I("acl.name").As("acl_name")).
 		LeftJoin(goqu.T("acl"), goqu.On(goqu.Ex{
 			"users.acl": goqu.I("acl.uuid"),
 		})).
@@ -74,6 +75,7 @@ func list(c echo.Context) error {
 	}
 	type rt struct {
 		db.User
+		AclCode string `db:"acl_code"`
 		AclName string `db:"acl_name"`
 	}
 	var result []rt
@@ -93,8 +95,11 @@ func list(c echo.Context) error {
 			"name":      u.Name,
 			"email":     u.Email,
 			"mobile":    u.Mobile,
+			"n_signin":  u.NSignin,
+			"signin_at": u.SigninAt,
 			"acl":       u.ACL,
 			"acl_name":  u.AclName,
+			"acl_code":  u.AclCode,
 			"disabled":  u.Disabled,
 			"deleted":   u.Deleted,
 		})

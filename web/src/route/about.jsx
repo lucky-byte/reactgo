@@ -20,6 +20,7 @@ export default function About() {
         <Stack sx={{ mt: 2 }} spacing={2}>
           <Row title='系统名称:' value={process.env.REACT_APP_NAME} />
           <Row title='系统版本:' value={process.env.REACT_APP_VERSION} />
+          <Row title='内部代码:' value='ZK-1321-3200' />
           <Row title='版权声明:' value={
             '版权所有 © ' + new Date().getFullYear() + ' ' +
             process.env.REACT_APP_COMPANY_NAME_FULL}

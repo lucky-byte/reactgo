@@ -24,19 +24,49 @@ import { get, post } from '~/rest';
 
 export default function TaskAdd() {
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
-  const { enqueueSnackbar } = useSnackbar();
+  const [funcs, setFuncs] = useState([]);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-
   useEffect(() => { setTitle('添加定时任务'); }, [setTitle]);
 
   const {
-    register, handleSubmit, formState: {
+    register, handleSubmit, watch, formState: {
       errors, isSubmitting
     }
   } = useForm();
+
+  const type = watch('type', 1);
+  const cron = watch('cron', '');
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setProgress(true);
+        const resp = await get('/system/task/funcs');
+        setFuncs(resp.funcs || []);
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      } finally {
+        setProgress(false);
+      }
+    })();
+  }, [enqueueSnackbar, setProgress]);
+
+  const onTestCron = async () => {
+    if (cron.length === 0) {
+      return enqueueSnackbar('请输入 cron 表达式', { variant: 'warning' });
+    }
+    try {
+      const params = new URLSearchParams({ cron });
+      await get('/system/task/testcron?' + params.toString());
+      enqueueSnackbar('表达式有效', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
 
   const onSubmit = async data => {
     try {
@@ -55,7 +85,12 @@ export default function TaskAdd() {
           <IconButton component={RouteLink} to='..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
-          <Typography variant='h6'>定时任务</Typography>
+          <Stack>
+            <Typography variant='h6'>定时任务</Typography>
+            <FormHelperText>
+              配置定时任务需要对系统内部有比较深入的了解，请在开发人员的指导下进行配置
+            </FormHelperText>
+          </Stack>
         </Stack>
         <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -79,9 +114,9 @@ export default function TaskAdd() {
                   error={errors?.cron}
                   InputProps={{
                     endAdornment: (
-                      <InputAdornment>
+                      <InputAdornment position='end'>
                         <Tooltip title='测试表达式是否有效'>
-                          <Button>测试</Button>
+                          <Button onClick={onTestCron}>测试</Button>
                         </Tooltip>
                         <Tooltip title='查看帮助'>
                           <IconButton LinkComponent={RouteLink} to='../cron'>
@@ -109,17 +144,32 @@ export default function TaskAdd() {
                   <MenuItem value={1}>内置函数</MenuItem>
                   <MenuItem value={2}>外部命令</MenuItem>
                 </TextField>
-                <TextField label='文件路径' variant='standard' fullWidth required
-                  placeholder='文件路径'
-                  helperText={errors?.path?.message}
-                  error={errors?.path}
-                  {...register('path', {
-                    required: "不能为空",
-                    maxLength: {
-                      value: 128, message: '超出最大长度'
-                    },
-                  })}
-                />
+                {parseInt(type) === 1 ?
+                  <TextField label='函数名' variant='standard' fullWidth
+                    required select defaultValue=''
+                    helperText={errors?.func?.message}
+                    error={errors?.func}
+                    {...register('func', { required: "不能为空" })}
+                  >
+                    {funcs.map(item => (
+                      <MenuItem key={item.name} value={item.name}>
+                        {item.title}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  :
+                  <TextField label='文件路径' variant='standard' fullWidth required
+                    placeholder='文件路径'
+                    helperText={errors?.path?.message}
+                    error={errors?.path}
+                    {...register('path', {
+                      required: "不能为空",
+                      maxLength: {
+                        value: 128, message: '超出最大长度'
+                      },
+                    })}
+                  />
+                }
               </Stack>
               <TextField label='描述' variant='standard' fullWidth
                 placeholder='任务描述，可以不填'

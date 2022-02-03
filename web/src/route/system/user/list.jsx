@@ -149,7 +149,7 @@ export default function UserList() {
               <TableCell align='center'>姓名</TableCell>
               <TableCell align='center'>访问控制</TableCell>
               <TableCell align='center'>创建时间</TableCell>
-              <TableCell align='center'>更新时间</TableCell>
+              <TableCell align='center'>登录时间 / 次数</TableCell>
               <TableCell align='right' colSpan={2} padding='checkbox'></TableCell>
             </TableRow>
           </TableHead>
@@ -158,12 +158,20 @@ export default function UserList() {
               <TableRow hover key={user.userid}>
                 <TableCell align="center">{user.userid}</TableCell>
                 <TableCell align="center">{user.name}</TableCell>
-                <TableCell align="center">{user.acl_name}</TableCell>
+                <TableCell align="center">
+                  {parseInt(user.acl_code) === 0 ?
+                    <Typography variant='body2' color='secondary'>
+                      {user.acl_name}
+                    </Typography>
+                    :
+                    <Typography variant='body2'>{user.acl_name}</Typography>
+                  }
+                </TableCell>
                 <TableCell align="center">
                   {dayjs(user.create_at).format('YY-MM-DD HH:mm:ss')}
                 </TableCell>
                 <TableCell align="center">
-                  {dayjs(user.update_at).format('YY-MM-DD HH:mm:ss')}
+                  {dayjs(user.signin_at).format('YY-MM-DD HH:mm:ss')} / {user.n_signin}
                 </TableCell>
                 <TableCell align="right" padding='none'>
                   {user.deleted &&
