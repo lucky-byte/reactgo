@@ -55,7 +55,9 @@ export default function UserPassword() {
       enqueueSnackbar('修改成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
-      enqueueSnackbar(err.message, { variant: 'error' });
+      if (err) {
+        enqueueSnackbar(err.message, { variant: 'error' });
+      }
     } finally {
       setDisabled(false);
     }

@@ -53,7 +53,9 @@ export default function UserProfile() {
       setUser({ ...user, userid: value, });
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
-      enqueueSnackbar(err.message);
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
     }
   }
 

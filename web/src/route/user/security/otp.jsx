@@ -98,7 +98,7 @@ export default function OTP() {
             </Typography>
           </Stack>
         </Stack>
-        <Paper variant='outlined' sx={{ p: 3, mt: 4 }}>
+        <Paper variant='outlined' sx={{ p: 3, mt: 2 }}>
           <Stack alignItems='center' spacing={2}>
             <TextField variant='filled' autoFocus
               hiddenLabel

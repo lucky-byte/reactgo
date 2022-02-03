@@ -67,13 +67,20 @@ const SecretCodeDialog = ({ open, onSuccess, onClose, inputFocus }) => {
   }
 
   return (
-    <Dialog open={open} onClose={onDialogClose}>
+    <Dialog open={open} onClose={onDialogClose}
+    PaperProps={{
+      style: {
+        border: '1px solid orangered',
+        boxShadow: `
+          0px 11px 15px -7px rgb(227 66 52/20%),
+          0px 24px 38px 3px rgb(227 66 52/14%),
+          0px 9px 46px 8px rgb(227 66 52/12%)
+        `,
+      }}}>
       {loading && <LinearProgress color='secondary' sx={{ width: '100%' }} />}
       <DialogTitle>
         <Stack>
-          <Typography variant='h6'>
-            验证安全操作码
-          </Typography>
+          <Typography variant='h6'>验证安全操作码</Typography>
           <Typography variant='caption'>
             该操作可能存在风险，需要验证您的安全操作码后才能继续执行
           </Typography>

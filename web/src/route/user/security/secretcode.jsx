@@ -84,7 +84,9 @@ export default function SecretCode() {
       setUser({ ...user, secretcode_isset: true });
       navigate('..');
     } catch (err) {
-      enqueueSnackbar(err.message)
+      if (err) {
+        enqueueSnackbar(err.message)
+      }
     } finally {
       setSubmitting(false);
     }
@@ -105,7 +107,8 @@ export default function SecretCode() {
             </FormHelperText>
           </Stack>
         </Stack>
-        <Stack alignItems='center' sx={{ mt: 4 }} spacing={2}>
+        <Paper variant='outlined' sx={{ p: 2, mt: 2 }}>
+        <Stack alignItems='center' sx={{ mt: 2 }} spacing={2}>
           <Typography>请输入安全操作码</Typography>
           <PinInput hide={hide} disabled={code1Disabled} focus={code1Focus}
             clear={clear} onComplete={onCodeComplete1}
@@ -136,6 +139,7 @@ export default function SecretCode() {
             </Button>
           </Stack>
         </Stack>
+        </Paper>
       </Paper>
     </Container>
   )
