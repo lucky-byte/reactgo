@@ -53,6 +53,7 @@ export default function App() {
             },
             cancellationButtonProps: { sx: { mb: 1 } },
             dialogProps: { maxWidth: 'xs' },
+            allowClose: false,
           }}>
             <BrowserRouter>
               <Routes>

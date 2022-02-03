@@ -23,6 +23,9 @@ type cacheEntry struct {
 	failed    int    // 验证失败次数
 }
 
+// 30分钟内有效
+const expiryTime = 60 * 30
+
 // 生成 6 位随机数字验证码
 func randomCode() string {
 	table := [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
@@ -114,7 +117,7 @@ func VerifyCode(id string, code string, email string) error {
 		return fmt.Errorf("系统内部错")
 	}
 	// 30 分钟内有效
-	if time.Now().Unix()-entry.timestamp > 60*30 {
+	if time.Now().Unix()-entry.timestamp > expiryTime {
 		return fmt.Errorf("验证超时，请重新获取验证码")
 	}
 	// 超出最多验证失败次数
@@ -134,7 +137,7 @@ func VerifyCode(id string, code string, email string) error {
 func clean() {
 	codeCache.Range(func(key, value interface{}) bool {
 		if entry, ok := value.(*cacheEntry); ok {
-			if time.Now().Unix()-entry.timestamp > 60*30 {
+			if time.Now().Unix()-entry.timestamp > expiryTime {
 				codeCache.Delete(key)
 			}
 		}

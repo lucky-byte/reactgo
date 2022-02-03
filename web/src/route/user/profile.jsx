@@ -16,6 +16,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useSnackbar } from 'notistack';
 import InplaceInput from '~/comp/inplace-input';
+import { useSecretCode } from '~/comp/secretcode';
 import titleState from "~/state/title";
 import userState from "~/state/user";
 import { put } from "~/rest";
@@ -23,6 +24,7 @@ import { put } from "~/rest";
 export default function UserProfile() {
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
+  const secretCode = useSecretCode();
   const [user, setUser] = useRecoilState(userState);
 
   useEffect(() => { setTitle('个人资料'); }, [setTitle]);
@@ -51,6 +53,8 @@ export default function UserProfile() {
 
   // 修改邮箱地址
   const onChangeEmail = async value => {
+    console.log(secretCode)
+    await secretCode();
     enqueueSnackbar('暂不支持修改邮箱地址', { variant: 'info' });
   }
 

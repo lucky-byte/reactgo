@@ -41,6 +41,7 @@ import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import titleState from "~/state/title";
 import userState from "~/state/user";
+import { SecretCodeProvider } from "../comp/secretcode";
 import sidebarState from "~/state/sidebar";
 import progressState from "~/state/progress";
 import codeState from "~/state/code";
@@ -93,31 +94,33 @@ export default function Index() {
   }, [location.pathname, setCode]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "row" }}>
-      {progressVisible &&
-        <Portal>
-          <LinearProgress sx={{
-            position: 'fixed', top: 0, left: 0, right: 0, zIndex: 'modal'
-          }} />
-        </Portal>
-      }
-      <Collapse orientation="horizontal" in={sidebar}>
-        <Sidebar />
-      </Collapse>
-      <Stack sx={{ flex: 1, height: '100vh' }}>
-        <Appbar />
-        <Box sx={{ maxHeight: '100%', overflow: 'scroll' }}>
-          <Routes>
-            <Route path='/' element={<Dashboard />} />
-            <Route path='user/*' element={<User />} />
-            <Route path='system/*' element={<System />} />
-            <Route path='codes' element={<Codes />} />
-            <Route path='about' element={<About />} />
-            <Route path='*' element={<NotFound />} />
-          </Routes>
-        </Box>
-      </Stack>
-    </Box>
+    <SecretCodeProvider>
+      <Box sx={{ display: "flex", flexDirection: "row" }}>
+        {progressVisible &&
+          <Portal>
+            <LinearProgress sx={{
+              position: 'fixed', top: 0, left: 0, right: 0, zIndex: 'modal'
+            }} />
+          </Portal>
+        }
+        <Collapse orientation="horizontal" in={sidebar}>
+          <Sidebar />
+        </Collapse>
+        <Stack sx={{ flex: 1, height: '100vh' }}>
+          <Appbar />
+          <Box sx={{ maxHeight: '100%', overflow: 'scroll' }}>
+            <Routes>
+              <Route path='/' element={<Dashboard />} />
+              <Route path='user/*' element={<User />} />
+              <Route path='system/*' element={<System />} />
+              <Route path='codes' element={<Codes />} />
+              <Route path='about' element={<About />} />
+              <Route path='*' element={<NotFound />} />
+            </Routes>
+          </Box>
+        </Stack>
+      </Box>
+    </SecretCodeProvider>
   )
 }
 

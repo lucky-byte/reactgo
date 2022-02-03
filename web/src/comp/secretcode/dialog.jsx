@@ -6,43 +6,16 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-const SecretCodeDialog = ({ open, options, onCancel, onConfirm, onClose }) => {
-  const {
-    title,
-    description,
-    content,
-    confirmationText,
-    cancellationText,
-    dialogProps,
-    confirmationButtonProps,
-    cancellationButtonProps,
-    titleProps,
-    contentProps,
-    allowClose,
-  } = options;
-
+const SecretCodeDialog = ({ open, onCancel, onConfirm, onClose }) => {
   return (
-    <Dialog fullWidth {...dialogProps} open={open} onClose={allowClose ? onClose : null}>
-      {title && (
-        <DialogTitle {...titleProps}>{title}</DialogTitle>
-      )}
-      {content ? (
-        <DialogContent {...contentProps}>
-          {content}
-        </DialogContent>
-      ) : (
-        description && (
-          <DialogContent {...contentProps}>
-            <DialogContentText>{description}</DialogContentText>
-          </DialogContent>
-        )
-      )}
+    <Dialog fullWidth open={open} onClose={onClose}>
+      <DialogTitle>验证</DialogTitle>
       <DialogActions>
-        <Button {...cancellationButtonProps} onClick={onCancel}>
-          {cancellationText}
+        <Button onClick={onCancel}>
+          取消
         </Button>
-        <Button color="primary" {...confirmationButtonProps} onClick={onConfirm}>
-          {confirmationText}
+        <Button color="primary" onClick={onConfirm}>
+          验证
         </Button>
       </DialogActions>
     </Dialog>
