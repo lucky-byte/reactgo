@@ -13,6 +13,11 @@ import App from './app';
 
 dayjs.locale('zh-cn');
 
+// 某些第三方模块(react-pin-input)大量打印 debug 日志
+if (process.env.NODE_ENV === 'production') {
+  window.console.debug = function(){}
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
