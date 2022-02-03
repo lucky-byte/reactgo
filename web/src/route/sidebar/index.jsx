@@ -57,7 +57,9 @@ export default function Sidebar() {
   return (
     <Box sx={{
       display: "flex", flexDirection: "column", width: '220px', height: '100vh',
-      borderRight: '1px solid #8888',
+      borderRight: '1px solid #8888', '@media print': {
+        height: '100%',
+      }
     }}>
       <Toolbar disableGutters sx={{ paddingLeft: '14px' }}>
         <Link component={RouteLink} to='/'>

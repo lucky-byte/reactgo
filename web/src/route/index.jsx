@@ -106,7 +106,7 @@ export default function Index() {
         <Collapse orientation="horizontal" in={sidebar}>
           <Sidebar />
         </Collapse>
-        <Stack sx={{ flex: 1, height: '100vh' }}>
+        <Stack sx={{ flex: 1, height: '100vh', '@media print': { height: '100%' } }}>
           <Appbar />
           <Box sx={{ maxHeight: '100%', overflow: 'scroll' }}>
             <Routes>
