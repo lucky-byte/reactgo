@@ -12,6 +12,7 @@ const SecretCodeProvider = ({ children }) => {
   const user = useRecoilValue(userState);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [resolveReject, setResolveReject] = useState([]);
+
   const [resolve, reject] = resolveReject;
 
   const popupTip = useCallback(() => {

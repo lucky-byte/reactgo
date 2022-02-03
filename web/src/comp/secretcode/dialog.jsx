@@ -75,7 +75,7 @@ const SecretCodeDialog = ({ open, onSuccess, onClose, inputFocus }) => {
             验证安全操作码
           </Typography>
           <Typography variant='caption'>
-            该操作可能存在风险，需要验证安全操作码才能继续
+            该操作可能存在风险，需要验证您的安全操作码后才能继续执行
           </Typography>
         </Stack>
       </DialogTitle>

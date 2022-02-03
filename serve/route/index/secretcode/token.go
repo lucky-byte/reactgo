@@ -57,6 +57,9 @@ func verifyToken(user_uuid string, token string) error {
 		tokenCache.Store(user_uuid, entry)
 		return fmt.Errorf("验证失败，TOKEN 不匹配")
 	}
+	// 验证成功，删除记录
+	tokenCache.Delete(user_uuid)
+
 	return nil
 }
 

@@ -16,6 +16,7 @@ import Link from '@mui/material/Link';
 import { useHotkeys } from 'react-hotkeys-hook';
 import QRCode from 'qrcode.react';
 import { useSnackbar } from 'notistack';
+import { useSecretCode } from '~/comp/secretcode';
 import titleState from "~/state/title";
 import userState from "~/state/user";
 import { get, post } from '~/rest';
@@ -24,6 +25,7 @@ export default function OTP() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
+  const secretCode = useSecretCode();
   const [user, setUser] = useRecoilState(userState);
   const [code, setCode] = useState('');
   const [url, setURL] = useState('');
@@ -60,7 +62,11 @@ export default function OTP() {
       if (code.length !== 6) {
         return enqueueSnackbar('请输入6位数字口令', { variant: 'warning' });
       }
-      await post('/user/otp/verify', new URLSearchParams({ code, secret }));
+      const token = await secretCode();
+
+      await post('/user/otp/verify', new URLSearchParams({
+        secretcode_token: token, code, secret
+      }));
       enqueueSnackbar('设置成功', { variant: 'success' });
       setUser({ ...user, totp_isset: true });
       navigate('..', { replace: true });

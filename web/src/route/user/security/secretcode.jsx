@@ -15,6 +15,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import PinInput from '~/comp/pin-input';
+import { useSecretCode } from '~/comp/secretcode';
 import titleState from "~/state/title";
 import userState from "~/state/user";
 import { put } from '~/rest';
@@ -23,6 +24,7 @@ export default function SecretCode() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
+  const secretCode = useSecretCode();
   const [user, setUser] = useRecoilState(userState);
   const [code1, setCode1] = useState('');
   const [code1Focus, setCode1Focus] = useState(true);
@@ -71,9 +73,12 @@ export default function SecretCode() {
     setCode2Disabled(true);
 
     try {
+      const token = await secretCode();
+
       setSubmitting(true);
+
       await put('/user/secretcode', new URLSearchParams({
-        secretcode: code1,
+        secretcode_token: token, secretcode: code1,
       }));
       enqueueSnackbar('设置成功', { variant: 'success' });
       setUser({ ...user, secretcode_isset: true });

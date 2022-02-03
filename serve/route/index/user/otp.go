@@ -44,7 +44,7 @@ func otpVerify(c echo.Context) error {
 	}
 	// 验证
 	if !totp.Validate(code, secret) {
-		return c.String(http.StatusBadRequest, "验证失败")
+		return c.String(http.StatusBadRequest, "两因素认证口令验证失败")
 	}
 	ql := `update users set totp_secret = ? where uuid = ?`
 
