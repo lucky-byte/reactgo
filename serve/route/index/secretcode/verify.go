@@ -1,0 +1,39 @@
+package secretcode
+
+import (
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"github.com/lucky-byte/reactgo/serve/ctx"
+	"github.com/lucky-byte/reactgo/serve/secure"
+)
+
+// 验证安全操作码
+func verify(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var secretcode string
+
+	err := echo.FormFieldBinder(c).MustString("secretcode", &secretcode).BindError()
+	if err != nil {
+		cc.ErrLog(err).Error("请求参数无效")
+		return c.NoContent(http.StatusBadRequest)
+	}
+	user := cc.User()
+
+	// 验证
+	phc, err := secure.ParsePHC(user.Passwd)
+	if err != nil {
+		cc.ErrLog(err).WithField("userid", user.UserId).Error("解析安全操作码错")
+		return c.String(http.StatusForbidden, "验证失败")
+	}
+	if err = phc.Verify(secretcode); err != nil {
+		cc.ErrLog(err).WithField("userid", user.UserId).Error("验证安全操作码错")
+		return c.String(http.StatusForbidden, "验证失败")
+	}
+
+	// 生成验证 TOKEN
+	token := genToken(user.UUID)
+
+	return c.String(http.StatusOK, token)
+}

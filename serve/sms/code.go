@@ -97,10 +97,9 @@ func VerifyCode(smsid string, code string, mobile string) error {
 	}
 	entry, ok := v.(*cacheEntry)
 	if !ok {
-		xlog.X.Error("验证码缓存内容无效")
-		return fmt.Errorf("系统内部错")
+		return fmt.Errorf("验证码缓存内容无效")
 	}
-	// 10分钟内有效
+	// 检查是否在有效期内
 	if time.Now().Unix()-entry.timestamp > expiryTime {
 		return fmt.Errorf("验证超时，请重新获取验证码")
 	}

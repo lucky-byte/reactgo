@@ -11,7 +11,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/secure"
 )
 
-func secretcode(c echo.Context) error {
+func scode(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 

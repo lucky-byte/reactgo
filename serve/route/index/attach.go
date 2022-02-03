@@ -5,6 +5,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/route/index/auth"
 	"github.com/lucky-byte/reactgo/serve/route/index/resetpass"
+	"github.com/lucky-byte/reactgo/serve/route/index/secretcode"
 	"github.com/lucky-byte/reactgo/serve/route/index/signin"
 	"github.com/lucky-byte/reactgo/serve/route/index/system"
 	"github.com/lucky-byte/reactgo/serve/route/index/user"
@@ -17,6 +18,8 @@ func Attach(up *echo.Echo) {
 	resetpass.Attach(group)
 
 	group.Use(auth.Authentication)
+
+	secretcode.Attach(group)
 
 	user.Attach(group)
 	system.Attach(group)
