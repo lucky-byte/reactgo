@@ -12,6 +12,7 @@ func Attach(up *echo.Group) {
 	group.PUT("/name", name)
 	group.PUT("/userid", userid)
 	group.PUT("/email", email, secretcode.Verify())
+	group.PUT("/mobile", mobile, secretcode.Verify())
 	group.PUT("/passwd", passwd)
 	group.PUT("/address", address)
 	group.PUT("/secretcode", scode)

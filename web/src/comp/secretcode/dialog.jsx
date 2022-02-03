@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,7 +15,7 @@ import PinInput from '~/comp/pin-input';
 import { put } from '~/rest';
 import { FormHelperText } from '@mui/material';
 
-const SecretCodeDialog = ({ open, onSuccess, onClose }) => {
+const SecretCodeDialog = ({ open, onSuccess, onClose, inputFocus }) => {
   const [hide, setHide] = useState(true);
   const [focus, setFocus] = useState(true);
   const [clear, setClear] = useState(Math.random());
@@ -23,9 +23,16 @@ const SecretCodeDialog = ({ open, onSuccess, onClose }) => {
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const onDialogClose = () => {
+  // 重新打开对话框时，设置输入焦点
+  useEffect(() => { setFocus(open); }, [open]);
+
+  const reset = () => {
     setMessage('');
     setSuccess(false);
+  }
+
+  const onDialogClose = () => {
+    reset();
     onClose();
   }
 
@@ -48,7 +55,7 @@ const SecretCodeDialog = ({ open, onSuccess, onClose }) => {
         throw new Error('响应无效');
       }
       setSuccess(true);
-      setTimeout(() => { onSuccess(resp); }, 200);
+      setTimeout(() => { onSuccess(resp); reset(); }, 200);
     } catch (err) {
       setLoading(false);
       setClear(Math.random());

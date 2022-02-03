@@ -2,7 +2,7 @@ package user
 
 import (
 	"net/http"
-	"net/mail"
+	"regexp"
 
 	"github.com/labstack/echo/v4"
 
@@ -10,28 +10,33 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-func email(c echo.Context) error {
+func mobile(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 
-	var email string
+	var mobile string
 
-	err := echo.FormFieldBinder(c).MustString("email", &email).BindError()
+	err := echo.FormFieldBinder(c).MustString("mobile", &mobile).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
-	cc.Trim(&email)
+	cc.Trim(&mobile)
 
-	if _, err := mail.ParseAddress(email); err != nil {
-		cc.ErrLog(err).Error("解析邮件地址错")
-		return c.String(http.StatusBadRequest, "邮箱地址格式错误")
+	match, err := regexp.MatchString(`^1[0-9]{10}$`, mobile)
+	if err != nil {
+		cc.ErrLog(err).Error("验证手机号错")
+		return c.NoContent(http.StatusInternalServerError)
 	}
+	if !match {
+		return c.String(http.StatusBadRequest, "手机号格式错误")
+	}
+
 	ql := `
 		update users set email = ?, update_at = current_timestamp
 		where uuid = ?
 	`
-	if err = db.ExecOne(ql, email, user.UUID); err != nil {
+	if err = db.ExecOne(ql, mobile, user.UUID); err != nil {
 		cc.ErrLog(err).Error("修改用户邮箱地址失败")
 		return c.NoContent(http.StatusInternalServerError)
 	}

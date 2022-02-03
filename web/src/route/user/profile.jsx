@@ -15,6 +15,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useSnackbar } from 'notistack';
+import isEmail from 'validator/lib/isEmail';
+import isMobile from 'validator/lib/isMobilePhone';
 import InplaceInput from '~/comp/inplace-input';
 import { useSecretCode } from '~/comp/secretcode';
 import titleState from "~/state/title";
@@ -54,6 +56,9 @@ export default function UserProfile() {
   // 修改邮箱地址
   const onChangeEmail = async value => {
     try {
+      if (!isEmail(value)) {
+        return enqueueSnackbar('请输入正确邮箱地址', { variant: 'warning' });
+      }
       const token = await secretCode();
 
       await put('/user/email', new URLSearchParams({
@@ -70,7 +75,22 @@ export default function UserProfile() {
 
   // 修改手机号
   const onChangeMobile = async value => {
-    enqueueSnackbar('暂不支持修改手机号', { variant: 'info' });
+    try {
+      if (!isMobile(value, 'zh-CN')) {
+        return enqueueSnackbar('请输入正确手机号', { variant: 'warning' });
+      }
+      const token = await secretCode();
+
+      await put('/user/mobile', new URLSearchParams({
+        secretcode_token: token, mobile: value
+      }));
+      setUser({ ...user, mobile: value, });
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
   }
 
   // 修改联系地址
