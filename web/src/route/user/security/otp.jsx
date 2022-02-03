@@ -71,7 +71,9 @@ export default function OTP() {
       setUser({ ...user, totp_isset: true });
       navigate('..', { replace: true });
     } catch (err) {
-      enqueueSnackbar(err.message);
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
     }
   }
 
