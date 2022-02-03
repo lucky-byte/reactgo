@@ -7,19 +7,15 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import TextField from "@mui/material/TextField";
 import InputAdornment from '@mui/material/InputAdornment';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
-import Switch from '@mui/material/Switch';
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
 import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Tooltip from '@mui/material/Tooltip';
-import { grey } from '@mui/material/colors';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import titleState from "~/state/title";
@@ -31,39 +27,21 @@ export default function TaskAdd() {
   const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const { enqueueSnackbar } = useSnackbar();
-  const [ acls, setAcls ] = useState([]);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
 
   useEffect(() => { setTitle('添加定时任务'); }, [setTitle]);
 
   const {
-    register, handleSubmit, setValue, formState: {
+    register, handleSubmit, formState: {
       errors, isSubmitting
     }
   } = useForm();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setProgress(true);
-        const resp = await get('/system/acl/');
-        setAcls(resp.acls || []);
-      } catch (err) {
-        enqueueSnackbar(err.message);
-      } finally {
-        setProgress(false);
-      }
-    })();
-  }, [enqueueSnackbar, setProgress]);
-
   const onSubmit = async data => {
-    if (data.password !== data.password2) {
-      return enqueueSnackbar('2次密码输入不一致');
-    }
     try {
-      await post('/system/user/add', new URLSearchParams(data));
-      enqueueSnackbar(`用户 ${data.name} 添加成功`, { variant: 'success' });
+      await post('/system/task/add', new URLSearchParams(data));
+      enqueueSnackbar('添加成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message);
@@ -83,24 +61,35 @@ export default function TaskAdd() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={4}>
               <Stack direction='row' spacing={3}>
-                <TextField label='任务名称' variant='standard' fullWidth required
-                  autoFocus
+                <TextField label='任务名称' variant='standard' fullWidth
+                  required autoFocus
                   placeholder='定时任务名称'
                   helperText={errors?.name?.message}
                   error={errors?.name}
                   {...register('name', {
                     required: "不能为空",
                     maxLength: {
-                      value: 64, message: '超出最大长度'
+                      value: 32, message: '超出最大长度'
                     },
                   })}
                 />
-                <TextField label='调度表达式' variant='standard' fullWidth required
-                  placeholder='CRON 表达式'
+                <TextField label='调度表达式' variant='standard' fullWidth
+                  required placeholder='CRON 表达式'
                   helperText={errors?.cron?.message}
                   error={errors?.cron}
-                  inputProps={{
-                    fontFamily: 'monospace',
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment>
+                        <Tooltip title='测试表达式是否有效'>
+                          <Button>测试</Button>
+                        </Tooltip>
+                        <Tooltip title='查看帮助'>
+                          <IconButton LinkComponent={RouteLink} to='../cron'>
+                            <HelpOutlineIcon fontSize='small' color='primary' />
+                          </IconButton>
+                        </Tooltip>
+                      </InputAdornment>
+                    )
                   }}
                   {...register('cron', {
                     required: "不能为空",
@@ -111,31 +100,20 @@ export default function TaskAdd() {
                 />
               </Stack>
               <Stack direction='row' spacing={3}>
-                <TextField label='解释器' variant='standard' fullWidth
-                  required type='tel'
-                  placeholder='登录时用于接收短信验证码'
-                  inputProps={{ maxLength: 11 }}
-                  helperText={errors?.mobile?.message}
-                  error={errors?.mobile}
-                  {...register('mobile', {
-                    required: "不能为空",
-                    minLength: {
-                      value: 11, message: '长度不足11位'
-                    },
-                    maxLength: {
-                      value: 11, message: '长度不能超出11位'
-                    },
-                    pattern: {
-                      value: /^1[0-9]{10}$/, message: '格式不符合规范'
-                    },
-                  })}
-                />
-                <TextField label='文件路径' variant='standard' fullWidth
-                  required type='email'
-                  placeholder='用于接收重要邮件，请填写真实有效的邮箱地址'
-                  helperText={errors?.email?.message}
-                  error={errors?.email}
-                  {...register('email', {
+                <TextField label='任务类型' variant='standard' fullWidth
+                  required select defaultValue={1}
+                  helperText={errors?.type?.message}
+                  error={errors?.type}
+                  {...register('type', { required: "不能为空" })}
+                >
+                  <MenuItem value={1}>内置函数</MenuItem>
+                  <MenuItem value={2}>外部命令</MenuItem>
+                </TextField>
+                <TextField label='文件路径' variant='standard' fullWidth required
+                  placeholder='文件路径'
+                  helperText={errors?.path?.message}
+                  error={errors?.path}
+                  {...register('path', {
                     required: "不能为空",
                     maxLength: {
                       value: 128, message: '超出最大长度'
@@ -143,39 +121,9 @@ export default function TaskAdd() {
                   })}
                 />
               </Stack>
-              <Stack>
-                <TextField label='访问控制' variant='standard' fullWidth
-                  required select defaultValue=''
-                  helperText={errors?.acl?.message}
-                  {...register('acl', { required: "不能为空" })}>
-                  {acls.map(acl => (
-                    <MenuItem key={acl.uuid} value={acl.uuid}>
-                      <Stack direction='row' alignItems='center' sx={{ width: '100%' }}>
-                        {acl.code === 0 ?
-                          <Typography sx={{ flex: 1 }} color='secondary'>
-                            {acl.name}
-                          </Typography>
-                          :
-                          <Typography sx={{ flex: 1 }}>{acl.name}</Typography>
-                        }
-                        <Tooltip title={acl.summary} placement="top-start">
-                          <HelpOutlineIcon
-                            fontSize='small' sx={{ ml: 2, color: grey[600] }}
-                          />
-                        </Tooltip>
-                      </Stack>
-                    </MenuItem>
-                  ))}
-                </TextField>
-                <FormHelperText>
-                  未找到符合条件的访问控制角色？
-                  <Link component={RouteLink} to='/system/acl/add'>点击这里</Link>
-                  添加一个
-                </FormHelperText>
-              </Stack>
-              <TextField label='联系地址' variant='standard' fullWidth
-                placeholder='联系地址，如果没有可以不填'
-                {...register('address', {
+              <TextField label='描述' variant='standard' fullWidth
+                placeholder='任务描述，可以不填'
+                {...register('summary', {
                   maxLength: {
                     value: 256, message: '超出最大长度'
                   },

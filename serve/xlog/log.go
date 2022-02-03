@@ -31,7 +31,7 @@ func Setup(debug bool, conf *config.ViperConfig) {
 
 	// to file bdb.log
 	rotate_logger := &lumberjack.Logger{
-		Filename:  path.Join(conf.LogPath(), "bdb.log"),
+		Filename:  path.Join(conf.LogPath(), "reactgo.log"),
 		MaxSize:   20,
 		Compress:  true,
 		LocalTime: true,

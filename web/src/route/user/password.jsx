@@ -66,7 +66,12 @@ export default function UserPassword() {
   return (
     <Container as='main' maxWidth='xs' sx={{ mb: 4 }}>
       <Paper elevation={4} sx={{ px: 4, py: 3, mt: 4 }}>
-        <Typography sx={{ mb: 3 }} variant='h6'>修改登录密码</Typography>
+        <Stack sx={{ mb: 3 }}>
+        <Typography variant='h6'>修改登录密码</Typography>
+        <Typography variant='caption'>
+          建议使用密码管理工具自动生成和保存密码，例如浏览器内置的密码管理器，不要设置太简单的密码
+        </Typography>
+        </Stack>
         <TextField fullWidth autoFocus
           label="原登录密码" variant="standard"
           type={oldPasswordHide ? 'password' : 'text'}

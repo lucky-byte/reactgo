@@ -18,22 +18,23 @@ type Image struct {
 // Users
 type User struct {
 	UUID       string         `db:"uuid"`        // uuid
-	CreateAt   time.Time      `db:"create_at"`   // create time
-	UpdateAt   time.Time      `db:"update_at"`   // update time
-	SigninAt   time.Time      `db:"signin_at"`   // last sign in time
-	Disabled   bool           `db:"disabled"`    // disabled
-	Deleted    bool           `db:"deleted"`     // deleted
-	UserId     string         `db:"userid"`      // userid
-	Passwd     string         `db:"passwd"`      // password
-	Name       string         `db:"name"`        // user name
-	Email      string         `db:"email"`       // email
-	Mobile     string         `db:"mobile"`      // mobile
-	Address    sql.NullString `db:"address"`     // address
-	TFA        bool           `db:"tfa"`         // 2fa
+	CreateAt   time.Time      `db:"create_at"`   // 创建时间
+	UpdateAt   time.Time      `db:"update_at"`   // 更新时间
+	SigninAt   time.Time      `db:"signin_at"`   // 最后登录时间
+	Disabled   bool           `db:"disabled"`    // 已禁用
+	Deleted    bool           `db:"deleted"`     // 已删除
+	UserId     string         `db:"userid"`      // 登录名
+	Passwd     string         `db:"passwd"`      // 密码
+	Name       string         `db:"name"`        // 姓名
+	Avatar     string         `db:"avatar"`      // 头像
+	Email      string         `db:"email"`       // 邮箱地址
+	Mobile     string         `db:"mobile"`      // 手机号
+	Address    sql.NullString `db:"address"`     // 联系地址
+	TFA        bool           `db:"tfa"`         // 短信认证
 	ACL        string         `db:"acl"`         // 访问控制
 	SecretCode string         `db:"secretcode"`  // 安全操作码
 	TOTPSecret string         `db:"totp_secret"` // TOTP 密钥
-	NSignin    int            `db:"n_signin"`    // signin count in total
+	NSignin    int            `db:"n_signin"`    // 总登录次数
 }
 
 // Signin history

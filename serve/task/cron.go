@@ -32,7 +32,14 @@ func Startup(fpath string) error {
 		path: fpath,
 	}
 
-	scheduler.cron = cron.New()
+	scheduler.cron = cron.New(
+		cron.WithLogger(cron.DefaultLogger),
+		cron.WithChain(
+			cron.Recover(cron.DefaultLogger),
+			cron.SkipIfStillRunning(cron.DefaultLogger),
+		),
+		cron.WithSeconds(),
+	)
 
 	// id, err := scheduler.AddFunc("30 * * * *", func() {
 	// 	fmt.Println("Every hour on the half hour")
@@ -42,8 +49,8 @@ func Startup(fpath string) error {
 	// }
 	// ids = append(ids, id)
 
-	job := newJob(path.Join(fpath, "test.sh"))
-	_, err = scheduler.cron.AddJob("* * * * *", job)
+	job := newCommandJob(path.Join(fpath, "test.sh"))
+	_, err = scheduler.cron.AddJob("* * * * * *", job)
 	if err != nil {
 		return err
 	}

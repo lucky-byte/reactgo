@@ -147,9 +147,9 @@ export default function UserList() {
             <TableRow sx={{ whiteSpace:'nowrap' }}>
               <TableCell align='center'>登录名</TableCell>
               <TableCell align='center'>姓名</TableCell>
-              <TableCell align='center'>手机号</TableCell>
               <TableCell align='center'>访问控制</TableCell>
               <TableCell align='center'>创建时间</TableCell>
+              <TableCell align='center'>更新时间</TableCell>
               <TableCell align='right' colSpan={2} padding='checkbox'></TableCell>
             </TableRow>
           </TableHead>
@@ -158,10 +158,12 @@ export default function UserList() {
               <TableRow hover key={user.userid}>
                 <TableCell align="center">{user.userid}</TableCell>
                 <TableCell align="center">{user.name}</TableCell>
-                <TableCell align="center">{user.mobile}</TableCell>
                 <TableCell align="center">{user.acl_name}</TableCell>
                 <TableCell align="center">
                   {dayjs(user.create_at).format('YY-MM-DD HH:mm:ss')}
+                </TableCell>
+                <TableCell align="center">
+                  {dayjs(user.update_at).format('YY-MM-DD HH:mm:ss')}
                 </TableCell>
                 <TableCell align="right" padding='none'>
                   {user.deleted &&

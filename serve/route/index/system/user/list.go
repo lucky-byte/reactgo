@@ -88,6 +88,7 @@ func list(c echo.Context) error {
 		users = append(users, echo.Map{
 			"uuid":      u.UUID,
 			"create_at": u.CreateAt,
+			"update_at": u.UpdateAt,
 			"userid":    u.UserId,
 			"name":      u.Name,
 			"email":     u.Email,

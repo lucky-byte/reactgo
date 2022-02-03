@@ -31,13 +31,14 @@ export default function Item(props) {
 
   return (
     <ListItem disablePadding onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
+      onMouseLeave={onMouseLeave}>
       <ListItemButton onClick={onClick}>
         <ListItemIcon sx={{ minWidth: '32px' }}>{props.icon}</ListItemIcon>
         {code === props.code ?
           <ListItemText primary={item.title}
-            primaryTypographyProps={{ variant: 'button', color: 'primary' }}
+            primaryTypographyProps={{
+              variant: 'button', color: 'primary', fontWeight: 'bold'
+            }}
           />
           :
           <ListItemText primary={item.title}
