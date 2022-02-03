@@ -65,6 +65,9 @@ var embededWebFS embed.FS
 //go:embed privacy.html
 var privacy_html string
 
+//go:embed eula.html
+var eula_html string
+
 // WEB 静态文件目录，可以通过配置修改
 var web_directory = "./web"
 
@@ -203,6 +206,11 @@ func main() {
 	// 隐私政策
 	engine.GET("/privacy", func(c echo.Context) error {
 		return c.HTML(http.StatusOK, privacy_html)
+	})
+
+	// 最终用户许可协议
+	engine.GET("/eula", func(c echo.Context) error {
+		return c.HTML(http.StatusOK, eula_html)
 	})
 
 	// 路由
