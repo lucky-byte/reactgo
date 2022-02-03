@@ -190,11 +190,18 @@ export default function SignIn() {
             登录
           </Button>
         </Paper>
-        <Typography variant='body2' sx={{ mt: 4 }}>
+        <Stack direction='row' spacing={2} sx={{ mt: 4 }}>
+        <Typography variant='caption'>
           <Link component='a' href='/privacy' target='_blank' underline='hover'>
             隐私政策
           </Link>
         </Typography>
+        <Typography variant='caption'>
+          <Link component='a' href='/terms' target='_blank' underline='hover'>
+            服务条款
+          </Link>
+        </Typography>
+        </Stack>
         <FormHelperText sx={{ mt: 1 }}>
           版权所有 &copy; {new Date().getFullYear()}
           {process.env.REACT_APP_COMPANY_NAME}，保留所有权利。

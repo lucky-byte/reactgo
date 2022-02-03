@@ -45,7 +45,11 @@ export default function UserProfile() {
   // 修改登录名
   const onChangeUserid = async value => {
     try {
-      await put('/user/userid', new URLSearchParams({ userid: value }));
+      const token = await secretCode();
+
+      await put('/user/userid', new URLSearchParams({
+        secretcode_token: token, userid: value
+      }));
       setUser({ ...user, userid: value, });
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {

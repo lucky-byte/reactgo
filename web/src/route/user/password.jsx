@@ -12,6 +12,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useSecretCode } from '~/comp/secretcode';
 import titleState from "~/state/title";
 import { put } from "~/rest";
 import { Typography } from '@mui/material';
@@ -20,6 +21,7 @@ export default function UserPassword() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
+  const secretCode = useSecretCode();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPassword2, setNewPassword2] = useState('');
@@ -45,7 +47,11 @@ export default function UserPassword() {
     try {
       setDisabled(true);
 
-      await put('/user/passwd', new URLSearchParams({ oldPassword, newPassword }));
+      const token = await secretCode();
+
+      await put('/user/passwd', new URLSearchParams({
+        secretcode_token: token, oldPassword, newPassword
+      }));
       enqueueSnackbar('修改成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {

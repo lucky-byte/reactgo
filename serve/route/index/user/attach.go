@@ -10,12 +10,12 @@ func Attach(up *echo.Group) {
 
 	group.GET("/info", info)
 	group.PUT("/name", name)
-	group.PUT("/userid", userid)
+	group.PUT("/userid", userid, secretcode.Verify())
 	group.PUT("/email", email, secretcode.Verify())
 	group.PUT("/mobile", mobile, secretcode.Verify())
-	group.PUT("/passwd", passwd)
+	group.PUT("/passwd", passwd, secretcode.Verify())
 	group.PUT("/address", address)
-	group.PUT("/secretcode", scode)
+	group.PUT("/secretcode", scode, secretcode.Verify())
 	group.GET("/otp/url", otpURL)
-	group.POST("/otp/verify", otpVerify)
+	group.POST("/otp/verify", otpVerify, secretcode.Verify())
 }

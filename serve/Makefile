@@ -50,6 +50,11 @@ linux: web
 	GOOS=linux GOARCH=amd64 \
 	go build -ldflags='$(LDFLAGS)' -tags '${TAGS} dev' -o ${APPNAME}-linux-amd64-dev
 
+# 生成 privacy.html 和 terms.html，需要安装 pandoc 工具
+html: privacy.md terms.md
+	pandoc privacy.md -f markdown -t html -s -o privacy.html
+	pandoc terms.md -f markdown -t html -s -o terms.html
+
 # run test
 test:
 	go test $(arg) ./test/...
@@ -58,4 +63,4 @@ test:
 clean:
 	go clean
 
-.PHONY: web build build-dev dev test all clean linux
+.PHONY: web build build-dev dev test all clean linux html
