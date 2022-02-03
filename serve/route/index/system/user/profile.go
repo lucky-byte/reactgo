@@ -52,6 +52,7 @@ func profile(c echo.Context) error {
 		"n_signin":         user.NSignin,
 		"tfa":              user.TFA,
 		"secretcode_isset": len(user.SecretCode) > 0,
+		"totp_isset":       len(user.TOTPSecret) > 0,
 		"disabled":         user.Disabled,
 		"deleted":          user.Deleted,
 		"acl":              acl,

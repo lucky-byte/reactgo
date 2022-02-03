@@ -24,6 +24,7 @@ create table if not exists users (
   tfa         boolean         not null default true,
   acl         varchar(36)     not null,
   secretcode  varchar(256)    not null default '',
+  totp_secret varchar(256)    not null default '',
   n_signin    int             not null default 0
 );
 

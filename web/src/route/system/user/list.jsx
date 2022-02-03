@@ -31,6 +31,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import KeyIcon from '@mui/icons-material/Key';
 import KeyOffIcon from '@mui/icons-material/KeyOff';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
@@ -239,7 +240,7 @@ function UserMenuIconButton(props) {
   };
 
   // 清除安全操作码
-  const onClearSecretCodeClick = async () => {
+  const onClearSecretCode = async () => {
     try {
       setAnchorEl(null);
 
@@ -256,6 +257,32 @@ function UserMenuIconButton(props) {
 
       if (currentUser.userid === user.userid) {
         setCurrentUser({ ...currentUser, secretcode_isset: false });
+      }
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
+  // 清除两因素认证
+  const onClearTOTP = async () => {
+    try {
+      setAnchorEl(null);
+
+      await confirm({
+        description: `确定要清除 ${user.name} 的两因素认证吗？`,
+        confirmationText: '清除',
+        confirmationButtonProps: { color: 'warning' },
+        contentProps: { p: 8 },
+      });
+      await post('/system/user/cleartotp',
+        new URLSearchParams({ uuid: user.uuid })
+      );
+      enqueueSnackbar('已清除', { variant: 'success' });
+
+      if (currentUser.userid === user.userid) {
+        setCurrentUser({ ...currentUser, totp_isset: false });
       }
     } catch (err) {
       if (err) {
@@ -347,12 +374,17 @@ function UserMenuIconButton(props) {
           <ListItemText>访问控制</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem disabled={user.disabled || user.deleted}
-          onClick={onClearSecretCodeClick}>
+        <MenuItem disabled={user.disabled || user.deleted} onClick={onClearSecretCode}>
           <ListItemIcon>
             <KeyOffIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>清除安全操作码</ListItemText>
+        </MenuItem>
+        <MenuItem disabled={user.disabled || user.deleted} onClick={onClearTOTP}>
+          <ListItemIcon>
+            <DeleteForeverIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>清除两因素认证</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem disabled={user.deleted} onClick={onDisableClick}>

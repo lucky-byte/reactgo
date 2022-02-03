@@ -143,8 +143,12 @@ function BaseInfoTable(props) {
           </TableRow>
           <TableRow sx={{ td: { borderBottom: 0 } }}>
             <TableCell>安全操作码</TableCell>
-            <TableCell colSpan={3} sx={{ borderLeft: '1px solid' }}>
+            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
               {profile.secretcode_isset ? '已设置' : '未设置'}
+            </TableCell>
+            <TableCell>两因素认证</TableCell>
+            <TableCell sx={{ borderLeft: '1px solid' }}>
+              {profile.totp_isset ? '已设置' : '未设置'}
             </TableCell>
           </TableRow>
         </TableBody>

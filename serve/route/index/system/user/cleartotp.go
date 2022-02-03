@@ -9,7 +9,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-func clearSecretCode(c echo.Context) error {
+func clearTOTP(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	var uuid string
@@ -18,13 +18,13 @@ func clearSecretCode(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	// 清除安全操作码
+	// 清除 TOTP
 	ql := `
-		update users set secretcode = '', update_at = current_timestamp
+		update users set totp_secret = '', update_at = current_timestamp
 		where uuid = ?
 	`
 	if err := db.ExecOne(ql, uuid); err != nil {
-		cc.ErrLog(err).Error("清除用户安全操作码错")
+		cc.ErrLog(err).Error("清除 TOTP 错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

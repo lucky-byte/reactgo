@@ -48,16 +48,20 @@ export default function UserSecurityHome() {
             </Button>
           </Stack>
         </Paper>
-        <Typography variant='h6' sx={{ mt: 4 }}>多因素认证</Typography>
+        <Typography variant='h6' sx={{ mt: 4 }}>两因素认证</Typography>
         <FormHelperText>
           在进行身份认证时，除了验证密码外，还可以添加第二个认证因子，即使密码泄漏，
           如果没有第二个认证因子，也无法登录您的账户
         </FormHelperText>
         <Paper variant='outlined' sx={{ p: 2, mt: 1 }}>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <Typography color='error'>还未设置多因素认证</Typography>
-            <Button variant='contained' LinkComponent={Link} to='totp'>
-              设置多因素认证
+            {user?.totp_isset ?
+              <Typography>两因素认证已设置</Typography>
+              :
+              <Typography color='error'>还未设置两因素认证</Typography>
+            }
+            <Button variant='contained' LinkComponent={Link} to='otp'>
+              {user?.totp_isset ? '修改两因素认证' : '设置两因素认证'}
             </Button>
           </Stack>
         </Paper>

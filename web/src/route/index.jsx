@@ -169,6 +169,7 @@ function Appbar(params) {
             email: resp.email,
             address: resp.address,
             secretcode_isset: resp.secretcode_isset,
+            totp_isset: resp.totp_isset,
             allows: resp.allows,
           });
         } catch (err) {

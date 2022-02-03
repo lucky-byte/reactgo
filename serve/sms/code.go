@@ -113,6 +113,9 @@ func VerifyCode(smsid string, code string, mobile string) error {
 		codeCache.Store(smsid, entry)
 		return fmt.Errorf("验证失败，验证码不匹配")
 	}
+	// 验证通过，删除记录
+	codeCache.Delete(smsid)
+
 	return nil
 }
 

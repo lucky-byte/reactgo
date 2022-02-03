@@ -98,6 +98,7 @@ export default function SignIn() {
         mobile: resp.mobile,
         address: resp.address,
         secretcode_isset: resp.secretcode_isset,
+        totp_isset: resp.totp_isset,
         allows: resp.allows,
       });
       localStorage.setItem('token', resp.token);

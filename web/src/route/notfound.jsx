@@ -15,7 +15,7 @@ export default function NotFound() {
   return (
     <Stack alignItems='center' spacing={1}>
       <Typography variant='body1' mt={8}>你访问的页面不存在</Typography>
-      <Stack direction='row' sx={{ mt: 0 }} spacing={2}>
+      <Stack direction='row' sx={{ mt: 0 }} spacing={1}>
         <Button onClick={() => { navigate('/') }} color="secondary">
           首页
         </Button>

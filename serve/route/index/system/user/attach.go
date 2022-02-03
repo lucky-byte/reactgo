@@ -25,6 +25,7 @@ func Attach(up *echo.Group) {
 
 	group.POST("/add", add)
 	group.POST("/clearsecretcode", clearSecretCode)
+	group.POST("/cleartotp", clearTOTP)
 	group.POST("/disable", disable)
 	group.DELETE("/delete", del)
 }

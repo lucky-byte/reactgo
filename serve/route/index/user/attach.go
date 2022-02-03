@@ -16,4 +16,6 @@ func Attach(up *echo.Group) {
 	group.PUT("/passwd", passwd)
 	group.PUT("/address", address)
 	group.PUT("/secretcode", scode)
+	group.GET("/otp/url", otpURL)
+	group.POST("/otp/verify", otpVerify)
 }

@@ -29,6 +29,7 @@ func info(c echo.Context) error {
 		"mobile":           user.Mobile,
 		"address":          user.Address.String,
 		"secretcode_isset": len(user.SecretCode) > 0,
+		"totp_isset":       len(user.TOTPSecret) > 0,
 		"allows":           allows,
 	})
 }

@@ -33,11 +33,11 @@ func mobile(c echo.Context) error {
 	}
 
 	ql := `
-		update users set email = ?, update_at = current_timestamp
+		update users set mobile = ?, update_at = current_timestamp
 		where uuid = ?
 	`
 	if err = db.ExecOne(ql, mobile, user.UUID); err != nil {
-		cc.ErrLog(err).Error("修改用户邮箱地址失败")
+		cc.ErrLog(err).Error("修改用户手机号失败")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)
