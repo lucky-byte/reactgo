@@ -116,6 +116,11 @@ export default function SignInSMS() {
     }
   }
 
+  // 切换到 TOTP 认证
+  const onSwitchOTP = () => {
+    navigate('/signin/otp', { state: { tfa: true } });
+  }
+
   return (
     <Stack as='main' role='main'>
       <Toolbar>
@@ -128,7 +133,8 @@ export default function SignInSMS() {
       <Container maxWidth='xs'
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 6, py: 3, px: 4, width: '100%' }}>
-          <Typography as='h1' variant='caption' sx={{ mt: 1 }}>
+          <Typography as='h1' variant="h6">短信认证</Typography>
+          <Typography variant='caption' sx={{ mt: 1 }}>
             短信验证码已发送到手机号 ****{user?.mobile?.substring(7)}，
             请输入短信中的验证码完成验证
           </Typography>
@@ -148,7 +154,14 @@ export default function SignInSMS() {
             />
             {time > 0 ?
               <FormHelperText sx={{ mx: 0, my: 1 }}>
-                没有收到验证码？请等待 {time} 秒后尝试重新获取，如尝试多次无效，请联系工作人员
+                没有收到验证码？请等待 {time} 秒后尝试重新获取，如尝试多次无效，
+                请联系管理员协助处理。
+                {user?.totp_isset &&
+                  <Link underline="hover" onClick={onSwitchOTP}
+                    sx={{ cursor: 'pointer' }}>
+                    或切换到 TOTP 认证
+                  </Link>
+                }
               </FormHelperText>
               :
               <Button sx={{ mt: 1 }} color='warning' onClick={onReSendClick}>

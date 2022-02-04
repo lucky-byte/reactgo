@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
-import { put } from "~/rest";
+import { put, post } from "~/rest";
 
 export default function SignInOTP() {
   const theme = useTheme();
@@ -27,6 +27,7 @@ export default function SignInOTP() {
   const location = useLocation();
   const user = useRecoilValue(userState);
   const { enqueueSnackbar } = useSnackbar();
+  const [tfa, setTFA] = useState(false);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -39,6 +40,7 @@ export default function SignInOTP() {
     if (!token || !user || !user.userid) {
       return navigate('/signin', { replace: true });
     }
+    setTFA(location?.state?.tfa || false);
   }, [user, navigate, location?.state]);
 
   const onCodeChange = e => {
@@ -82,6 +84,19 @@ export default function SignInOTP() {
     }
   }
 
+  // 切换到短信认证
+  const onSwitchSMS = async () => {
+    try {
+      const resp = await post('/signin/smsresend');
+      if (!resp.smsid) {
+        throw new Error('响应数据无效');
+      }
+      navigate('/signin/sms', { state: { smsid: resp.smsid } });
+    } catch (err) {
+      enqueueSnackbar(err.message)
+    }
+  }
+
   return (
     <Stack as='main' role='main'>
       <Toolbar>
@@ -100,7 +115,7 @@ export default function SignInOTP() {
           </Typography>
           <FormControl fullWidth sx={{ mt: 3 }}>
             <TextField required autoFocus autoComplete="off"
-              label='TOTP 口令' placeholder="请输入 TOTP 认证口令"
+              label='TOTP 口令' placeholder="请输入 6 位口令"
               variant='outlined' value={code} onChange={onCodeChange}
               onKeyDown={onCodeKeyDown}
               inputProps={{ maxLength: 6, minLength: 6 }}
@@ -113,7 +128,13 @@ export default function SignInOTP() {
               }}
             />
             <FormHelperText sx={{ mx: 0, my: 1 }}>
-              您可以在手机 TOTP 客户端中查看认证口令，如无法访问，请联系管理员
+              您可以在手机 TOTP 客户端中查看认证口令，如无法访问，请联系管理员协助处理。
+              {tfa &&
+                <Link underline="hover" onClick={onSwitchSMS}
+                  sx={{ cursor: 'pointer' }}>
+                  或切换到短信验证码认证
+                </Link>
+              }
             </FormHelperText>
           </FormControl>
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}

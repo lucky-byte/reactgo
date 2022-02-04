@@ -105,7 +105,7 @@ export default function SignIn() {
 
       // 如果设置了 TOTP，则进入 TOTP 认证
       if (resp.totp_isset) {
-        return navigate('/signin/otp');
+        return navigate('/signin/otp', { state: { tfa: resp.tfa } });
       }
       // 如果设置了短信认证，则进入短信认证
       if (resp.tfa) {
