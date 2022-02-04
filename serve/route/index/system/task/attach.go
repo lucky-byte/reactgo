@@ -11,9 +11,9 @@ func Attach(up *echo.Group) {
 
 	group := up.Group("/task", acl.AllowRead(code))
 
+	group.POST("/list", list)
 	group.GET("/funcs", funcs)
 	group.GET("/testcron", testcron)
-	// group.POST("/list", list)
 	// group.GET("/profile", profile)
 
 	group.Use(acl.AllowWrite(code))

@@ -83,14 +83,15 @@ export default function SignIn() {
     try {
       setSubmitting(true);
 
-      const resp = await put('/signin/', new URLSearchParams({
-        username, password
-      }));
+      const resp = await put('/signin/', new URLSearchParams({ username, password }));
       setSubmitting(false);
 
       if (!resp || !resp.token) {
-        throw new Error('服务器响应数据无效');
+        throw new Error('响应数据无效');
       }
+      localStorage.setItem('token', resp.token);
+
+      // 保存用户信息到全局状态
       setUser({
         userid: resp.userid,
         name: resp.name,
@@ -101,20 +102,24 @@ export default function SignIn() {
         totp_isset: resp.totp_isset,
         allows: resp.allows,
       });
-      localStorage.setItem('token', resp.token);
 
+      // 如果设置了 TOTP，则进入 TOTP 认证
+      if (resp.totp_isset) {
+        return navigate('/signin/otp');
+      }
+      // 如果设置了短信认证，则进入短信认证
       if (resp.tfa) {
         if (!resp.smsid) {
-          return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
+          return enqueueSnackbar('响应数据不完整', { variant: 'error' });
         }
         return navigate('/signin/sms', { state: { smsid: resp.smsid } });
       }
       // 跳转到最近访问页面
       let last = localStorage.getItem('last-access');
-      localStorage.removeItem('last-access');
       if (last?.startsWith('/signin') || last.startsWith('/resetpass')) {
         last = '/';
       }
+      localStorage.removeItem('last-access');
       navigate(last || '/', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message, { variant: 'error' });

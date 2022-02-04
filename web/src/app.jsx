@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ConfirmProvider } from 'material-ui-confirm';
 import SignIn from "./signin";
 import SignInSMS from "./signin/sms";
+import SignInOTP from "./signin/otp";
 import ResetPass from "./resetpass";
 import ResetPassSMS from "./resetpass/sms";
 import ResetPassSuccess from "./resetpass/success";
@@ -36,9 +37,8 @@ export default function App() {
     },
   }, zhCN), [mode]);
 
-  useEffect(() => {
-    setMode(prefersDarkMode ? 'dark' : 'light');
-  }, [prefersDarkMode]);
+  // 更新色彩模式
+  useEffect(() => { setMode(prefersDarkMode ? 'dark' : 'light'); }, [prefersDarkMode]);
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -59,6 +59,7 @@ export default function App() {
               <Routes>
                 <Route path='/signin' element={<SignIn />} />
                 <Route path='/signin/sms' element={<SignInSMS />} />
+                <Route path='/signin/otp' element={<SignInOTP />} />
                 <Route path='/resetpass' element={<ResetPass />} />
                 <Route path='/resetpass/sms' element={<ResetPassSMS />} />
                 <Route path='/resetpass/success' element={<ResetPassSuccess />} />

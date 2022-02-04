@@ -23,6 +23,7 @@ func smsVerify(c echo.Context) error {
 		MustString("smsid", &smsid).
 		MustString("code", &code).BindError()
 	if err != nil {
+		cc.ErrLog(err).Error("请求无效")
 		c.String(http.StatusBadRequest, "请求数据不完整")
 	}
 	// 获取登录TOKEN

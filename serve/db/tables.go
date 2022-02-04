@@ -104,3 +104,19 @@ type MTA struct {
 	SortNo   int    `db:"sortno"`   // 排序序号
 	NSent    int    `db:"nsent"`    // 发送量
 }
+
+type Task struct {
+	UUID     string         `db:"uuid"`      // uuid
+	CreateAt time.Time      `db:"create_at"` // 创建时间
+	UpdateAt time.Time      `db:"update_at"` // 更新时间
+	Name     string         `db:"name"`      // 名称
+	Summary  string         `db:"summary"`   // 描述
+	Cron     string         `db:"cron"`      // CRON 表达式
+	Type     int            `db:"type"`      // 类型
+	Path     string         `db:"path"`      // 文件路径
+	LastFire time.Time      `db:"last_fire"` // 最后执行时间
+	NFire    int            `db:"nfire"`     // 执行次数
+	NFailed  int            `db:"nfailed"`   // 执行失败次数
+	Disabled bool           `db:"disabled"`  // 是否停用
+	Note     sql.NullString `db:"note"`      // 备注
+}

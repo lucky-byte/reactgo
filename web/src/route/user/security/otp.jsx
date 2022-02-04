@@ -88,23 +88,19 @@ export default function OTP() {
             <Typography variant='h6'>设置两因素认证</Typography>
             <Typography variant='caption'>
               两因素认证使用存储在您手机 APP 中的一次性口令作为第二个认证因素，
-              可以增强您的账户安全性。
+              可以增强您的账户安全。
             </Typography>
             <Typography variant='caption'>
-              您需要在手机中安装 TOTP 客户端来完成以下操作，不能卸载，
-              否则无法找回口令。常见的 TOTP 客户端有:
-              <br />
-              <strong>Google Authenticator</strong>、
-              <strong>Microsoft Authenticator</strong>、
-              <strong>RedHat FreeOTP</strong>
+              您需要在手机中安装 TOTP<sup>1</sup> 客户端<sup>2</sup>来完成设置，
+              并不能卸载<sup>3</sup>，否则无法找回口令。
             </Typography>
           </Stack>
         </Stack>
-        <Paper variant='outlined' sx={{ p: 3, mt: 2 }}>
+        <Paper variant='outlined' sx={{ p: 3, mt: 2, mb: 1 }}>
           <Stack alignItems='center' spacing={2}>
             <TextField variant='filled' autoFocus
               hiddenLabel
-              placeholder="6位口令，扫码获取"
+              placeholder="请输入 6 位数字口令"
               autoComplete='new-password'
               value={code} onChange={e => setCode(e.target.value)}
               onKeyDown={onCodeKeyDown}
@@ -133,13 +129,21 @@ export default function OTP() {
           </Stack>
         </Paper>
         <FormHelperText>
-          TOTP 是 Time-based One-time Password Algorith（基于时间的一次性密码算法）
+          1. TOTP 是 Time-based One-time Password Algorith（基于时间的一次性密码算法）
           的缩写，是国际标准，在&nbsp;
           <Link underline='hover'
             href='https://tools.ietf.org/html/rfc6238' target='_blank'>
             RFC 6238
           </Link>
           &nbsp;中定义。
+        </FormHelperText>
+        <FormHelperText>
+          2. 常见的 TOTP 客户端有: <strong>Google Authenticator</strong>、
+          <strong>Microsoft Authenticator</strong>、
+          <strong>RedHat FreeOTP</strong>
+        </FormHelperText>
+        <FormHelperText>
+          3. 某些客户端提供备份功能，卸载后重新安装可以恢复数据，根据您使用的客户端而定。
         </FormHelperText>
       </Paper>
     </Container>
