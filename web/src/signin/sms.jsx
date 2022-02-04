@@ -79,7 +79,7 @@ export default function SignInSMS() {
       setLoading(true);
 
       const resp = await put('/signin/smsverify', new URLSearchParams({
-        mobile: user.mobile, smsid, code
+        smsid, code
       }));
       if (!resp || !resp.token) {
         return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
@@ -105,9 +105,7 @@ export default function SignInSMS() {
   // 重新发送验证码
   const onReSendClick = async () => {
     try {
-      const resp = await post('/signin/smsresend', new URLSearchParams({
-        mobile: user.mobile
-      }));
+      const resp = await post('/signin/smsresend');
       if (!resp.smsid) {
         throw new Error('响应数据无效');
       }

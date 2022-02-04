@@ -12,7 +12,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/index/auth"
 )
 
-// 验证短信验证码
+// 验证 TOTP 口令
 func otpVerify(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -53,7 +53,7 @@ func otpVerify(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "口令错误")
 	}
 
-	// 重新生成登录TOKEN
+	// 重新生成登录 TOKEN
 	ql = `select token_duration from settings`
 	var duration time.Duration
 

@@ -16,23 +16,21 @@ import (
 func smsVerify(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var mobile, smsid, code string
+	var smsid, code string
 
 	err := echo.FormFieldBinder(c).
-		MustString("mobile", &mobile).
-		MustString("smsid", &smsid).
-		MustString("code", &code).BindError()
+		MustString("smsid", &smsid).MustString("code", &code).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("请求无效")
 		c.String(http.StatusBadRequest, "请求数据不完整")
 	}
-	// 获取登录TOKEN
+	// 获取登录 TOKEN
 	authToken := c.Request().Header.Get("x-auth-token")
 	if len(authToken) == 0 {
 		cc.Log().Error("请求缺少访问 TOKEN")
 		return c.String(http.StatusBadRequest, "无效的请求")
 	}
-	// 解析登录TOKEN
+	// 解析登录 TOKEN
 	jwt, err := auth.JWTParse(authToken)
 	if err != nil {
 		cc.ErrLog(err).Error("解析登录 TOKEN 错")
@@ -43,6 +41,15 @@ func smsVerify(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "无效的请求")
 	}
 
+	// 查询用户手机号
+	ql := `select mobile from users where uuid = ?`
+	var mobile string
+
+	if err = db.SelectOne(ql, &mobile, jwt.User); err != nil {
+		cc.ErrLog(err).Error("查询用户手机号错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
 	// 验证短信验证码
 	err = sms.VerifyCode(smsid, code, mobile)
 	if err != nil {
@@ -50,7 +57,7 @@ func smsVerify(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	// 重新生成登录TOKEN
-	ql := `select token_duration from settings`
+	ql = `select token_duration from settings`
 	var duration time.Duration
 
 	if err = db.SelectOne(ql, &duration); err != nil {
@@ -70,19 +77,13 @@ func smsVerify(c echo.Context) error {
 func smsResend(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var mobile string
-
-	err := echo.FormFieldBinder(c).MustString("mobile", &mobile).BindError()
-	if err != nil {
-		c.String(http.StatusBadRequest, "请求数据不完整")
-	}
-	// 获取登录TOKEN
+	// 获取登录 TOKEN
 	authToken := c.Request().Header.Get("x-auth-token")
 	if len(authToken) == 0 {
 		cc.Log().Error("请求缺少访问 TOKEN")
 		return c.String(http.StatusBadRequest, "无效的请求")
 	}
-	// 解析登录TOKEN
+	// 解析登录 TOKEN
 	jwt, err := auth.JWTParse(authToken)
 	if err != nil {
 		cc.ErrLog(err).Error("解析登录 TOKEN 错")
@@ -92,6 +93,16 @@ func smsResend(c echo.Context) error {
 		cc.Log().Error("登录 TOKEN.user 无效")
 		return c.String(http.StatusBadRequest, "无效的请求")
 	}
+
+	// 查询用户手机号
+	ql := `select mobile from users where uuid = ?`
+	var mobile string
+
+	if err = db.SelectOne(ql, &mobile, jwt.User); err != nil {
+		cc.ErrLog(err).Error("查询用户手机号错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
 	// 重新发送验证码
 	smsid, err := sms.SendCode(mobile)
 	if err != nil {
