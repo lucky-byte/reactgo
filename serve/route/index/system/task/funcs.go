@@ -13,10 +13,7 @@ func funcs(c echo.Context) error {
 	var funcs []echo.Map
 
 	for _, v := range task.Funcs {
-		funcs = append(funcs, echo.Map{
-			"name":  v.Name,
-			"title": v.Title,
-		})
+		funcs = append(funcs, echo.Map{"name": v.Name, "path": v.Path})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"funcs": funcs})
 }

@@ -40,6 +40,7 @@ func resetpass(c echo.Context) error {
 
 	if err = db.ExecOne(ql, resetpass); err != nil {
 		cc.ErrLog(err).Error("更新系统设置错")
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)
 }
@@ -59,6 +60,7 @@ func duration(c echo.Context) error {
 
 	if err = db.ExecOne(ql, duration); err != nil {
 		cc.ErrLog(err).Error("更新系统设置错")
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)
 }

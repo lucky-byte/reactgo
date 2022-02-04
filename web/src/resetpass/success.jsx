@@ -46,7 +46,7 @@ export default function ResetPassSuccess() {
           <Stack alignItems='center' spacing={2}>
             <CheckIcon color='success' sx={{ fontSize: '96px' }} />
             <Typography variant="h6">密码已重置</Typography>
-            <Typography variant='body2'>
+            <Typography variant='body2' sx={{ textAlign: 'center' }}>
               新密码已发送到您的邮箱 {email}，请注意查收
             </Typography>
           </Stack>

@@ -114,7 +114,8 @@ export default function ResetPassSMS() {
       <Container maxWidth='xs'
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 6, py: 3, px: 4, width: '100%' }}>
-          <Typography as='h1' variant='caption' sx={{ mt: 1 }}>
+          <Typography as='h1' variant='h6' sx={{ mt: 1 }}>短信认证</Typography>
+          <Typography variant='caption'>
             短信验证码已发送到手机号 ****{mobile?.substring(7)}，请输入短信中的验证码完成验证
           </Typography>
           <FormControl fullWidth sx={{ mt: 3 }}>

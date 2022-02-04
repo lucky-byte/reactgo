@@ -32,7 +32,7 @@ func add(c echo.Context) error {
 		String("address", &address).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("无效的请求")
-		c.String(http.StatusBadRequest, "无效的请求")
+		return c.String(http.StatusBadRequest, "无效的请求")
 	}
 	// 删除前后空白字符
 	cc.Trim(&userid, &name, &password, &email, &mobile, &address)

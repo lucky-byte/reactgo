@@ -35,7 +35,7 @@ import progressState from "~/state/progress";
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
 import usePageData from '~/hook/pagedata';
-import { post, del, get } from '~/rest';
+import { post, del } from '~/rest';
 
 export default function UserList() {
   const navigate = useNavigate();
@@ -44,10 +44,8 @@ export default function UserList() {
   const [pageData, setPageData] = usePageData();
   const { enqueueSnackbar } = useSnackbar();
   const [total, setTotal] = useState(0);
-  const [users, setUsers] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [keyword, setKeyword] = useState('');
-  const [acls, setAcls] = useState([]);
-  const [acl, setAcl] = useState('all');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(pageData('rowsPerPage') || 10);
   const [refresh, setRefresh] = useState(true);
@@ -59,31 +57,20 @@ export default function UserList() {
   useEffect(() => {
     (async () => {
       try {
-        const resp1 = await get('/system/acl/');
-        setAcls(resp1.acls || []);
-      } catch (err) {
-        enqueueSnackbar(err.message);
-      }
-    })();
-  }, [ enqueueSnackbar ]);
-
-  useEffect(() => {
-    (async () => {
-      try {
         setProgress(true);
 
-        const resp = await post('/system/user/list', new URLSearchParams({
-          page, rows_per_page: rowsPerPage, keyword, acl,
+        const resp = await post('/system/task/list', new URLSearchParams({
+          page, rows_per_page: rowsPerPage, keyword,
         }));
         setTotal(resp.total || 0);
-        setUsers(resp.users || []);
+        setTasks(resp.tasks || []);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
         setProgress(false);
       }
     })();
-  }, [ enqueueSnackbar, setProgress, page, rowsPerPage, keyword, acl, refresh ]);
+  }, [ enqueueSnackbar, setProgress, page, rowsPerPage, keyword, refresh ]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -118,38 +105,42 @@ export default function UserList() {
         <Table size='medium'>
           <TableHead>
             <TableRow sx={{ whiteSpace:'nowrap' }}>
-              <TableCell align='center'>登录名</TableCell>
-              <TableCell align='center'>姓名</TableCell>
-              <TableCell align='center'>手机号</TableCell>
-              <TableCell align='center'>访问控制</TableCell>
-              <TableCell align='center'>创建时间</TableCell>
+              <TableCell align='center'>名称</TableCell>
+              <TableCell align='center'>CRON</TableCell>
+              <TableCell align='center'>类型</TableCell>
+              <TableCell align='center'>函数/命令</TableCell>
+              <TableCell align='center'>总数/失败</TableCell>
+              <TableCell align='center'>最后执行时间</TableCell>
               <TableCell align='right' colSpan={2} padding='checkbox'></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
-              <TableRow hover key={user.userid}>
-                <TableCell align="center">{user.userid}</TableCell>
-                <TableCell align="center">{user.name}</TableCell>
-                <TableCell align="center">{user.mobile}</TableCell>
-                <TableCell align="center">{user.acl_name}</TableCell>
+            {tasks.map(task => (
+              <TableRow hover key={task.uuid}>
+                <TableCell align="center">{task.name}</TableCell>
+                <TableCell align="center"><code>{task.cron}</code></TableCell>
                 <TableCell align="center">
-                  {dayjs(user.create_at).format('YY-MM-DD HH:mm:ss')}
+                  {task.type === 1 ? '函数' : '命令'}
+                </TableCell>
+                <TableCell align="center">{task.path}</TableCell>
+                <TableCell align="center">{task.nfire} / {task.nfailed}</TableCell>
+                <TableCell align="center">
+                  {dayjs(task.last_fire).format('YY-MM-DD HH:mm:ss')}
                 </TableCell>
                 <TableCell align="right" padding='none'>
-                  {user.deleted &&
+                  {task.deleted &&
                     <RemoveCircleOutlineIcon color='error' fontSize='small'
                       sx={{ verticalAlign: 'middle' }}
                     />
                   }
-                  {(user.disabled && !user.deleted) &&
+                  {(task.disabled && !task.deleted) &&
                     <BlockIcon color='warning' fontSize='small'
                       sx={{ verticalAlign: 'middle' }}
                     />
                   }
                 </TableCell>
                 <TableCell align="right" padding='checkbox'>
-                  <UserMenuIconButton user={user} requestRefresh={requestRefresh} />
+                  <UserMenuIconButton user={task} requestRefresh={requestRefresh} />
                 </TableCell>
               </TableRow>
             ))}

@@ -55,7 +55,7 @@ const SecretCodeDialog = ({ open, onSuccess, onClose, inputFocus }) => {
         throw new Error('响应无效');
       }
       setSuccess(true);
-      setTimeout(() => { onSuccess(resp); reset(); }, 200);
+      setTimeout(() => { onSuccess(resp); reset(); }, 500);
     } catch (err) {
       setLoading(false);
       setClear(Math.random());
@@ -82,7 +82,7 @@ const SecretCodeDialog = ({ open, onSuccess, onClose, inputFocus }) => {
         <Stack>
           <Typography variant='h6'>验证安全操作码</Typography>
           <Typography variant='caption'>
-            该操作可能存在风险，需要验证您的安全操作码后才能继续执行
+            该操作需要验证您的安全操作码后才能继续执行
           </Typography>
         </Stack>
       </DialogTitle>

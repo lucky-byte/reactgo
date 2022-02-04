@@ -152,8 +152,8 @@ export default function TaskAdd() {
                     {...register('func', { required: "不能为空" })}
                   >
                     {funcs.map(item => (
-                      <MenuItem key={item.name} value={item.name}>
-                        {item.title}
+                      <MenuItem key={item.path} value={item.path}>
+                        {item.name}
                       </MenuItem>
                     ))}
                   </TextField>

@@ -20,17 +20,19 @@ import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
 import titleState from "~/state/title";
+import usePageData from '~/hook/pagedata';
 import { post } from '~/rest';
 
 export default function History() {
   const setTitle = useSetRecoilState(titleState);
   const { enqueueSnackbar } = useSnackbar();
+  const [pageData, setPageData] = usePageData();
   const [keyword, setKeyword] = useState([]);
   const [day, setDay] = useState(7);
   const [total, setTotal] = useState(0);
   const [history, setHistory] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(pageData('rowsPerPage') || 10);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => { setTitle('登录历史'); }, [setTitle]);
@@ -66,8 +68,11 @@ export default function History() {
 
   // 每页行数改变
   const onRowsPerPageChange = e => {
-    setRowsPerPage(parseInt(e.target.value, 10));
+    const rows = parseInt(e.target.value, 10);
+
+    setRowsPerPage(rows);
     setPage(0);
+    setPageData('rowsPerPage', rows);
   }
 
   return (

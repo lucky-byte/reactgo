@@ -64,6 +64,7 @@ func mailAdd(c echo.Context) error {
 		String("cc", &ccc).
 		String("bcc", &bcc).BindError()
 	if err != nil {
+		cc.ErrLog(err).Error("请求无效")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	// 删除前后空白字符
@@ -183,6 +184,7 @@ func mailModify(c echo.Context) error {
 		String("cc", &ccc).
 		String("bcc", &bcc).BindError()
 	if err != nil {
+		cc.ErrLog(err).Error("请求无效")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	// 删除前后空白字符
@@ -229,6 +231,7 @@ func mailSort(c echo.Context) error {
 		MustString("dir", &dir).
 		MustInt("sortno", &sortno).BindError()
 	if err != nil {
+		cc.ErrLog(err).Error("请求无效")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	// 移到最前
@@ -268,6 +271,7 @@ func mailTest(c echo.Context) error {
 		MustString("uuid", &mta_uuid).
 		MustString("email", &address).BindError()
 	if err != nil {
+		cc.ErrLog(err).Error("请求无效")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	// 解析收件地址

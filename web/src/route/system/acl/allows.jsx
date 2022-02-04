@@ -175,6 +175,28 @@ export default function AclAllows() {
     try {
       setUpdated(true);
 
+      // 如果开通管理权限，则自动开通写权限
+      if (admin) {
+        write = true;
+      }
+      // 如果开通写权限，则自动开通读权限
+      if (write) {
+        read = true;
+      }
+      let changed = true;
+
+      for (let i = 0; i < allowList.length; i++) {
+        const a = allowList[i];
+        if (a.uuid === uuid) {
+          if (a.read === read && a.write === write && a.admin === admin) {
+            changed = false;
+          }
+          break;
+        }
+      }
+      if (!changed) {
+        return enqueueSnackbar('无需更新，可能已设定更高权限', { variant: 'info' });
+      }
       await put('/system/acl/allow/update', new URLSearchParams({
         uuid, read, write, admin,
       }));
