@@ -20,12 +20,12 @@ func Attach(up *echo.Group) {
 
 	group.Use(acl.AllowWrite(code))
 
-	// group.PUT("/info", updateinfo)
-	group.PUT("/fire", fire)
+	group.PUT("/info", infoUpdate)
 
 	group.Use(acl.AllowAdmin(code))
 
 	group.POST("/add", add)
+	group.POST("/fire", fire)
 	group.POST("/disable", disable)
 	group.DELETE("/delete", del, secretcode.Verify())
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { useNavigate, useLocation, Link as RouteLink } from 'react-router-dom';
 import { useForm, Controller } from "react-hook-form";
 import Paper from "@mui/material/Paper";
@@ -24,7 +24,7 @@ export default function MailModify() {
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
-  const setProgress = useSetRecoilState(progressState);
+  const [progress, setProgress] = useRecoilState(progressState);
   const [ passwordVisible, setPasswordVisible ] = useState(false);
   const [mta, setMta] = useState({});
 
@@ -77,12 +77,16 @@ export default function MailModify() {
 
   const onSubmit = async data => {
     try {
+      setProgress(true);
+
       data.uuid = location?.state?.uuid;
       await put('/system/settings/mail/modify', new URLSearchParams(data));
       enqueueSnackbar('更新成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message);
+    } finally {
+      setProgress(false);
     }
   }
 
@@ -100,6 +104,7 @@ export default function MailModify() {
             <TextField label='名称' variant='standard' fullWidth
               required focused autoComplete='off'
               placeholder='自定义，一般是邮件服务器的称呼，例如 QQ 邮箱'
+              disabled={progress}
               helperText={errors?.name?.message}
               error={errors?.name}
               {...register('name', {
@@ -112,6 +117,7 @@ export default function MailModify() {
             <Stack direction='row' spacing={3}>
               <TextField label='服务器地址' variant='standard' required
                 focused autoComplete='url'
+                disabled={progress}
                 placeholder='邮件服务器域名，例如 smtp.qq.com'
                 helperText={errors?.host?.message}
                 error={errors?.host}
@@ -125,6 +131,7 @@ export default function MailModify() {
               />
               <TextField label='端口' variant='standard' required
                 focused autoComplete='off'
+                disabled={progress}
                 placeholder='邮件服务器端口'
                 inputProps={{ maxLength: 5 }}
                 helperText={errors?.port?.message}
@@ -143,6 +150,7 @@ export default function MailModify() {
               <Controller name="ssl" control={control}
                 render={({ field: { onChange, value } }) => (
                   <TextField label='加密模式' variant='standard' required
+                    disabled={progress}
                     select value={value} onChange={onChange}
                     sx={{ flex: 1 }}>
                     <MenuItem value='true'>SSL</MenuItem>
@@ -154,6 +162,7 @@ export default function MailModify() {
             <Stack>
               <TextField label='发件人地址' variant='standard' fullWidth required
                 focused autoComplete='email'
+                disabled={progress}
                 placeholder='发件人邮箱地址，通常也是登录账号'
                 helperText={errors?.sender?.message}
                 error={errors.sender}
@@ -172,6 +181,7 @@ export default function MailModify() {
             <Stack direction='row' spacing={3}>
               <TextField label='登录用户' variant='standard' fullWidth
                 focused autoComplete='off'
+                disabled={progress}
                 placeholder='通常使用发件人地址作为登录用户，此字段不填'
                 helperText={errors?.username?.message}
                 error={errors?.username}
@@ -183,6 +193,7 @@ export default function MailModify() {
               />
               <TextField label='登录密码' variant='standard' fullWidth
                 focused autoComplete='new-password'
+                disabled={progress}
                 type={passwordVisible ? 'text' : 'password'}
                 placeholder='服务器登录密码，如果没有则不填'
                 InputProps={{
@@ -209,6 +220,7 @@ export default function MailModify() {
             <Stack>
               <TextField label='标题前缀' variant='standard' fullWidth
                 focused autoComplete='off'
+                disabled={progress}
                 placeholder='邮件标题前缀，可以不填'
                 helperText={errors?.prefix?.message}
                 error={errors?.prefix}
@@ -226,6 +238,7 @@ export default function MailModify() {
             <Stack>
               <TextField label='回复地址' variant='standard' fullWidth
                 focused autoComplete='email'
+                disabled={progress}
                 placeholder='邮件回复地址，可以不填'
                 helperText={errors?.replyto?.message}
                 error={errors?.replyto}
@@ -241,8 +254,8 @@ export default function MailModify() {
               </FormHelperText>
             </Stack>
             <Stack>
-              <TextField label='抄送地址' variant='standard' fullWidth
-                focused
+              <TextField label='抄送地址' variant='standard' fullWidth focused
+                disabled={progress}
                 placeholder='邮件抄送地址，可以不填，多个地址以逗号分隔'
                 helperText={errors?.cc?.message}
                 error={errors?.cc}
@@ -257,8 +270,8 @@ export default function MailModify() {
               </FormHelperText>
             </Stack>
             <Stack>
-              <TextField label='密送地址' variant='standard' fullWidth
-                focused
+              <TextField label='密送地址' variant='standard' fullWidth focused
+                disabled={progress}
                 placeholder='邮件密送地址，可以不填，多个地址以逗号分隔'
                 helperText={errors?.bcc?.message}
                 error={errors?.bcc}

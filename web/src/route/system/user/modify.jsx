@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   Navigate, useLocation, useNavigate, Link as RouteLink
 } from "react-router-dom";
@@ -26,7 +26,7 @@ export default function UserModify() {
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
-  const setProgress = useSetRecoilState(progressState);
+  const [progress, setProgress] = useRecoilState(progressState);
   const [userInfo, setUserInfo] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
@@ -69,18 +69,18 @@ export default function UserModify() {
     })();
   }, [location.state, enqueueSnackbar, setProgress, reset]);
 
-  const onReset = () => {
-    reset(userInfo);
-  }
-
   const onSubmit = async data => {
     try {
+      setProgress(true);
+
       data.uuid = location.state.uuid;
       await put('/system/user/info', new URLSearchParams(data));
       enqueueSnackbar('用户资料更新成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message);
+    } finally {
+      setProgress(false);
     }
   }
 
@@ -103,6 +103,7 @@ export default function UserModify() {
               <Stack direction='row' spacing={3}>
                 <TextField label='登录名' variant='standard' focused fullWidth
                   required
+                  disabled={progress}
                   placeholder='用于登录，使用字母或数字'
                   helperText={errors?.userid?.message}
                   error={errors?.userid}
@@ -115,6 +116,7 @@ export default function UserModify() {
                 />
                 <TextField label='真实姓名' variant='standard' focused fullWidth
                   required
+                  disabled={progress}
                   placeholder='用户真实姓名'
                   helperText={errors?.name?.message}
                   error={errors?.name}
@@ -129,6 +131,7 @@ export default function UserModify() {
               <Stack direction='row' spacing={3}>
                 <TextField label='手机号' variant='standard' focused fullWidth
                   required type='tel'
+                  disabled={progress}
                   placeholder='登录时用于接收短信验证码'
                   inputProps={{ maxLength: 11 }}
                   helperText={errors?.mobile?.message}
@@ -148,6 +151,7 @@ export default function UserModify() {
                 />
                 <TextField label='邮箱地址' variant='standard' focused fullWidth
                   required type='email'
+                  disabled={progress}
                   placeholder='用于接收各种邮件'
                   helperText={errors?.email?.message}
                   error={errors?.email}
@@ -160,6 +164,7 @@ export default function UserModify() {
                 />
               </Stack>
               <TextField label='联系地址' variant='standard' focused fullWidth
+                disabled={progress}
                 placeholder='联系地址，如果没有可以不填'
                 {...register('address', {
                   maxLength: {
@@ -174,6 +179,7 @@ export default function UserModify() {
                     name="tfa"
                     render={({ field: { value, onChange, ref } }) => (
                       <Switch checked={value} onChange={onChange}
+                        disabled={progress}
                         inputRef={ref}
                       />
                     )}
@@ -185,7 +191,9 @@ export default function UserModify() {
                   onClick={() => { navigate('..') }}>
                   取消
                 </Button>
-                <Button disabled={isSubmitting} onClick={onReset}>重置</Button>
+                <Button disabled={isSubmitting} onClick={() => {reset(userInfo)}}>
+                  重置
+                </Button>
                 <LoadingButton variant='contained' type='submit'
                   loading={isSubmitting}>
                   提交

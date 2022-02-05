@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   Navigate, useLocation, useNavigate, Link as RouteLink
 } from "react-router-dom";
@@ -28,8 +28,8 @@ export default function TaskModify() {
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
-  const setProgress = useSetRecoilState(progressState);
-  const [funcs, setFuncs] = useState([]);
+  const [progress, setProgress] = useRecoilState(progressState);
+  const [funcList, setFuncList] = useState([]);
   const [info, setInfo] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
@@ -40,7 +40,7 @@ export default function TaskModify() {
     errors, isSubmitting
   } } = useForm({
     defaultValues: {
-      tfa: true,
+      type: 1, func: '',
     }
   });
 
@@ -49,10 +49,14 @@ export default function TaskModify() {
 
   const reset = useCallback(info => {
     setValue("name", info.name);
+    setValue("summary", info.summary);
     setValue("cron", info.cron);
     setValue("type", info.type);
-    setValue("path", info.path);
-    setValue("summary", info.summary);
+    if (info.type === 1) {
+      setValue("func", info.path);
+    } else {
+      setValue("path", info.path);
+    }
   }, [setValue]);
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function TaskModify() {
 
           // 查询可用的函数
           const resp = await get('/system/task/funcs');
-          setFuncs(resp.funcs || []);
+          setFuncList(resp.funcs || []);
 
           // 查询任务信息
           const params = new URLSearchParams({ uuid: location.state.uuid });
@@ -96,12 +100,16 @@ export default function TaskModify() {
   // 提交
   const onSubmit = async data => {
     try {
+      setProgress(true);
+
       data.uuid = location.state.uuid;
-      await put('/system/user/info', new URLSearchParams(data));
-      enqueueSnackbar('用户资料更新成功', { variant: 'success' });
+      await put('/system/task/info', new URLSearchParams(data));
+      enqueueSnackbar('更新成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message);
+    } finally {
+      setProgress(false);
     }
   }
 
@@ -124,6 +132,7 @@ export default function TaskModify() {
               <Stack direction='row' spacing={3}>
                 <TextField label='任务名称' variant='standard' fullWidth
                   required autoFocus focused
+                  disabled={progress}
                   placeholder='定时任务名称'
                   helperText={errors?.name?.message}
                   error={errors?.name}
@@ -136,6 +145,7 @@ export default function TaskModify() {
                 />
                 <TextField label='调度表达式' variant='standard' fullWidth
                   focused required placeholder='CRON 表达式'
+                  disabled={progress}
                   helperText={errors?.cron?.message}
                   error={errors?.cron}
                   InputProps={{
@@ -161,30 +171,37 @@ export default function TaskModify() {
                 />
               </Stack>
               <Stack direction='row' spacing={3}>
-                <TextField label='任务类型' variant='standard' fullWidth
-                  focused required select defaultValue={1}
-                  helperText='函数指内置于系统的功能，命令指外部可执行文件'
-                  {...register('type', { required: "不能为空" })}
-                >
-                  <MenuItem value={1}>函数</MenuItem>
-                  <MenuItem value={2}>命令</MenuItem>
-                </TextField>
+                <Controller name="type" control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <TextField label='任务类型' variant='standard' fullWidth
+                      disabled={progress}
+                      required focused select
+                      helperText='函数指内置于系统的功能，命令指外部可执行文件'
+                      value={value} onChange={onChange}>
+                      <MenuItem value={1}>函数</MenuItem>
+                      <MenuItem value={2}>命令</MenuItem>
+                    </TextField>
+                  )}
+                />
                 {parseInt(type) === 1 ?
-                  <TextField label='函数' variant='standard' fullWidth
-                    focused required select defaultValue=''
-                    helperText='请从列表中选择一项'
-                    error={errors?.func}
-                    {...register('func', { required: "不能为空" })}
-                  >
-                    {funcs.map(item => (
-                      <MenuItem key={item.path} value={item.path}>
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                  <Controller name="func" control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <TextField label='函数' variant='standard' fullWidth
+                        disabled={progress} required focused select
+                        helperText='请从列表中选择一项'
+                        value={value} onChange={onChange}>
+                        {funcList.map(item => (
+                          <MenuItem key={item.path} value={item.path}>
+                            {item.name}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    )}
+                  />
                   :
                   <TextField label='命令' variant='standard' fullWidth required
                     focused placeholder='文件路径'
+                    disabled={progress}
                     helperText='可以是相对路径或绝对路径'
                     error={errors?.path}
                     {...register('path', {
@@ -198,6 +215,7 @@ export default function TaskModify() {
               </Stack>
               <TextField label='描述' variant='standard' fullWidth
                 focused placeholder='任务描述，可以不填'
+                disabled={progress}
                 {...register('summary', {
                   maxLength: {
                     value: 256, message: '超出最大长度'
