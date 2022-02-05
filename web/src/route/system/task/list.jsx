@@ -5,7 +5,6 @@ import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import SecurityIcon from '@mui/icons-material/Security';
 import Button from '@mui/material/Button';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
@@ -25,9 +24,9 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import KeyIcon from '@mui/icons-material/Key';
+import InfoIcon from '@mui/icons-material/Info';
+import EditIcon from '@mui/icons-material/Edit';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
@@ -117,7 +116,7 @@ export default function UserList() {
               <TableCell align='center'>函数/命令</TableCell>
               <TableCell align='center'>执行次数</TableCell>
               <TableCell align='center'>最后执行时间</TableCell>
-              <TableCell align='right' colSpan={2} padding='checkbox'></TableCell>
+              <TableCell as='td' align='right' colSpan={2} padding='checkbox' />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -146,7 +145,7 @@ export default function UserList() {
                   }
                 </TableCell>
                 <TableCell align="right" padding='checkbox'>
-                  <UserMenuIconButton user={task} requestRefresh={requestRefresh} />
+                  <UserMenuIconButton task={task} requestRefresh={requestRefresh} />
                 </TableCell>
               </TableRow>
             ))}
@@ -178,34 +177,22 @@ function UserMenuIconButton(props) {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
-  const { user, requestRefresh } = props;
+  const { task, requestRefresh } = props;
 
   const onClose = () => {
     setAnchorEl(null);
   };
 
   // 用户资料
-  const onProfileClick = () => {
+  const onInfoClick = () => {
     setAnchorEl(null);
-    navigate('profile', { state: { uuid: user.uuid } });
+    navigate('info', { state: { uuid: task.uuid } });
   };
 
   // 修改资料
-  const onInfoClick = () => {
+  const onModifyClick = () => {
     setAnchorEl(null);
-    navigate('info', { state: { uuid: user.uuid } });
-  };
-
-  // 修改密码
-  const onPasswdClick = () => {
-    setAnchorEl(null);
-    navigate('passwd', { state: { uuid: user.uuid, name: user.name } });
-  };
-
-  // 访问控制
-  const onACLClick = () => {
-    setAnchorEl(null);
-    navigate('acl', { state: { uuid: user.uuid, name: user.name, acl: user.acl } });
+    navigate('info', { state: { uuid: task.uuid } });
   };
 
   // 禁用/启用
@@ -214,16 +201,16 @@ function UserMenuIconButton(props) {
       setAnchorEl(null);
 
       await confirm({
-        description: user.disabled ?
+        description: task.disabled ?
           `确定要恢复该账号吗？恢复后该账号可正常使用。`
           :
           `确定要禁用该账号吗？禁用后该账号不可以继续使用，直到恢复为止。`,
-        confirmationText: user.disabled ? '恢复' : '禁用',
+        confirmationText: task.disabled ? '恢复' : '禁用',
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
       await post('/system/user/disable',
-        new URLSearchParams({ uuid: user.uuid })
+        new URLSearchParams({ uuid: task.uuid })
       );
       enqueueSnackbar('用户状态更新成功', { variant: 'success' });
       requestRefresh();
@@ -244,7 +231,7 @@ function UserMenuIconButton(props) {
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
-      const params = new URLSearchParams({ uuid: user.uuid });
+      const params = new URLSearchParams({ uuid: task.uuid });
       await del('/system/user/delete?' + params.toString());
       enqueueSnackbar('用户已被删除', { variant: 'success' });
       requestRefresh();
@@ -258,54 +245,49 @@ function UserMenuIconButton(props) {
   return (
     <>
       <IconButton color='primary'
-        aria-controls={open ? 'basic-menu' : undefined}
+        aria-label='菜单'
+        aria-controls={open ? '菜单' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={e => { setAnchorEl(e.currentTarget); }}>
         <MoreVertIcon />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
-        <MenuItem onClick={onProfileClick}>
+        <MenuItem onClick={onInfoClick}>
           <ListItemIcon>
-            <AccountCircleIcon fontSize="small" />
+            <InfoIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>详细信息</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem disabled={user.disabled || user.deleted} onClick={onInfoClick}>
+        <MenuItem disabled={task.disabled} onClick={onModifyClick}>
           <ListItemIcon>
-            <ManageAccountsIcon fontSize="small" />
+            <EditIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>修改</ListItemText>
         </MenuItem>
-        <MenuItem disabled={user.disabled || user.deleted} onClick={onPasswdClick}>
-          <ListItemIcon>
-            <KeyIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>修改密码</ListItemText>
-        </MenuItem>
-        <MenuItem disabled={user.disabled || user.deleted} onClick={onACLClick}>
-          <ListItemIcon>
-            <SecurityIcon fontSize="small" color='info' />
-          </ListItemIcon>
-          <ListItemText>访问控制</ListItemText>
-        </MenuItem>
         <Divider />
-        <MenuItem disabled={user.deleted} onClick={onDisableClick}>
+        <MenuItem disabled={task.deleted} onClick={onDeleteClick}>
+          <ListItemIcon>
+            <LocalFireDepartmentIcon fontSize="small" color='error' />
+          </ListItemIcon>
+          <ListItemText>立即运行</ListItemText>
+        </MenuItem>
+        <MenuItem disabled={task.deleted} onClick={onDisableClick}>
           <ListItemIcon>
             <BlockIcon fontSize="small" color='warning' />
           </ListItemIcon>
-          {user.disabled ?
-            <ListItemText>恢复账号</ListItemText>
+          {task.disabled ?
+            <ListItemText>恢复</ListItemText>
             :
-            <ListItemText>禁用账号</ListItemText>
+            <ListItemText>禁用</ListItemText>
           }
         </MenuItem>
-        <MenuItem disabled={user.deleted} onClick={onDeleteClick}>
+        <MenuItem disabled={task.deleted} onClick={onDeleteClick}>
           <ListItemIcon>
             <RemoveCircleOutlineIcon fontSize="small" color='error' />
           </ListItemIcon>
-          <ListItemText>删除账号</ListItemText>
+          <ListItemText>删除</ListItemText>
         </MenuItem>
       </Menu>
     </>

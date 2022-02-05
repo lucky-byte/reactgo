@@ -15,7 +15,7 @@ func Attach(up *echo.Group) {
 	group.GET("/testcron", testcron)
 	group.GET("/funcs", funcs)
 	group.GET("/entries", entries)
-	// group.GET("/profile", profile)
+	group.GET("/info", info)
 
 	group.Use(acl.AllowWrite(code))
 

@@ -169,7 +169,7 @@ export default function SignIn() {
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton size='small' onClick={() => {
+                  <IconButton aria-label="显示密码" size='small' onClick={() => {
                     setPasswordHide(!passwordHide);
                   }}>
                     {passwordHide ? <VisibilityIcon /> : <VisibilityOffIcon />}
