@@ -7,6 +7,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/task"
 )
 
 func del(c echo.Context) error {
@@ -17,6 +18,11 @@ func del(c echo.Context) error {
 	err := echo.QueryParamsBinder(c).MustString("uuid", &uuid).BindError()
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
+	}
+	// 停止任务
+	if err = task.Remove(uuid); err != nil {
+		cc.ErrLog(err).Error("停止任务错")
+		return c.NoContent(http.StatusInternalServerError)
 	}
 	// 删除
 	ql := `delete from tasks where uuid = ?`

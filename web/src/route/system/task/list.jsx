@@ -193,6 +193,27 @@ function UserMenuIconButton(props) {
     navigate('modify', { state: { uuid: task.uuid } });
   };
 
+  // 立即执行
+  const onFireClick = async () => {
+    try {
+      setAnchorEl(null);
+
+      await confirm({
+        description: `确定要立即执行 ${task?.name} 吗？`,
+        confirmationText: '立即执行',
+        confirmationButtonProps: { color: 'warning' },
+      });
+
+      await post('/system/task/fire', new URLSearchParams({ uuid: task.uuid }));
+      enqueueSnackbar('已提交', { variant: 'success' });
+      requestRefresh();
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
   // 禁用/启用
   const onDisableClick = async () => {
     try {
@@ -269,7 +290,7 @@ function UserMenuIconButton(props) {
           </ListItemIcon>
           <ListItemText>修改</ListItemText>
         </MenuItem>
-        <MenuItem disabled={task.disabled} onClick={onDeleteClick}>
+        <MenuItem disabled={task.disabled} onClick={onFireClick}>
           <ListItemIcon>
             <LocalFireDepartmentIcon fontSize="small" color='error' />
           </ListItemIcon>

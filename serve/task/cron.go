@@ -3,34 +3,32 @@ package task
 import (
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/lucky-byte/reactgo/serve/db"
-	"github.com/lucky-byte/reactgo/serve/xlog"
 	"github.com/pkg/errors"
 	"github.com/robfig/cron/v3"
 )
 
 type Scheduler struct {
-	path string
+	root string
 	cron *cron.Cron
 }
 
 var scheduler *Scheduler
 
 // 启动任务调度
-func Startup(task_path string) error {
-	if len(task_path) == 0 {
+func Startup(root string) error {
+	if len(root) == 0 {
 		return fmt.Errorf("未配置 task.path")
 	}
-	i, err := os.Stat(task_path)
+	i, err := os.Stat(root)
 	if err != nil {
-		return errors.Wrap(err, task_path)
+		return errors.Wrap(err, root)
 	}
 	if !i.IsDir() {
-		return fmt.Errorf("%s 不是目录", task_path)
+		return fmt.Errorf("%s 不是目录", root)
 	}
-	scheduler = &Scheduler{path: task_path}
+	scheduler = &Scheduler{root: root}
 
 	scheduler.cron = cron.New(
 		cron.WithLogger(cron.DefaultLogger),
@@ -38,7 +36,10 @@ func Startup(task_path string) error {
 			cron.Recover(cron.DefaultLogger),
 			cron.SkipIfStillRunning(cron.DefaultLogger),
 		),
-		cron.WithSeconds(),
+		cron.WithParser(cron.NewParser(
+			cron.SecondOptional|cron.Minute|cron.Hour|
+				cron.Dom|cron.Month|cron.Dow|cron.Descriptor,
+		)),
 	)
 
 	// 查询所有任务
@@ -54,35 +55,12 @@ func Startup(task_path string) error {
 		if t.Type != 1 && t.Type != 2 {
 			return fmt.Errorf("任务'%s'的类型 %d 无效", t.Name, t.Type)
 		}
-		if err := addJob(t, task_path); err != nil {
+		if err := Add(t); err != nil {
 			return errors.Wrapf(err, "添加任务'%s'错", t.Name)
 		}
 	}
 	// 启动
 	scheduler.cron.Start()
-	return nil
-}
-
-// 添加 JOB
-func addJob(t db.Task, task_path string) error {
-	job := Job{Task: t}
-
-	if t.Type == 1 {
-		f := findFunc(t.Path)
-
-		if f == nil || f.Func == nil {
-			return fmt.Errorf("未定义函数'%s'", t.Path)
-		}
-		job.Func = f.Func
-	} else {
-		job.Command = path.Join(task_path, t.Path)
-	}
-	id, err := scheduler.cron.AddJob(t.Cron, job)
-	if err != nil {
-		return errors.Wrapf(err, "添加任务'%s'错", t.Name)
-	}
-	xlog.X.Tracef("添加任务'%s' %d", t.Name, id)
-	job.EntryId = id
 	return nil
 }
 

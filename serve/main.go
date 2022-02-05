@@ -187,10 +187,11 @@ func main() {
 		webfsHandler := http.FileServer(http.FS(fsys))
 
 		engine.GET("/static/*", echo.WrapHandler(webfsHandler))
-		engine.GET("/manifest.json", echo.WrapHandler(webfsHandler))
+		engine.GET("/asset-manifest.json", echo.WrapHandler(webfsHandler))
 		engine.GET("/favicon.png", echo.WrapHandler(webfsHandler))
 		engine.GET("/logo192.png", echo.WrapHandler(webfsHandler))
 		engine.GET("/logo512.png", echo.WrapHandler(webfsHandler))
+		engine.GET("/manifest.json", echo.WrapHandler(webfsHandler))
 		engine.GET("/robots.txt", echo.WrapHandler(webfsHandler))
 	} else {
 		webdir := conf.Webdir()
@@ -244,6 +245,7 @@ func main() {
 	task.Stop()
 }
 
+// 在单独的 goroutine 中启动 http 服务
 func startup(conf *config.ViperConfig) {
 	bind := conf.ServerBind()
 	secure := conf.ServerSecure()
@@ -255,8 +257,8 @@ func startup(conf *config.ViperConfig) {
 			bind = ":http"
 		}
 	}
-	// insecure http server
-	// start http/2 cleartext server(HTTP2 over HTTP)
+	// 不安全的 http 服务器
+	// 启动 http/2 cleartext 服务器(HTTP2 over HTTP)
 	if !secure {
 		h2s := &http2.Server{
 			MaxReadFrameSize:     1024 * 1024 * 5,
@@ -273,11 +275,10 @@ func startup(conf *config.ViperConfig) {
 			}
 		}
 	} else {
-		// secure https server, support both http 1.1 and http2
+		// 安全 https 服务器，支持 HTTP/1.1 和 HTTP2
 		var tlsconfig *tls.Config
 
-		// automatic access to certificates from Let's Encrypt and
-		// any other ACME-based CA.
+		// 自动从 Let's Encrypt 或其他支持 ACME 的 CA 获取证书
 		if conf.ServerAutoTLS() {
 			domains := conf.ServerDomains()
 			if len(domains) == 0 {
@@ -300,7 +301,7 @@ func startup(conf *config.ViperConfig) {
 			if len(tlskey) == 0 || len(tlscrt) == 0 {
 				xlog.X.Fatal("configuration missing tlscrt or tlskey")
 			}
-			// load cert and key from pem file, DON'T support encrypted key
+			// 从 pem 文件加载证书和私钥，不支持加密的私钥
 			c, err := tls.LoadX509KeyPair(tlscrt, tlskey)
 			if err != nil {
 				xlog.X.Fatalf("failed to load pem: %v", err)
@@ -328,13 +329,12 @@ func startup(conf *config.ViperConfig) {
 	}
 }
 
-// HTTP Error Handler
+// HTTP 错误处理
 func httpErrorHandler(err error, c echo.Context) {
 	url := c.Request().URL.String()
 
-	// Since web front-end is a React SPA with client route, to support user
-	// access from any path(like /some/place, /some/place is client route),
-	// we need serve index.html rather than 404 not found
+	// 前端是使用客户端路由的 React 应用，为了支持用户从任意路径访问，例如 /some/place
+	// (/some/place 是客户端路由)，需要响应 index.html 而不是 404
 	if e, ok := err.(*echo.HTTPError); ok {
 		if e.Code == 404 && c.Request().Method == http.MethodGet {
 			accept := c.Request().Header["Accept"]
@@ -359,11 +359,11 @@ func httpErrorHandler(err error, c echo.Context) {
 	xlog.F("url", url, "error", err).Error("Server error")
 	// reportError(err, c)
 
-	// Default error handler
+	// 默认错误处理
 	c.Echo().DefaultHTTPErrorHandler(err, c)
 }
 
-// print version information
+// 打印版本信息
 func printVersion() {
 	name := color.MagentaString(Name)
 

@@ -1,9 +1,5 @@
 package task
 
-import (
-	"github.com/lucky-byte/reactgo/serve/xlog"
-)
-
 type FuncEntry struct {
 	Name string
 	Path string
@@ -12,14 +8,7 @@ type FuncEntry struct {
 
 var Funcs []*FuncEntry
 
-func test() {
-	xlog.X.Debug("I am tester")
-}
-
-func init() {
-	Funcs = append(Funcs, &FuncEntry{"测试函数", "test", test})
-}
-
+// 查找函数
 func findFunc(path string) *FuncEntry {
 	for _, f := range Funcs {
 		if f.Path == path {

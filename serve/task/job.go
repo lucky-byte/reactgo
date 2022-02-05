@@ -3,18 +3,18 @@ package task
 import (
 	"os"
 	"os/exec"
+	"path"
+	"strings"
 	"time"
 
 	"github.com/lucky-byte/reactgo/serve/db"
 	"github.com/lucky-byte/reactgo/serve/xlog"
-	"github.com/robfig/cron/v3"
 )
 
 type Job struct {
 	Task    db.Task
 	Func    func()
-	Command string
-	EntryId cron.EntryID
+	running bool
 }
 
 func (j Job) Run() {
@@ -41,22 +41,46 @@ func (j Job) Run() {
 		where uuid = ?
 	`
 	if err := db.ExecOne(ql, j.Task.UUID); err != nil {
-		xlog.X.WithError(err).Error("更新任务运行次数错")
+		xlog.X.WithError(err).WithField("name", j.Task.Name).
+			Error("更新任务运行次数错")
 	}
 }
 
 // 运行命令
 func (j Job) runCommand() {
-	i, err := os.Stat(j.Command)
+	if j.running {
+		xlog.X.Infof("任务'%s'正在执行中，本次调度被忽略", j.Task.Name)
+		return
+	}
+	j.running = true
+	defer func() { j.running = false }()
+
+	args := strings.Fields(j.Task.Path)
+	command := args[0]
+
+	if !path.IsAbs(command) {
+		command = path.Join(scheduler.root, command)
+	}
+	i, err := os.Stat(command)
 	if err != nil {
 		xlog.X.WithError(err).Errorf("执行任务'%s'错", j.Task.Name)
 		return
 	}
 	if i.IsDir() {
-		xlog.X.Errorf("%s 是一个目录，不能执行", j.Command)
+		xlog.X.Errorf("%s 是一个目录，不能执行", command)
 		return
 	}
-	cmd := exec.Command(j.Command)
+	if i.Mode().Perm()&0100 == 0 {
+		xlog.X.Errorf("%s 不是可执行文件，需要添加执行权限", command)
+		return
+	}
+	var cmd *exec.Cmd
+
+	if len(args) == 1 {
+		cmd = exec.Command(command)
+	} else {
+		cmd = exec.Command(command, args[1:]...)
+	}
 
 	// 设置环境变量
 	cmd.Env = append(os.Environ(), "")
@@ -64,7 +88,9 @@ func (j Job) runCommand() {
 	// 执行命令
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		xlog.X.WithError(err).WithField("name", j.Task.Name).Error("执行任务错")
+		xlog.X.WithError(err).
+			WithField("name", j.Task.Name).
+			WithField("path", j.Task.Path).Error("执行任务错")
 	}
-	xlog.X.Infof("任务'%s'输出: %s", j.Task.Name, out)
+	xlog.X.Infof("任务'%s'[%s]输出: %s", j.Task.Name, j.Task.Path, out)
 }
