@@ -92,7 +92,7 @@ export default function UserModify() {
     <Container as='main' maxWidth='md' sx={{ mb: 2 }}>
       <Paper elevation={3} sx={{ px: 4, py: 3, mt: 5 }}>
         <Stack direction='row' alignItems='center' spacing={1} sx={{ mb: 3 }}>
-          <IconButton component={RouteLink} to='..'>
+          <IconButton aria-label="返回" component={RouteLink} to='..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
           <Typography variant='h6'>用户资料</Typography>

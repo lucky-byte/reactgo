@@ -8,12 +8,14 @@ import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import TextField from "@mui/material/TextField";
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import InputAdornment from '@mui/material/InputAdornment';
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Typography from '@mui/material/Typography';
+import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
@@ -27,27 +29,30 @@ export default function TaskModify() {
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
-  const [userInfo, setUserInfo] = useState({});
+  const [funcs, setFuncs] = useState([]);
+  const [info, setInfo] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
 
-  useEffect(() => { setTitle('修改用户资料'); }, [setTitle]);
+  useEffect(() => { setTitle('修改定时任务'); }, [setTitle]);
 
-  const { register, handleSubmit, control, setValue, formState: {
+  const { register, handleSubmit, watch, control, setValue, formState: {
     errors, isSubmitting
-  }} = useForm({
+  } } = useForm({
     defaultValues: {
       tfa: true,
     }
   });
 
+  const type = watch('type', 1);
+  const cron = watch('cron', '');
+
   const reset = useCallback(info => {
-    setValue("userid", info.userid);
     setValue("name", info.name);
-    setValue("mobile", info.mobile);
-    setValue("email", info.email);
-    setValue("address", info.address);
-    setValue("tfa", info.tfa);
+    setValue("cron", info.cron);
+    setValue("type", info.type);
+    setValue("path", info.path);
+    setValue("summary", info.summary);
   }, [setValue]);
 
   useEffect(() => {
@@ -56,10 +61,15 @@ export default function TaskModify() {
         if (location.state) {
           setProgress(true);
 
+          // 查询可用的函数
+          const resp = await get('/system/task/funcs');
+          setFuncs(resp.funcs || []);
+
+          // 查询任务信息
           const params = new URLSearchParams({ uuid: location.state.uuid });
-          const resp = await get('/system/user/info?' + params.toString());
-          setUserInfo(resp);
-          reset(resp);
+          const info = await get('/system/task/info?' + params.toString());
+          setInfo(info);
+          reset(info);
         }
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -69,10 +79,21 @@ export default function TaskModify() {
     })();
   }, [location.state, enqueueSnackbar, setProgress, reset]);
 
-  const onReset = () => {
-    reset(userInfo);
+  // 验证 cron 表达式
+  const onTestCron = async () => {
+    if (cron.length === 0) {
+      return enqueueSnackbar('请先输入表达式', { variant: 'warning' });
+    }
+    try {
+      const params = new URLSearchParams({ cron });
+      await get('/system/task/testcron?' + params.toString());
+      enqueueSnackbar('表达式有效', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
   }
 
+  // 提交
   const onSubmit = async data => {
     try {
       data.uuid = location.state.uuid;
@@ -92,33 +113,46 @@ export default function TaskModify() {
     <Container as='main' maxWidth='md' sx={{ mb: 2 }}>
       <Paper elevation={3} sx={{ px: 4, py: 3, mt: 5 }}>
         <Stack direction='row' alignItems='center' spacing={1} sx={{ mb: 3 }}>
-          <IconButton component={RouteLink} to='..'>
+          <IconButton aria-label="返回" component={RouteLink} to='..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
-          <Typography variant='h6'>用户资料</Typography>
+          <Typography variant='h6'>定时任务</Typography>
         </Stack>
         <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={4}>
               <Stack direction='row' spacing={3}>
-                <TextField label='登录名' variant='standard' focused fullWidth
-                  required
-                  placeholder='用于登录，使用字母或数字'
-                  helperText={errors?.userid?.message}
-                  error={errors?.userid}
-                  {...register('userid', {
+                <TextField label='任务名称' variant='standard' fullWidth
+                  required autoFocus focused
+                  placeholder='定时任务名称'
+                  helperText={errors?.name?.message}
+                  error={errors?.name}
+                  {...register('name', {
                     required: "不能为空",
                     maxLength: {
                       value: 32, message: '超出最大长度'
                     },
                   })}
                 />
-                <TextField label='真实姓名' variant='standard' focused fullWidth
-                  required
-                  placeholder='用户真实姓名'
-                  helperText={errors?.name?.message}
-                  error={errors?.name}
-                  {...register('name', {
+                <TextField label='调度表达式' variant='standard' fullWidth
+                  focused required placeholder='CRON 表达式'
+                  helperText={errors?.cron?.message}
+                  error={errors?.cron}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <Tooltip title='测试表达式是否有效'>
+                          <Button onClick={onTestCron}>验证</Button>
+                        </Tooltip>
+                        <Tooltip title='查看帮助'>
+                          <IconButton LinkComponent={RouteLink} to='../cron'>
+                            <HelpOutlineIcon fontSize='small' color='primary' />
+                          </IconButton>
+                        </Tooltip>
+                      </InputAdornment>
+                    )
+                  }}
+                  {...register('cron', {
                     required: "不能为空",
                     maxLength: {
                       value: 64, message: '超出最大长度'
@@ -127,65 +161,57 @@ export default function TaskModify() {
                 />
               </Stack>
               <Stack direction='row' spacing={3}>
-                <TextField label='手机号' variant='standard' focused fullWidth
-                  required type='tel'
-                  placeholder='登录时用于接收短信验证码'
-                  inputProps={{ maxLength: 11 }}
-                  helperText={errors?.mobile?.message}
-                  error={errors?.mobile}
-                  {...register('mobile', {
-                    required: "不能为空",
-                    minLength: {
-                      value: 11, message: '长度不足11位'
-                    },
-                    maxLength: {
-                      value: 11, message: '长度不能超出11位'
-                    },
-                    pattern: {
-                      value: /^1[0-9]{10}$/, message: '格式不符合规范'
-                    },
-                  })}
-                />
-                <TextField label='邮箱地址' variant='standard' focused fullWidth
-                  required type='email'
-                  placeholder='用于接收各种邮件'
-                  helperText={errors?.email?.message}
-                  error={errors?.email}
-                  {...register('email', {
-                    required: "不能为空",
-                    maxLength: {
-                      value: 128, message: '超出最大长度'
-                    },
-                  })}
-                />
+                <TextField label='任务类型' variant='standard' fullWidth
+                  focused required select defaultValue={1}
+                  helperText='函数指内置于系统的功能，命令指外部可执行文件'
+                  {...register('type', { required: "不能为空" })}
+                >
+                  <MenuItem value={1}>函数</MenuItem>
+                  <MenuItem value={2}>命令</MenuItem>
+                </TextField>
+                {parseInt(type) === 1 ?
+                  <TextField label='函数' variant='standard' fullWidth
+                    focused required select defaultValue=''
+                    helperText='请从列表中选择一项'
+                    error={errors?.func}
+                    {...register('func', { required: "不能为空" })}
+                  >
+                    {funcs.map(item => (
+                      <MenuItem key={item.path} value={item.path}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  :
+                  <TextField label='命令' variant='standard' fullWidth required
+                    focused placeholder='文件路径'
+                    helperText='可以是相对路径或绝对路径'
+                    error={errors?.path}
+                    {...register('path', {
+                      required: "不能为空",
+                      maxLength: {
+                        value: 128, message: '超出最大长度'
+                      },
+                    })}
+                  />
+                }
               </Stack>
-              <TextField label='联系地址' variant='standard' focused fullWidth
-                placeholder='联系地址，如果没有可以不填'
-                {...register('address', {
+              <TextField label='描述' variant='standard' fullWidth
+                focused placeholder='任务描述，可以不填'
+                {...register('summary', {
                   maxLength: {
                     value: 256, message: '超出最大长度'
                   },
                 })}
-              />
-              <FormControlLabel label="登录时需要验证短信验证码（非特殊情况必须开启）"
-                control={
-                  <Controller
-                    control={control}
-                    name="tfa"
-                    render={({ field: { value, onChange, ref } }) => (
-                      <Switch checked={value} onChange={onChange}
-                        inputRef={ref}
-                      />
-                    )}
-                  />
-                }
               />
               <Stack direction='row' spacing={2} justifyContent='flex-end'>
                 <Button color='secondary' disabled={isSubmitting}
                   onClick={() => { navigate('..') }}>
                   取消
                 </Button>
-                <Button disabled={isSubmitting} onClick={onReset}>重置</Button>
+                <Button disabled={isSubmitting} onClick={() => {reset(info)}}>
+                  重置
+                </Button>
                 <LoadingButton variant='contained' type='submit'
                   loading={isSubmitting}>
                   提交

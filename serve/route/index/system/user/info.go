@@ -10,7 +10,38 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-func updateinfo(c echo.Context) error {
+// 查询信息
+func infoGet(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var uuid string
+
+	err := echo.QueryParamsBinder(c).MustString("uuid", &uuid).BindError()
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+	ql := `
+		select userid, name, email, mobile, address, tfa from users
+		where uuid = ?
+	`
+	var user db.User
+
+	if err := db.SelectOne(ql, &user, uuid); err != nil {
+		cc.ErrLog(err).Error("查询用户信息错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"userid":  user.UserId,
+		"name":    user.Name,
+		"mobile":  user.Mobile,
+		"email":   user.Email,
+		"address": user.Address.String,
+		"tfa":     user.TFA,
+	})
+}
+
+// 修改信息
+func infoUpdate(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	var uuid, userid, name, email, mobile, address string

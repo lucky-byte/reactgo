@@ -27,7 +27,7 @@ export default function TaskAdd() {
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
-  const [funcs, setFuncs] = useState([]);
+  const [funcList, setFuncList] = useState([]);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
   useEffect(() => { setTitle('添加定时任务'); }, [setTitle]);
@@ -41,12 +41,13 @@ export default function TaskAdd() {
   const type = watch('type', 1);
   const cron = watch('cron', '');
 
+  // 查询可用的函数
   useEffect(() => {
     (async () => {
       try {
         setProgress(true);
         const resp = await get('/system/task/funcs');
-        setFuncs(resp.funcs || []);
+        setFuncList(resp.funcs || []);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
@@ -55,9 +56,10 @@ export default function TaskAdd() {
     })();
   }, [enqueueSnackbar, setProgress]);
 
+  // 验证 cron 表达式
   const onTestCron = async () => {
     if (cron.length === 0) {
-      return enqueueSnackbar('请输入 cron 表达式', { variant: 'warning' });
+      return enqueueSnackbar('请先输入表达式', { variant: 'warning' });
     }
     try {
       const params = new URLSearchParams({ cron });
@@ -68,6 +70,7 @@ export default function TaskAdd() {
     }
   }
 
+  // 提交
   const onSubmit = async data => {
     try {
       await post('/system/task/add', new URLSearchParams(data));
@@ -88,7 +91,7 @@ export default function TaskAdd() {
           <Stack>
             <Typography variant='h6'>定时任务</Typography>
             <FormHelperText>
-              配置定时任务需要对系统内部有比较深入的了解，请在开发人员的指导下进行配置
+              配置定时任务需要对系统有比较深入的了解，请在开发人员的指导下进行配置
             </FormHelperText>
           </Stack>
         </Stack>
@@ -116,7 +119,7 @@ export default function TaskAdd() {
                     endAdornment: (
                       <InputAdornment position='end'>
                         <Tooltip title='测试表达式是否有效'>
-                          <Button onClick={onTestCron}>测试</Button>
+                          <Button onClick={onTestCron}>验证</Button>
                         </Tooltip>
                         <Tooltip title='查看帮助'>
                           <IconButton LinkComponent={RouteLink} to='../cron'>
@@ -137,30 +140,29 @@ export default function TaskAdd() {
               <Stack direction='row' spacing={3}>
                 <TextField label='任务类型' variant='standard' fullWidth
                   required select defaultValue={1}
-                  helperText={errors?.type?.message}
-                  error={errors?.type}
+                  helperText='函数指内置于系统的功能，命令指外部可执行文件'
                   {...register('type', { required: "不能为空" })}
                 >
-                  <MenuItem value={1}>内置函数</MenuItem>
-                  <MenuItem value={2}>外部命令</MenuItem>
+                  <MenuItem value={1}>函数</MenuItem>
+                  <MenuItem value={2}>命令</MenuItem>
                 </TextField>
                 {parseInt(type) === 1 ?
-                  <TextField label='函数名' variant='standard' fullWidth
+                  <TextField label='函数' variant='standard' fullWidth
                     required select defaultValue=''
-                    helperText={errors?.func?.message}
+                    helperText='请从列表中选择一项'
                     error={errors?.func}
                     {...register('func', { required: "不能为空" })}
                   >
-                    {funcs.map(item => (
+                    {funcList.map(item => (
                       <MenuItem key={item.path} value={item.path}>
                         {item.name}
                       </MenuItem>
                     ))}
                   </TextField>
                   :
-                  <TextField label='文件路径' variant='standard' fullWidth required
+                  <TextField label='命令' variant='standard' fullWidth required
                     placeholder='文件路径'
-                    helperText={errors?.path?.message}
+                    helperText='可以是相对路径或绝对路径'
                     error={errors?.path}
                     {...register('path', {
                       required: "不能为空",

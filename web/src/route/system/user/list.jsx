@@ -21,6 +21,7 @@ import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import BlockIcon from '@mui/icons-material/Block';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -40,6 +41,7 @@ import userState from "~/state/user";
 import progressState from "~/state/progress";
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
+import { useSecretCode } from '~/comp/secretcode';
 import usePageData from '~/hook/pagedata';
 import { post, del, get } from '~/rest';
 
@@ -219,6 +221,7 @@ function UserMenuIconButton(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [currentUser, setCurrentUser] = useRecoilState(userState);
   const confirm = useConfirm();
+  const secretCode = useSecretCode();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
@@ -336,11 +339,16 @@ function UserMenuIconButton(props) {
       setAnchorEl(null);
 
       await confirm({
-        description: `确定要删除用户 ${user.name} 吗？删除后不能恢复。`,
+        description: `确定要删除用户 ${user.name} 吗？删除后用户数据将保留，但账号将永久停用，无法恢复!`,
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
-      const params = new URLSearchParams({ uuid: user.uuid });
+
+      const token = await secretCode();
+
+      const params = new URLSearchParams({
+        uuid: user.uuid, secretcode_token: token
+      });
       await del('/system/user/delete?' + params.toString());
       enqueueSnackbar('用户已被删除', { variant: 'success' });
       requestRefresh();
@@ -403,19 +411,23 @@ function UserMenuIconButton(props) {
         <Divider />
         <MenuItem disabled={user.deleted} onClick={onDisableClick}>
           <ListItemIcon>
-            <BlockIcon fontSize="small" color='warning' />
+            {user.disabled ?
+              <SettingsBackupRestoreIcon fontSize="small" color='warning' />
+              :
+              <BlockIcon fontSize="small" color='warning' />
+            }
           </ListItemIcon>
           {user.disabled ?
-            <ListItemText>恢复账号</ListItemText>
+            <ListItemText>恢复</ListItemText>
             :
-            <ListItemText>禁用账号</ListItemText>
+            <ListItemText>禁用</ListItemText>
           }
         </MenuItem>
         <MenuItem disabled={user.deleted} onClick={onDeleteClick}>
           <ListItemIcon>
             <RemoveCircleOutlineIcon fontSize="small" color='error' />
           </ListItemIcon>
-          <ListItemText>删除账号</ListItemText>
+          <ListItemText>删除</ListItemText>
         </MenuItem>
       </Menu>
     </>

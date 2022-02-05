@@ -35,6 +35,7 @@ import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import { saveAs } from 'file-saver';
 import OutlinedPaper from '~/comp/outlined-paper';
+import { useSecretCode } from '~/comp/secretcode';
 import userState from '~/state/user';
 import { get, put, post, del } from "~/rest";
 import { InputAdornment } from "@mui/material";
@@ -141,6 +142,7 @@ export default function MailSettings() {
 function MenuButton(props) {
   const navigate = useNavigate();
   const confirm = useConfirm();
+  const secretCode= useSecretCode();
   const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -158,6 +160,8 @@ function MenuButton(props) {
 
   const onSort = async dir => {
     try {
+      onClose();
+
       await put('/system/settings/mail/sort', new URLSearchParams({
         uuid, dir, sortno,
       }));
@@ -165,8 +169,6 @@ function MenuButton(props) {
       requestRefresh();
     } catch (err) {
       enqueueSnackbar(err.message);
-    } finally {
-      onClose();
     }
   }
 
@@ -187,12 +189,17 @@ function MenuButton(props) {
 
   const onDelete = async () => {
     try {
+      onClose();
+
       await confirm({
-        description: `确定要删除 ${name} 吗？删除后不能恢复。`,
+        description: `确定要删除 ${name} 吗？删除后无法恢复。`,
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
-      const params = new URLSearchParams({ uuid });
+
+      const token = await secretCode();
+
+      const params = new URLSearchParams({ uuid, secretcode_token: token });
       await del('/system/settings/mail/delete?' + params.toString());
       enqueueSnackbar('删除成功', { variant: 'success' });
       requestRefresh();
@@ -200,8 +207,6 @@ function MenuButton(props) {
       if (err) {
         enqueueSnackbar(err.message);
       }
-    } finally {
-      onClose();
     }
   }
 

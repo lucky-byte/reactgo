@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/lucky-byte/reactgo/serve/route/index/acl"
+	"github.com/lucky-byte/reactgo/serve/route/index/secretcode"
 )
 
 func Attach(up *echo.Group) {
@@ -31,7 +32,7 @@ func Attach(up *echo.Group) {
 	group.Use(acl.AllowAdmin(code)) // Admin 权限
 
 	group.POST("/mail/add", mailAdd)
-	group.DELETE("/mail/delete", mailDel)
+	group.DELETE("/mail/delete", mailDel, secretcode.Verify())
 	group.GET("/mail/export", mailExport)
 	group.POST("/mail/import", mailImport)
 

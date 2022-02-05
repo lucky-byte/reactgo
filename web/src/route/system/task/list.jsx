@@ -18,6 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import BlockIcon from '@mui/icons-material/Block';
+import RestoreIcon from '@mui/icons-material/Restore';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -34,6 +35,7 @@ import titleState from "~/state/title";
 import progressState from "~/state/progress";
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
+import { useSecretCode } from '~/comp/secretcode';
 import usePageData from '~/hook/pagedata';
 import { post, del } from '~/rest';
 
@@ -133,12 +135,7 @@ export default function UserList() {
                   {dayjs(task.last_fire).format('YY-MM-DD HH:mm:ss')}
                 </TableCell>
                 <TableCell align="right" padding='none'>
-                  {task.deleted &&
-                    <RemoveCircleOutlineIcon color='error' fontSize='small'
-                      sx={{ verticalAlign: 'middle' }}
-                    />
-                  }
-                  {(task.disabled && !task.deleted) &&
+                  {task.disabled &&
                     <BlockIcon color='warning' fontSize='small'
                       sx={{ verticalAlign: 'middle' }}
                     />
@@ -174,6 +171,7 @@ function UserMenuIconButton(props) {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const confirm = useConfirm();
+  const secretCode = useSecretCode();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
@@ -183,16 +181,16 @@ function UserMenuIconButton(props) {
     setAnchorEl(null);
   };
 
-  // 用户资料
+  // 信息
   const onInfoClick = () => {
     setAnchorEl(null);
     navigate('info', { state: { uuid: task.uuid } });
   };
 
-  // 修改资料
+  // 修改
   const onModifyClick = () => {
     setAnchorEl(null);
-    navigate('info', { state: { uuid: task.uuid } });
+    navigate('modify', { state: { uuid: task.uuid } });
   };
 
   // 禁用/启用
@@ -202,17 +200,17 @@ function UserMenuIconButton(props) {
 
       await confirm({
         description: task.disabled ?
-          `确定要恢复该账号吗？恢复后该账号可正常使用。`
+          `确定要恢复 ${task?.name} 吗？恢复后该任务将立即添加到调度队列等待执行。`
           :
-          `确定要禁用该账号吗？禁用后该账号不可以继续使用，直到恢复为止。`,
+          `确定要禁用 ${task?.name} 吗？禁用后该任务将从调度队列中移除。`,
         confirmationText: task.disabled ? '恢复' : '禁用',
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      await post('/system/user/disable',
+      await post('/system/task/disable',
         new URLSearchParams({ uuid: task.uuid })
       );
-      enqueueSnackbar('用户状态更新成功', { variant: 'success' });
+      enqueueSnackbar('更新成功', { variant: 'success' });
       requestRefresh();
     } catch (err) {
       if (err) {
@@ -227,13 +225,18 @@ function UserMenuIconButton(props) {
       setAnchorEl(null);
 
       await confirm({
-        description: '确定要删除该用户吗？删除后不能恢复。',
+        description: `确定要删除 ${task?.name} 吗？删除后无法恢复。`,
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
-      const params = new URLSearchParams({ uuid: task.uuid });
-      await del('/system/user/delete?' + params.toString());
-      enqueueSnackbar('用户已被删除', { variant: 'success' });
+
+      const token = await secretCode();
+
+      const params = new URLSearchParams({
+        secretcode_token: token, uuid: task.uuid
+      });
+      await del('/system/task/delete?' + params.toString());
+      enqueueSnackbar('已删除', { variant: 'success' });
       requestRefresh();
     } catch (err) {
       if (err) {
@@ -266,16 +269,20 @@ function UserMenuIconButton(props) {
           </ListItemIcon>
           <ListItemText>修改</ListItemText>
         </MenuItem>
-        <Divider />
-        <MenuItem disabled={task.deleted} onClick={onDeleteClick}>
+        <MenuItem disabled={task.disabled} onClick={onDeleteClick}>
           <ListItemIcon>
             <LocalFireDepartmentIcon fontSize="small" color='error' />
           </ListItemIcon>
-          <ListItemText>立即运行</ListItemText>
+          <ListItemText>立即执行</ListItemText>
         </MenuItem>
+        <Divider />
         <MenuItem disabled={task.deleted} onClick={onDisableClick}>
           <ListItemIcon>
-            <BlockIcon fontSize="small" color='warning' />
+            {task.disabled ?
+              <RestoreIcon fontSize="small" color='warning' />
+              :
+              <BlockIcon fontSize="small" color='warning' />
+            }
           </ListItemIcon>
           {task.disabled ?
             <ListItemText>恢复</ListItemText>

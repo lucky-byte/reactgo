@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/lucky-byte/reactgo/serve/route/index/acl"
+	"github.com/lucky-byte/reactgo/serve/route/index/secretcode"
 )
 
 func Attach(up *echo.Group) {
@@ -13,11 +14,11 @@ func Attach(up *echo.Group) {
 
 	group.POST("/list", list)
 	group.GET("/profile", profile)
-	group.GET("/info", getinfo)
+	group.GET("/info", infoGet)
 
 	group.Use(acl.AllowWrite(code))
 
-	group.PUT("/info", updateinfo)
+	group.PUT("/info", infoUpdate)
 	group.PUT("/passwd", passwd)
 	group.PUT("/acl", aclUpdate)
 
@@ -27,5 +28,5 @@ func Attach(up *echo.Group) {
 	group.POST("/clearsecretcode", clearSecretCode)
 	group.POST("/cleartotp", clearTOTP)
 	group.POST("/disable", disable)
-	group.DELETE("/delete", del)
+	group.DELETE("/delete", del, secretcode.Verify())
 }
