@@ -75,18 +75,23 @@ export default function Index() {
     }
   }, [progress]);
 
-  // 通过 pathname 设置高亮侧边栏选项
+  // 通过 pathname 高亮侧边栏菜单项
   useEffect(() => {
     try {
       const entries = Object.entries(urlCodes);
+      let found = false;
 
       for (let i = 0; i < entries.length; i++) {
         const entry = entries[i];
         const { to } = entry[1];
         if (to === location.pathname) {
           setCode(parseInt(entry[0]));
+          found = true;
           break;
         }
+      }
+      if (!found) {
+        setCode(0);
       }
     } catch (err) {
       console.error('change code error:' + err.message)
@@ -241,7 +246,7 @@ function Appbar(params) {
         </IconButton>
         {!sidebar &&
           <Link component={RouteLink} to='/' sx={{ mr: 2, lineHeight: 1 }}>
-            <img src={Logo} alt='Logo' height='32px' />
+            <img src={Logo} alt='Logo' height='30px' width='126px' />
           </Link>
         }
         <Typography component='h1' variant="h6" sx={{ flexGrow: 1 }}>

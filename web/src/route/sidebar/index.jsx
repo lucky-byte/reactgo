@@ -61,9 +61,9 @@ export default function Sidebar() {
         height: '100%',
       }
     }}>
-      <Toolbar disableGutters sx={{ paddingLeft: '14px' }}>
+      <Toolbar disableGutters sx={{ ml: 2 }}>
         <Link component={RouteLink} to='/'>
-          <img src={Logo} alt='Logo' height='32px' />
+          <img src={Logo} alt='Logo' height='30px' width='126px' />
         </Link>
       </Toolbar>
       <Box sx={{ flexGrow: 1, overflowY: 'scroll' }}>
@@ -96,8 +96,7 @@ function Menu({ menu }) {
     <Accordion disableGutters elevation={0} square
       expanded={expanded} onChange={handleChange}
     >
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content">
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle2">{menu.title}</Typography>
       </AccordionSummary>
       <List sx={{ backgroundColor: listBgColor }}>

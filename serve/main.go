@@ -172,9 +172,6 @@ func main() {
 				if strings.HasPrefix(urlpath, "/static/js/") {
 					return false
 				}
-				if strings.HasPrefix(urlpath, "/locales/") {
-					return false
-				}
 			}
 			return true
 		},
@@ -190,7 +187,11 @@ func main() {
 		webfsHandler := http.FileServer(http.FS(fsys))
 
 		engine.GET("/static/*", echo.WrapHandler(webfsHandler))
-		engine.GET("/locales/*", echo.WrapHandler(webfsHandler))
+		engine.GET("/manifest.json", echo.WrapHandler(webfsHandler))
+		engine.GET("/favicon.png", echo.WrapHandler(webfsHandler))
+		engine.GET("/logo192.png", echo.WrapHandler(webfsHandler))
+		engine.GET("/logo512.png", echo.WrapHandler(webfsHandler))
+		engine.GET("/robots.txt", echo.WrapHandler(webfsHandler))
 	} else {
 		webdir := conf.Webdir()
 		if len(webdir) > 0 {

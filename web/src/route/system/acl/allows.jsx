@@ -41,7 +41,6 @@ export default function AclAllows() {
   const [updated, setUpdated] = useState(false);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-
   useEffect(() => { setTitle('修改访问控制'); }, [setTitle]);
 
   // 查询已经允许的列表
@@ -58,6 +57,10 @@ export default function AclAllows() {
 
           // 更新剩余可用的列表
           const list = Object.keys(urlCodes).map(code => {
+            // free 标志指示不需要进行访问控制
+            if (urlCodes[code].omit) {
+              return null;
+            }
             for (let i = 0; i < allows.length; i++) {
               if (parseInt(allows[i].code) === parseInt(code)) {
                 return null;

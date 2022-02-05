@@ -134,6 +134,12 @@ func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 				if strings.HasPrefix(urlpath, "/static/js/") {
 					c.Response().Header().Set("cache-control", "max-age=31536000")
 				}
+				if strings.HasPrefix(urlpath, "/static/media/") {
+					c.Response().Header().Set("cache-control", "max-age=31536000")
+				}
+				if strings.HasPrefix(urlpath, "/static/css/") {
+					c.Response().Header().Set("cache-control", "max-age=31536000")
+				}
 			})
 			cc := &Context{c, l, conf, nil, nil}
 			return next(cc)
