@@ -73,7 +73,7 @@ export default function SecretCode() {
     setCode2Disabled(true);
 
     try {
-      const token = await secretCode();
+      const token = await secretCode(false);
 
       setSubmitting(true);
 
@@ -96,7 +96,7 @@ export default function SecretCode() {
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Paper elevation={3} sx={{ px: 4, py: 3, mt: 4 }}>
         <Stack direction='row' alignItems='center' spacing={1}>
-          <IconButton component={Link} to='..'>
+          <IconButton aria-label='返回' component={Link} to='..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
           <Stack>
@@ -121,7 +121,7 @@ export default function SecretCode() {
               clear={clear} onComplete={onCodeComplete2}
             />
           </Collapse>
-          <IconButton onClick={() => {setHide(!hide)}}>
+          <IconButton aria-label='显示密码' onClick={() => {setHide(!hide)}}>
             {hide ?
               <VisibilityIcon color='primary' />
               :

@@ -3,9 +3,9 @@ import NotFound from "~/route/notfound";
 import UserList from "./list";
 import TaskAdd from "./add";
 import UserPassword from "./passwd";
-import UserACL from "./acl";
 import UserProfile from "./profile";
 import TaskCron from "./cron";
+import TaskEntries from "./entries";
 
 export default function Task() {
   return (
@@ -13,9 +13,9 @@ export default function Task() {
       <Route path='/' element={<UserList />} />
       <Route path='add' element={<TaskAdd />} />
       <Route path='cron' element={<TaskCron />} />
+      <Route path='entries' element={<TaskEntries />} />
       <Route path='profile' element={<UserProfile />} />
       <Route path='passwd' element={<UserPassword />} />
-      <Route path='acl' element={<UserACL />} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

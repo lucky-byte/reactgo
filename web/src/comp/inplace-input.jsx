@@ -63,11 +63,11 @@ export default function InplaceInput(props) {
               <InputAdornment position="end">
                 <Stack direction='row'>
                   <Tooltip title='取消修改'>
-                    <IconButton onClick={onCancelClick}>
+                    <IconButton aria-label="取消" onClick={onCancelClick}>
                       <CancelIcon fontSize="small" color='warning' />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title='确定修改'>
+                  <Tooltip aria-label="确定修改" title='确定修改'>
                     <IconButton onClick={onConfirmClick}>
                       <CheckCircleIcon fontSize="small" color='success' />
                     </IconButton>
@@ -103,7 +103,7 @@ export default function InplaceInput(props) {
           {props.placeholder}
         </Typography>
       }
-      <IconButton onClick={onEditClick} sx={{
+      <IconButton aria-label='修改' onClick={onEditClick} sx={{
         display: iconVisible ? 'visible' : 'none', padding: 0, marginLeft: '4px',
       }}>
         <EditIcon sx={{ fontSize: '14px' }} color='primary' />

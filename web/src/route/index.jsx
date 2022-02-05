@@ -233,7 +233,7 @@ function Appbar(params) {
   }
 
   return (
-    <AppBar position="static" color='transparent' elevation={2} sx={{ zIndex: 1 }}>
+    <AppBar position="static" color='transparent' elevation={1} sx={{ zIndex: 1 }}>
       <Toolbar>
         <IconButton aria-label="菜单" sx={{ mr: 1 }} color='primary'
           onClick={openSidebarClick}>
@@ -244,16 +244,19 @@ function Appbar(params) {
             <img src={Logo} alt='Logo' height='32px' />
           </Link>
         }
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography component='h1' variant="h6" sx={{ flexGrow: 1 }}>
           {title}
         </Typography>
         <Chip label='CTRL+K' variant='outlined' color='info' icon={<DirectionsIcon />}
           onClick={onQuickNavigate}
         />
-        <IconButton onClick={colorMode.toggleColorMode} color="primary" sx={{ mx: 1 }}>
+        <IconButton aria-label="切换色彩模式"
+          onClick={colorMode.toggleColorMode} color="primary" sx={{ mx: 1 }}>
           {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
         <Button
+          aria-label="用户菜单"
+          title="用户菜单"
           aria-controls={sidebarOpen ? '用户菜单' : undefined}
           aria-haspopup="true"
           aria-expanded={sidebarOpen ? 'true' : undefined}

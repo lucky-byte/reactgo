@@ -75,7 +75,9 @@ export default function Secure() {
               则需要管理员登录后台帮助用户重置密码
             </FormHelperText>
           </Stack>
-          <Switch checked={resetPass} onChange={onResetPassCheck} />
+          <Switch checked={resetPass} onChange={onResetPassCheck}
+            inputProps={{ 'aria-label': '开关' }}
+          />
         </Stack>
       </Paper>
     </Stack>

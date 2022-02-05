@@ -79,7 +79,8 @@ export default function History() {
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={loading} onChange={onKeywordChange} />
-        <TextField select variant='standard' sx={{ ml: 2 }}
+        <TextField id='select-time-scope'
+          select variant='standard' sx={{ ml: 2 }}
           value={day} onChange={e => { setDay(e.target.value)}}
           InputProps={{
             startAdornment:

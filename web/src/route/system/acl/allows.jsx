@@ -219,10 +219,10 @@ export default function AclAllows() {
   return (
     <Container as='main' maxWidth='md' sx={{ py: 4 }}>
       <Stack direction='row' alignItems='center' sx={{ mb: 3 }}>
-        <IconButton sx={{ mr: 1 }} onClick={() => { navigate('..') }}>
+        <IconButton aria-label='返回' onClick={() => { navigate('..') }}>
           <ArrowBackIcon color='primary' />
         </IconButton>
-        <Stack sx={{ flex: 1 }}>
+        <Stack sx={{ flex: 1, ml: 1 }}>
           <Typography variant='h6'>{location?.state?.name}</Typography>
           <Typography variant='body2'>{location?.state?.summary}</Typography>
         </Stack>
@@ -234,9 +234,10 @@ export default function AclAllows() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell align='center' padding='checkbox'>
+                <TableCell as='td' align='center' padding='checkbox'>
                   <Checkbox checked={codeAllChecked} onChange={onCodeCheckAll}
                     indeterminate={codeAllInterminate}
+                    inputProps={{ "aria-label": "选择全部" }}
                   />
                 </TableCell>
                 <TableCell align='center'>代码</TableCell>
@@ -250,6 +251,7 @@ export default function AclAllows() {
                   <TableCell align='center' padding='checkbox'>
                     <Checkbox checked={row.checked === true}
                       onChange={e => onCodeCheck(e, index)}
+                      inputProps={{ "aria-label": "选择" }}
                     />
                   </TableCell>
                   <TableCell align="center">{row.code}</TableCell>
@@ -275,9 +277,10 @@ export default function AclAllows() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell align='center' padding='checkbox'>
+                <TableCell as='td' align='center' padding='checkbox'>
                   <Checkbox checked={allowAllChecked} onChange={onAllowCheckAll}
                     indeterminate={allowAllInterminate}
+                    inputProps={{ "aria-label": "选择全部" }}
                   />
                 </TableCell>
                 <TableCell align='center'>代码</TableCell>
@@ -300,6 +303,7 @@ export default function AclAllows() {
                   <TableCell align='center' padding='checkbox'>
                     <Checkbox checked={row.checked === true}
                       onChange={e => onAllowCheck(e, index)}
+                      inputProps={{ "aria-label": "选择" }}
                     />
                   </TableCell>
                   <TableCell align="center">{row.code}</TableCell>
@@ -311,6 +315,7 @@ export default function AclAllows() {
                           row.uuid, !row.read, row.write, row.admin
                         );
                       }}
+                      inputProps={{ "aria-label": "访问权限" }}
                     />
                   </TableCell>
                   <TableCell align="center" padding='checkbox'>
@@ -320,6 +325,7 @@ export default function AclAllows() {
                           row.uuid, row.read, !row.write, row.admin
                         );
                       }}
+                      inputProps={{ "aria-label": "修改权限" }}
                     />
                   </TableCell>
                   <TableCell align="center" padding='checkbox'>
@@ -329,6 +335,7 @@ export default function AclAllows() {
                           row.uuid, row.read, row.write, !row.admin
                         );
                       }}
+                      inputProps={{ "aria-label": "管理权限" }}
                     />
                   </TableCell>
                 </TableRow>

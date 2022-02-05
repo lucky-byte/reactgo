@@ -45,12 +45,14 @@ const SecretCodeProvider = ({ children }) => {
   }, [enqueueSnackbar, closeSnackbar, navigate]);
 
   // 启动验证
-  const verify = useCallback(() => {
+  const verify = useCallback((prompt = true) => {
     return new Promise((resolve, reject) => {
       // 未设置安全操作码，不用验证，弹出提示
       if (!user?.secretcode_isset) {
-        if (localStorage.getItem('secretcode_prompt') !== 'off') {
-          popupTip();
+        if (prompt) {
+          if (localStorage.getItem('secretcode_prompt') !== 'off') {
+            popupTip();
+          }
         }
         return resolve("");
       }

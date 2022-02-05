@@ -188,7 +188,7 @@ export default function SMS() {
               <TableCell align="center">模板名称</TableCell>
               <TableCell align="center">模板正文</TableCell>
               <TableCell align="center">模板编号</TableCell>
-              <TableCell align="center" padding="checkbox"></TableCell>
+              <TableCell as='td' align="center" padding="checkbox"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -247,7 +247,7 @@ function MenuButton(props) {
 
   return (
     <div>
-      <IconButton onClick={onOpen}>
+      <IconButton aria-label="菜单" onClick={onOpen}>
         <MoreVertIcon color='primary' />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>

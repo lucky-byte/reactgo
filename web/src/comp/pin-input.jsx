@@ -42,6 +42,7 @@ export default function PinInput(props) {
       className={styles.pininput}
       autoComplete="new-password" type='password'
       placeholder='○' length={6} validate='0123456789'
+      aria-label="输入代码"
       onChange={props.onChange}
       onComplete={props.onComplete}
     />

@@ -23,8 +23,8 @@ export default function SearchInput(props) {
   }
 
   return (
-    <TextField
-      variant="standard" placeholder='搜索...' value={value} onChange={onChange}
+    <TextField variant="standard" placeholder='搜索...'
+      value={value} onChange={onChange}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start" sx={{ width: '32px' }}>
@@ -32,6 +32,7 @@ export default function SearchInput(props) {
           </InputAdornment>
         ),
       }}
+      inputProps={{ 'aria-label': '搜索' }}
     />
   )
 }

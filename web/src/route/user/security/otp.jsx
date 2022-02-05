@@ -81,7 +81,7 @@ export default function OTP() {
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Paper elevation={3} sx={{ px: 4, py: 3, mt: 4 }}>
         <Stack direction='row' alignItems='flex-start' spacing={1}>
-          <IconButton component={RouteLink} to='..'>
+          <IconButton aria-label='返回' component={RouteLink} to='..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
           <Stack>
@@ -104,7 +104,7 @@ export default function OTP() {
               autoComplete='new-password'
               value={code} onChange={e => setCode(e.target.value)}
               onKeyDown={onCodeKeyDown}
-              inputProps={{ maxLength: 6 }}
+              inputProps={{ maxLength: 6, 'aria-label': '口令' }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position='start'>

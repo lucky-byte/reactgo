@@ -25,7 +25,7 @@ export default function UserSecurityHome() {
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Paper elevation={3} sx={{ px: 4, py: 3, mt: 4 }}>
         <Stack direction='row' alignItems='center' spacing={1}>
-          <IconButton component={Link} to='../..'>
+          <IconButton aria-label='返回' component={Link} to='../..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
           <Typography variant='h5'>安全设置</Typography>

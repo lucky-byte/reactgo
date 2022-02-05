@@ -150,7 +150,7 @@ export default function UserList() {
               <TableCell align='center'>访问控制</TableCell>
               <TableCell align='center'>创建时间</TableCell>
               <TableCell align='center'>登录时间 / 次数</TableCell>
-              <TableCell align='right' colSpan={2} padding='checkbox'></TableCell>
+              <TableCell as='td' align='right' colSpan={2} padding='checkbox' />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -199,7 +199,10 @@ export default function UserList() {
                 count={total}
                 rowsPerPage={rowsPerPage}
                 page={page}
-                SelectProps={{ inputProps: { 'aria-label': '每页行数' } }}
+                SelectProps={{
+                  id: 'pagination-rows-per-page',
+                  inputProps: { 'aria-label': '每页行数' }
+                }}
                 onPageChange={onPageChange}
                 onRowsPerPageChange={onRowsPerPageChange}
               />
@@ -351,7 +354,8 @@ function UserMenuIconButton(props) {
   return (
     <>
       <IconButton color='primary'
-        aria-controls={open ? 'basic-menu' : undefined}
+        aria-label='菜单'
+        aria-controls={open ? '菜单' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={e => { setAnchorEl(e.currentTarget); }}>

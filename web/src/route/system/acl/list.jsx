@@ -102,7 +102,7 @@ export default function AclList() {
               <Typography variant='h6' sx={{ flex: 1, mr: 2 }}>
                 角色
               </Typography>
-              <IconButton onClick={onAddClick}>
+              <IconButton aria-label='添加' onClick={onAddClick}>
                 <AddIcon color='primary' />
               </IconButton>
             </Stack>
@@ -206,7 +206,7 @@ function AclInfo(props) {
         <InplaceInput variant='h6' sx={{ flex: 1 }} text={info.name || ''}
           fontSize='large' onConfirm={onChangeName}
         />
-        <IconButton onClick={() => { setCollapsed(!collapsed) }}>
+        <IconButton aria-label='展开' onClick={() => { setCollapsed(!collapsed) }}>
           {collapsed ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
         <Button color='error' onClick={onDelete}>删除</Button>

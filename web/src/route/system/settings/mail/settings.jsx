@@ -110,7 +110,7 @@ export default function MailSettings() {
               <TableCell align="center">服务器</TableCell>
               <TableCell align="center">发件人</TableCell>
               <TableCell align="center">发送量</TableCell>
-              <TableCell align="center" padding="checkbox"></TableCell>
+              <TableCell as='td' align="center" padding="checkbox" />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -207,7 +207,7 @@ function MenuButton(props) {
 
   return (
     <div>
-      <IconButton onClick={onOpen}>
+      <IconButton aria-label="菜单" onClick={onOpen}>
         <MoreVertIcon color="primary" />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>

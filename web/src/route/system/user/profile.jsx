@@ -59,7 +59,8 @@ export default function UserProfile() {
     <Container as='main' maxWidth='md' sx={{ mb: 2 }}>
       <Paper elevation={3} sx={{ px: 5, py: 3, mt: 5 }}>
         <Stack direction='row' alignItems='center' sx={{ mb: 3 }}>
-          <IconButton onClick={() => { navigate('..') }} sx={{ mr: 1 }}>
+          <IconButton aria-label='返回' onClick={() => { navigate('..') }}
+            sx={{ mr: 1 }}>
             <ArrowBackIcon color='primary' />
           </IconButton>
           <Typography variant='h6' gutterBottom={false}>详细资料</Typography>

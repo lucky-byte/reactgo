@@ -269,14 +269,14 @@ function UserMenuIconButton(props) {
           <ListItemIcon>
             <AccountCircleIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>详细资料</ListItemText>
+          <ListItemText>详细信息</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem disabled={user.disabled || user.deleted} onClick={onInfoClick}>
           <ListItemIcon>
             <ManageAccountsIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>修改资料</ListItemText>
+          <ListItemText>修改</ListItemText>
         </MenuItem>
         <MenuItem disabled={user.disabled || user.deleted} onClick={onPasswdClick}>
           <ListItemIcon>

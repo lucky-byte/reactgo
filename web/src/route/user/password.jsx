@@ -80,7 +80,7 @@ export default function UserPassword() {
           InputProps={{
             endAdornment:
               <InputAdornment position="end">
-                <IconButton size='small' onClick={() => {
+                <IconButton aria-label='显示密码' size='small' onClick={() => {
                   setOldPasswordHide(!oldPasswordHide);
                 }}>
                   {oldPasswordHide ? <VisibilityIcon /> : <VisibilityOffIcon />}
@@ -96,7 +96,7 @@ export default function UserPassword() {
           InputProps={{
             endAdornment:
               <InputAdornment position="end">
-                <IconButton size='small' onClick={() => {
+                <IconButton aria-label='显示密码' size='small' onClick={() => {
                   setNewPasswordHide(!newPasswordHide);
                 }}>
                   {newPasswordHide ? <VisibilityIcon /> : <VisibilityOffIcon />}
@@ -112,7 +112,7 @@ export default function UserPassword() {
           InputProps={{
             endAdornment:
               <InputAdornment position="end">
-                <IconButton size='small' onClick={() => {
+                <IconButton aria-label='显示密码' size='small' onClick={() => {
                   setNewPassword2Hide(!newPassword2Hide);
                 }}>
                   {newPassword2Hide ? <VisibilityIcon /> : <VisibilityOffIcon />}
