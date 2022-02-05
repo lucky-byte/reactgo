@@ -130,7 +130,6 @@ create table if not exists tasks (
   path        varchar(256)    not null,
   last_fire   timestamp       not null default current_timestamp,
   nfire       int             not null default 0,
-  nfailed     int             not null default 0,
   disabled    boolean         not null default false,
   note        text
 );

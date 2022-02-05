@@ -3,6 +3,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import SecurityIcon from '@mui/icons-material/Security';
 import Button from '@mui/material/Button';
@@ -97,9 +98,14 @@ export default function UserList() {
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={progress} onChange={onKeywordChange} />
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
-        <Button startIcon={<AddIcon />} onClick={() => { navigate('add') }}>
-          添加
+        <Stack direction='row' spacing={1}>
+          <Button startIcon={<AddIcon />} onClick={() => { navigate('add') }}>
+            添加
+          </Button>
+          <Button color='warning' onClick={() => { navigate('entries') }}>
+          诊断
         </Button>
+        </Stack>
       </Toolbar>
       <TableContainer component={OutlinedPaper}>
         <Table size='medium'>
@@ -109,7 +115,7 @@ export default function UserList() {
               <TableCell align='center'>CRON</TableCell>
               <TableCell align='center'>类型</TableCell>
               <TableCell align='center'>函数/命令</TableCell>
-              <TableCell align='center'>总数/失败</TableCell>
+              <TableCell align='center'>执行次数</TableCell>
               <TableCell align='center'>最后执行时间</TableCell>
               <TableCell align='right' colSpan={2} padding='checkbox'></TableCell>
             </TableRow>
@@ -123,7 +129,7 @@ export default function UserList() {
                   {task.type === 1 ? '函数' : '命令'}
                 </TableCell>
                 <TableCell align="center">{task.path}</TableCell>
-                <TableCell align="center">{task.nfire} / {task.nfailed}</TableCell>
+                <TableCell align="center">{task.nfire}</TableCell>
                 <TableCell align="center">
                   {dayjs(task.last_fire).format('YY-MM-DD HH:mm:ss')}
                 </TableCell>

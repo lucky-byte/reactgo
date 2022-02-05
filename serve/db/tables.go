@@ -116,7 +116,6 @@ type Task struct {
 	Path     string         `db:"path"`      // 文件路径
 	LastFire time.Time      `db:"last_fire"` // 最后执行时间
 	NFire    int            `db:"nfire"`     // 执行次数
-	NFailed  int            `db:"nfailed"`   // 执行失败次数
 	Disabled bool           `db:"disabled"`  // 是否停用
 	Note     sql.NullString `db:"note"`      // 备注
 }

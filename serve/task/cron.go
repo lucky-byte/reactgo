@@ -3,6 +3,7 @@ package task
 import (
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/lucky-byte/reactgo/serve/db"
 	"github.com/pkg/errors"
@@ -49,20 +50,37 @@ func Startup(task_path string) error {
 
 	// 逐个添加任务
 	for _, t := range tasks {
-		if t.Type == 1 {
-			if err = addFunc(&t); err != nil {
-				return errors.Wrapf(err, "添加任务'%s'错", t.Name)
-			}
-		} else if t.Type == 2 {
-			if err = addCommand(&t, task_path); err != nil {
-				return errors.Wrapf(err, "添加任务'%s'错", t.Name)
-			}
-		} else {
-			return fmt.Errorf("任务 %s 的类型 %d 无效", t.Name, t.Type)
+		if t.Type != 1 && t.Type != 2 {
+			return fmt.Errorf("任务'%s'的类型 %d 无效", t.Name, t.Type)
+		}
+		if err := addJob(&t, task_path); err != nil {
+			return errors.Wrapf(err, "添加任务'%s'错", t.Name)
 		}
 	}
 	// 启动
 	scheduler.cron.Start()
+	return nil
+}
+
+// 添加 JOB
+func addJob(t *db.Task, task_path string) error {
+	job := Job{task: t}
+
+	if t.Type == 1 {
+		f := findFunc(t.Path)
+
+		if f == nil || f.Func == nil {
+			return fmt.Errorf("未定义函数'%s'", t.Path)
+		}
+		job.fn = f.Func
+	} else {
+		job.command = path.Join(task_path, t.Path)
+	}
+	id, err := scheduler.cron.AddJob(t.Cron, job)
+	if err != nil {
+		return errors.Wrapf(err, "添加任务 %s 错", t.Name)
+	}
+	job.entryid = id
 	return nil
 }
 
@@ -71,4 +89,12 @@ func Stop() {
 	if scheduler != nil && scheduler.cron != nil {
 		scheduler.cron.Stop()
 	}
+}
+
+// 运行中的任务
+func Entries() []cron.Entry {
+	if scheduler == nil || scheduler.cron == nil {
+		return nil
+	}
+	return scheduler.cron.Entries()
 }

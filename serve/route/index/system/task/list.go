@@ -84,7 +84,6 @@ func list(c echo.Context) error {
 			"path":      u.Path,
 			"last_fire": u.LastFire,
 			"nfire":     u.NFire,
-			"nfailed":   u.NFailed,
 			"disabled":  u.Disabled,
 		})
 	}
