@@ -20,7 +20,7 @@ func IsPathValid(fpath string, task_type int) error {
 	p := args[0]
 
 	if !path.IsAbs(p) {
-		p = path.Join(scheduler.root, p)
+		p = path.Join(scheduler.conf.TaskPath(), p)
 	}
 	// 检查文件是否存在并可以执行
 	i, err := os.Stat(p)

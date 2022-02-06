@@ -72,7 +72,6 @@ task:
   #
   path: ../jobs
 
-  # 环境变量
+  # 环境变量，名称会转换为大些字母
   env:
-    # 数据库连接参数
-    dsn: postgres://localhost/demo
+    name: value

@@ -1,6 +1,7 @@
 package task
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path"
@@ -61,7 +62,7 @@ func (j *Job) runCommand() {
 	command := args[0]
 
 	if !path.IsAbs(command) {
-		command = path.Join(scheduler.root, command)
+		command = path.Join(scheduler.conf.TaskPath(), command)
 	}
 	i, err := os.Stat(command)
 	if err != nil {
@@ -85,7 +86,14 @@ func (j *Job) runCommand() {
 	}
 
 	// 设置环境变量
-	cmd.Env = append(os.Environ(), "")
+	dsn := fmt.Sprintf("DSN=%s", scheduler.conf.DatabaseDSN())
+	cmd.Env = append(os.Environ(), dsn)
+
+	envs := scheduler.conf.TaskEnv()
+	for k, v := range envs {
+		s := fmt.Sprintf("%s=%s", strings.ToUpper(k), v)
+		cmd.Env = append(cmd.Env, s)
+	}
 
 	// 执行命令
 	out, err := cmd.CombinedOutput()

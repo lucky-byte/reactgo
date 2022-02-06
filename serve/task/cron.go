@@ -4,20 +4,23 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/db"
 	"github.com/pkg/errors"
 	"github.com/robfig/cron/v3"
 )
 
 type Scheduler struct {
-	root string
 	cron *cron.Cron
+	conf *config.ViperConfig
 }
 
 var scheduler *Scheduler
 
 // 启动任务调度
-func Startup(root string) error {
+func Startup(conf *config.ViperConfig) error {
+	root := conf.TaskPath()
+
 	if len(root) == 0 {
 		return fmt.Errorf("未配置 task.path")
 	}
@@ -28,7 +31,7 @@ func Startup(root string) error {
 	if !i.IsDir() {
 		return fmt.Errorf("%s 不是目录", root)
 	}
-	scheduler = &Scheduler{root: root}
+	scheduler = &Scheduler{conf: conf}
 
 	scheduler.cron = cron.New(
 		cron.WithLogger(cron.DefaultLogger),

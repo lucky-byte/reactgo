@@ -222,7 +222,7 @@ func main() {
 
 	// 启动任务调度
 	if *cron {
-		if err = task.Startup(conf.TaskPath()); err != nil {
+		if err = task.Startup(conf); err != nil {
 			xlog.X.WithError(err).Fatal("启动任务调度失败")
 		}
 	}
