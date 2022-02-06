@@ -9,6 +9,7 @@ func Attach(up *echo.Group) {
 	group := up.Group("/user")
 
 	group.GET("/info", info)
+	group.GET("/devices", devices)
 	group.PUT("/name", name)
 	group.PUT("/userid", userid, secretcode.Verify())
 	group.PUT("/email", email, secretcode.Verify())

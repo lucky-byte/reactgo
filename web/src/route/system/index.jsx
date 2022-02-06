@@ -5,6 +5,7 @@ import Acl from "./acl";
 import History from "./history";
 import Settings from "./settings";
 import Task from "./task";
+import Notification from "./notification";
 
 export default function System() {
   return (
@@ -14,6 +15,7 @@ export default function System() {
       <Route path='history/*' element={<History />} />
       <Route path='settings/*' element={<Settings />} />
       <Route path='task/*' element={<Task />} />
+      <Route path='notification/*' element={<Notification />} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

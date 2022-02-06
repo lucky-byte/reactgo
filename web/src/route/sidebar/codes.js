@@ -10,6 +10,7 @@ const urlCodes = {
   1330: { title: '安全设置', to: '/system/settings/secure', omit: true },
   1400: { title: '系统事件', to: '/system/notification' },
   1500: { title: '定时任务', to: '/system/task' },
+  1510: { title: '任务诊断', to: '/system/task/entries', omit: true },
   2000: { title: '用户资料', to: '/user', omit: true },
   2100: { title: '修改密码', to: '/user/password', omit: true },
   2200: { title: '安全设置', to: '/user/security', omit: true },

@@ -8,6 +8,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/ctx"
 )
 
+// 查询用户资料
 func info(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()

@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { Link as RouteLink } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -14,6 +15,16 @@ import Link from '@mui/material/Link';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import DesktopMacIcon from '@mui/icons-material/DesktopMac';
+import DesktopWindowsIcon from '@mui/icons-material/DesktopWindows';
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
+import Icon from '@mdi/react';
+import { mdiGoogleChrome } from '@mdi/js';
+import { mdiFirefox } from '@mdi/js';
+import { mdiMicrosoftEdge } from '@mdi/js';
+import { mdiAppleSafari } from '@mdi/js';
+import { mdiOpera } from '@mdi/js';
 import { useSnackbar } from 'notistack';
 import isEmail from 'validator/lib/isEmail';
 import isMobile from 'validator/lib/isMobilePhone';
@@ -21,7 +32,7 @@ import InplaceInput from '~/comp/inplace-input';
 import { useSecretCode } from '~/comp/secretcode';
 import titleState from "~/state/title";
 import userState from "~/state/user";
-import { put } from "~/rest";
+import { get, put } from "~/rest";
 
 export default function UserProfile() {
   const { enqueueSnackbar } = useSnackbar();
@@ -143,7 +154,7 @@ export default function UserProfile() {
                 <EmailIcon fontSize='small' color='primary' />
               </Tooltip>
               <InplaceInput sx={{ flex: 1 }} text={user?.email || ''}
-                onConfirm={onChangeEmail}
+                variant='body2' onConfirm={onChangeEmail}
               />
             </Stack>
             <Stack direction='row' spacing={1} alignItems='center'>
@@ -151,7 +162,7 @@ export default function UserProfile() {
                 <PhoneIcon fontSize='small' color='primary' />
               </Tooltip>
               <InplaceInput sx={{ flex: 1 }} text={user?.mobile || ''}
-                maxLength={11} onConfirm={onChangeMobile}
+                variant='body2' maxLength={11} onConfirm={onChangeMobile}
               />
             </Stack>
             <Stack direction='row' spacing={1} alignItems='center'>
@@ -159,7 +170,7 @@ export default function UserProfile() {
                 <LocationOnIcon fontSize='small' color='primary' />
               </Tooltip>
               <InplaceInput sx={{ flex: 1 }} text={user?.address || ''}
-                onConfirm={onChangeAddress}
+                variant='body2' onConfirm={onChangeAddress}
               />
             </Stack>
           </Stack>
@@ -167,15 +178,16 @@ export default function UserProfile() {
         <Stack sx={{ mt: 4 }}>
           <Typography variant='h6'>访问设备</Typography>
           <FormHelperText>
-            访问设备通过浏览器设置的 User Agent 识别，系统仅使用这些信息增强安全，
+            访问设备通过浏览器的 User Agent 识别，系统仅使用这些信息增强安全，
             不与任何第三方共享，详情请参考
             <Link component='a' href='/privacy' target='_blank' underline='hover'>
               《隐私政策》
             </Link>
           </FormHelperText>
         </Stack>
+        <Devices />
         <Stack sx={{ mt: 3 }}>
-          <Typography variant='h6'>安全日志</Typography>
+          <Typography variant='h6'>访问地图</Typography>
           <FormHelperText>
             IP 地址通过网络连接获取，地理位置通过 IP 查询而来，这些信息用于增强安全，
             不与任何第三方分享，详情请参考
@@ -184,7 +196,131 @@ export default function UserProfile() {
             </Link>
           </FormHelperText>
         </Stack>
+        <Typography variant='caption'>
+          <Link component={RouteLink} to='signinlist' underline='hover'>
+            查看我的登录历史
+          </Link>
+        </Typography>
       </Paper>
     </Container>
+  )
+}
+
+// 访问设备列表
+function Devices() {
+  const { enqueueSnackbar } = useSnackbar();
+  const [devices, setDevices] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const resp = await get('/user/devices');
+        setDevices(resp.devices || []);
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      }
+    })();
+  }, [enqueueSnackbar]);
+
+  return (
+    <Paper variant='outlined' sx={{ p: 2 }}>
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        {devices.map((item, index) => (
+          <Grid key={index} item xs={4}>
+            <Paper variant='outlined' sx={{ p: 2 }}>
+              <Stack direction='row' spacing={1} alignItems='flex-end'
+                justifyContent='center'>
+                <OSIcon os={item.os} />
+                <BrowserIcon browser={item.browser} />
+              </Stack>
+              <Stack sx={{ mt: 1 }}>
+                <Typography variant='caption' sx={{ textAlign: 'center' }}>
+                  {item.browser} on {item.os}
+                </Typography>
+              </Stack>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+      <Typography variant='caption'>
+        如果上面有您不认识的设备，说明您的账号极大可能被盗用，请联系管理员进行排查
+      </Typography>
+    </Paper>
+  )
+}
+
+// 操作系统图标
+function OSIcon(props) {
+  switch (props.os?.toLowerCase()) {
+    case "mac os x":
+      return (
+        <Tooltip title='Mac OS X' arrow placement='top'>
+          <DesktopMacIcon fontSize='large' />
+        </Tooltip>
+      )
+    case "iphone os":
+      return (
+        <Tooltip title='iPhone OS' arrow placement='top'>
+          <PhoneIphoneIcon fontSize='large' />
+        </Tooltip>
+      )
+    case "android":
+      return (
+        <Tooltip title='iPhone OS' arrow placement='top'>
+          <PhoneAndroidIcon fontSize='large' />
+        </Tooltip>
+      )
+    case "windows":
+      return (
+        <Tooltip title='Windows' arrow placement='top'>
+          <DesktopWindowsIcon fontSize='large' />
+        </Tooltip>
+      )
+    default:
+      return null;
+  }
+}
+
+// 浏览器图标
+function BrowserIcon(props) {
+  let icon, title, color;
+
+  switch (props.browser?.toLowerCase()) {
+    case 'chrome':
+      icon = mdiGoogleChrome;
+      title = 'Chrome 浏览器';
+      color = '#019934';
+      break;
+    case 'firefox':
+      icon = mdiFirefox;
+      title = 'Firefox 浏览器';
+      color = '#f62336';
+      break;
+    case 'edge':
+      icon = mdiMicrosoftEdge;
+      title = 'Microsoft Edge 浏览器';
+      color = '#3277BC';
+      break;
+    case 'safari':
+      icon = mdiAppleSafari;
+      title = 'Apple Safari 浏览器';
+      color = '#0FB5EE';
+      break;
+    case 'opera':
+      icon = mdiOpera;
+      title = 'Opera 浏览器';
+      color = 'red';
+      break;
+    default:
+      icon = null;
+      break;
+  }
+  if (!icon) {
+    return null;
+  }
+  return (
+    <Tooltip title={title} arrow placement='top'>
+      <Icon path={icon} size={1.5} color={color} />
+    </Tooltip>
   )
 }
