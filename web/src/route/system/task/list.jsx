@@ -115,7 +115,7 @@ export default function UserList() {
               <TableCell align='center'>名称</TableCell>
               <TableCell align='center'>CRON</TableCell>
               <TableCell align='center'>类型</TableCell>
-              <TableCell align='center'>函数/命令</TableCell>
+              <TableCell align='center'>路径</TableCell>
               <TableCell align='center'>执行次数</TableCell>
               <TableCell align='center'>最后执行时间</TableCell>
               <TableCell as='td' align='right' colSpan={2} padding='checkbox' />

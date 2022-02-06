@@ -19,8 +19,8 @@ func fire(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	if err = task.Fire(uuid); err != nil {
-		cc.ErrLog(err).Error("更新任务信息错")
-		return c.NoContent(http.StatusInternalServerError)
+		cc.ErrLog(err).Error("立即执行任务错")
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusOK)
 }

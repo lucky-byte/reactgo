@@ -70,7 +70,8 @@ export default function TaskEntries() {
             <TableCell align='center'>ID</TableCell>
             <TableCell align='center'>名称</TableCell>
             <TableCell align='center'>CRON</TableCell>
-            <TableCell align='center'>函数/命令</TableCell>
+            <TableCell align='center'>路径</TableCell>
+            <TableCell align='center'>状态</TableCell>
             <TableCell align='center'>上次执行时间</TableCell>
             <TableCell align='center'>下次执行时间</TableCell>
           </TableRow>
@@ -82,6 +83,9 @@ export default function TaskEntries() {
               <TableCell align="center">{entry.name}</TableCell>
               <TableCell align="center"><code>{entry.cron}</code></TableCell>
               <TableCell align="center">{entry.path}</TableCell>
+              <TableCell align="center">
+                {entry.running ? '运行中' : '闲置'}
+              </TableCell>
               <TableCell align="center">
                 {dayjs(entry.prev).format('YY-MM-DD HH:mm:ss')}
               </TableCell>

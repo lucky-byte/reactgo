@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/pkg/errors"
+	"github.com/tevino/abool/v2"
+
 	"github.com/lucky-byte/reactgo/serve/db"
 	"github.com/lucky-byte/reactgo/serve/xlog"
-	"github.com/pkg/errors"
 )
 
 var lock sync.Mutex
@@ -16,7 +18,7 @@ func Add(t db.Task) error {
 	lock.Lock()
 	defer lock.Unlock()
 
-	job := Job{Task: t}
+	job := &Job{Task: t, Running: *abool.New()}
 
 	if t.Type == 1 {
 		f := findFunc(t.Path)
@@ -40,14 +42,14 @@ func Replace(t db.Task, uuid string) error {
 	defer lock.Unlock()
 
 	for _, e := range Entries() {
-		job := e.Job.(Job)
+		job := e.Job.(*Job)
 		if job.Task.UUID == uuid {
 			scheduler.cron.Remove(e.ID)
 			xlog.X.Tracef("删除任务'%S'", job.Task.Name)
 			break
 		}
 	}
-	job := Job{Task: t}
+	job := &Job{Task: t, Running: *abool.New()}
 
 	if t.Type == 1 {
 		f := findFunc(t.Path)
@@ -71,7 +73,7 @@ func Remove(uuid string) error {
 	defer lock.Unlock()
 
 	for _, e := range Entries() {
-		job := e.Job.(Job)
+		job := e.Job.(*Job)
 		if job.Task.UUID == uuid {
 			scheduler.cron.Remove(e.ID)
 			xlog.X.Tracef("删除任务'%S'", job.Task.Name)
@@ -87,8 +89,11 @@ func Fire(uuid string) error {
 	defer lock.Unlock()
 
 	for _, e := range Entries() {
-		job := e.Job.(Job)
+		job := e.Job.(*Job)
 		if job.Task.UUID == uuid {
+			if job.Running.IsSet() {
+				return fmt.Errorf("任务正在执行中，本次调度被忽略")
+			}
 			go func() {
 				job.Run()
 			}()

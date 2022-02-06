@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tevino/abool/v2"
+
 	"github.com/lucky-byte/reactgo/serve/db"
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
@@ -14,10 +16,17 @@ import (
 type Job struct {
 	Task    db.Task
 	Func    func()
-	running bool
+	Running abool.AtomicBool
 }
 
-func (j Job) Run() {
+func (j *Job) Run() {
+	if j.Running.IsSet() {
+		xlog.X.Infof("任务'%s'正在执行中，本次调度被忽略", j.Task.Name)
+		return
+	}
+	j.Running.Set()
+	defer j.Running.UnSet()
+
 	now := time.Now()
 
 	if j.Task.Type == 1 {
@@ -47,14 +56,7 @@ func (j Job) Run() {
 }
 
 // 运行命令
-func (j Job) runCommand() {
-	if j.running {
-		xlog.X.Infof("任务'%s'正在执行中，本次调度被忽略", j.Task.Name)
-		return
-	}
-	j.running = true
-	defer func() { j.running = false }()
-
+func (j *Job) runCommand() {
 	args := strings.Fields(j.Task.Path)
 	command := args[0]
 

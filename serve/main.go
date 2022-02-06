@@ -184,15 +184,15 @@ func main() {
 		if err != nil {
 			xlog.X.Fatalf("unable to load embed web assets: %v", err)
 		}
-		webfsHandler := http.FileServer(http.FS(fsys))
+		handler := echo.WrapHandler(http.FileServer(http.FS(fsys)))
 
-		engine.GET("/static/*", echo.WrapHandler(webfsHandler))
-		engine.GET("/asset-manifest.json", echo.WrapHandler(webfsHandler))
-		engine.GET("/favicon.png", echo.WrapHandler(webfsHandler))
-		engine.GET("/logo192.png", echo.WrapHandler(webfsHandler))
-		engine.GET("/logo512.png", echo.WrapHandler(webfsHandler))
-		engine.GET("/manifest.json", echo.WrapHandler(webfsHandler))
-		engine.GET("/robots.txt", echo.WrapHandler(webfsHandler))
+		engine.GET("/static/*", handler)
+		engine.GET("/asset-manifest.json", handler)
+		engine.GET("/favicon.png", handler)
+		engine.GET("/logo192.png", handler)
+		engine.GET("/logo512.png", handler)
+		engine.GET("/manifest.json", handler)
+		engine.GET("/robots.txt", handler)
 	} else {
 		webdir := conf.Webdir()
 		if len(webdir) > 0 {
