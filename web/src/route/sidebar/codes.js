@@ -8,7 +8,7 @@ const urlCodes = {
   1310: { title: '邮件设置', to: '/system/settings/mail', omit: true },
   1320: { title: '短信设置', to: '/system/settings/sms', omit: true },
   1330: { title: '安全设置', to: '/system/settings/secure', omit: true },
-  1400: { title: '系统事件', to: '/system/notification' },
+  1400: { title: '事件通知', to: '/system/notification' },
   1500: { title: '定时任务', to: '/system/task' },
   1510: { title: '任务诊断', to: '/system/task/entries', omit: true },
   2000: { title: '用户资料', to: '/user', omit: true },

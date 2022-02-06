@@ -50,6 +50,9 @@ func Setup(debug bool, conf *config.ViperConfig) {
 	})
 	l.SetOutput(rotate_logger)
 
+	// 发送通知
+	l.AddHook(newNotificationHook())
+
 	if debug {
 		l.AddHook(newTerminalHook())
 		l.SetLevel(logrus.TraceLevel)

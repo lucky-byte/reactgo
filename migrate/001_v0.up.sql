@@ -111,8 +111,7 @@ create table if not exists mtas (
 create table if not exists notifications (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
-  category    int             not null default 1,
-  to          varchar(36)     not null default '',
+  touser      varchar(36)     not null default '',
   level       int             not null,
   title       varchar(64)     not null,
   message     text            not null,
