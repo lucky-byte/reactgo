@@ -284,7 +284,7 @@ function UserMenuIconButton(props) {
           <ListItemText>详细信息</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem disabled={task.disabled} onClick={onModifyClick}>
+        <MenuItem onClick={onModifyClick}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>

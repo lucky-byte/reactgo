@@ -105,10 +105,12 @@ func infoUpdate(c echo.Context) error {
 		cc.ErrLog(err).Error("更新任务信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	// 替换调度
-	if err = task.Replace(t, uuid); err != nil {
-		cc.ErrLog(err).Error("替换任务调度错")
-		return c.NoContent(http.StatusInternalServerError)
+	// 如果没有禁用的话，重新调度
+	if !t.Disabled {
+		if err = task.Replace(t, uuid); err != nil {
+			cc.ErrLog(err).Error("替换任务调度错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
 	}
 	return c.NoContent(http.StatusOK)
 }
