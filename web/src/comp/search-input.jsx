@@ -3,6 +3,9 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { debounce } from "lodash";
 
 export default function SearchInput(props) {
@@ -22,6 +25,14 @@ export default function SearchInput(props) {
     debounceChange(e.target.value);
   }
 
+  // 清除
+  const onClear = () => {
+    setValue('');
+    props.onChange('');
+  }
+
+  useHotkeys('esc', onClear, { enableOnTags: ["INPUT"] });
+
   return (
     <TextField variant="standard" placeholder='搜索...'
       value={value} onChange={onChange}
@@ -31,6 +42,15 @@ export default function SearchInput(props) {
             {loading ? <CircularProgress size={20} /> : <SearchIcon />}
           </InputAdornment>
         ),
+        endAdornment: (
+          (value.length > 0 &&
+            <InputAdornment position="end">
+              <IconButton aria-label='清除' onClick={onClear}>
+                <ClearIcon color='error' />
+              </IconButton>
+            </InputAdornment>
+          )
+        )
       }}
       inputProps={{ 'aria-label': '搜索' }}
     />

@@ -173,33 +173,50 @@ export default function AclAllows() {
     }
   }
 
+  // 修改访问权限
+  const onAllowReadCheck = async row => {
+    let { read, write, admin } = row;
+
+    // 当前是允许的，改变成不允许，同时也会取消修改和管理权限
+    if (row.read) {
+      [read, write, admin] = [false, false, false];
+    } else {
+      read = true;
+    }
+    await onAllowUpdateCheck(row.uuid, read, write, admin);
+  }
+
+  // 修改写权限
+  const onAllowWriteCheck = async row => {
+    let { read, write, admin } = row;
+
+    // 当前是允许的，改变成不允许，同时也会取消管理权限
+    if (row.write) {
+      [write, admin] = [false, false];
+    } else {
+      [read, write] = [true, true];
+    }
+    await onAllowUpdateCheck(row.uuid, read, write, admin);
+  }
+
+  // 修改管理权限
+  const onAllowAdminCheck = async row => {
+    let { read, write, admin } = row;
+
+    // 当前是允许的，改变成不允许
+    if (row.admin) {
+      admin = false
+    } else {
+      [read, write, admin] = [true, true, true];
+    }
+    await onAllowUpdateCheck(row.uuid, read, write, admin);
+  }
+
   // 修改权限
   const onAllowUpdateCheck = async (uuid, read, write, admin) => {
     try {
       setUpdated(true);
 
-      // 如果开通管理权限，则自动开通写权限
-      if (admin) {
-        write = true;
-      }
-      // 如果开通写权限，则自动开通读权限
-      if (write) {
-        read = true;
-      }
-      let changed = true;
-
-      for (let i = 0; i < allowList.length; i++) {
-        const a = allowList[i];
-        if (a.uuid === uuid) {
-          if (a.read === read && a.write === write && a.admin === admin) {
-            changed = false;
-          }
-          break;
-        }
-      }
-      if (!changed) {
-        return enqueueSnackbar('无需更新，可能已设定更高权限', { variant: 'info' });
-      }
       await put('/system/acl/allow/update', new URLSearchParams({
         uuid, read, write, admin,
       }));
@@ -313,31 +330,19 @@ export default function AclAllows() {
                   <TableCell align="center">{row.title}</TableCell>
                   <TableCell align="center" padding='checkbox'>
                     <Checkbox disabled={updated} checked={row.read} color='success'
-                      onChange={e => {
-                        onAllowUpdateCheck(
-                          row.uuid, !row.read, row.write, row.admin
-                        );
-                      }}
+                      onChange={e => { onAllowReadCheck(row); }}
                       inputProps={{ "aria-label": "访问权限" }}
                     />
                   </TableCell>
                   <TableCell align="center" padding='checkbox'>
                     <Checkbox disabled={updated} checked={row.write} color='success'
-                      onChange={e => {
-                        onAllowUpdateCheck(
-                          row.uuid, row.read, !row.write, row.admin
-                        );
-                      }}
+                      onChange={e => { onAllowWriteCheck(row); }}
                       inputProps={{ "aria-label": "修改权限" }}
                     />
                   </TableCell>
                   <TableCell align="center" padding='checkbox'>
                     <Checkbox disabled={updated} checked={row.admin} color='success'
-                      onChange={e => {
-                        onAllowUpdateCheck(
-                          row.uuid, row.read, row.write, !row.admin
-                        );
-                      }}
+                      onChange={e => { onAllowAdminCheck(row); }}
                       inputProps={{ "aria-label": "管理权限" }}
                     />
                   </TableCell>

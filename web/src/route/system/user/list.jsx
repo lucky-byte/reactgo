@@ -156,8 +156,9 @@ export default function UserList() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
-              <TableRow hover key={user.userid}>
+            {users.map(user => (
+              <TableRow hover key={user.userid}
+                disabled={user.disabled} deleted={user.deleted}>
                 <TableCell align="center">{user.userid}</TableCell>
                 <TableCell align="center">{user.name}</TableCell>
                 <TableCell align="center">

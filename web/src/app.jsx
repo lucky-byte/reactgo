@@ -35,6 +35,33 @@ export default function App() {
         main: '#ff00af',
       },
     },
+    components: {
+      // 给表格行增加 disabled 和 deleted 风格
+      MuiTableRow: {
+        styleOverrides: {
+          root: ({ ownerState, theme }) => {
+            if (ownerState.deleted) {
+              return {
+                textDecoration: 'line-through',
+                color: theme.palette.error.main,
+                '& td:not(:last-child)': {
+                  color: theme.palette.text.disabled,
+                  pointerEvents: 'none',
+                },
+              }
+            }
+            if (ownerState.disabled) {
+              return {
+                '& td:not(:last-child)': {
+                  color: theme.palette.text.disabled,
+                  pointerEvents: 'none',
+                },
+              }
+            }
+          },
+        }
+      }
+    }
   }, zhCN), [mode]);
 
   // 更新色彩模式

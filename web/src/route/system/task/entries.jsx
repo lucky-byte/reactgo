@@ -60,9 +60,13 @@ export default function TaskEntries() {
             查看系统任务调度器内部运行状态
           </Typography>
         </Stack>
-        <Button startIcon={<RefreshIcon />} onClick={() => setRefresh(true)}>
-          刷新
-        </Button>
+        <Stack direction='row' alignItems='center' spacing={4}>
+          <Typography variant='body2'>共 {entries.length} 项</Typography>
+          <Button variant='text' startIcon={<RefreshIcon />}
+            onClick={() => setRefresh(true)}>
+            刷新
+          </Button>
+        </Stack>
       </Stack>
       <Table size='medium'>
         <TableHead>
@@ -84,7 +88,11 @@ export default function TaskEntries() {
               <TableCell align="center"><code>{entry.cron}</code></TableCell>
               <TableCell align="center">{entry.path}</TableCell>
               <TableCell align="center">
-                {entry.running ? '运行中' : '闲置'}
+                {entry.running ?
+                  <Typography color='secondary' variant='body2'>运行</Typography>
+                  :
+                  <span>闲置</span>
+                }
               </TableCell>
               <TableCell align="center">
                 {dayjs(entry.prev).format('YY-MM-DD HH:mm:ss')}

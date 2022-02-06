@@ -123,7 +123,7 @@ export default function UserList() {
           </TableHead>
           <TableBody>
             {tasks.map(task => (
-              <TableRow hover key={task.uuid}>
+              <TableRow hover key={task.uuid} disabled={task.disabled}>
                 <TableCell align="center">{task.name}</TableCell>
                 <TableCell align="center"><code>{task.cron}</code></TableCell>
                 <TableCell align="center">
