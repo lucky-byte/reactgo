@@ -241,8 +241,8 @@ func main() {
 	if err := engine.Shutdown(ctx); err != nil {
 		xlog.X.WithError(err).Fatal("Server forced to shutdown")
 	}
-	db.Disconnect()
 	task.Stop()
+	db.Disconnect()
 }
 
 // 在单独的 goroutine 中启动 http 服务

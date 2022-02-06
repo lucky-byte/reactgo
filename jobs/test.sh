@@ -2,8 +2,11 @@
 
 echo "hello world"
 
-env
+echo $DSN
 
-sleep 20
+trap 'echo "SIG TERM received"' TERM
+trap 'echo "SIG INT received"' INT
+
+sleep 60
 
 exit 1

@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/tevino/abool/v2"
@@ -79,11 +80,15 @@ func (j *Job) runCommand() {
 	}
 	var cmd *exec.Cmd
 
+	// 支持命令行选项
 	if len(args) == 1 {
 		cmd = exec.Command(command)
 	} else {
 		cmd = exec.Command(command, args[1:]...)
 	}
+
+	// 启用新的进程组，避免信号污染
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true, Pgid: 0}
 
 	// 设置环境变量
 	dsn := fmt.Sprintf("DSN=%s", scheduler.conf.DatabaseDSN())

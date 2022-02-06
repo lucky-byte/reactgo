@@ -208,7 +208,7 @@ export default function SignIn() {
         </Typography>
         </Stack>
         <FormHelperText sx={{ mt: 1 }}>
-          版权所有 &copy; {new Date().getFullYear()}
+          版权所有 &copy; {new Date().getFullYear()}&nbsp;
           {process.env.REACT_APP_COMPANY_NAME}，保留所有权利。
         </FormHelperText>
         {process.env.REACT_APP_ICP &&
