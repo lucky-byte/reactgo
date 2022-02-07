@@ -1,14 +1,13 @@
 package db
 
 import (
+	"log"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/v4/stdlib"
-
-	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 const (
@@ -22,7 +21,7 @@ var mainDB *sqlx.DB
 // Connect open database connection
 func Connect(driver string, dsn string) {
 	if mainDB != nil {
-		xlog.X.Debug("Repeat connection to the database")
+		log.Printf("Repeat connection to the database")
 		return
 	}
 	mainDB = sqlx.MustConnect(driver, dsn)
@@ -39,7 +38,7 @@ func Connect(driver string, dsn string) {
 // Disconnect from database
 func Disconnect() {
 	if err := mainDB.Close(); err != nil {
-		xlog.X.WithError(err).Error("Disconnect from Database error")
+		log.Printf("Disconnect from Database error: %v", err)
 	}
 	mainDB = nil
 }
@@ -47,7 +46,7 @@ func Disconnect() {
 // Default get default database connection pool
 func Default() *sqlx.DB {
 	if mainDB == nil {
-		xlog.X.Panic("Database is not connection yet.")
+		log.Panic("Database is not connection yet.")
 	}
 	return mainDB
 }

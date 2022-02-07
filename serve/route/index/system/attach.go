@@ -5,6 +5,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/route/index/system/acl"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/history"
+	"github.com/lucky-byte/reactgo/serve/route/index/system/notification"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/settings"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/task"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/user"
@@ -18,4 +19,5 @@ func Attach(up *echo.Group) {
 	history.Attach(group)
 	settings.Attach(group)
 	task.Attach(group)
+	notification.Attach(group)
 }

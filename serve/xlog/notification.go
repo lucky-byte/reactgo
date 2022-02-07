@@ -1,6 +1,7 @@
 package xlog
 
 import (
+	"github.com/lucky-byte/reactgo/serve/notification"
 	"github.com/sirupsen/logrus"
 )
 
@@ -27,6 +28,7 @@ func (h *notificationHook) Fire(entry *logrus.Entry) error {
 	// }
 	// _, err = fmt.Println(message)
 	// return err
+	notification.Error(entry.Message, entry.Message)
 	return nil
 }
 

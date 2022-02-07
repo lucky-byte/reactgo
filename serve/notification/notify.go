@@ -3,6 +3,7 @@ package notification
 import (
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
@@ -16,10 +17,11 @@ const (
 // 记录通知，可以指定接收人
 func NotifyTo(to string, level int, title, message string) {
 	ql := `
-		insert into notifications (touser, level, title, message)
-		values (?, ?, ?, ?)
+		insert into notifications (uuid, touser, level, title, message)
+		values (?, ?, ?, ?, ?)
 	`
-	if err := db.ExecOne(ql, to, level, title, message); err != nil {
+	err := db.ExecOne(ql, uuid.NewString(), to, level, title, message)
+	if err != nil {
 		log.Printf("记录通知错: %v", err)
 	}
 }

@@ -12,13 +12,16 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TablePagination from '@mui/material/TablePagination';
+import { useSnackbar } from 'notistack';
 import SearchInput from '~/comp/search-input';
 import Markdown from '~/comp/markdown';
 import usePageData from '~/hook/pagedata';
 import titleState from "~/state/title";
 import Typography from '@mui/material/Typography';
+import { post } from '~/rest';
 
 export default function Notification() {
+  const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
   const [pageData, setPageData] = usePageData();
   const [keyword, setKeyword] = useState([]);
@@ -29,7 +32,25 @@ export default function Notification() {
   const [rowsPerPage, setRowsPerPage] = useState(pageData('rowsPerPage') || 10);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { setTitle('系统事件'); }, [setTitle]);
+  useEffect(() => { setTitle('事件通知'); }, [setTitle]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+
+        const resp = await post('/system/notification/', new URLSearchParams({
+          page, rows_per_page: rowsPerPage, keyword, day,
+        }));
+        setNotifications(resp.notifications || []);
+        setTotal(resp.total || 0);
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [enqueueSnackbar, page, rowsPerPage, keyword, day]);
 
   // 搜索
   const onKeywordChange = value => {
