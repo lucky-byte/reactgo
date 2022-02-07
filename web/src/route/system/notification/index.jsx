@@ -7,10 +7,17 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from '@mui/material/Tooltip';
 import HistoryIcon from '@mui/icons-material/History';
 import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import InfoIcon from '@mui/icons-material/Info';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import TablePagination from '@mui/material/TablePagination';
 import { useSnackbar } from 'notistack';
 import SearchInput from '~/comp/search-input';
@@ -18,7 +25,7 @@ import Markdown from '~/comp/markdown';
 import usePageData from '~/hook/pagedata';
 import titleState from "~/state/title";
 import Typography from '@mui/material/Typography';
-import { post } from '~/rest';
+import { post, put } from '~/rest';
 
 export default function Notification() {
   const { enqueueSnackbar } = useSnackbar();
@@ -58,6 +65,25 @@ export default function Notification() {
     setPage(0);
   }
 
+  // 展开时更新通知为已读
+  const onAccordionChange = async (e, expanded, notification) => {
+    if (expanded && notification.fresh && notification.touser === '') {
+      try {
+        await put('/system/notification/unfresh', new URLSearchParams({
+          uuid: notification.uuid,
+        }));
+        setNotifications(notifications.map(n => {
+          if (n.uuid === notification.uuid) {
+            n.fresh = false;
+          }
+          return n;
+        }));
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
   // 页面改变
   const onPageChange = (e, newPage) => {
     setPage(newPage);
@@ -95,20 +121,35 @@ export default function Notification() {
         </TextField>
       </Toolbar>
 
-      {notifications.map(n => (
-         <Accordion>
-         <AccordionSummary
-           expandIcon={<ExpandMoreIcon />}
-           aria-controls="panel1a-content"
-           id="panel1a-header"
-         >
-           <Typography>Accordion 1</Typography>
-         </AccordionSummary>
-         <AccordionDetails>
-            <Markdown>{n.message}</Markdown>
-         </AccordionDetails>
-       </Accordion>
-      ))}
+      <Paper variant='outlined' sx={{ mt: 2 }}>
+        {notifications.map(n => (
+          <Accordion key={n.uuid} elevation={0} disableGutters
+            onChange={(e, expanded) => onAccordionChange(e, expanded, n)} sx={{
+            borderBottom: '1px solid #8884',
+            '&:before': { display: 'none', },
+            '&:last-child': { borderBottom: 0, }
+          }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Stack direction='row' alignItems='center' spacing={1}>
+                <LevelIcon level={n.level} />
+                <Typography variant='subtitle1' sx={{
+                  fontWeight: n.fresh ? 'bold' : 'normal',
+                }}>
+                  {n.title}
+                </Typography>
+              </Stack>
+            </AccordionSummary>
+            <AccordionDetails sx={{
+              pt: 2, pl: 6,
+              fontSize: 'small',
+              backgroundColor: theme =>
+                theme.palette.mode === 'dark' ? 'black' : 'white',
+            }}>
+              <Markdown>{n.message}</Markdown>
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </Paper>
 
       {/* <TablePagination
         rowsPerPageOptions={[10, 25, 50, 100]}
@@ -122,4 +163,19 @@ export default function Notification() {
       /> */}
     </Container>
   )
+}
+
+function LevelIcon(props) {
+  switch (props.level) {
+    case 0:
+      return <CheckBoxOutlineBlankIcon color='success' />
+    case 1:
+      return <InfoIcon color='info' />
+    case 2:
+      return <WarningAmberIcon color='warning' />
+    case 3:
+      return <ErrorOutlineIcon color='error' />
+    default:
+      return <HelpOutlineIcon color='disabled' />
+  }
 }

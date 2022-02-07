@@ -12,7 +12,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-// 查询登录历史列表
+// 查询列表
 func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -62,6 +62,7 @@ func list(c echo.Context) error {
 
 	for _, h := range records {
 		notifications = append(notifications, echo.Map{
+			"uuid":      h.UUID,
 			"create_at": h.CreateAt,
 			"touser":    h.ToUser,
 			"level":     h.Level,

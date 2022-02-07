@@ -9,4 +9,5 @@ func Attach(up *echo.Group, code int) {
 	group := up.Group("/notification", acl.AllowRead(code))
 
 	group.POST("/", list)
+	group.PUT("/unfresh", unfresh)
 }
