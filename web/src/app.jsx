@@ -40,7 +40,7 @@ export default function App() {
       MuiTableRow: {
         styleOverrides: {
           root: ({ ownerState, theme }) => {
-            if (ownerState.deleted) {
+            if (ownerState.deleted === 'true') {
               return {
                 textDecoration: 'line-through',
                 color: theme.palette.error.main,

@@ -15,22 +15,22 @@ const menus = [{
 }, {
   title: '系统管理',
   items: [{
-    code: 1000,
+    code: 9000,
     icon: SupervisorAccountIcon,
   }, {
-    code: 1100,
+    code: 9010,
     icon: SecurityIcon,
   }, {
-    code: 1200,
+    code: 9020,
     icon: HistoryIcon,
   }, {
-    code: 1300,
+    code: 9030,
     icon: SettingsIcon,
   }, {
-    code: 1400,
+    code: 9040,
     icon: NotificationsIcon,
   }, {
-    code: 1500,
+    code: 9050,
     icon: AccessAlarmIcon,
   }],
 }]

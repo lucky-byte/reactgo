@@ -158,7 +158,7 @@ export default function UserList() {
           <TableBody>
             {users.map(user => (
               <TableRow hover key={user.userid}
-                disabled={user.disabled} deleted={user.deleted}>
+                disabled={user.disabled} deleted={user.deleted?.toString()}>
                 <TableCell align="center">{user.userid}</TableCell>
                 <TableCell align="center">{user.name}</TableCell>
                 <TableCell align="center">

@@ -7,9 +7,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/index/secretcode"
 )
 
-func Attach(up *echo.Group) {
-	code := 1000
-
+func Attach(up *echo.Group, code int) {
 	group := up.Group("/user", acl.AllowRead(code))
 
 	group.POST("/list", list)

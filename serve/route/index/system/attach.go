@@ -11,13 +11,22 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/index/system/user"
 )
 
+const (
+	menuCodeUser         = 9000
+	menuCodeACL          = 9010
+	menuCodeHistory      = 9020
+	menuCodeSettings     = 9030
+	menuCodeNotification = 9040
+	menuCodeTask         = 9050
+)
+
 func Attach(up *echo.Group) {
 	group := up.Group("/system")
 
-	user.Attach(group)
-	acl.Attach(group)
-	history.Attach(group)
-	settings.Attach(group)
-	task.Attach(group)
-	notification.Attach(group)
+	user.Attach(group, menuCodeUser)
+	acl.Attach(group, menuCodeACL)
+	history.Attach(group, menuCodeHistory)
+	settings.Attach(group, menuCodeSettings)
+	notification.Attach(group, menuCodeNotification)
+	task.Attach(group, menuCodeTask)
 }

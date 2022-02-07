@@ -24,6 +24,7 @@ export default function Sidebar() {
 
   const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
 
+  // 根据用户的权限计算可以展示的菜单
   useEffect(() => {
     if (user?.allows) {
       const allows = [];
@@ -94,8 +95,7 @@ function Menu({ menu }) {
 
   return (
     <Accordion disableGutters elevation={0} square
-      expanded={expanded} onChange={handleChange}
-    >
+      expanded={expanded} onChange={handleChange}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle2">{menu.title}</Typography>
       </AccordionSummary>

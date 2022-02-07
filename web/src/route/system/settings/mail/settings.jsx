@@ -368,11 +368,8 @@ function ImportDialog(props) {
       <DialogTitle>导入配置</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          导入文件格式必须与导出的文件格式一致。一般的操作流程是先导出文件备份，后续在需要的时候再导入之前备份的文件。
+          导入文件格式必须与导出的文件格式一致。一般的操作流程是先导出文件备份，后续在再进行导入。
         </DialogContentText>
-        <input accept="application/json" id="import-file" type="file" hidden
-          onChange={onFileChange}
-        />
         <TextField fullWidth disabled focused sx={{ mt: 3 }}
           label='导入文件'
           placeholder="请选择"
@@ -380,9 +377,12 @@ function ImportDialog(props) {
           InputProps={{
             endAdornment:
               <InputAdornment position="end">
-                <label htmlFor="import-file">
-                  <Button variant="text" component="span">选择文件</Button>
-                </label>
+                <input accept="application/json" id="importfile" type="file"
+                  hidden onChange={onFileChange}
+                />
+                <Button htmlFor='importfile' variant="text" component="label">
+                  选择文件
+                </Button>
               </InputAdornment>
           }}
         />

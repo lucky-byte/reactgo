@@ -15,7 +15,15 @@ export default function Item(props) {
   const code = useRecoilValue(codeState);
   const [showCode, setShowCode] = useState(false);
 
-  const item = urlCodes[props.code];
+  const item = urlCodes[props?.code];
+
+  if (!item) {
+    return (
+      <Typography color='error' variant='button' paragraph sx={{ ml: 2 }}>
+        菜单 {props?.code} 不存在
+      </Typography>
+    )
+  }
 
   const onMouseEnter = () => {
     setShowCode(true);
