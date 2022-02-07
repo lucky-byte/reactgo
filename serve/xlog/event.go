@@ -1,0 +1,108 @@
+package xlog
+
+import (
+	"encoding/json"
+	"fmt"
+	"path"
+	"strings"
+
+	"github.com/lucky-byte/reactgo/serve/event"
+	"github.com/sirupsen/logrus"
+)
+
+const (
+	formatJson  = 1
+	formatField = 2
+)
+
+type notificationHook struct {
+	format int
+}
+
+func newNotificationHook(format int) *notificationHook {
+	return &notificationHook{format: format}
+}
+
+func (h *notificationHook) Fire(entry *logrus.Entry) error {
+	var level int
+
+	switch entry.Level {
+	case logrus.PanicLevel, logrus.ErrorLevel, logrus.FatalLevel:
+		level = event.LevelError
+	case logrus.WarnLevel:
+		level = event.LevelWarn
+	default:
+		level = event.LevelInfo
+	}
+	// 可以以 2 种格式记录 Markdown
+	if h.format == formatJson {
+		return h.fireJson(entry, level)
+	}
+	return h.fireField(entry, level)
+}
+
+// 以 JSON 格式记录日志字段
+func (h *notificationHook) fireJson(entry *logrus.Entry, level int) error {
+	message := ""
+	fields := make(logrus.Fields)
+
+	for k, v := range entry.Data {
+		switch v := v.(type) {
+		case error:
+			message = v.Error()
+		default:
+			fields[k] = v
+		}
+	}
+	if entry.HasCaller() {
+		fields["func"] = path.Base(entry.Caller.Function)
+		fields["file"] = fmt.Sprintf("%s:%d",
+			path.Base(entry.Caller.File), entry.Caller.Line,
+		)
+	}
+	m, err := json.MarshalIndent(fields, "", "  ")
+	if err != nil {
+		return err
+	}
+	message = fmt.Sprintf("%s\n\n```json\n%s\n```", message, m)
+
+	event.Add(level, entry.Message, message)
+	return nil
+}
+
+// 以 k=v 格式记录日志字段
+func (h *notificationHook) fireField(entry *logrus.Entry, level int) error {
+	message := ""
+	fields := []string{}
+
+	for k, v := range entry.Data {
+		switch v := v.(type) {
+		case error:
+			message = v.Error()
+		default:
+			fields = append(fields, fmt.Sprintf("`%s`=`%s`", k, v))
+		}
+	}
+	if entry.HasCaller() {
+		fields = append(fields, fmt.Sprintf("`func`=`%s`",
+			path.Base(entry.Caller.Function),
+		))
+		fields = append(fields, fmt.Sprintf("`file`=`%s:%d`",
+			path.Base(entry.Caller.File), entry.Caller.Line,
+		))
+	}
+	m := strings.Join(fields, "，")
+	message = fmt.Sprintf("%s\n\n%s", message, m)
+
+	event.Add(level, entry.Message, message)
+	return nil
+}
+
+func (h *notificationHook) Levels() []logrus.Level {
+	return []logrus.Level{
+		logrus.PanicLevel,
+		logrus.FatalLevel,
+		logrus.ErrorLevel,
+		logrus.WarnLevel,
+	}
+}

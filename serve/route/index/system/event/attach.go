@@ -1,4 +1,4 @@
-package notification
+package event
 
 import (
 	"github.com/labstack/echo/v4"
@@ -6,7 +6,7 @@ import (
 )
 
 func Attach(up *echo.Group, code int) {
-	group := up.Group("/notification", acl.AllowRead(code))
+	group := up.Group("/event", acl.AllowRead(code))
 
 	group.POST("/", list)
 	group.PUT("/unfresh", unfresh)

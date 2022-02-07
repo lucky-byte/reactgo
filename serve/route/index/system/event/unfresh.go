@@ -1,4 +1,4 @@
-package notification
+package event
 
 import (
 	"net/http"
@@ -20,11 +20,10 @@ func unfresh(c echo.Context) error {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
-	ql := `
-		update notifications set fresh = false where uuid = ? and touser = ''
-	`
+	ql := `update events set fresh = false where uuid = ?`
+
 	if err = db.ExecOne(ql, uuid); err != nil {
-		cc.ErrLog(err).Error("更新通知错")
+		cc.ErrLog(err).Error("更新事件错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

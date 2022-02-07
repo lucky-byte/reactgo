@@ -9,6 +9,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -20,6 +21,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import TablePagination from '@mui/material/TablePagination';
 import { useSnackbar } from 'notistack';
+import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import Markdown from '~/comp/markdown';
 import usePageData from '~/hook/pagedata';
@@ -27,29 +29,29 @@ import titleState from "~/state/title";
 import Typography from '@mui/material/Typography';
 import { post, put } from '~/rest';
 
-export default function Notification() {
+export default function Event() {
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
   const [pageData, setPageData] = usePageData();
   const [keyword, setKeyword] = useState([]);
   const [day, setDay] = useState(7);
   const [total, setTotal] = useState(0);
-  const [notifications, setNotifications] = useState([]);
+  const [events, setEvents] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(pageData('rowsPerPage') || 10);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { setTitle('事件通知'); }, [setTitle]);
+  useEffect(() => { setTitle('系统事件'); }, [setTitle]);
 
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
 
-        const resp = await post('/system/notification/', new URLSearchParams({
+        const resp = await post('/system/event/', new URLSearchParams({
           page, rows_per_page: rowsPerPage, keyword, day,
         }));
-        setNotifications(resp.notifications || []);
+        setEvents(resp.events || []);
         setTotal(resp.total || 0);
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -66,17 +68,17 @@ export default function Notification() {
   }
 
   // 展开时更新通知为已读
-  const onAccordionChange = async (e, expanded, notification) => {
-    if (expanded && notification.fresh && notification.touser === '') {
+  const onAccordionChange = async (e, expanded, event) => {
+    if (expanded && event.fresh) {
       try {
-        await put('/system/notification/unfresh', new URLSearchParams({
-          uuid: notification.uuid,
+        await put('/system/event/unfresh', new URLSearchParams({
+          uuid: event.uuid,
         }));
-        setNotifications(notifications.map(n => {
-          if (n.uuid === notification.uuid) {
-            n.fresh = false;
+        setEvents(events.map(e => {
+          if (e.uuid === event.uuid) {
+            e.fresh = false;
           }
-          return n;
+          return e;
         }));
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -122,30 +124,32 @@ export default function Notification() {
       </Toolbar>
 
       <Paper variant='outlined' sx={{ mt: 2 }}>
-        {notifications.map(n => (
-          <Accordion key={n.uuid} elevation={0} disableGutters
-            onChange={(e, expanded) => onAccordionChange(e, expanded, n)} sx={{
+        {events.map(e => (
+          <Accordion key={e.uuid} elevation={0} disableGutters
+            onChange={(e, expanded) => onAccordionChange(e, expanded, e)} sx={{
             borderBottom: '1px solid #8884',
             '&:before': { display: 'none', },
             '&:last-child': { borderBottom: 0, }
           }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Stack direction='row' alignItems='center' spacing={1}>
-                <LevelIcon level={n.level} />
+                <LevelIcon level={e.level} />
                 <Typography variant='subtitle1' sx={{
-                  fontWeight: n.fresh ? 'bold' : 'normal',
+                  fontWeight: e.fresh ? 'bold' : 'normal',
                 }}>
-                  {n.title}
+                  {e.title}
                 </Typography>
               </Stack>
             </AccordionSummary>
-            <AccordionDetails sx={{
-              pt: 2, pl: 6,
-              fontSize: 'small',
-              backgroundColor: theme =>
+            <AccordionDetails sx={{ pl: 6, backgroundColor: theme =>
                 theme.palette.mode === 'dark' ? 'black' : 'white',
             }}>
-              <Markdown>{n.message}</Markdown>
+              <Stack sx={{ maxWidth: 660 }} spacing={1}>
+                <Typography variant='caption'>
+                  时间: {dayjs(e.create_at).format('YY-MM-DD HH:mm:ss')}
+                </Typography>
+                <Markdown>{e.message}</Markdown>
+              </Stack>
             </AccordionDetails>
           </Accordion>
         ))}

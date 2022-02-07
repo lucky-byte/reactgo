@@ -8,7 +8,7 @@ const urlCodes = {
   9031: { title: '邮件设置', to: '/system/settings/mail', omit: true },
   9032: { title: '短信设置', to: '/system/settings/sms', omit: true },
   9033: { title: '安全设置', to: '/system/settings/secure', omit: true },
-  9040: { title: '事件通知', to: '/system/notification' },
+  9040: { title: '系统事件', to: '/system/event' },
   9050: { title: '定时任务', to: '/system/task' },
   9051: { title: '任务诊断', to: '/system/task/entries', omit: true },
   8000: { title: '用户资料', to: '/user', omit: true },

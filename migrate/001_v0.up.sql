@@ -108,10 +108,9 @@ create table if not exists mtas (
   nsent       int             default 0
 );
 
-create table if not exists notifications (
+create table if not exists events (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
-  touser      varchar(36)     not null default '',
   level       int             not null,
   title       varchar(64)     not null,
   message     text            not null,

@@ -120,10 +120,9 @@ type Task struct {
 	Note     sql.NullString `db:"note"`      // 备注
 }
 
-type Notification struct {
+type Event struct {
 	UUID     string    `db:"uuid"`      // uuid
 	CreateAt time.Time `db:"create_at"` // 创建时间
-	ToUser   string    `db:"touser"`    // 发送给
 	Level    int       `db:"level"`     // 级别
 	Title    string    `db:"title"`     // 标题
 	Message  string    `db:"message"`   // 消息

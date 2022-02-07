@@ -51,7 +51,7 @@ func Setup(debug bool, conf *config.ViperConfig) {
 	l.SetOutput(rotate_logger)
 
 	// 发送通知
-	l.AddHook(newNotificationHook())
+	l.AddHook(newNotificationHook(formatField))
 
 	if debug {
 		l.AddHook(newTerminalHook())

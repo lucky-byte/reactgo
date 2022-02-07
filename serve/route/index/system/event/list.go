@@ -1,4 +1,4 @@
-package notification
+package event
 
 import (
 	"fmt"
@@ -35,43 +35,40 @@ func list(c echo.Context) error {
 
 	// 查询总数
 	ql := `
-		select count(*) from notifications
+		select count(*) from events
 		where create_at > $1 and (title ilike $2 or message ilike $2)
 	`
 	var total int
 
 	if err = db.SelectOne(ql, &total, startAt, keyword); err != nil {
-		cc.ErrLog(err).Error("查询通知错")
+		cc.ErrLog(err).Error("查询事件错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	// 查询列表
 	ql = `
-		select * from notifications
+		select * from events
 		where create_at > $1 and (title ilike $2 or message ilike $2)
 		order by create_at desc
 		offset $3 limit $4
 	`
-	var records []db.Notification
+	var records []db.Event
 
 	err = db.Select(ql, &records, startAt, keyword, offset, rows_per_page)
 	if err != nil {
-		cc.ErrLog(err).Error("查询通知错")
+		cc.ErrLog(err).Error("查询事件错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var notifications []echo.Map
+	var events []echo.Map
 
 	for _, h := range records {
-		notifications = append(notifications, echo.Map{
+		events = append(events, echo.Map{
 			"uuid":      h.UUID,
 			"create_at": h.CreateAt,
-			"touser":    h.ToUser,
 			"level":     h.Level,
 			"title":     h.Title,
 			"message":   h.Message,
 			"fresh":     h.Fresh,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"total": total, "notifications": notifications,
-	})
+	return c.JSON(http.StatusOK, echo.Map{"total": total, "events": events})
 }
