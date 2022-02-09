@@ -18,21 +18,22 @@ func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	var level, page, rows uint
-	var day int
-	var keyword string
+	var days int
+	var keyword, fresh string
 
 	err := echo.FormFieldBinder(c).
 		MustUint("page", &page).
 		MustUint("rows", &rows).
-		MustInt("day", &day).
+		MustInt("days", &days).
 		MustUint("level", &level).
+		MustString("fresh", &fresh).
 		String("keyword", &keyword).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
-	startAt := time.Now().AddDate(0, 0, -day)
+	startAt := time.Now().AddDate(0, 0, -days)
 	offset := page * rows
 
 	pg := db.NewPagination("events", offset, rows)
@@ -41,6 +42,11 @@ func list(c echo.Context) error {
 		pg.Col("title").ILike(keyword), pg.Col("message").ILike(keyword),
 	)
 	pg.Where(like, pg.Col("create_at").Gt(startAt), pg.Col("level").Gte(level))
+	if fresh == "true" {
+		pg.Where(pg.Col("fresh").Eq(true))
+	} else if fresh == "false" {
+		pg.Where(pg.Col("fresh").Eq(false))
+	}
 	pg.OrderBy(pg.Col("create_at").Desc())
 
 	var count uint

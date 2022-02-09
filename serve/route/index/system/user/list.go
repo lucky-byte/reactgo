@@ -44,13 +44,13 @@ func list(c echo.Context) error {
 	} else {
 		pg.Where(like)
 	}
-	acl_table := goqu.T("acl")
+	aclTable := goqu.T("acl")
 
-	pg.Join(acl_table, goqu.On(pg.Col("acl").Eq(acl_table.Col("uuid"))))
+	pg.Join(aclTable, goqu.On(pg.Col("acl").Eq(aclTable.Col("uuid"))))
 
 	pg.Select(pg.Col("*"),
-		acl_table.Col("code").As("acl_code"),
-		acl_table.Col("name").As("acl_name"),
+		aclTable.Col("code").As("acl_code"),
+		aclTable.Col("name").As("acl_name"),
 	)
 	pg.OrderBy(pg.Col("create_at").Desc())
 

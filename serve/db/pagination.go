@@ -10,6 +10,7 @@ type paginationJoin struct {
 	table exp.Expression
 	on    exp.JoinCondition
 }
+
 type Pagination struct {
 	Table   exp.IdentifierExpression
 	selects []interface{}
@@ -22,10 +23,13 @@ type Pagination struct {
 
 func NewPagination(table string, offset, limit uint) *Pagination {
 	return &Pagination{
-		Table:  goqu.T(table),
-		join:   make([]paginationJoin, 0),
-		offset: offset,
-		limit:  limit,
+		Table:   goqu.T(table),
+		selects: make([]interface{}, 0),
+		where:   make([]exp.Expression, 0),
+		orderby: make([]exp.OrderedExpression, 0),
+		join:    make([]paginationJoin, 0),
+		offset:  offset,
+		limit:   limit,
 	}
 }
 
@@ -48,7 +52,7 @@ func (p *Pagination) Select(columns ...interface{}) *Pagination {
 
 // 添加 where 子句，多个条件以 and 结合，和使用 goqu.And() 的效果一样
 func (p *Pagination) Where(conds ...exp.Expression) *Pagination {
-	p.where = conds
+	p.where = append(p.where, conds...)
 	return p
 }
 
@@ -60,6 +64,8 @@ func (p *Pagination) OrderBy(order ...exp.OrderedExpression) *Pagination {
 	return p
 }
 
+// 添加 left join，大致用法如下(on 有多种方式):
+// p.Join(goqu.T('t2'), goqu.On(t1.col.eq(t2.col)))
 func (p *Pagination) Join(t exp.Expression, on exp.JoinCondition) *Pagination {
 	p.join = append(p.join, paginationJoin{t, on})
 	return p
@@ -74,7 +80,7 @@ func (p *Pagination) Exec(count *uint, records interface{}) error {
 	if err != nil {
 		return err
 	}
-	logrus.Tracef("SQL: %s", q1)
+	logrus.Debugf("SQL: %s", q1)
 
 	b2 := goqu.From(p.Table).Select(p.selects...)
 	for _, j := range p.join {
@@ -87,7 +93,7 @@ func (p *Pagination) Exec(count *uint, records interface{}) error {
 	if err != nil {
 		return err
 	}
-	logrus.Tracef("SQL: %s", q2)
+	logrus.Debugf("SQL: %s", q2)
 
 	// 查询总数
 	if err = SelectOne(q1, count); err != nil {

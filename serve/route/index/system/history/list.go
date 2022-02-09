@@ -19,20 +19,20 @@ func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	var page, rows uint
-	var day int
+	var days int
 	var keyword string
 
 	err := echo.FormFieldBinder(c).
 		MustUint("page", &page).
 		MustUint("rows", &rows).
-		MustInt("day", &day).
+		MustInt("days", &days).
 		String("keyword", &keyword).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
-	startAt := time.Now().AddDate(0, 0, -day)
+	startAt := time.Now().AddDate(0, 0, -days)
 	offset := page * rows
 
 	pg := db.NewPagination("signin_history", offset, rows)

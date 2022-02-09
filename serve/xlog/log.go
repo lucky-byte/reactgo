@@ -24,6 +24,11 @@ var X = logrus.StandardLogger()
 
 // 配置日志
 func Setup(debug bool, conf *config.ViperConfig) {
+	if conf.Debug() {
+		logrus.SetLevel(logrus.TraceLevel)
+	} else {
+		logrus.SetLevel(logrus.InfoLevel)
+	}
 	X = logrus.New()
 
 	X.SetReportCaller(true)

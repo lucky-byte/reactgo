@@ -28,7 +28,7 @@ export default function History() {
   const { enqueueSnackbar } = useSnackbar();
   const [pageData, setPageData] = usePageData();
   const [keyword, setKeyword] = useState([]);
-  const [day, setDay] = useState(7);
+  const [days, setDays] = useState(7);
   const [count, setCount] = useState(0);
   const [history, setHistory] = useState([]);
   const [page, setPage] = useState(0);
@@ -43,7 +43,7 @@ export default function History() {
         setLoading(true);
 
         const resp = await post('/system/history/', new URLSearchParams({
-          page, rows, keyword, day,
+          page, rows, keyword, days,
         }));
         setHistory(resp.history || []);
         setCount(resp.count || 0);
@@ -53,12 +53,18 @@ export default function History() {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rows, keyword, day]);
+  }, [enqueueSnackbar, page, rows, keyword, days]);
 
   // 搜索
   const onKeywordChange = value => {
     setKeyword(value);
     setPage(0);
+  }
+
+  // 时间段
+  const onDaysChange = e => {
+    setPage(0);
+    setDays(e.target.value);
   }
 
   // 页面改变
@@ -81,7 +87,7 @@ export default function History() {
         <SearchInput isLoading={loading} onChange={onKeywordChange} />
         <TextField
           select variant='standard' sx={{ ml: 2, minWidth: 140 }}
-          value={day} onChange={e => { setDay(e.target.value)}}
+          value={days} onChange={onDaysChange}
           InputProps={{
             startAdornment:
               <InputAdornment position="start">

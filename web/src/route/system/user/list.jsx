@@ -95,11 +95,13 @@ export default function UserList() {
 
   // 搜索
   const onKeywordChange = value => {
-    setKeyword(value);
     setPage(0);
+    setKeyword(value);
   }
 
+  // 访问控制
   const onAclChange = e => {
+    setPage(0);
     setAcl(e.target.value);
   }
 

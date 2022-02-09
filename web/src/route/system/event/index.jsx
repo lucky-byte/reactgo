@@ -18,18 +18,22 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Pagination from '@mui/material/Pagination';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import SearchInput from '~/comp/search-input';
 import Markdown from '~/comp/markdown';
 import titleState from "~/state/title";
 import Typography from '@mui/material/Typography';
 import { post, put } from '~/rest';
 
+dayjs.extend(relativeTime);
+
 export default function Event() {
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
   const [keyword, setKeyword] = useState([]);
-  const [day, setDay] = useState(7);
+  const [days, setDays] = useState(7);
   const [level, setLevel] = useState(2);
+  const [fresh, setFresh] = useState('all');
   const [events, setEvents] = useState([]);
   const [total, setTotal] = useState(0);
   const [rows] = useState(10);
@@ -44,7 +48,7 @@ export default function Event() {
         setLoading(true);
 
         const resp = await post('/system/event/', new URLSearchParams({
-          page, rows, keyword, day, level,
+          page, rows, keyword, days, level, fresh,
         }));
         if (resp.count > 0) {
           let pages = resp.count / rows;
@@ -62,12 +66,40 @@ export default function Event() {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rows, keyword, day, level]);
+  }, [enqueueSnackbar, page, rows, keyword, days, level, fresh]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setEvents(events.map(e => {
+        e.timeAgo = dayjs(e.create_at).fromNow();
+        return e;
+      }));
+    }, 1000);
+    return () => clearInterval(timer)
+  }, [events]);
 
   // 搜索
   const onKeywordChange = value => {
-    setKeyword(value);
     setPage(0);
+    setKeyword(value);
+  }
+
+  // 时间段
+  const onDaysChange = e => {
+    setPage(0);
+    setDays(e.target.value);
+  }
+
+  // 级别
+  const onLevelChange = e => {
+    setPage(0);
+    setLevel(e.target.value);
+  }
+
+  // 状态
+  const onFreshChange = e => {
+    setPage(0);
+    setFresh(e.target.value);
   }
 
   // 展开时更新通知为已读
@@ -95,7 +127,7 @@ export default function Event() {
         <SearchInput isLoading={loading} onChange={onKeywordChange} />
         <TextField
           select variant='standard' sx={{ ml: 2, minWidth: 100 }}
-          value={day} onChange={e => { setDay(e.target.value) }}>
+          value={days} onChange={onDaysChange}>
           <MenuItem value={7}>近一周</MenuItem>
           <MenuItem value={30}>近一月</MenuItem>
           <MenuItem value={90}>近三月</MenuItem>
@@ -104,11 +136,18 @@ export default function Event() {
         </TextField>
         <TextField
           select variant='standard' sx={{ ml: 2, minWidth: 100 }}
-          value={level} onChange={e => { setLevel(e.target.value) }}>
+          value={level} onChange={onLevelChange}>
           <MenuItem value={0}>待办</MenuItem>
           <MenuItem value={1}>信息</MenuItem>
           <MenuItem value={2}>警告</MenuItem>
           <MenuItem value={3}>错误</MenuItem>
+        </TextField>
+        <TextField
+          select variant='standard' sx={{ ml: 2, minWidth: 100 }}
+          value={fresh} onChange={onFreshChange}>
+          <MenuItem value='all'>全部</MenuItem>
+          <MenuItem value='false'>已读</MenuItem>
+          <MenuItem value='true'>未读</MenuItem>
         </TextField>
       </Toolbar>
 
@@ -121,12 +160,16 @@ export default function Event() {
             '&:last-child': { borderBottom: 0, }
           }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Stack direction='row' alignItems='center' spacing={1}>
+              <Stack direction='row' alignItems='center' spacing={1}
+                sx={{ flex: 1, mr: 2 }}>
                 <LevelIcon level={e.level} />
                 <Typography variant='subtitle1' sx={{
-                  fontWeight: e.fresh ? 'bold' : 'normal',
+                  flex: 1, fontWeight: e.fresh ? 'bold' : 'normal',
                 }}>
                   {e.title}
+                </Typography>
+                <Typography variant='caption' sx={{ color: 'gray' }}>
+                  {e.timeAgo || dayjs(e.create_at).fromNow()}
                 </Typography>
               </Stack>
             </AccordionSummary>
@@ -134,9 +177,6 @@ export default function Event() {
                 theme.palette.mode === 'dark' ? 'black' : 'white',
             }}>
               <Stack sx={{ maxWidth: 660 }} spacing={1}>
-                <Typography variant='caption'>
-                  时间: {dayjs(e.create_at).format('YY-MM-DD HH:mm:ss')}
-                </Typography>
                 <Markdown>{e.message}</Markdown>
               </Stack>
             </AccordionDetails>
