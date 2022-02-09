@@ -7,6 +7,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/reflectx"
+	"github.com/pkg/errors"
 )
 
 // A wrapper to sqlx.DB.Rebind()
@@ -18,10 +19,10 @@ func Rebind(ql string) string {
 func MustAffected1Row(res sql.Result, ql string) error {
 	rows, err := res.RowsAffected()
 	if err != nil {
-		return err
+		return errors.Wrap(err, "SQL")
 	}
 	if rows != 1 {
-		return fmt.Errorf("'%s' affect %d rows, expect 1 row", ql, rows)
+		return fmt.Errorf("'%s' 影响了 %d 行, 期望 1 行", ql, rows)
 	}
 	return nil
 }
@@ -36,16 +37,16 @@ func SelectOne(ql string, dest interface{}, params ...interface{}) error {
 	v := reflect.ValueOf(dest)
 
 	if v.Kind() != reflect.Ptr {
-		return fmt.Errorf("GetOne() must pass a pointer, not a value")
+		return fmt.Errorf("GetOne() 必须传一个指针，而不是值")
 	}
 	if v.IsNil() {
-		return fmt.Errorf("GetOne() nil pointer passed")
+		return fmt.Errorf("GetOne() 传了 nil 指针")
 	}
 	t := reflectx.Deref(v.Type())
 
 	rows, err := mainDB.Queryx(mainDB.Rebind(ql), params...)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "SQL")
 	}
 	defer rows.Close()
 
@@ -53,7 +54,7 @@ func SelectOne(ql string, dest interface{}, params ...interface{}) error {
 
 	for rows.Next() {
 		if count > 0 {
-			return fmt.Errorf("'%s' return more then 1 rows, expect 1 row", ql)
+			return fmt.Errorf("SQL: '%s' 返回了多行, 期望 1 行", ql)
 		}
 		if reflect.PtrTo(t).Implements(_scannerInterface) { // like types.NullString
 			err = rows.Scan(dest)
@@ -63,15 +64,15 @@ func SelectOne(ql string, dest interface{}, params ...interface{}) error {
 			err = rows.Scan(dest)
 		}
 		if err != nil {
-			return err
+			return errors.Wrap(err, "SQL")
 		}
 		count += 1
 	}
 	if err = rows.Err(); err != nil {
-		return err
+		return errors.Wrap(err, "SQL")
 	}
 	if count == 0 {
-		return fmt.Errorf("'%s' return no result, expect 1 row", ql)
+		return fmt.Errorf("SQL: '%s' 未返回结果, 期望 1 行", ql)
 	}
 	return nil
 }
@@ -80,7 +81,7 @@ func SelectOne(ql string, dest interface{}, params ...interface{}) error {
 func ExecOne(ql string, params ...interface{}) error {
 	res, err := mainDB.Exec(mainDB.Rebind(ql), params...)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "SQL")
 	}
 	return MustAffected1Row(res, ql)
 }
