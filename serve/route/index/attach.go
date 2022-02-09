@@ -1,8 +1,12 @@
 package index
 
 import (
-	"github.com/labstack/echo/v4"
+	"net/http"
 
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+
+	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/route/index/auth"
 	"github.com/lucky-byte/reactgo/serve/route/index/resetpass"
 	"github.com/lucky-byte/reactgo/serve/route/index/secretcode"
@@ -11,8 +15,20 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/index/user"
 )
 
-func Attach(up *echo.Echo) {
+func Attach(up *echo.Echo, conf *config.ViperConfig) {
 	group := up.Group("/r")
+
+	// CSRF token
+	group.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		CookieName:     "csrf",
+		CookiePath:     "/",
+		CookieHTTPOnly: false,
+		CookieSecure:   conf.ServerSecure(),
+		CookieSameSite: http.SameSiteStrictMode,
+		Skipper: func(c echo.Context) bool {
+			return false
+		},
+	}))
 
 	signin.Attach(group)
 	resetpass.Attach(group)

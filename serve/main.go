@@ -121,18 +121,6 @@ func main() {
 	// 限制请求报文大小
 	engine.Use(middleware.BodyLimit("10M"))
 
-	// CSRF token
-	engine.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		CookieName:     "csrf",
-		CookiePath:     "/",
-		CookieHTTPOnly: false,
-		CookieSecure:   conf.ServerSecure(),
-		CookieSameSite: http.SameSiteStrictMode,
-		Skipper: func(c echo.Context) bool {
-			return false
-		},
-	}))
-
 	// 回滚日志文件
 	// Echo 的日志和 Go log 的日志将保存到 misc.log 文件中
 	rotate_logger_msic := &lumberjack.Logger{
@@ -214,8 +202,8 @@ func main() {
 		return c.HTML(http.StatusOK, terms_html)
 	})
 
-	// 路由
-	index.Attach(engine)
+	// 后台管理
+	index.Attach(engine, conf)
 
 	// 在 goroutine 中启动服务器，这样主 goroutine 不会阻塞
 	go startup(conf)
