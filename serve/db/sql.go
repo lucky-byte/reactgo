@@ -15,7 +15,7 @@ func Rebind(ql string) string {
 	return mainDB.Rebind(ql)
 }
 
-// for update/insert/delete, check result must affected just 1 row
+// 对于 update/insert/delete，检查结果是否只影响了 1 行
 func MustAffected1Row(res sql.Result, ql string) error {
 	rows, err := res.RowsAffected()
 	if err != nil {
@@ -29,10 +29,9 @@ func MustAffected1Row(res sql.Result, ql string) error {
 
 var _scannerInterface = reflect.TypeOf((*sql.Scanner)(nil)).Elem()
 
-// select one row, it's a error if result sets is empty or has more than one rows
+// 查询单行记录，如果返回 0 行或多行都是错误
 //
-// *NOTE*:
-//   this function only support StructScan and Scan, not MapScan or SliceScan,
+// 注意: 该函数仅支持 structScan 及 Scan，不支持 MapScan 或 SliceScan
 func SelectOne(ql string, dest interface{}, params ...interface{}) error {
 	v := reflect.ValueOf(dest)
 
@@ -77,7 +76,7 @@ func SelectOne(ql string, dest interface{}, params ...interface{}) error {
 	return nil
 }
 
-// execute insert/update/delete, and must and only affect 1 row
+// 执行 insert/update/delete，必须且只能影响 1 行
 func ExecOne(ql string, params ...interface{}) error {
 	res, err := mainDB.Exec(mainDB.Rebind(ql), params...)
 	if err != nil {

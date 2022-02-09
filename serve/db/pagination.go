@@ -15,7 +15,7 @@ type Pagination struct {
 	Table   exp.IdentifierExpression
 	selects []interface{}
 	where   []exp.Expression
-	orderby []exp.OrderedExpression
+	order   []exp.OrderedExpression
 	join    []paginationJoin
 	offset  uint
 	limit   uint
@@ -26,7 +26,7 @@ func NewPagination(table string, offset, limit uint) *Pagination {
 		Table:   goqu.T(table),
 		selects: make([]interface{}, 0),
 		where:   make([]exp.Expression, 0),
-		orderby: make([]exp.OrderedExpression, 0),
+		order:   make([]exp.OrderedExpression, 0),
 		join:    make([]paginationJoin, 0),
 		offset:  offset,
 		limit:   limit,
@@ -44,13 +44,15 @@ func (p *Pagination) Col(col interface{}) exp.IdentifierExpression {
 // select name from
 // select table.name from
 //
-// 可以指定多列
+// 可以指定多列，也可以多次调用该函数来添加列
 func (p *Pagination) Select(columns ...interface{}) *Pagination {
 	p.selects = append(p.selects, columns...)
 	return p
 }
 
 // 添加 where 子句，多个条件以 and 结合，和使用 goqu.And() 的效果一样
+//
+// 可以多次调用该函数增加查询条件(and 组合)
 func (p *Pagination) Where(conds ...exp.Expression) *Pagination {
 	p.where = append(p.where, conds...)
 	return p
@@ -59,13 +61,17 @@ func (p *Pagination) Where(conds ...exp.Expression) *Pagination {
 // 添加 order by 子句，可以指定多个，例如:
 // OrderBy(goqu.Col("serial").Desc(), goqu.Col("create_at").Asc())
 // 注意使用 Desc() 和 Asc()
+//
+// 可以多次调用该函数添加多个 order by 子句
 func (p *Pagination) OrderBy(order ...exp.OrderedExpression) *Pagination {
-	p.orderby = append(p.orderby, order...)
+	p.order = append(p.order, order...)
 	return p
 }
 
 // 添加 left join，大致用法如下(on 有多种方式):
 // p.Join(goqu.T('t2'), goqu.On(t1.col.eq(t2.col)))
+//
+// 可以多次调用该函数联合多个表
 func (p *Pagination) Join(t exp.Expression, on exp.JoinCondition) *Pagination {
 	p.join = append(p.join, paginationJoin{t, on})
 	return p
@@ -86,8 +92,7 @@ func (p *Pagination) Exec(count *uint, records interface{}) error {
 	for _, j := range p.join {
 		b2 = b2.LeftJoin(j.table, j.on)
 	}
-	b2 = b2.Where(p.where...).Order(p.orderby...).
-		Offset(p.offset).Limit(uint(p.limit))
+	b2 = b2.Where(p.where...).Order(p.order...).Offset(p.offset).Limit(uint(p.limit))
 
 	q2, _, err := b2.ToSQL()
 	if err != nil {

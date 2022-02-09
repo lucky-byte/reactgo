@@ -5,17 +5,17 @@ import (
 	"time"
 )
 
-// Images
+// 图片
 type Image struct {
 	UUID     string    `db:"uuid"`      // unique id
 	CreateAt time.Time `db:"create_at"` // create time
 	UpdateAt time.Time `db:"update_at"` // update time
-	Data     []byte    `db:"data"`      // image data
-	Mime     string    `db:"mime"`      // image mime type
-	ETag     string    `db:"etag"`      // image data digest
+	Data     []byte    `db:"data"`      // image 数据
+	Mime     string    `db:"mime"`      // image mime 类型
+	ETag     string    `db:"etag"`      // image 数据哈希
 }
 
-// Users
+// 用户
 type User struct {
 	UUID       string         `db:"uuid"`        // uuid
 	CreateAt   time.Time      `db:"create_at"`   // 创建时间
@@ -37,41 +37,41 @@ type User struct {
 	NSignin    int            `db:"n_signin"`    // 总登录次数
 }
 
-// Signin history
+// 登录历史
 type SigninHistory struct {
 	UUID     string         `db:"uuid"`      // unique id
 	CreateAt time.Time      `db:"create_at"` // create time
 	User     string         `db:"user_uuid"` // user uuid
 	UserId   string         `db:"userid"`    // userid
-	Name     string         `db:"name"`      // user name
-	IP       string         `db:"ip"`        // ip address
+	Name     string         `db:"name"`      // 姓名
+	IP       string         `db:"ip"`        // ip 地址
 	City     sql.NullString `db:"city"`      // city
 	UA       string         `db:"ua"`        // user agent
 }
 
-// ACL
+// 访问控制角色
 type ACL struct {
 	UUID     string    `db:"uuid"`      // uuid
 	CreateAt time.Time `db:"create_at"` // create time
 	UpdateAt time.Time `db:"update_at"` // update time
-	Code     int       `db:"code"`      // code
-	Name     string    `db:"name"`      // name
-	Summary  string    `db:"summary"`   // summary
+	Code     int       `db:"code"`      // 代码
+	Name     string    `db:"name"`      // 名称
+	Summary  string    `db:"summary"`   // 描述
 }
 
-// ACL Allows
+// 访问控制权限
 type ACLAllow struct {
 	UUID  string `db:"uuid"`  // uuid
 	ACL   string `db:"acl"`   // acl uuid
-	Code  int    `db:"code"`  // code
-	Title string `db:"title"` // title
+	Code  int    `db:"code"`  // 菜单代码
+	Title string `db:"title"` // 菜单标题
 	URL   string `db:"url"`   // url
-	Read  bool   `db:"read"`  // readable
-	Write bool   `db:"write"` // writable
-	Admin bool   `db:"admin"` // Admin
+	Read  bool   `db:"read"`  // 访问权限
+	Write bool   `db:"write"` // 修改权限
+	Admin bool   `db:"admin"` // 管理权限
 }
 
-// Setting
+// 设置
 type Setting struct {
 	UUID          string `db:"uuid"`           // uuid
 	ResetPass     bool   `db:"resetpass"`      // 找回密码
@@ -83,7 +83,7 @@ type SmsSetting struct {
 	AppId     string `db:"appid"`      // appid
 	SecretId  string `db:"secret_id"`  // secret id
 	SecretKey string `db:"secret_key"` // secret key
-	Sign      string `db:"sign"`       // sign
+	Sign      string `db:"sign"`       // 签名
 	MsgID1    string `db:"msgid1"`     // 验证码模板ID
 }
 
@@ -105,6 +105,7 @@ type MTA struct {
 	NSent    int    `db:"nsent"`    // 发送量
 }
 
+// 定时任务
 type Task struct {
 	UUID     string         `db:"uuid"`      // uuid
 	CreateAt time.Time      `db:"create_at"` // 创建时间
@@ -120,6 +121,7 @@ type Task struct {
 	Note     sql.NullString `db:"note"`      // 备注
 }
 
+// 系统事件
 type Event struct {
 	UUID     string    `db:"uuid"`      // uuid
 	CreateAt time.Time `db:"create_at"` // 创建时间
