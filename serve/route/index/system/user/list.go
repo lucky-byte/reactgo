@@ -16,12 +16,12 @@ import (
 func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var page, rows_per_page uint
+	var page, rows uint
 	var keyword, acl string
 
 	err := echo.FormFieldBinder(c).
 		MustUint("page", &page).
-		MustUint("rows_per_page", &rows_per_page).
+		MustUint("rows", &rows).
 		MustString("acl", &acl).
 		String("keyword", &keyword).BindError()
 	if err != nil {
@@ -29,64 +29,47 @@ func list(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
-	offset := page * rows_per_page
+	offset := page * rows
 
-	t := goqu.T("users")
+	pg := db.NewPagination("users", offset, rows)
 
-	var where goqu.Expression = goqu.ExOr{
-		"users.userid": goqu.Op{"ilike": keyword},
-		"users.name":   goqu.Op{"ilike": keyword},
-		"users.mobile": goqu.Op{"ilike": keyword},
-		"users.email":  goqu.Op{"ilike": keyword},
-	}
+	like := goqu.Or(
+		pg.Col("userid").ILike(keyword),
+		pg.Col("name").ILike(keyword),
+		pg.Col("mobile").ILike(keyword),
+		pg.Col("email").ILike(keyword),
+	)
 	if acl != "all" {
-		where = goqu.And(where, goqu.Ex{"users.acl": acl})
+		pg.Where(like, pg.Col("acl").Eq(acl))
+	} else {
+		pg.Where(like)
 	}
+	acl_table := goqu.T("acl")
 
-	// 查询用户总数
-	b := db.From(t).Select(goqu.COUNT("*")).Where(where)
-	ql, _, err := b.ToSQL()
-	if err != nil {
-		cc.ErrLog(err).Error("构造 SQL 错")
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	var total int
+	pg.Join(acl_table, goqu.On(pg.Col("acl").Eq(acl_table.Col("uuid"))))
 
-	if err := db.SelectOne(ql, &total); err != nil {
-		cc.ErrLog(err).Error("查询用户信息错")
-		return c.NoContent(http.StatusInternalServerError)
-	}
+	pg.Select(pg.Col("*"),
+		acl_table.Col("code").As("acl_code"),
+		acl_table.Col("name").As("acl_name"),
+	)
+	pg.OrderBy(pg.Col("create_at").Desc())
 
-	// 查询用户列表
-	b = db.From(t).
-		Select(t.Col("*"), goqu.I("acl.code").As("acl_code"),
-			goqu.I("acl.name").As("acl_name")).
-		LeftJoin(goqu.T("acl"), goqu.On(goqu.Ex{
-			"users.acl": goqu.I("acl.uuid"),
-		})).
-		Where(where).
-		Order(t.Col("create_at").Desc()).
-		Offset(offset).Limit(rows_per_page)
-
-	ql, _, err = b.ToSQL()
-	if err != nil {
-		cc.ErrLog(err).Error("构造 SQL 错")
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	type rt struct {
+	type record struct {
 		db.User
 		AclCode string `db:"acl_code"`
 		AclName string `db:"acl_name"`
 	}
-	var result []rt
+	var count uint
+	var records []record
 
-	if err := db.Select(ql, &result); err != nil {
+	err = pg.Exec(&count, &records)
+	if err != nil {
 		cc.ErrLog(err).Error("查询用户信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	var users []echo.Map
 
-	for _, u := range result {
+	for _, u := range records {
 		users = append(users, echo.Map{
 			"uuid":      u.UUID,
 			"create_at": u.CreateAt,
@@ -104,5 +87,5 @@ func list(c echo.Context) error {
 			"deleted":   u.Deleted,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"total": total, "users": users})
+	return c.JSON(http.StatusOK, echo.Map{"count": count, "users": users})
 }

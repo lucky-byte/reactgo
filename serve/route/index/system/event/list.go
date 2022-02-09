@@ -17,15 +17,13 @@ import (
 func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	// 每页固定 10 行
-	var rows_per_page uint = 10
-
-	var level, page uint
+	var level, page, rows uint
 	var day int
 	var keyword string
 
 	err := echo.FormFieldBinder(c).
 		MustUint("page", &page).
+		MustUint("rows", &rows).
 		MustInt("day", &day).
 		MustUint("level", &level).
 		String("keyword", &keyword).BindError()
@@ -33,11 +31,11 @@ func list(c echo.Context) error {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
-	offset := page * rows_per_page
-	startAt := time.Now().AddDate(0, 0, -day)
 	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
+	startAt := time.Now().AddDate(0, 0, -day)
+	offset := page * rows
 
-	pg := db.NewPagination("events", offset, rows_per_page)
+	pg := db.NewPagination("events", offset, rows)
 
 	like := goqu.Or(
 		pg.Col("title").ILike(keyword), pg.Col("message").ILike(keyword),

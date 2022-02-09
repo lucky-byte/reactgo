@@ -29,10 +29,10 @@ export default function History() {
   const [pageData, setPageData] = usePageData();
   const [keyword, setKeyword] = useState([]);
   const [day, setDay] = useState(7);
-  const [total, setTotal] = useState(0);
+  const [count, setCount] = useState(0);
   const [history, setHistory] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(pageData('rowsPerPage') || 10);
+  const [rows, setRows] = useState(pageData('rowsPerPage') || 10);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => { setTitle('登录历史'); }, [setTitle]);
@@ -43,17 +43,17 @@ export default function History() {
         setLoading(true);
 
         const resp = await post('/system/history/', new URLSearchParams({
-          page, rows_per_page: rowsPerPage, keyword, day,
+          page, rows, keyword, day,
         }));
         setHistory(resp.history || []);
-        setTotal(resp.total || 0);
+        setCount(resp.count || 0);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rowsPerPage, keyword, day]);
+  }, [enqueueSnackbar, page, rows, keyword, day]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -70,7 +70,7 @@ export default function History() {
   const onRowsPerPageChange = e => {
     const rows = parseInt(e.target.value, 10);
 
-    setRowsPerPage(rows);
+    setRows(rows);
     setPage(0);
     setPageData('rowsPerPage', rows);
   }
@@ -126,8 +126,8 @@ export default function History() {
               <TablePagination
                 rowsPerPageOptions={[10, 25, 50, 100]}
                 colSpan={6}
-                count={total}
-                rowsPerPage={rowsPerPage}
+                count={count}
+                rowsPerPage={rows}
                 page={page}
                 SelectProps={{ inputProps: { 'aria-label': '每页行数' } }}
                 onPageChange={onPageChange}

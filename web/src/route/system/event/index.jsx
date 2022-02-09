@@ -32,6 +32,7 @@ export default function Event() {
   const [level, setLevel] = useState(2);
   const [events, setEvents] = useState([]);
   const [total, setTotal] = useState(0);
+  const [rows] = useState(10);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -43,11 +44,11 @@ export default function Event() {
         setLoading(true);
 
         const resp = await post('/system/event/', new URLSearchParams({
-          page, rows_per_page: 10, keyword, day, level,
+          page, rows, keyword, day, level,
         }));
         if (resp.count > 0) {
-          let pages = resp.count / 10;
-          if (resp.count % 10 > 0) {
+          let pages = resp.count / rows;
+          if (resp.count % rows > 0) {
             pages += 1;
           }
           setTotal(parseInt(pages));
@@ -61,7 +62,7 @@ export default function Event() {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, keyword, day, level]);
+  }, [enqueueSnackbar, page, rows, keyword, day, level]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -86,12 +87,6 @@ export default function Event() {
         enqueueSnackbar(err.message);
       }
     }
-  }
-
-  // 页面改变
-  const onPageChange = (e, newPage) => {
-    console.log(newPage)
-    setPage(newPage - 1);
   }
 
   return (
@@ -150,7 +145,7 @@ export default function Event() {
       </Paper>
       <Stack alignItems='center' sx={{ mt: 2 }}>
         <Pagination count={total} color="primary" page={page + 1}
-          onChange={onPageChange}
+          onChange={(e, newPage) => { setPage(newPage - 1)}}
         />
       </Stack>
     </Container>

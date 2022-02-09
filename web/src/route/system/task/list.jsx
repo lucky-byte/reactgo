@@ -45,11 +45,11 @@ export default function UserList() {
   const [progress, setProgress] = useRecoilState(progressState);
   const [pageData, setPageData] = usePageData();
   const { enqueueSnackbar } = useSnackbar();
-  const [total, setTotal] = useState(0);
+  const [count, setCount] = useState(0);
   const [tasks, setTasks] = useState([]);
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(pageData('rowsPerPage') || 10);
+  const [rows, setRows] = useState(pageData('rowsPerPage') || 10);
   const [refresh, setRefresh] = useState(true);
 
   useEffect(() => { setTitle('定时任务'); }, [setTitle]);
@@ -62,9 +62,9 @@ export default function UserList() {
         setProgress(true);
 
         const resp = await post('/system/task/list', new URLSearchParams({
-          page, rows_per_page: rowsPerPage, keyword,
+          page, rows, keyword,
         }));
-        setTotal(resp.total || 0);
+        setCount(resp.count || 0);
         setTasks(resp.tasks || []);
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -72,7 +72,7 @@ export default function UserList() {
         setProgress(false);
       }
     })();
-  }, [ enqueueSnackbar, setProgress, page, rowsPerPage, keyword, refresh ]);
+  }, [ enqueueSnackbar, setProgress, page, rows, keyword, refresh ]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -89,7 +89,7 @@ export default function UserList() {
   const onRowsPerPageChange = e => {
     const rows = parseInt(e.target.value, 10);
 
-    setRowsPerPage(rows);
+    setRows(rows);
     setPage(0);
     setPageData('rowsPerPage', rows);
   }
@@ -152,8 +152,8 @@ export default function UserList() {
               <TablePagination
                 rowsPerPageOptions={[10, 25, 50, 100]}
                 colSpan={10}
-                count={total}
-                rowsPerPage={rowsPerPage}
+                count={count}
+                rowsPerPage={rows}
                 page={page}
                 SelectProps={{ inputProps: { 'aria-label': '每页行数' } }}
                 onPageChange={onPageChange}

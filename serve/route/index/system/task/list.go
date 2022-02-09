@@ -16,63 +16,39 @@ import (
 func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var page, rows_per_page uint
+	var page, rows uint
 	var keyword string
 
 	err := echo.FormFieldBinder(c).
 		MustUint("page", &page).
-		MustUint("rows_per_page", &rows_per_page).
+		MustUint("rows", &rows).
 		String("keyword", &keyword).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("无效的请求")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
-	offset := page * rows_per_page
+	offset := page * rows
 
-	t := goqu.T("tasks")
+	pg := db.NewPagination("tasks", offset, rows)
 
-	var where goqu.Expression = goqu.ExOr{
-		"name":    goqu.Op{"ilike": keyword},
-		"summary": goqu.Op{"ilike": keyword},
-		"path":    goqu.Op{"ilike": keyword},
-	}
+	like := goqu.Or(
+		pg.Col("name").ILike(keyword),
+		pg.Col("summary").ILike(keyword),
+		pg.Col("path").ILike(keyword),
+	)
+	pg.Select(pg.Col("*")).Where(like).OrderBy(pg.Col("create_at").Desc())
 
-	// 查询总数
-	b := db.From(t).Select(goqu.COUNT("*")).Where(where)
-	ql, _, err := b.ToSQL()
-	if err != nil {
-		cc.ErrLog(err).Error("构造 SQL 错")
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	var total int
+	var count uint
+	var records []db.Task
 
-	if err := db.SelectOne(ql, &total); err != nil {
-		cc.ErrLog(err).Error("查询任务信息错")
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	// 查询列表
-	b = db.From(t).
-		Select(t.Col("*")).
-		Where(where).
-		Order(t.Col("create_at").Desc()).
-		Offset(offset).Limit(rows_per_page)
-
-	ql, _, err = b.ToSQL()
-	if err != nil {
-		cc.ErrLog(err).Error("构造 SQL 错")
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	var result []db.Task
-
-	if err := db.Select(ql, &result); err != nil {
+	if err = pg.Exec(&count, &records); err != nil {
 		cc.ErrLog(err).Error("查询任务信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	var tasks []echo.Map
 
-	for _, u := range result {
+	for _, u := range records {
 		tasks = append(tasks, echo.Map{
 			"uuid":      u.UUID,
 			"create_at": u.CreateAt,
@@ -87,5 +63,5 @@ func list(c echo.Context) error {
 			"disabled":  u.Disabled,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"total": total, "tasks": tasks})
+	return c.JSON(http.StatusOK, echo.Map{"count": count, "tasks": tasks})
 }

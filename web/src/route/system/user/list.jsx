@@ -51,13 +51,13 @@ export default function UserList() {
   const [progress, setProgress] = useRecoilState(progressState);
   const [pageData, setPageData] = usePageData();
   const { enqueueSnackbar } = useSnackbar();
-  const [total, setTotal] = useState(0);
+  const [count, setCount] = useState(0);
   const [users, setUsers] = useState([]);
   const [keyword, setKeyword] = useState('');
   const [acls, setAcls] = useState([]);
   const [acl, setAcl] = useState('all');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(pageData('rowsPerPage') || 10);
+  const [rows, setRows] = useState(pageData('rowsPerPage') || 10);
   const [refresh, setRefresh] = useState(true);
 
   useEffect(() => { setTitle('用户管理'); }, [setTitle]);
@@ -81,9 +81,9 @@ export default function UserList() {
         setProgress(true);
 
         const resp = await post('/system/user/list', new URLSearchParams({
-          page, rows_per_page: rowsPerPage, keyword, acl,
+          page, rows, keyword, acl,
         }));
-        setTotal(resp.total || 0);
+        setCount(resp.count || 0);
         setUsers(resp.users || []);
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -91,7 +91,7 @@ export default function UserList() {
         setProgress(false);
       }
     })();
-  }, [ enqueueSnackbar, setProgress, page, rowsPerPage, keyword, acl, refresh ]);
+  }, [ enqueueSnackbar, setProgress, page, rows, keyword, acl, refresh ]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -112,7 +112,7 @@ export default function UserList() {
   const onRowsPerPageChange = e => {
     const rows = parseInt(e.target.value, 10);
 
-    setRowsPerPage(rows);
+    setRows(rows);
     setPage(0);
     setPageData('rowsPerPage', rows);
   }
@@ -121,7 +121,7 @@ export default function UserList() {
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={progress} onChange={onKeywordChange} />
-        <TextField select variant='standard' sx={{ ml: 2 }}
+        <TextField select variant='standard' sx={{ ml: 2, minWidth: 140 }}
           value={acl} onChange={onAclChange}
           InputProps={{
             startAdornment:
@@ -199,11 +199,10 @@ export default function UserList() {
               <TablePagination
                 rowsPerPageOptions={[10, 25, 50, 100]}
                 colSpan={10}
-                count={total}
-                rowsPerPage={rowsPerPage}
+                count={count}
+                rowsPerPage={rows}
                 page={page}
                 SelectProps={{
-                  id: 'pagination-rows-per-page',
                   inputProps: { 'aria-label': '每页行数' }
                 }}
                 onPageChange={onPageChange}

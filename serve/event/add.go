@@ -14,11 +14,10 @@ const (
 	LevelError = 3
 )
 
-// 记录通知，可以指定接收人
+// 记录事件
 func Add(level int, title, message string) {
 	ql := `
-		insert into events (uuid, level, title, message)
-		values (?, ?, ?, ?)
+		insert into events (uuid, level, title, message) values (?, ?, ?, ?)
 	`
 	err := db.ExecOne(ql, uuid.NewString(), level, title, message)
 	if err != nil {

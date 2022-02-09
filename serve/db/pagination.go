@@ -1,17 +1,21 @@
 package db
 
 import (
-	"log"
-
 	"github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
+	"github.com/sirupsen/logrus"
 )
 
+type paginationJoin struct {
+	table exp.Expression
+	on    exp.JoinCondition
+}
 type Pagination struct {
 	Table   exp.IdentifierExpression
 	selects []interface{}
 	where   []exp.Expression
 	orderby []exp.OrderedExpression
+	join    []paginationJoin
 	offset  uint
 	limit   uint
 }
@@ -19,6 +23,7 @@ type Pagination struct {
 func NewPagination(table string, offset, limit uint) *Pagination {
 	return &Pagination{
 		Table:  goqu.T(table),
+		join:   make([]paginationJoin, 0),
 		offset: offset,
 		limit:  limit,
 	}
@@ -55,31 +60,39 @@ func (p *Pagination) OrderBy(order ...exp.OrderedExpression) *Pagination {
 	return p
 }
 
+func (p *Pagination) Join(t exp.Expression, on exp.JoinCondition) *Pagination {
+	p.join = append(p.join, paginationJoin{t, on})
+	return p
+}
+
 // 这个函数执行 2 个 SQL 查询，第一次查询表的总数，第二次查询当前的分页数据
 // 这个函数应该在上面的条件都准备好之后调用
 func (p *Pagination) Exec(count *uint, records interface{}) error {
-	b := goqu.From(p.Table).Select(goqu.COUNT('*')).Where(p.where...)
+	b1 := goqu.From(p.Table).Select(goqu.COUNT('*')).Where(p.where...)
 
-	ql1, _, err := b.ToSQL()
+	q1, _, err := b1.ToSQL()
 	if err != nil {
 		return err
 	}
-	log.Printf("sql: %s\n", ql1)
+	logrus.Tracef("SQL: %s", q1)
 
-	b = goqu.From(p.Table).Select(p.selects...).Where(p.where...).
-		Order(p.orderby...).
+	b2 := goqu.From(p.Table).Select(p.selects...)
+	for _, j := range p.join {
+		b2 = b2.LeftJoin(j.table, j.on)
+	}
+	b2 = b2.Where(p.where...).Order(p.orderby...).
 		Offset(p.offset).Limit(uint(p.limit))
 
-	ql2, _, err := b.ToSQL()
+	q2, _, err := b2.ToSQL()
 	if err != nil {
 		return err
 	}
-	log.Printf("sql: %s\n", ql2)
+	logrus.Tracef("SQL: %s", q2)
 
 	// 查询总数
-	if err = SelectOne(ql1, count); err != nil {
+	if err = SelectOne(q1, count); err != nil {
 		return err
 	}
 	// 查询分页记录
-	return Select(ql2, records)
+	return Select(q2, records)
 }
