@@ -32,22 +32,30 @@ func signin(c echo.Context) error {
 
 	// 查询用户信息
 	if err = db.SelectOne(ql, &user, username); err != nil {
-		cc.ErrLog(err).WithField("userid", username).Error("登录失败")
+		cc.ErrLog(err).WithField("userid", username).Errorf(
+			"登录失败, 用户 %s 不存在", username,
+		)
 		return c.String(http.StatusForbidden, "用户名或密码错误")
 	}
 	// 检查用户状态
 	if user.Disabled || user.Deleted {
-		cc.Log().WithField("userid", username).Error("用户已被禁用或删除")
+		cc.Log().WithField("userid", username).Errorf(
+			"用户 %s 已被禁用或删除, 不允许登录", user.Name,
+		)
 		return c.String(http.StatusForbidden, "不允许登录")
 	}
 	// 验证密码
 	phc, err := secure.ParsePHC(user.Passwd)
 	if err != nil {
-		cc.ErrLog(err).WithField("userid", username).Error("登录失败")
+		cc.ErrLog(err).WithField("userid", username).Errorf(
+			"%s 登录失败, 解析用户密码错", user.Name,
+		)
 		return c.String(http.StatusForbidden, "登录名或密码错误")
 	}
 	if err = phc.Verify(password); err != nil {
-		cc.ErrLog(err).WithField("userid", username).Error("登录失败")
+		cc.ErrLog(err).WithField("userid", username).Errorf(
+			"%s 登录失败, 验证登录密码错", user.Name,
+		)
 		return c.String(http.StatusForbidden, "登录名或密码错误")
 	}
 	// 查询会话保持时间
@@ -70,7 +78,9 @@ func signin(c echo.Context) error {
 		// 如果没有设置 TOTP，则发送短信验证码
 		if len(user.TOTPSecret) == 0 {
 			if smsid, err = sms.SendCode(user.Mobile); err != nil {
-				cc.ErrLog(err).WithField("userid", username).Error("发送短信验证码错")
+				cc.ErrLog(err).WithField("userid", username).Errorf(
+					"%s 登录失败, 发送短信验证码错", user.Name,
+				)
 				return c.String(http.StatusInternalServerError, "发送短信验证码失败")
 			}
 		}
@@ -78,16 +88,18 @@ func signin(c echo.Context) error {
 	// 生成 JWT
 	token, err := auth.JWTGenerate(newJwt)
 	if err != nil {
-		cc.ErrLog(err).WithField("userid", username).Error("登录失败")
+		cc.ErrLog(err).WithField("userid", username).Errorf(
+			"%s 登录失败, 生成 JWT 错", user.Name,
+		)
 		return c.String(http.StatusForbidden, "服务器内部错")
 	}
-
 	// 更新用户信息
 	ql = `
 		update users set
 			signin_at = current_timestamp, n_signin = n_signin + 1
 		where uuid = ?
 	`
+	// 这里更新出错不用返回失败
 	if err = db.ExecOne(ql, user.UUID); err != nil {
 		cc.ErrLog(err).Error("更新用户最后登录时间错")
 	}
@@ -97,7 +109,7 @@ func signin(c echo.Context) error {
 	var result []db.ACLAllow
 
 	if err = db.Select(ql, &result, user.ACL); err != nil {
-		cc.ErrLog(err).Error("查询用户访问控制错误")
+		cc.ErrLog(err).Errorf("查询用户 %s 访问控制错误", user.Name)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	allows := []echo.Map{}
@@ -118,6 +130,7 @@ func signin(c echo.Context) error {
 	`
 	err = db.ExecOne(ql, uuid.NewString(),
 		user.UUID, user.UserId, user.Name, c.RealIP(), c.Request().UserAgent())
+	// 这里出错不用返回错误
 	if err != nil {
 		cc.ErrLog(err).Error("登记用户登录历史错误")
 	}

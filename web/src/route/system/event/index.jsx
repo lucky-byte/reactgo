@@ -3,13 +3,9 @@ import { useSetRecoilState } from "recoil";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import Tooltip from '@mui/material/Tooltip';
-import HistoryIcon from '@mui/icons-material/History';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -19,12 +15,11 @@ import InfoIcon from '@mui/icons-material/Info';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import TablePagination from '@mui/material/TablePagination';
+import Pagination from '@mui/material/Pagination';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import Markdown from '~/comp/markdown';
-import usePageData from '~/hook/pagedata';
 import titleState from "~/state/title";
 import Typography from '@mui/material/Typography';
 import { post, put } from '~/rest';
@@ -32,13 +27,12 @@ import { post, put } from '~/rest';
 export default function Event() {
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
-  const [pageData, setPageData] = usePageData();
   const [keyword, setKeyword] = useState([]);
   const [day, setDay] = useState(7);
-  const [total, setTotal] = useState(0);
+  const [level, setLevel] = useState(2);
   const [events, setEvents] = useState([]);
+  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(pageData('rowsPerPage') || 10);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => { setTitle('系统事件'); }, [setTitle]);
@@ -49,17 +43,25 @@ export default function Event() {
         setLoading(true);
 
         const resp = await post('/system/event/', new URLSearchParams({
-          page, rows_per_page: rowsPerPage, keyword, day,
+          page, rows_per_page: 10, keyword, day, level,
         }));
+        if (resp.count > 0) {
+          let pages = resp.count / 10;
+          if (resp.count % 10 > 0) {
+            pages += 1;
+          }
+          setTotal(parseInt(pages));
+        } else {
+          setTotal(0);
+        }
         setEvents(resp.events || []);
-        setTotal(resp.total || 0);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rowsPerPage, keyword, day]);
+  }, [enqueueSnackbar, page, keyword, day, level]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -88,45 +90,37 @@ export default function Event() {
 
   // 页面改变
   const onPageChange = (e, newPage) => {
-    setPage(newPage);
-  }
-
-  // 每页行数改变
-  const onRowsPerPageChange = e => {
-    const rows = parseInt(e.target.value, 10);
-
-    setRowsPerPage(rows);
-    setPage(0);
-    setPageData('rowsPerPage', rows);
+    console.log(newPage)
+    setPage(newPage - 1);
   }
 
   return (
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={loading} onChange={onKeywordChange} />
-        <TextField id='select-time-scope'
-          select variant='standard' sx={{ ml: 2 }}
-          value={day} onChange={e => { setDay(e.target.value) }}
-          InputProps={{
-            startAdornment:
-              <InputAdornment position="start">
-                <Tooltip title='查询时间段'>
-                  <HistoryIcon fontSize='small' sx={{ cursor: 'help' }} />
-                </Tooltip>
-              </InputAdornment>,
-          }}>
+        <TextField
+          select variant='standard' sx={{ ml: 2, minWidth: 100 }}
+          value={day} onChange={e => { setDay(e.target.value) }}>
           <MenuItem value={7}>近一周</MenuItem>
           <MenuItem value={30}>近一月</MenuItem>
           <MenuItem value={90}>近三月</MenuItem>
           <MenuItem value={365}>近一年</MenuItem>
           <MenuItem value={365000}>全部</MenuItem>
         </TextField>
+        <TextField
+          select variant='standard' sx={{ ml: 2, minWidth: 100 }}
+          value={level} onChange={e => { setLevel(e.target.value) }}>
+          <MenuItem value={0}>待办</MenuItem>
+          <MenuItem value={1}>信息</MenuItem>
+          <MenuItem value={2}>警告</MenuItem>
+          <MenuItem value={3}>错误</MenuItem>
+        </TextField>
       </Toolbar>
 
       <Paper variant='outlined' sx={{ mt: 2 }}>
         {events.map(e => (
           <Accordion key={e.uuid} elevation={0} disableGutters
-            onChange={(e, expanded) => onAccordionChange(e, expanded, e)} sx={{
+            onChange={(evt, expanded) => onAccordionChange(evt, expanded, e)} sx={{
             borderBottom: '1px solid #8884',
             '&:before': { display: 'none', },
             '&:last-child': { borderBottom: 0, }
@@ -154,21 +148,16 @@ export default function Event() {
           </Accordion>
         ))}
       </Paper>
-
-      {/* <TablePagination
-        rowsPerPageOptions={[10, 25, 50, 100]}
-        colSpan={6}
-        count={total}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        SelectProps={{ inputProps: { 'aria-label': '每页行数' } }}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-      /> */}
+      <Stack alignItems='center' sx={{ mt: 2 }}>
+        <Pagination count={total} color="primary" page={page + 1}
+          onChange={onPageChange}
+        />
+      </Stack>
     </Container>
   )
 }
 
+// 事件级别图标
 function LevelIcon(props) {
   switch (props.level) {
     case 0:

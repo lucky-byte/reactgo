@@ -15,11 +15,11 @@ func AllowRead(code int) echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			cc, ok := c.(*ctx.Context)
 			if !ok {
-				xlog.X.Panic("echo.context 无效，该中间件调用上下文不正确")
+				xlog.X.Panic("echo.context 无效, 该中间件调用上下文不正确")
 			}
 			if !cc.AllowRead(code) {
 				user := cc.User()
-				cc.Log().Errorf("用户 %s 不允许 read %d", user.Name, code)
+				cc.Log().Errorf("用户 %s 未开通 %d 访问权限", user.Name, code)
 				return c.String(http.StatusForbidden, "未开通此功能访问权限")
 			}
 			return next(c)
@@ -33,11 +33,11 @@ func AllowWrite(code int) echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			cc, ok := c.(*ctx.Context)
 			if !ok {
-				xlog.X.Panic("echo.context 无效，该中间件调用上下文不正确")
+				xlog.X.Panic("echo.context 无效, 该中间件调用上下文不正确")
 			}
 			if !cc.AllowWrite(code) {
 				user := cc.User()
-				cc.Log().Errorf("用户 %s 不允许 write %d", user.Name, code)
+				cc.Log().Errorf("用户 %s 未开通 %d 修改权限", user.Name, code)
 				return c.String(http.StatusForbidden, "未开通此功能访问权限")
 			}
 			return next(c)
@@ -51,11 +51,11 @@ func AllowAdmin(code int) echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			cc, ok := c.(*ctx.Context)
 			if !ok {
-				xlog.X.Panic("echo.context 无效，该中间件调用上下文不正确")
+				xlog.X.Panic("echo.context 无效, 该中间件调用上下文不正确")
 			}
 			if !cc.AllowAdmin(code) {
 				user := cc.User()
-				cc.Log().Errorf("用户 %s 不允许 admin %d", user.Name, code)
+				cc.Log().Errorf("用户 %s 未开通 %d 管理权限", user.Name, code)
 				return c.String(http.StatusForbidden, "未开通此功能访问权限")
 			}
 			return next(c)

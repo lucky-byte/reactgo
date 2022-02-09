@@ -39,7 +39,7 @@ func smsResend(c echo.Context) error {
 	// 发送验证码
 	smsid, err := sms.SendCode(mobile)
 	if err != nil {
-		cc.ErrLog(err).Error("发送短信验证码错误")
+		cc.ErrLog(err).Error("发送短信验证码失败")
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, echo.Map{"smsid": smsid})
@@ -87,7 +87,7 @@ func smsVerify(c echo.Context) error {
 	ql = `update users set passwd = ? where userid = ? and mobile = ?`
 
 	if err = db.ExecOne(ql, passwdHash, username, mobile); err != nil {
-		cc.ErrLog(err).Error("更新用户密码错")
+		cc.ErrLog(err).Error("更新用户密码失败")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
@@ -97,7 +97,7 @@ func smsVerify(c echo.Context) error {
 		"password": passwd,
 	})
 	if err != nil {
-		cc.ErrLog(err).Error("创建邮件错")
+		cc.ErrLog(err).Error("创建密码重置邮件错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	addr, err := mail.ParseAddress(user.Email)
@@ -109,7 +109,7 @@ func smsVerify(c echo.Context) error {
 
 	// 发送邮件
 	if err = m.Send(); err != nil {
-		cc.ErrLog(err).Error("发送邮件错")
+		cc.ErrLog(err).Error("发送邮件失败")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

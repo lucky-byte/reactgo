@@ -18,7 +18,7 @@ func initBuilderDialect(driver string) {
 	case "sqlite":
 		dialect = goqu.Dialect("sqlite3")
 	default:
-		panic("不能创建 SQL Builder，数据库驱动无效")
+		panic("不能创建 SQL Builder, 数据库驱动无效")
 	}
 }
 

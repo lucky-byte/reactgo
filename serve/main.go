@@ -86,7 +86,7 @@ func main() {
 	// 从文件中加载配置
 	conf, err := config.Load(*configFile)
 	if err != nil {
-		log.Fatalf("Failed to load configration: %v", err)
+		log.Fatalf("加载配置文件错: %v", err)
 	}
 	// 添加用户，然后退出
 	if *addUser {
@@ -101,7 +101,7 @@ func main() {
 	// 确保日志文件存在
 	logpath := conf.LogPath()
 	if err = os.MkdirAll(logpath, 0755); err != nil {
-		log.Fatalf("Failed to mkdir '%s': %v", logpath, err)
+		log.Fatalf("创建目录 '%s' 错: %v", logpath, err)
 	}
 	// 设置 xlog
 	xlog.Setup(debug, conf)
@@ -182,7 +182,7 @@ func main() {
 	if *webfs == "embed" {
 		fsys, err := fs.Sub(embededWebFS, "web")
 		if err != nil {
-			xlog.X.Fatalf("unable to load embed web assets: %v", err)
+			xlog.X.Fatalf("不能加载嵌入的 WEB 静态文件: %v", err)
 		}
 		handler := echo.WrapHandler(http.FileServer(http.FS(fsys)))
 
@@ -197,7 +197,7 @@ func main() {
 		webdir := conf.Webdir()
 		if len(webdir) > 0 {
 			if info, err := os.Stat(webdir); err != nil || !info.IsDir() {
-				xlog.X.Fatalf("Webdir '%s' is not a directory", webdir)
+				xlog.X.Fatalf("WEB 目录 '%s' 不是一个目录", webdir)
 				return
 			}
 			web_directory = webdir
@@ -232,14 +232,14 @@ func main() {
 
 	s := <-quit
 
-	xlog.X.Infof("received signal %s", s.String())
+	xlog.X.Infof("接收到信号 %s", s.String())
 
 	// 当收到信号时停止服务器
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := engine.Shutdown(ctx); err != nil {
-		xlog.X.WithError(err).Fatal("Server forced to shutdown")
+		xlog.X.WithError(err).Fatal("强制关闭服务器")
 	}
 	task.Stop()
 	db.Disconnect()
@@ -265,13 +265,13 @@ func startup(conf *config.ViperConfig) {
 			MaxConcurrentStreams: 250,
 			IdleTimeout:          10 * time.Second,
 		}
-		xlog.X.Tracef("%d is ready, listen on %s", os.Getpid(), bind)
+		xlog.X.Tracef("%d 准备就绪, 监听地址 %s", os.Getpid(), bind)
 
 		if err := engine.StartH2CServer(bind, h2s); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
-				engine.Logger.Debug("Server closed, cleanup...")
+				engine.Logger.Debug("服务器关闭, 清理...")
 			} else {
-				xlog.X.WithError(err).Fatal("Listen error")
+				xlog.X.WithError(err).Fatalf("启动服务器错: %v", err)
 			}
 		}
 	} else {
@@ -282,7 +282,7 @@ func startup(conf *config.ViperConfig) {
 		if conf.ServerAutoTLS() {
 			domains := conf.ServerDomains()
 			if len(domains) == 0 {
-				xlog.X.Fatal("autotls is enabled, but no doamins found")
+				xlog.X.Fatal("已启用 autotls, 但没有配置 doamins")
 			}
 			cachedir := conf.ServerCachedir()
 
@@ -299,12 +299,12 @@ func startup(conf *config.ViperConfig) {
 			tlscrt := conf.ServerTLSCrt()
 
 			if len(tlskey) == 0 || len(tlscrt) == 0 {
-				xlog.X.Fatal("configuration missing tlscrt or tlskey")
+				xlog.X.Fatal("配置缺少 tlscrt 或 tlskey")
 			}
 			// 从 pem 文件加载证书和私钥，不支持加密的私钥
 			c, err := tls.LoadX509KeyPair(tlscrt, tlskey)
 			if err != nil {
-				xlog.X.Fatalf("failed to load pem: %v", err)
+				xlog.X.Fatalf("打开 PEM 文件错: %v", err)
 			}
 			tlsconfig = &tls.Config{
 				MinVersion:   tls.VersionTLS11,
@@ -316,14 +316,14 @@ func startup(conf *config.ViperConfig) {
 			Addr:      bind,
 			Handler:   engine,
 		}
-		xlog.X.Tracef("%d is ready, listen on %s", os.Getpid(), bind)
+		xlog.X.Tracef("%d 准备就绪, 监听地址 %s", os.Getpid(), bind)
 
 		err := hs.ListenAndServeTLS("", "")
 		if err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
-				engine.Logger.Debug("Server closed, cleanup...")
+				engine.Logger.Debug("服务器关闭, 清理...")
 			} else {
-				xlog.X.WithError(err).Fatal("Listen error")
+				xlog.X.WithError(err).Fatalf("启动服务器错: %v", err)
 			}
 		}
 	}
@@ -339,11 +339,11 @@ func httpErrorHandler(err error, c echo.Context) {
 		if e.Code == 404 && c.Request().Method == http.MethodGet {
 			accept := c.Request().Header["Accept"]
 			if len(accept) > 0 && strings.Contains(accept[0], "text/html") {
-				xlog.X.WithField("url", url).Warn("404 Not found, return index.html")
+				xlog.F("url", url).Warnf("%s 未找到, 返回 index.html", url)
 				if *webfs == "embed" {
 					content, err := fs.ReadFile(embededWebFS, "web/index.html")
 					if err != nil {
-						xlog.X.Errorf("read web/index.html error: %v", err)
+						xlog.X.Errorf("读 web/index.html 错: %v", err)
 						c.NoContent(http.StatusInternalServerError)
 						return
 					}
@@ -356,7 +356,7 @@ func httpErrorHandler(err error, c echo.Context) {
 			}
 		}
 	}
-	xlog.F("url", url, "error", err).Error("Server error")
+	xlog.F("url", url, "error", err).Errorf("HTTP服务错误: %v", err)
 	// reportError(err, c)
 
 	// 默认错误处理

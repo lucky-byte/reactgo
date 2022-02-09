@@ -38,15 +38,15 @@ func emailverify(c echo.Context) error {
 
 	// 验证
 	if err = mailfs.VerifyCode(id, code, email); err != nil {
-		cc.ErrLog(err).Error("验证邮件验证码错")
+		cc.ErrLog(err).Error("验证邮件验证码失败")
 		return c.String(http.StatusBadRequest, "验证失败")
 	}
 
 	// 发送验证码
 	smsid, err := sms.SendCode(user.Mobile)
 	if err != nil {
-		cc.ErrLog(err).Error("发送短信验证码错")
-		return c.String(http.StatusInternalServerError, "发送短信验证码错")
+		cc.ErrLog(err).Error("发送短信验证码失败")
+		return c.String(http.StatusInternalServerError, "不能发送短信验证码")
 	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"mobile": user.Mobile,

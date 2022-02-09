@@ -177,25 +177,19 @@ export default function UserProfile() {
         </Stack>
         <Stack sx={{ mt: 4 }}>
           <Typography variant='h6'>访问设备</Typography>
-          <FormHelperText>
-            访问设备通过浏览器的 User Agent 识别，系统仅使用这些信息增强安全，
-            不与任何第三方共享，详情请参考
-            <Link component='a' href='/privacy' target='_blank' underline='hover'>
-              《隐私政策》
-            </Link>
-          </FormHelperText>
+          <Typography variant='caption'>
+            您曾经使用下列的设备登录您的账号，如果有不认识的设备，说明您的账号极大可能被盗用，
+            请联系管理员进行排查
+          </Typography>
         </Stack>
         <Devices />
         <Stack sx={{ mt: 3 }}>
           <Typography variant='h6'>访问地图</Typography>
-          <FormHelperText>
-            IP 地址通过网络连接获取，地理位置通过 IP 查询而来，这些信息用于增强安全，
-            不与任何第三方分享，详情请参考
-            <Link component='a' href='/privacy' target='_blank' underline='hover'>
-              《隐私政策》
-            </Link>
-          </FormHelperText>
+          <Typography variant='caption'>
+            您曾经在下列位置访问您的账号，位置信息通过 IP 获取，可能存在误差
+          </Typography>
         </Stack>
+        <Map />
         <Typography variant='caption'>
           <Link component={RouteLink} to='signinlist' underline='hover'>
             查看我的登录历史
@@ -242,9 +236,13 @@ function Devices() {
           </Grid>
         ))}
       </Grid>
-      <Typography variant='caption'>
-        如果上面有您不认识的设备，说明您的账号极大可能被盗用，请联系管理员进行排查
-      </Typography>
+      <FormHelperText>
+        访问设备通过浏览器的 User Agent 识别，系统仅使用这些信息增强安全，
+        不与任何第三方共享，详情请参考
+        <Link component='a' href='/privacy' target='_blank' underline='hover'>
+          《隐私政策》
+        </Link>
+      </FormHelperText>
     </Paper>
   )
 }
@@ -322,5 +320,20 @@ function BrowserIcon(props) {
     <Tooltip title={title} arrow placement='top'>
       <Icon path={icon} size={1.5} color={color} />
     </Tooltip>
+  )
+}
+
+// 访问地图
+function Map() {
+  return (
+    <Paper variant='outlined' sx={{ p: 2 }}>
+      <FormHelperText>
+        IP 地址通过网络连接获取，地理位置通过 IP 查询而来，这些信息用于增强安全，
+        不与任何第三方分享，详情请参考
+        <Link component='a' href='/privacy' target='_blank' underline='hover'>
+          《隐私政策》
+        </Link>
+      </FormHelperText>
+    </Paper>
   )
 }

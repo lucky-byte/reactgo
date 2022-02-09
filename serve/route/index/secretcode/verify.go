@@ -29,14 +29,15 @@ func verify(c echo.Context) error {
 	// 验证
 	phc, err := secure.ParsePHC(user.SecretCode)
 	if err != nil {
-		cc.ErrLog(err).WithField("userid", user.UserId).Error("解析安全操作码错")
+		cc.ErrLog(err).WithField("userid", user.UserId).Error("解析安全操作码失败")
 		return c.String(http.StatusForbidden, "验证失败")
 	}
 	if err = phc.Verify(secretcode); err != nil {
-		cc.ErrLog(err).WithField("userid", user.UserId).Error("验证安全操作码错")
+		cc.ErrLog(err).WithField("userid", user.UserId).Errorf(
+			"用户 %s 验证安全操作码失败", user.Name,
+		)
 		return c.String(http.StatusForbidden, "验证失败")
 	}
-
 	// 生成验证 TOKEN
 	token := genToken(user.UUID)
 

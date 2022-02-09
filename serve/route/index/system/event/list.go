@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/doug-martin/goqu/v9"
 	"github.com/labstack/echo/v4"
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
@@ -16,14 +17,17 @@ import (
 func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var page, rows_per_page uint
+	// 每页固定 10 行
+	var rows_per_page uint = 10
+
+	var level, page uint
 	var day int
 	var keyword string
 
 	err := echo.FormFieldBinder(c).
 		MustUint("page", &page).
-		MustUint("rows_per_page", &rows_per_page).
 		MustInt("day", &day).
+		MustUint("level", &level).
 		String("keyword", &keyword).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("无效的请求")
@@ -33,27 +37,18 @@ func list(c echo.Context) error {
 	startAt := time.Now().AddDate(0, 0, -day)
 	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
 
-	// 查询总数
-	ql := `
-		select count(*) from events
-		where create_at > $1 and (title ilike $2 or message ilike $2)
-	`
-	var total int
+	pg := db.NewPagination("events", offset, rows_per_page)
 
-	if err = db.SelectOne(ql, &total, startAt, keyword); err != nil {
-		cc.ErrLog(err).Error("查询事件错")
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	// 查询列表
-	ql = `
-		select * from events
-		where create_at > $1 and (title ilike $2 or message ilike $2)
-		order by create_at desc
-		offset $3 limit $4
-	`
+	like := goqu.Or(
+		pg.Col("title").ILike(keyword), pg.Col("message").ILike(keyword),
+	)
+	pg.Where(like, pg.Col("create_at").Gt(startAt), pg.Col("level").Gte(level))
+	pg.OrderBy(pg.Col("create_at").Desc())
+
+	var count uint
 	var records []db.Event
 
-	err = db.Select(ql, &records, startAt, keyword, offset, rows_per_page)
+	pg.Select(pg.Col("*")).Exec(&count, &records)
 	if err != nil {
 		cc.ErrLog(err).Error("查询事件错")
 		return c.NoContent(http.StatusInternalServerError)
@@ -70,5 +65,5 @@ func list(c echo.Context) error {
 			"fresh":     h.Fresh,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"total": total, "events": events})
+	return c.JSON(http.StatusOK, echo.Map{"count": count, "events": events})
 }

@@ -13,7 +13,6 @@ import (
 
 // common field names
 const (
-	FRealm  = "realm"  // realm
 	FReqID  = "reqid"  // http request id
 	FIP     = "ip"     // http client ip
 	FPath   = "path"   // http request url path
@@ -21,23 +20,23 @@ const (
 )
 
 // keep X usable(not panic) before Setup
-var X = logrus.StandardLogger().WithField(FRealm, "unknown")
+var X = logrus.StandardLogger()
 
-// Setup logger
+// 配置日志
 func Setup(debug bool, conf *config.ViperConfig) {
-	l := logrus.New()
+	X = logrus.New()
 
-	l.SetReportCaller(true)
+	X.SetReportCaller(true)
 
-	// to file bdb.log
+	// 日志文件
 	rotate_logger := &lumberjack.Logger{
 		Filename:  path.Join(conf.LogPath(), "reactgo.log"),
 		MaxSize:   20,
 		Compress:  true,
 		LocalTime: true,
 	}
-	// json format
-	l.SetFormatter(&logrus.JSONFormatter{
+	// JSON 格式
+	X.SetFormatter(&logrus.JSONFormatter{
 		CallerPrettyfier: func(f *runtime.Frame) (function string, file string) {
 			function = path.Base(f.Function)
 			file = path.Base(f.File) + ":" + strconv.Itoa(f.Line)
@@ -48,19 +47,17 @@ func Setup(debug bool, conf *config.ViperConfig) {
 		},
 		PrettyPrint: debug,
 	})
-	l.SetOutput(rotate_logger)
+	X.SetOutput(rotate_logger)
 
-	// 发送通知
-	l.AddHook(newNotificationHook(formatField))
+	// 记录系统事件
+	X.AddHook(newEventHook(formatJson))
 
 	if debug {
-		l.AddHook(newTerminalHook())
-		l.SetLevel(logrus.TraceLevel)
+		X.AddHook(newTerminalHook())
+		X.SetLevel(logrus.TraceLevel)
 	} else {
-		l.SetLevel(logrus.InfoLevel)
+		X.SetLevel(logrus.InfoLevel)
 	}
-	// set default realm to 'main'
-	X = l.WithField(FRealm, "main")
 }
 
 // F is a shortcut of withFields

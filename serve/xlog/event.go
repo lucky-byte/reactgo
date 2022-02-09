@@ -15,15 +15,15 @@ const (
 	formatField = 2
 )
 
-type notificationHook struct {
+type eventHook struct {
 	format int
 }
 
-func newNotificationHook(format int) *notificationHook {
-	return &notificationHook{format: format}
+func newEventHook(format int) *eventHook {
+	return &eventHook{format: format}
 }
 
-func (h *notificationHook) Fire(entry *logrus.Entry) error {
+func (h *eventHook) Fire(entry *logrus.Entry) error {
 	var level int
 
 	switch entry.Level {
@@ -42,7 +42,7 @@ func (h *notificationHook) Fire(entry *logrus.Entry) error {
 }
 
 // 以 JSON 格式记录日志字段
-func (h *notificationHook) fireJson(entry *logrus.Entry, level int) error {
+func (h *eventHook) fireJson(entry *logrus.Entry, level int) error {
 	message := ""
 	fields := make(logrus.Fields)
 
@@ -71,7 +71,7 @@ func (h *notificationHook) fireJson(entry *logrus.Entry, level int) error {
 }
 
 // 以 k=v 格式记录日志字段
-func (h *notificationHook) fireField(entry *logrus.Entry, level int) error {
+func (h *eventHook) fireField(entry *logrus.Entry, level int) error {
 	message := ""
 	fields := []string{}
 
@@ -91,14 +91,14 @@ func (h *notificationHook) fireField(entry *logrus.Entry, level int) error {
 			path.Base(entry.Caller.File), entry.Caller.Line,
 		))
 	}
-	m := strings.Join(fields, "，")
+	m := strings.Join(fields, ",")
 	message = fmt.Sprintf("%s\n\n%s", message, m)
 
 	event.Add(level, entry.Message, message)
 	return nil
 }
 
-func (h *notificationHook) Levels() []logrus.Level {
+func (h *eventHook) Levels() []logrus.Level {
 	return []logrus.Level{
 		logrus.PanicLevel,
 		logrus.FatalLevel,

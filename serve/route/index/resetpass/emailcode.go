@@ -50,18 +50,19 @@ func emailcode(c echo.Context) error {
 		cc.ErrLog(err).Error("查询用户信息错")
 		return c.String(http.StatusBadRequest, "未查询到用户信息")
 	}
+	if user.Disabled || user.Deleted {
+		cc.Log().Warn("非正常状态的用户 %s 尝试找回密码", user.Name)
+		return c.String(http.StatusForbidden, "该用户状态非正常")
+	}
 	if len(user.Mobile) == 0 {
 		return c.String(http.StatusForbidden, "用户未设置手机号")
-	}
-	if user.Disabled || user.Deleted {
-		return c.String(http.StatusForbidden, "该用户状态非正常")
 	}
 
 	// 发送验证码到邮箱
 	id, err := mailfs.SendCode(email, user.Name)
 	if err != nil {
-		cc.ErrLog(err).Error("发送验证邮件错")
-		return c.String(http.StatusInternalServerError, "发送验证邮件错")
+		cc.ErrLog(err).Error("发送验证邮件失败")
+		return c.String(http.StatusInternalServerError, "不能发送验证邮件")
 	}
 	return c.JSON(http.StatusOK, echo.Map{"id": id})
 }

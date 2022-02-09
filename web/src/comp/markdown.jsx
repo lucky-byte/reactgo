@@ -1,13 +1,13 @@
 import { useTheme } from "@mui/material/styles";
 import MuiMarkdown from 'mui-markdown';
 import vsDark from 'prism-react-renderer/themes/vsDark';
-import vsLight from 'prism-react-renderer/themes/vsLight';
+import github from 'prism-react-renderer/themes/github';
 
 export default function Markdown(props) {
   const theme = useTheme();
   const { children } = props;
 
-  const codeBlockTheme = theme.palette.mode === 'dark' ? vsDark : vsLight;
+  const codeBlockTheme = theme.palette.mode === 'dark' ? vsDark : github;
   const inlineCodeColor = theme.palette.mode === 'dark' ? 'white' : 'black';
   const inlineCodeBgColor = theme.palette.mode === 'dark' ? '#333' : '#ddd';
   const inlineCodeBorderColor = theme.palette.mode === 'dark' ? '#222' : '#ccc';

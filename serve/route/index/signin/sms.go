@@ -46,14 +46,14 @@ func smsVerify(c echo.Context) error {
 	var mobile string
 
 	if err = db.SelectOne(ql, &mobile, jwt.User); err != nil {
-		cc.ErrLog(err).Error("查询用户手机号错")
+		cc.ErrLog(err).Error("登录验证短信验证码时查询用户手机号错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	// 验证短信验证码
 	err = sms.VerifyCode(smsid, code, mobile)
 	if err != nil {
-		cc.ErrLog(err).WithField("mobile", mobile).Error("验证短信验证码失败")
+		cc.ErrLog(err).WithField("mobile", mobile).Error("登录验证短信验证码失败")
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	// 重新生成登录TOKEN

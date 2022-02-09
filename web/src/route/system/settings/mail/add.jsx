@@ -79,7 +79,7 @@ export default function MailAdd() {
               <TextField label='端口' variant='standard' required
                 autoComplete='off'
                 placeholder='邮件服务器端口'
-                inputProps={{ maxLength: 5 }}
+                inputProps={{ maxLength: 5, inputMode: 'numeric' }}
                 helperText={errors?.port?.message}
                 error={errors?.port}
                 sx={{ flex: 1 }}
