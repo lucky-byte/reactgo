@@ -18,7 +18,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import { post } from '~/rest';
 
-export default function MailAdd() {
+export default function Add() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [ passwordVisible, setPasswordVisible ] = useState(false);

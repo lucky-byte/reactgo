@@ -1,15 +1,15 @@
 import { Routes, Route } from "react-router-dom";
 import NotFound from "~/route/notfound";
-import AclAdd from "./add";
-import AclAllows from "./allows";
-import AclList from "./list";
+import Add from "./add";
+import Allows from "./allows";
+import List from "./list";
 
 export default function Acl() {
   return (
     <Routes>
-      <Route path='/' element={<AclList />} />
-      <Route path='add' element={<AclAdd />} />
-      <Route path='allows' element={<AclAllows />} />
+      <Route path='/' element={<List />} />
+      <Route path='add' element={<Add />} />
+      <Route path='allows' element={<Allows />} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

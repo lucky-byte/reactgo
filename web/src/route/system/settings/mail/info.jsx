@@ -17,7 +17,7 @@ import titleState from "~/state/title";
 import progressState from '~/state/progress';
 import { get } from '~/rest';
 
-export default function UserProfile() {
+export default function Info() {
   const location = useLocation();
   const navigate = useNavigate();
   const setTitle = useSetRecoilState(titleState);

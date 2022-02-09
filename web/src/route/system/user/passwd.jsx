@@ -17,7 +17,7 @@ import { useSnackbar } from 'notistack';
 import titleState from "~/state/title";
 import { put } from '~/rest';
 
-export default function UserPassword() {
+export default function Password() {
   const location = useLocation();
   const navigate = useNavigate();
   const setTitle = useSetRecoilState(titleState);

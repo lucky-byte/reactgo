@@ -39,7 +39,7 @@ import { useSecretCode } from '~/comp/secretcode';
 import usePageData from '~/hook/pagedata';
 import { post, del } from '~/rest';
 
-export default function UserList() {
+export default function List() {
   const navigate = useNavigate();
   const setTitle = useSetRecoilState(titleState);
   const [progress, setProgress] = useRecoilState(progressState);

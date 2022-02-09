@@ -14,7 +14,7 @@ import { useSnackbar } from 'notistack';
 import titleState from "~/state/title";
 import { post } from '~/rest';
 
-export default function AclAdd() {
+export default function Add() {
   const navigate = useNavigate();
   const setTitle = useSetRecoilState(titleState);
   const { enqueueSnackbar } = useSnackbar();

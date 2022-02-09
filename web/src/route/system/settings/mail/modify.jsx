@@ -20,7 +20,7 @@ import { useSnackbar } from 'notistack';
 import progressState from "~/state/progress";
 import { get, put } from '~/rest';
 
-export default function MailModify() {
+export default function Modify() {
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();

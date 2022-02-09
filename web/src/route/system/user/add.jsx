@@ -26,7 +26,7 @@ import titleState from "~/state/title";
 import progressState from '~/state/progress';
 import { get, post } from '~/rest';
 
-export default function UserAdd() {
+export default function Add() {
   const navigate = useNavigate();
   const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);

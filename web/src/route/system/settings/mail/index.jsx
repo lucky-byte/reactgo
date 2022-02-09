@@ -1,17 +1,17 @@
 import { Route, Routes } from "react-router-dom";
 import NotFound from "~/route/notfound";
-import MailAdd from "./add";
-import MailInfo from "./info";
-import MailModify from "./modify";
-import MailSettings from "./settings";
+import Add from "./add";
+import Info from "./info";
+import Modify from "./modify";
+import Settings from "./settings";
 
 export default function Mail() {
   return (
     <Routes>
-      <Route path='/' element={<MailSettings />} />
-      <Route path='add' element={<MailAdd />} />
-      <Route path='modify' element={<MailModify />} />
-      <Route path='info' element={<MailInfo />} />
+      <Route path='/' element={<Settings />} />
+      <Route path='add' element={<Add />} />
+      <Route path='modify' element={<Modify />} />
+      <Route path='info' element={<Info />} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

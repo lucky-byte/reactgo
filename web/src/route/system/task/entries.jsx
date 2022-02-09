@@ -20,7 +20,7 @@ import titleState from "~/state/title";
 import progressState from '~/state/progress';
 import { get } from "~/rest";
 
-export default function TaskEntries() {
+export default function Entries() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);

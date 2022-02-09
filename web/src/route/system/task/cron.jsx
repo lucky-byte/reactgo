@@ -18,7 +18,7 @@ import OutlinedPaper from "~/comp/outlined-paper";
 import titleState from "~/state/title";
 import CronJPG from '~/img/cron.jpg';
 
-export default function TaskCron() {
+export default function Cron() {
   const navigate = useNavigate();
   const setTitle = useSetRecoilState(titleState);
 

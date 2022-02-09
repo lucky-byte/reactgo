@@ -31,7 +31,7 @@ import titleState from "~/state/title";
 import progressState from "~/state/progress";
 import { get, post, del, put } from '~/rest';
 
-export default function AclList() {
+export default function List() {
   const navigate = useNavigate();
   const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);

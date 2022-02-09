@@ -23,7 +23,7 @@ import titleState from "~/state/title";
 import progressState from '~/state/progress';
 import { post, get, put } from '~/rest';
 
-export default function AclAllows() {
+export default function Allows() {
   const location = useLocation();
   const navigate = useNavigate();
   const setTitle = useSetRecoilState(titleState);
