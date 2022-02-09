@@ -27,8 +27,8 @@ func add(c echo.Context) error {
 		String("path", &fpath).
 		String("summary", &summary).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("无效的请求")
-		return c.String(http.StatusBadRequest, "无效的请求")
+		cc.ErrLog(err).Error("请求参数不完整")
+		return c.String(http.StatusBadRequest, "请求参数不完整")
 	}
 	// 删除前后空白字符
 	cc.Trim(&name, &cron_exp, &func_name, &fpath, &summary)

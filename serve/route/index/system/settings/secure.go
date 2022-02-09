@@ -33,7 +33,7 @@ func resetpass(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustBool("resetpass", &resetpass).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求无效")
+		cc.ErrLog(err).Error("请求参数不完整")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `update settings set resetpass = ?`
@@ -53,7 +53,7 @@ func duration(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustInt("duration", &duration).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求无效")
+		cc.ErrLog(err).Error("请求参数不完整")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `update settings set token_duration = ?`

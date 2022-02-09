@@ -21,7 +21,7 @@ func smsVerify(c echo.Context) error {
 	err := echo.FormFieldBinder(c).
 		MustString("smsid", &smsid).MustString("code", &code).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求无效")
+		cc.ErrLog(err).Error("请求参数不完整")
 		c.String(http.StatusBadRequest, "请求数据不完整")
 	}
 	// 获取登录 TOKEN

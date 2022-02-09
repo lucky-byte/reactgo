@@ -25,7 +25,7 @@ func signin(c echo.Context) error {
 		MustString("username", &username).
 		MustString("password", &password).BindError()
 	if err != nil {
-		return c.String(http.StatusBadRequest, "无效的请求")
+		return c.String(http.StatusBadRequest, "请求参数不完整")
 	}
 	ql := `select * from users where userid = ?`
 	var user db.User

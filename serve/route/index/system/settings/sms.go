@@ -40,7 +40,7 @@ func smsAppid(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustString("appid", &appid).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求无效")
+		cc.ErrLog(err).Error("请求参数不完整")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `update sms_settings set appid = ?`
@@ -60,7 +60,7 @@ func smsSecretId(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustString("secret_id", &secret_id).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求无效")
+		cc.ErrLog(err).Error("请求参数不完整")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `update sms_settings set secret_id = ?`
@@ -80,7 +80,7 @@ func smsSecretKey(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustString("secret_key", &secret_key).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求无效")
+		cc.ErrLog(err).Error("请求参数不完整")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `update sms_settings set secret_key = ?`
@@ -100,7 +100,7 @@ func smsSign(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustString("sign", &sign).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求无效")
+		cc.ErrLog(err).Error("请求参数不完整")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `update sms_settings set sign = ?`
@@ -122,7 +122,7 @@ func smsMsgId(c echo.Context) error {
 	err := echo.FormFieldBinder(c).
 		MustUint("n", &n).MustString("id", &id).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求无效")
+		cc.ErrLog(err).Error("请求参数不完整")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := fmt.Sprintf(`update sms_settings set msgid%d = ?`, n)
@@ -147,7 +147,7 @@ func smsTest(c echo.Context) error {
 		MustString("mobile", &mobile).
 		MustStrings("params", &params).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求无效")
+		cc.ErrLog(err).Error("请求参数不完整")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	if err = sms.Send([]string{mobile}, n, params); err != nil {
