@@ -37,10 +37,10 @@ func list(c echo.Context) error {
 
 	pg := db.NewPagination("signin_history", offset, rows)
 
-	like := goqu.Or(
+	pg.Where(goqu.Or(
 		pg.Col("userid").ILike(keyword), pg.Col("name").ILike(keyword),
-	)
-	pg.Where(like, pg.Col("create_at").Gt(startAt))
+	))
+	pg.Where(pg.Col("create_at").Gt(startAt))
 
 	var count uint
 	var records []db.SigninHistory

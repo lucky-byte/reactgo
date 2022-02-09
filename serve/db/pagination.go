@@ -46,7 +46,7 @@ func (p *Pagination) Col(col interface{}) exp.IdentifierExpression {
 //
 // 可以指定多列
 func (p *Pagination) Select(columns ...interface{}) *Pagination {
-	p.selects = columns
+	p.selects = append(p.selects, columns...)
 	return p
 }
 
@@ -60,7 +60,7 @@ func (p *Pagination) Where(conds ...exp.Expression) *Pagination {
 // OrderBy(goqu.Col("serial").Desc(), goqu.Col("create_at").Asc())
 // 注意使用 Desc() 和 Asc()
 func (p *Pagination) OrderBy(order ...exp.OrderedExpression) *Pagination {
-	p.orderby = order
+	p.orderby = append(p.orderby, order...)
 	return p
 }
 

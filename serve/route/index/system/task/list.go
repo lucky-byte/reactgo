@@ -32,12 +32,12 @@ func list(c echo.Context) error {
 
 	pg := db.NewPagination("tasks", offset, rows)
 
-	like := goqu.Or(
+	pg.Where(goqu.Or(
 		pg.Col("name").ILike(keyword),
 		pg.Col("summary").ILike(keyword),
 		pg.Col("path").ILike(keyword),
-	)
-	pg.Select(pg.Col("*")).Where(like).OrderBy(pg.Col("create_at").Desc())
+	))
+	pg.Select(pg.Col("*")).OrderBy(pg.Col("create_at").Desc())
 
 	var count uint
 	var records []db.Task

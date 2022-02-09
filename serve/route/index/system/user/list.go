@@ -33,16 +33,14 @@ func list(c echo.Context) error {
 
 	pg := db.NewPagination("users", offset, rows)
 
-	like := goqu.Or(
+	pg.Where(goqu.Or(
 		pg.Col("userid").ILike(keyword),
 		pg.Col("name").ILike(keyword),
 		pg.Col("mobile").ILike(keyword),
 		pg.Col("email").ILike(keyword),
-	)
+	))
 	if acl != "all" {
-		pg.Where(like, pg.Col("acl").Eq(acl))
-	} else {
-		pg.Where(like)
+		pg.Where(pg.Col("acl").Eq(acl))
 	}
 	aclTable := goqu.T("acl")
 

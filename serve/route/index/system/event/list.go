@@ -38,10 +38,10 @@ func list(c echo.Context) error {
 
 	pg := db.NewPagination("events", offset, rows)
 
-	like := goqu.Or(
+	pg.Where(goqu.Or(
 		pg.Col("title").ILike(keyword), pg.Col("message").ILike(keyword),
-	)
-	pg.Where(like, pg.Col("create_at").Gt(startAt), pg.Col("level").Gte(level))
+	))
+	pg.Where(pg.Col("create_at").Gt(startAt), pg.Col("level").Gte(level))
 	if fresh == "true" {
 		pg.Where(pg.Col("fresh").Eq(true))
 	} else if fresh == "false" {
