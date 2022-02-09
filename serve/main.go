@@ -265,7 +265,7 @@ func startup(conf *config.ViperConfig) {
 			MaxConcurrentStreams: 250,
 			IdleTimeout:          10 * time.Second,
 		}
-		xlog.X.Tracef("%d 准备就绪, 监听地址 %s", os.Getpid(), bind)
+		xlog.X.Tracef("HTTP 服务 %d 准备就绪, 监听地址 %s", os.Getpid(), bind)
 
 		if err := engine.StartH2CServer(bind, h2s); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
@@ -279,18 +279,19 @@ func startup(conf *config.ViperConfig) {
 		var tlsconfig *tls.Config
 
 		// 自动从 Let's Encrypt 或其他支持 ACME 的 CA 获取证书
-		if conf.ServerAutoTLS() {
-			domains := conf.ServerDomains()
+		if conf.ServerAutoTLSEnabled() {
+			domains := conf.ServerAutoTLSDomains()
 			if len(domains) == 0 {
 				xlog.X.Fatal("已启用 autotls, 但没有配置 doamins")
 			}
-			cachedir := conf.ServerCachedir()
+			cachedir := conf.ServerAutoTLSCachedir()
 
 			manager := autocert.Manager{
 				Prompt:      autocert.AcceptTOS,
+				Email:       conf.ServerAutoTLSEmail(),
 				Cache:       autocert.DirCache(cachedir),
 				HostPolicy:  autocert.HostWhitelist(domains...),
-				RenewBefore: 30,
+				RenewBefore: 20,
 			}
 			tlsconfig = manager.TLSConfig()
 			tlsconfig.MinVersion = tls.VersionTLS11
@@ -316,7 +317,7 @@ func startup(conf *config.ViperConfig) {
 			Addr:      bind,
 			Handler:   engine,
 		}
-		xlog.X.Tracef("%d 准备就绪, 监听地址 %s", os.Getpid(), bind)
+		xlog.X.Tracef("HTTPS 服务 %d 准备就绪, 监听地址 %s", os.Getpid(), bind)
 
 		err := hs.ListenAndServeTLS("", "")
 		if err != nil {

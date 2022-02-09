@@ -59,9 +59,9 @@ func Load(filepath string) (*ViperConfig, error) {
 
 // contract server.httpurl if it is empty
 func setHttpurl(c *ViperConfig) error {
-	domains := c.ServerDomains()
+	domains := c.ServerAutoTLSDomains()
 	if len(domains) == 0 {
-		return fmt.Errorf("both server.httpurl and server.domains is empty")
+		return fmt.Errorf("server.httpurl 和 server.autotls.domains 都是空")
 	}
 	var httpurl url.URL
 
@@ -74,9 +74,7 @@ func setHttpurl(c *ViperConfig) error {
 
 	if len(bind) > 0 {
 		if !strings.Contains(bind, ":") {
-			return fmt.Errorf(
-				"server.bind unrecognizable, did you missing colon before port?",
-			)
+			return fmt.Errorf("server.bind 格式错误，是不是忘了端口前面的冒号?")
 		}
 		arr := strings.Split(bind, ":")
 		port := arr[len(arr)-1]

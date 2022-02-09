@@ -15,19 +15,24 @@ func (c *ViperConfig) ServerSecure() bool {
 	return c.vp.GetBool("server.secure")
 }
 
-// server.autotls
-func (c *ViperConfig) ServerAutoTLS() bool {
-	return c.vp.GetBool("server.autotls")
+// server.autotls.enabled
+func (c *ViperConfig) ServerAutoTLSEnabled() bool {
+	return c.vp.GetBool("server.autotls.enabled")
 }
 
-// server.domains
-func (c *ViperConfig) ServerDomains() []string {
-	return c.vp.GetStringSlice("server.domains")
+// server.autotls.domains
+func (c *ViperConfig) ServerAutoTLSDomains() []string {
+	return c.vp.GetStringSlice("server.autotls.domains")
 }
 
-// server.cachedir
-func (c *ViperConfig) ServerCachedir() string {
-	return c.vp.GetString("server.cachedir")
+// server.autotls.email
+func (c *ViperConfig) ServerAutoTLSEmail() string {
+	return c.vp.GetString("server.autotls.email")
+}
+
+// server.autotls.cachedir
+func (c *ViperConfig) ServerAutoTLSCachedir() string {
+	return c.vp.GetString("server.autotls.cachedir")
 }
 
 // server.tlskey
