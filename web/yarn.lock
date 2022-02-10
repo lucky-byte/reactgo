@@ -1826,10 +1826,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@soywod/pin-field@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@soywod/pin-field/-/pin-field-0.2.1.tgz#9accc7bd0a0dbbf68da549088cf12276cb12d743"
-  integrity sha512-WgdLL+o/4POFfwyYlJPz9Tan7fVWk0bxW0AiNYY08lMm0GTFfprMJcRiG3gcPFuSHXCLt5VAsmRHPgj7jZh8TA==
+"@soywod/pin-field@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@soywod/pin-field/-/pin-field-0.2.2.tgz#60f1e6be27db41d73e0406c20bce8f96c1a6a160"
+  integrity sha512-R0kpLXHn+Nbi3D4Eb0dHNQbx+yYWuvMWxy5hPEoVok+RfpUIpAMrhJQC4Qmg3FkkFrROPejO9VWyPGMID+Dv+Q==
 
 "@surma/rollup-plugin-off-main-thread@^2.2.3":
   version "2.2.3"
@@ -7632,10 +7632,10 @@ react-is@^17.0.1, react-is@^17.0.2:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
-react-pin-field@^2.0.0-beta.2:
-  version "2.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/react-pin-field/-/react-pin-field-2.0.0-beta.2.tgz#04a087a0db4e1460f1ef6ebcb21428f20dcd5ca4"
-  integrity sha512-nqqZPR6beTeNG5WtieCvmxDXqYbIOEhAn//oTcfIw7+yUfO4OrWh+7COmkUCyknSZdxbQ2kxq+xwMaOa1ot66A==
+react-pin-field@^2.0.0-beta.3:
+  version "2.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/react-pin-field/-/react-pin-field-2.0.0-beta.3.tgz#7d2767169e86e3da10feb7f176adfd13ae6ba150"
+  integrity sha512-fzOOaqG9ymUnxPYtL6O80Kix1+HhH15ghcOAfTa708vbtEtHBGHXIJ4jS0BCgCaMSlDgPYrifeW235TdjZUk/A==
 
 react-refresh@^0.11.0:
   version "0.11.0"
