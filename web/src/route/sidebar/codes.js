@@ -1,6 +1,8 @@
-
 const urlCodes = {
-  911: { title: '导航代码', to: '/codes' },
+  // 查询导航代码
+  911:  { title: '导航代码', to: '/codes', omit: true },
+
+  // 系统功能
   9000: { title: '用户管理', to: '/system/user' },
   9010: { title: '访问控制', to: '/system/acl' },
   9020: { title: '登录历史', to: '/system/history' },
@@ -11,13 +13,15 @@ const urlCodes = {
   9040: { title: '系统事件', to: '/system/event' },
   9050: { title: '定时任务', to: '/system/task' },
   9051: { title: '任务诊断', to: '/system/task/entries', omit: true },
+
+  // 用户设置
   8000: { title: '用户资料', to: '/user', omit: true },
   8010: { title: '修改密码', to: '/user/password', omit: true },
   8020: { title: '安全设置', to: '/user/security', omit: true },
   8021: { title: '设置安全操作码', to: '/user/security/secretcode', omit: true },
   8022: { title: '设置两因素认证', to: '/user/security/otp', omit: true },
 
-  // 在下面增加业务代码
+  // 下面自定义业务
   100: { title: '看板', to: '/' },
 }
 

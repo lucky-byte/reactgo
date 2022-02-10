@@ -40,7 +40,7 @@ import userState from '~/state/user';
 import { get, put, post, del } from "~/rest";
 import { InputAdornment } from "@mui/material";
 
-export default function Settings() {
+export default function Home() {
   const { enqueueSnackbar } = useSnackbar();
   const confirm = useConfirm();
   const [mtas, setMtas] = useState([]);
