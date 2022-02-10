@@ -30,7 +30,7 @@ export default function History() {
   const [keyword, setKeyword] = useState([]);
   const [days, setDays] = useState(7);
   const [count, setCount] = useState(0);
-  const [history, setHistory] = useState([]);
+  const [list, setList] = useState([]);
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(pageData('rowsPerPage') || 10);
   const [loading, setLoading] = useState(false);
@@ -45,7 +45,7 @@ export default function History() {
         const resp = await post('/system/history/', new URLSearchParams({
           page, rows, keyword, days,
         }));
-        setHistory(resp.history || []);
+        setList(resp.list || []);
         setCount(resp.count || 0);
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -115,7 +115,7 @@ export default function History() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {history.map((row, index) => (
+            {list.map((row, index) => (
               <TableRow key={index} hover>
                 <TableCell align="center">
                   {dayjs(row.create_at).format('YY/MM/DD HH:mm:ss')}

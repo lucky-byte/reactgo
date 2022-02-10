@@ -65,10 +65,10 @@ func list(c echo.Context) error {
 		cc.ErrLog(err).Error("查询用户信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var users []echo.Map
+	var list []echo.Map
 
 	for _, u := range records {
-		users = append(users, echo.Map{
+		list = append(list, echo.Map{
 			"uuid":      u.UUID,
 			"create_at": u.CreateAt,
 			"update_at": u.UpdateAt,
@@ -85,5 +85,5 @@ func list(c echo.Context) error {
 			"deleted":   u.Deleted,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"count": count, "users": users})
+	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})
 }

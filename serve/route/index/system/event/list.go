@@ -42,6 +42,7 @@ func list(c echo.Context) error {
 		pg.Col("title").ILike(keyword), pg.Col("message").ILike(keyword),
 	))
 	pg.Where(pg.Col("create_at").Gt(startAt), pg.Col("level").Gte(level))
+
 	if fresh == "true" {
 		pg.Where(pg.Col("fresh").Eq(true))
 	} else if fresh == "false" {
@@ -57,10 +58,10 @@ func list(c echo.Context) error {
 		cc.ErrLog(err).Error("查询事件错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var events []echo.Map
+	var list []echo.Map
 
 	for _, h := range records {
-		events = append(events, echo.Map{
+		list = append(list, echo.Map{
 			"uuid":      h.UUID,
 			"create_at": h.CreateAt,
 			"level":     h.Level,
@@ -69,5 +70,5 @@ func list(c echo.Context) error {
 			"fresh":     h.Fresh,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"count": count, "events": events})
+	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})
 }

@@ -52,7 +52,7 @@ export default function List() {
   const [pageData, setPageData] = usePageData();
   const { enqueueSnackbar } = useSnackbar();
   const [count, setCount] = useState(0);
-  const [users, setUsers] = useState([]);
+  const [list, setList] = useState([]);
   const [keyword, setKeyword] = useState('');
   const [acls, setAcls] = useState([]);
   const [acl, setAcl] = useState('all');
@@ -67,8 +67,8 @@ export default function List() {
   useEffect(() => {
     (async () => {
       try {
-        const resp1 = await get('/system/acl/');
-        setAcls(resp1.acls || []);
+        const resp = await get('/system/acl/');
+        setAcls(resp.acls || []);
       } catch (err) {
         enqueueSnackbar(err.message);
       }
@@ -84,7 +84,7 @@ export default function List() {
           page, rows, keyword, acl,
         }));
         setCount(resp.count || 0);
-        setUsers(resp.users || []);
+        setList(resp.list || []);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
@@ -158,40 +158,40 @@ export default function List() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map(user => (
-              <TableRow hover key={user.userid}
-                disabled={user.disabled} deleted={user.deleted?.toString()}>
-                <TableCell align="center">{user.userid}</TableCell>
-                <TableCell align="center">{user.name}</TableCell>
+            {list.map(u => (
+              <TableRow hover key={u.userid}
+                disabled={u.disabled} deleted={u.deleted?.toString()}>
+                <TableCell align="center">{u.userid}</TableCell>
+                <TableCell align="center">{u.name}</TableCell>
                 <TableCell align="center">
-                  {parseInt(user.acl_code) === 0 ?
+                  {parseInt(u.acl_code) === 0 ?
                     <Typography variant='body2' color='secondary'>
-                      {user.acl_name}
+                      {u.acl_name}
                     </Typography>
                     :
-                    <Typography variant='body2'>{user.acl_name}</Typography>
+                    <Typography variant='body2'>{u.acl_name}</Typography>
                   }
                 </TableCell>
                 <TableCell align="center">
-                  {dayjs(user.create_at).format('YY-MM-DD HH:mm:ss')}
+                  {dayjs(u.create_at).format('YY-MM-DD HH:mm:ss')}
                 </TableCell>
                 <TableCell align="center">
-                  {dayjs(user.signin_at).format('YY-MM-DD HH:mm:ss')} / {user.n_signin}
+                  {dayjs(u.signin_at).format('YY-MM-DD HH:mm:ss')} / {u.n_signin}
                 </TableCell>
                 <TableCell align="right" padding='none'>
-                  {user.deleted &&
+                  {u.deleted &&
                     <RemoveCircleOutlineIcon color='error' fontSize='small'
                       sx={{ verticalAlign: 'middle' }}
                     />
                   }
-                  {(user.disabled && !user.deleted) &&
+                  {(u.disabled && !u.deleted) &&
                     <BlockIcon color='warning' fontSize='small'
                       sx={{ verticalAlign: 'middle' }}
                     />
                   }
                 </TableCell>
                 <TableCell align="right" padding='checkbox'>
-                  <UserMenuIconButton user={user} requestRefresh={requestRefresh} />
+                  <UserMenuIconButton user={u} requestRefresh={requestRefresh} />
                 </TableCell>
               </TableRow>
             ))}

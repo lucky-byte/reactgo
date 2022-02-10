@@ -41,6 +41,7 @@ func list(c echo.Context) error {
 		pg.Col("userid").ILike(keyword), pg.Col("name").ILike(keyword),
 	))
 	pg.Where(pg.Col("create_at").Gt(startAt))
+	pg.OrderBy(pg.Col("create_at").Desc())
 
 	var count uint
 	var records []db.SigninHistory
@@ -50,7 +51,7 @@ func list(c echo.Context) error {
 		cc.ErrLog(err).Error("查询登录历史信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var history []echo.Map
+	var list []echo.Map
 
 	for _, h := range records {
 		ua := user_agent.New(h.UA) // parse useragent string
@@ -61,7 +62,7 @@ func list(c echo.Context) error {
 		name, version := ua.Browser()
 		browser := fmt.Sprintf("%s %s", name, version)
 
-		history = append(history, echo.Map{
+		list = append(list, echo.Map{
 			"create_at": h.CreateAt,
 			"userid":    h.UserId,
 			"name":      h.Name,
@@ -72,5 +73,5 @@ func list(c echo.Context) error {
 			"is_mobile": ua.Mobile(),
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"count": count, "history": history})
+	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})
 }

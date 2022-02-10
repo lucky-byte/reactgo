@@ -34,8 +34,8 @@ export default function Event() {
   const [days, setDays] = useState(7);
   const [level, setLevel] = useState(2);
   const [fresh, setFresh] = useState('all');
-  const [events, setEvents] = useState([]);
-  const [total, setTotal] = useState(0);
+  const [list, setList] = useState([]);
+  const [pageCount, setPageCount] = useState(0);
   const [rows] = useState(10);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -55,11 +55,11 @@ export default function Event() {
           if (resp.count % rows > 0) {
             pages += 1;
           }
-          setTotal(parseInt(pages));
+          setPageCount(parseInt(pages));
         } else {
-          setTotal(0);
+          setPageCount(0);
         }
-        setEvents(resp.events || []);
+        setList(resp.list || []);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
@@ -70,13 +70,13 @@ export default function Event() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setEvents(events.map(e => {
+      setList(list.map(e => {
         e.timeAgo = dayjs(e.create_at).fromNow();
         return e;
       }));
     }, 1000);
     return () => clearInterval(timer)
-  }, [events]);
+  }, [list]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -109,7 +109,7 @@ export default function Event() {
         await put('/system/event/unfresh', new URLSearchParams({
           uuid: event.uuid,
         }));
-        setEvents(events.map(e => {
+        setList(list.map(e => {
           if (e.uuid === event.uuid) {
             e.fresh = false;
           }
@@ -152,7 +152,7 @@ export default function Event() {
       </Toolbar>
 
       <Paper variant='outlined' sx={{ mt: 2 }}>
-        {events.map(e => (
+        {list.map(e => (
           <Accordion key={e.uuid} elevation={0} disableGutters
             onChange={(evt, expanded) => onAccordionChange(evt, expanded, e)} sx={{
             borderBottom: '1px solid #8884',
@@ -184,7 +184,7 @@ export default function Event() {
         ))}
       </Paper>
       <Stack alignItems='center' sx={{ mt: 2 }}>
-        <Pagination count={total} color="primary" page={page + 1}
+        <Pagination count={pageCount} color="primary" page={page + 1}
           onChange={(e, newPage) => { setPage(newPage - 1)}}
         />
       </Stack>

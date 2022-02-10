@@ -15,8 +15,8 @@ import (
 	"github.com/lucky-byte/reactgo/serve/mailfs"
 )
 
-// 查询邮件服务配置
-func mailConfig(c echo.Context) error {
+// 查询邮件 MTA 列表
+func mailMTAList(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	ql := `select * from mtas order by sortno`
@@ -26,10 +26,10 @@ func mailConfig(c echo.Context) error {
 		cc.ErrLog(err).Error("查询邮件配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var mtas []echo.Map
+	var list []echo.Map
 
 	for _, v := range result {
-		mtas = append(mtas, echo.Map{
+		list = append(list, echo.Map{
 			"uuid":   v.UUID,
 			"name":   v.Name,
 			"host":   v.Host,
@@ -40,7 +40,7 @@ func mailConfig(c echo.Context) error {
 			"nsent":  v.NSent,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"mtas": mtas})
+	return c.JSON(http.StatusOK, echo.Map{"list": list})
 }
 
 // 添加邮件传输代理

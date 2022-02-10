@@ -43,7 +43,7 @@ import { get, put, post, del } from "~/rest";
 export default function Home() {
   const { enqueueSnackbar } = useSnackbar();
   const confirm = useConfirm();
-  const [mtas, setMtas] = useState([]);
+  const [list, setList] = useState([]);
   const [refresh, setRefresh] = useState(true);
   const [importOpen, setImportOpen] = useState(false);
 
@@ -52,7 +52,7 @@ export default function Home() {
       try {
         if (refresh) {
           const resp = await get('/system/settings/mail');
-          setMtas(resp.mtas || []);
+          setList(resp.list || []);
         }
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -115,15 +115,15 @@ export default function Home() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {mtas.map(mta => (
-              <TableRow key={mta.uuid}
+            {list.map(m => (
+              <TableRow key={m.uuid}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align="center">{mta.name}</TableCell>
-                <TableCell align="center">{mta.host}:{mta.port}</TableCell>
-                <TableCell align="center">{mta.sender}</TableCell>
-                <TableCell align="center">{mta.nsent}</TableCell>
+                <TableCell align="center">{m.name}</TableCell>
+                <TableCell align="center">{m.host}:{m.port}</TableCell>
+                <TableCell align="center">{m.sender}</TableCell>
+                <TableCell align="center">{m.nsent}</TableCell>
                 <TableCell align="center" padding="checkbox">
-                  <MenuButton uuid={mta.uuid} name={mta.name} sortno={mta.sortno}
+                  <MenuButton uuid={m.uuid} name={m.name} sortno={m.sortno}
                     requestRefresh={() => setRefresh(true)}
                   />
                 </TableCell>

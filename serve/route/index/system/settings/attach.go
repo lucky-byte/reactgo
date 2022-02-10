@@ -10,7 +10,7 @@ import (
 func Attach(up *echo.Group, code int) {
 	group := up.Group("/settings", acl.AllowRead(code))
 
-	group.GET("/mail", mailConfig)
+	group.GET("/mail", mailMTAList)
 	group.GET("/mail/info", mailInfo)
 	group.GET("/sms", smsConfig)
 	group.GET("/secure", secureConfig)

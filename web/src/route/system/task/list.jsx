@@ -46,7 +46,7 @@ export default function List() {
   const [pageData, setPageData] = usePageData();
   const { enqueueSnackbar } = useSnackbar();
   const [count, setCount] = useState(0);
-  const [tasks, setTasks] = useState([]);
+  const [list, setList] = useState([]);
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(pageData('rowsPerPage') || 10);
@@ -65,7 +65,7 @@ export default function List() {
           page, rows, keyword,
         }));
         setCount(resp.count || 0);
-        setTasks(resp.tasks || []);
+        setList(resp.list || []);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
@@ -122,27 +122,27 @@ export default function List() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {tasks.map(task => (
-              <TableRow hover key={task.uuid} disabled={task.disabled}>
-                <TableCell align="center">{task.name}</TableCell>
-                <TableCell align="center"><code>{task.cron}</code></TableCell>
+            {list.map(t => (
+              <TableRow hover key={t.uuid} disabled={t.disabled}>
+                <TableCell align="center">{t.name}</TableCell>
+                <TableCell align="center"><code>{t.cron}</code></TableCell>
                 <TableCell align="center">
-                  {task.type === 1 ? '函数' : '命令'}
+                  {t.type === 1 ? '函数' : '命令'}
                 </TableCell>
-                <TableCell align="center">{task.path}</TableCell>
-                <TableCell align="center">{task.nfire}</TableCell>
+                <TableCell align="center">{t.path}</TableCell>
+                <TableCell align="center">{t.nfire}</TableCell>
                 <TableCell align="center">
-                  {dayjs(task.last_fire).format('YY-MM-DD HH:mm:ss')}
+                  {dayjs(t.last_fire).format('YY-MM-DD HH:mm:ss')}
                 </TableCell>
                 <TableCell align="right" padding='none'>
-                  {task.disabled &&
+                  {t.disabled &&
                     <BlockIcon color='warning' fontSize='small'
                       sx={{ verticalAlign: 'middle' }}
                     />
                   }
                 </TableCell>
                 <TableCell align="right" padding='checkbox'>
-                  <UserMenuIconButton task={task} requestRefresh={requestRefresh} />
+                  <UserMenuIconButton task={t} requestRefresh={requestRefresh} />
                 </TableCell>
               </TableRow>
             ))}
