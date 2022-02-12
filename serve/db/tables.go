@@ -74,7 +74,8 @@ type ACLAllow struct {
 // 设置
 type Setting struct {
 	UUID          string `db:"uuid"`           // uuid
-	ResetPass     bool   `db:"resetpass"`      // 找回密码
+	BugReport     bool   `db:"bugreport"`      // 允许报告错误
+	ResetPass     bool   `db:"resetpass"`      // 允许找回密码
 	TokenDuration int    `db:"token_duration"` // 会话持续时间
 }
 

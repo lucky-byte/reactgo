@@ -57,13 +57,13 @@ export default function Secure() {
       <Paper variant="outlined" sx={{ p: 2, mt: 2 }}>
         <Stack>
           <Stack direction='row' alignItems='center'>
-            <Typography>登录会话持续时间（分钟）:</Typography>
+            <Typography>登录会话持续时间(分钟):</Typography>
             <InplaceInput text={duration || ''} onConfirm={onChangeDuration}
               color='primary' sx={{ flex: 1, ml: 2 }}
             />
           </Stack>
           <FormHelperText>
-            用户登录成功后会话保持时间，以分钟为单位。例如 1440 表示持续时间为 1 天。
+            用户登录成功后会话保持时间，以分钟为单位。例如 1440 表示持续时间为 1 天
           </FormHelperText>
         </Stack>
         <Divider sx={{ my: 2 }} />

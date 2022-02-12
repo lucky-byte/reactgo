@@ -10,6 +10,7 @@ import (
 func Attach(up *echo.Group, code int) {
 	group := up.Group("/settings", acl.AllowRead(code))
 
+	group.GET("/generic", genericConfig)
 	group.GET("/mail", mailMTAList)
 	group.GET("/mail/info", mailInfo)
 	group.GET("/sms", smsConfig)
@@ -28,6 +29,8 @@ func Attach(up *echo.Group, code int) {
 	group.PUT("/sms/msgid", smsMsgId)
 
 	group.Use(acl.AllowAdmin(code)) // Admin 权限
+
+	group.PUT("/generic/bugreport", bugreport)
 
 	group.POST("/mail/add", mailAdd)
 	group.DELETE("/mail/delete", mailDel, secretcode.Verify())

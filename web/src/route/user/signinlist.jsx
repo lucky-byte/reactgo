@@ -20,7 +20,7 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import titleState from "~/state/title";
 import { get } from "~/rest";
 
-export default function UserSignInList() {
+export default function SignInList() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
@@ -53,7 +53,7 @@ export default function UserSignInList() {
               系统仅显示近半年的登录历史记录，如存在可疑登录记录，请联系管理员排查
             </Typography>
           </Stack>
-          <Typography variant='body2'>共 {list.length} 条记录</Typography>
+          <Typography variant='caption'>共 {list.length} 条记录</Typography>
         </Stack>
         <TableContainer component={OutlinedPaper}>
           <Table>

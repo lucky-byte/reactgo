@@ -17,7 +17,7 @@ import titleState from "~/state/title";
 import { put } from "~/rest";
 import { Typography } from '@mui/material';
 
-export default function UserPassword() {
+export default function Password() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);

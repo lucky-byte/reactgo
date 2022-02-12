@@ -15,10 +15,6 @@ import Link from '@mui/material/Link';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import DesktopMacIcon from '@mui/icons-material/DesktopMac';
-import DesktopWindowsIcon from '@mui/icons-material/DesktopWindows';
-import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
-import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import Icon from '@mdi/react';
 import { mdiGoogleChrome } from '@mdi/js';
 import { mdiFirefox } from '@mdi/js';
@@ -34,7 +30,7 @@ import titleState from "~/state/title";
 import userState from "~/state/user";
 import { get, put } from "~/rest";
 
-export default function UserProfile() {
+export default function Profile() {
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
   const secretCode = useSecretCode();
@@ -178,7 +174,7 @@ export default function UserProfile() {
         <Stack sx={{ mt: 4 }}>
           <Typography variant='h6'>访问设备</Typography>
           <Typography variant='caption'>
-            您曾经使用下列的设备登录您的账号，如果有不认识的设备，说明您的账号极大可能被盗用，
+            您曾经使用下列的设备登录系统，如果有不认识的设备，说明您的账号极大可能被盗用，
             请联系管理员进行排查
           </Typography>
         </Stack>
@@ -191,7 +187,7 @@ export default function UserProfile() {
         </Stack>
         <Map />
         <Typography variant='caption'>
-          <Link component={RouteLink} to='signinlist' underline='hover'>
+          <Link component={RouteLink} to='../signinlist' underline='hover'>
             查看我的登录历史
           </Link>
         </Typography>
@@ -224,7 +220,6 @@ function Devices() {
             <Paper variant='outlined' sx={{ p: 2 }}>
               <Stack direction='row' spacing={1} alignItems='flex-end'
                 justifyContent='center'>
-                <OSIcon os={item.os} />
                 <BrowserIcon browser={item.browser} />
               </Stack>
               <Stack sx={{ mt: 1 }}>
@@ -245,38 +240,6 @@ function Devices() {
       </FormHelperText>
     </Paper>
   )
-}
-
-// 操作系统图标
-function OSIcon(props) {
-  switch (props.os?.toLowerCase()) {
-    case "mac os x":
-      return (
-        <Tooltip title='Mac OS X' arrow placement='top'>
-          <DesktopMacIcon fontSize='large' />
-        </Tooltip>
-      )
-    case "iphone os":
-      return (
-        <Tooltip title='iPhone OS' arrow placement='top'>
-          <PhoneIphoneIcon fontSize='large' />
-        </Tooltip>
-      )
-    case "android":
-      return (
-        <Tooltip title='iPhone OS' arrow placement='top'>
-          <PhoneAndroidIcon fontSize='large' />
-        </Tooltip>
-      )
-    case "windows":
-      return (
-        <Tooltip title='Windows' arrow placement='top'>
-          <DesktopWindowsIcon fontSize='large' />
-        </Tooltip>
-      )
-    default:
-      return null;
-  }
 }
 
 // 浏览器图标

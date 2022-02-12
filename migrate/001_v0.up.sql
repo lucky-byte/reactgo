@@ -2,6 +2,7 @@ begin;
 
 create table if not exists settings (
   uuid            boolean         primary key default true,
+  bugreport       boolean         default true,
   resetpass       boolean         default false,
   token_duration  int             default 1440
 );

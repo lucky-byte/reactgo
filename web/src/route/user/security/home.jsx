@@ -13,7 +13,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import titleState from "~/state/title";
 import userState from "~/state/user";
 
-export default function UserSecurityHome() {
+export default function SecurityHome() {
   const navigate = useNavigate();
   const setTitle = useSetRecoilState(titleState);
   const user = useRecoilValue(userState);
@@ -33,7 +33,7 @@ export default function UserSecurityHome() {
         <Typography variant='h6' sx={{ mt: 4 }}>安全操作码</Typography>
         <FormHelperText>
           安全操作码是只有您本人知晓的 6 位数字，
-          在执行带有风险的操作时，设置安全操作码可以提供更多的安全保护
+          在执行带有风险的操作时，安全操作码可以提供更多的安全保护
         </FormHelperText>
         <Paper variant='outlined' sx={{ p: 2, mt: 1 }}>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
