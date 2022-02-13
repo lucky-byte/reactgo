@@ -29,6 +29,7 @@ import { useSecretCode } from '~/comp/secretcode';
 import titleState from "~/state/title";
 import userState from "~/state/user";
 import { get, put } from "~/rest";
+import AvatarPicker from './avatar';
 
 export default function Profile() {
   const { enqueueSnackbar } = useSnackbar();
@@ -121,7 +122,10 @@ export default function Profile() {
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Paper elevation={3} sx={{ mt: 4, px: 4, py: 3 }}>
         <Stack direction='row' spacing={3}>
-          <Avatar sx={{ width: 96, height: 96 }} />
+          <Stack spacing={1}>
+            <Avatar sx={{ width: 96, height: 96 }} />
+            <AvatarPicker />
+          </Stack>
           <Stack spacing={2} width='100%'>
             <Stack direction='row'>
               <Stack sx={{ flex: 1 }}>

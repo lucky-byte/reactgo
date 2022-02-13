@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import NotFound from "../notfound";
+import Avatar from "./avatar";
 import Password from "./password";
 import Profile from "./profile";
 import Security from "./security";
@@ -10,6 +11,7 @@ export default function User() {
     <Routes>
       <Route path='/' element={<Profile />} />
       <Route path='profile' element={<Profile />} />
+      <Route path='avatar' element={<Avatar />} />
       <Route path='password' element={<Password />} />
       <Route path='security/*' element={<Security />} />
       <Route path='signinlist' element={<SignInList />} />
