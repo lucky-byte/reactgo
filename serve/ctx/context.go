@@ -1,16 +1,19 @@
 package ctx
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 
 	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/event"
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
@@ -117,20 +120,29 @@ func (c *Context) Trim(args ...*string) {
 func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+			now := time.Now()
+
 			reqid := c.Response().Header().Get(echo.HeaderXRequestID)
 			req := c.Request()
 
-			// attach a logger to echo.Context.
+			// 将 logger 附属到 Context，后续可以使用
 			l := xlog.X.WithFields(logrus.Fields{
 				xlog.FReqID:  reqid,
 				xlog.FPath:   req.URL.Path,
 				xlog.FMethod: req.Method,
 				xlog.FIP:     c.RealIP(),
 			})
-			// cache the static assets in client
 			c.Response().Before(func() {
 				urlpath := c.Request().URL.Path
 
+				// 如果处理请求超出 1 秒，记录一条信息
+				elapsed := time.Since(now).Seconds()
+				if elapsed > 1 {
+					t := fmt.Sprintf("处理 %s 使用了 %f 秒", urlpath, elapsed)
+					l.Info(t)
+					event.Add(event.LevelTodo, t, "请分析该请求的处理方式是否有优化空间")
+				}
+				// 对于下列资源启用客户端缓存
 				if strings.HasPrefix(urlpath, "/static/js/") {
 					c.Response().Header().Set("cache-control", "max-age=31536000")
 				}

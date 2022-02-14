@@ -99,15 +99,15 @@ export default function List() {
         <Paper elevation={0} sx={{ height: maxHeight, width: 180, mr: 2 }}>
           <Stack>
             <Stack direction='row' alignItems='center' sx={{ pl: 2, py: '3px' }}>
-              <Typography variant='h6' sx={{ flex: 1, mr: 2 }}>
-                角色
-              </Typography>
+              <Stack direction='row' alignItems='baseline' sx={{ flex: 1 }}>
+                <Typography variant='h6' sx={{ mr: 1 }}>角色</Typography>
+                <Typography variant='body2'>{acls.length} 项</Typography>
+              </Stack>
               <IconButton aria-label='添加' onClick={onAddClick}>
                 <AddIcon color='primary' />
               </IconButton>
             </Stack>
-            <Typography variant='body2' sx={{ ml: 2 }}>共 {acls.length} 项</Typography>
-            <Divider sx={{ my: 1 }} />
+            <Divider sx={{ mb: 1 }} />
             <Tabs orientation="vertical" value={tabValue} onChange={onTabChange}
               variant="scrollable" scrollButtons={false} sx={{
                 maxHeight: maxHeight - 80
@@ -211,7 +211,7 @@ function AclInfo(props) {
         </IconButton>
         <Button color='error' onClick={onDelete}>删除</Button>
       </Toolbar>
-      <Stack sx={{ ml: 3 }} spacing={1}>
+      <Stack sx={{ mx: 3 }} spacing={1}>
         <InplaceInput variant='body2' text={info.summary || ''} multiline
           fontSize='small' onConfirm={onChangeSummary}
         />
