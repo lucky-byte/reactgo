@@ -137,7 +137,7 @@ export default function Event() {
         <TextField
           select variant='standard' sx={{ ml: 2, minWidth: 100 }}
           value={level} onChange={onLevelChange}>
-          <MenuItem value={0}>待办</MenuItem>
+          <MenuItem value={0}>全部</MenuItem>
           <MenuItem value={1}>信息</MenuItem>
           <MenuItem value={2}>警告</MenuItem>
           <MenuItem value={3}>错误</MenuItem>

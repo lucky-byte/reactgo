@@ -30,6 +30,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/image"
 	"github.com/lucky-byte/reactgo/serve/mailfs"
 	"github.com/lucky-byte/reactgo/serve/route/index"
 	"github.com/lucky-byte/reactgo/serve/task"
@@ -201,6 +202,9 @@ func main() {
 	engine.GET("/terms", func(c echo.Context) error {
 		return c.HTML(http.StatusOK, terms_html)
 	})
+
+	// 图片
+	image.Attach(engine)
 
 	// 后台管理
 	index.Attach(engine, conf)

@@ -137,6 +137,7 @@ func signin(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"userid":           user.UserId,
+		"avatar":           user.Avatar,
 		"name":             user.Name,
 		"email":            user.Email,
 		"mobile":           user.Mobile,

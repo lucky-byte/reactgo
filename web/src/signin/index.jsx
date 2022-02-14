@@ -94,6 +94,7 @@ export default function SignIn() {
       // 保存用户信息到全局状态
       setUser({
         userid: resp.userid,
+        avatar: resp.avatar ? `/image/?u=${resp.avatar}` : '',
         name: resp.name,
         email: resp.email,
         mobile: resp.mobile,

@@ -169,6 +169,7 @@ function Appbar(params) {
           }
           setUser({
             userid: resp.userid,
+            avatar: resp.avatar ? `/image/?u=${resp.avatar}` : '',
             name: resp.name,
             mobile: resp.mobile,
             email: resp.email,

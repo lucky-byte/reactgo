@@ -11,6 +11,7 @@ func Attach(up *echo.Group) {
 	group.GET("/info", info)
 	group.GET("/devices", devices)
 	group.GET("/signinlist", signinlist)
+	group.PUT("/avatar", avatar)
 	group.PUT("/name", name)
 	group.PUT("/userid", userid, secretcode.Verify())
 	group.PUT("/email", email, secretcode.Verify())

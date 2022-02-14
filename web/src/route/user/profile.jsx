@@ -123,7 +123,9 @@ export default function Profile() {
       <Paper elevation={3} sx={{ mt: 4, px: 4, py: 3 }}>
         <Stack direction='row' spacing={3}>
           <Stack spacing={1}>
-            <Avatar sx={{ width: 96, height: 96 }} />
+            <Avatar sx={{ width: 96, height: 96 }} alt='头像'
+              src={user?.avatar}
+            />
             <AvatarPicker />
           </Stack>
           <Stack spacing={2} width='100%'>
