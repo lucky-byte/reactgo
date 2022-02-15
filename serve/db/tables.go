@@ -131,3 +131,8 @@ type Event struct {
 	Message  string    `db:"message"`   // 消息
 	Fresh    bool      `db:"fresh"`     // 未读
 }
+
+// IP 定位
+type GeoIP struct {
+	WebKey string `db:"webkey"` // 高德开放平台 web 服务 key
+}

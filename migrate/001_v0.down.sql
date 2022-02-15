@@ -10,5 +10,6 @@ drop table if exists mtas;
 drop table if exists events;
 drop table if exists tasks;
 drop table if exists images;
+drop table if exists geoip;
 
 commit;

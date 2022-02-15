@@ -142,4 +142,10 @@ create table if not exists images (
   etag        varchar(32)     not null
 );
 
+create table if not exists geoip (
+  webkey      varchar(128)
+);
+
+insert into geoip (webkey) values ('');
+
 commit;
