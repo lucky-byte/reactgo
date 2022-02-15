@@ -37,7 +37,12 @@ create table if not exists signin_history (
   userid      varchar(128)    not null,
   name        varchar(64)     not null,
   ip          varchar(128)    not null,
+  country     varchar(64),
+  province    varchar(64),
   city        varchar(64),
+  district    varchar(64),
+  longitude   float,
+  latitude    float,
   ua          varchar(512)    not null
 );
 

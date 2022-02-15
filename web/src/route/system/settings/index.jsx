@@ -31,6 +31,9 @@ export default function Settings() {
     if (pathname.includes('/sms')) {
       return setTabValue(3);
     }
+    if (pathname.includes('/geoip')) {
+      return setTabValue(4);
+    }
     if (pathname.includes('/secure')) {
       return setTabValue(5);
     }

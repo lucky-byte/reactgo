@@ -43,7 +43,12 @@ func signinlist(c echo.Context) error {
 		list = append(list, echo.Map{
 			"create_at": h.CreateAt,
 			"ip":        h.IP,
-			"city":      h.City.String,
+			"country":   h.Country,
+			"province":  h.Province,
+			"city":      h.City,
+			"district":  h.District,
+			"longitude": h.Longitude,
+			"latitude":  h.Latitude,
 			"os":        os,
 			"browser":   browser,
 		})

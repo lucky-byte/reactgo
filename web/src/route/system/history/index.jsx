@@ -81,6 +81,14 @@ export default function History() {
     setPageData('rowsPerPage', rows);
   }
 
+  // 显示地理位置
+  const geo = row => {
+    if (row.city) {
+      return row.province + row.city;
+    }
+    return row.country + row.province;
+  }
+
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
@@ -123,7 +131,7 @@ export default function History() {
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">{row.browser} on {row.os}</TableCell>
-                <TableCell align="center">{row.ip} {row.city}</TableCell>
+                <TableCell align="center">{row.ip} {geo(row)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

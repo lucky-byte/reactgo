@@ -10,6 +10,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/geoip"
 	"github.com/lucky-byte/reactgo/serve/route/index/auth"
 	"github.com/lucky-byte/reactgo/serve/secure"
 	"github.com/lucky-byte/reactgo/serve/sms"
@@ -122,18 +123,8 @@ func signin(c echo.Context) error {
 			"admin": v.Admin,
 		})
 	}
-
 	// 记录登录历史
-	ql = `
-		insert into signin_history (uuid, user_uuid, userid, name, ip, ua)
-		values (?, ?, ?, ?, ?, ?)
-	`
-	err = db.ExecOne(ql, uuid.NewString(),
-		user.UUID, user.UserId, user.Name, c.RealIP(), c.Request().UserAgent())
-	// 这里出错不用返回错误
-	if err != nil {
-		cc.ErrLog(err).Error("登记用户登录历史错误")
-	}
+	addSignInHistory(c, &user)
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"userid":           user.UserId,
@@ -149,4 +140,30 @@ func signin(c echo.Context) error {
 		"smsid":            smsid,
 		"token":            token,
 	})
+}
+
+// 记录登录历史
+func addSignInHistory(c echo.Context, user *db.User) {
+	cc := c.(*ctx.Context)
+
+	// 查询 IP 位置
+	info, err := geoip.Lookup(c.RealIP())
+	if err != nil {
+		cc.ErrLog(err).Error("查询 IP 地理位置错")
+		info = new(geoip.Info)
+	}
+	ql := `
+		insert into signin_history (
+			uuid, user_uuid, userid, name, ip, country, province, city,
+			district, longitude, latitude, ua
+		) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`
+	err = db.ExecOne(ql, uuid.NewString(),
+		user.UUID, user.UserId, user.Name, c.RealIP(), info.Country,
+		info.Province, info.City, info.District, info.Longitude, info.Latitude,
+		c.Request().UserAgent(),
+	)
+	if err != nil {
+		cc.ErrLog(err).Error("登记用户登录历史错误")
+	}
 }

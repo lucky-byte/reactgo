@@ -39,14 +39,19 @@ type User struct {
 
 // 登录历史
 type SigninHistory struct {
-	UUID     string         `db:"uuid"`      // unique id
-	CreateAt time.Time      `db:"create_at"` // create time
-	User     string         `db:"user_uuid"` // user uuid
-	UserId   string         `db:"userid"`    // userid
-	Name     string         `db:"name"`      // 姓名
-	IP       string         `db:"ip"`        // ip 地址
-	City     sql.NullString `db:"city"`      // city
-	UA       string         `db:"ua"`        // user agent
+	UUID      string    `db:"uuid"`      // unique id
+	CreateAt  time.Time `db:"create_at"` // create time
+	User      string    `db:"user_uuid"` // user uuid
+	UserId    string    `db:"userid"`    // userid
+	Name      string    `db:"name"`      // 姓名
+	IP        string    `db:"ip"`        // ip 地址
+	Country   string    `db:"country"`   // 国家
+	Province  string    `db:"province"`  // 省
+	City      string    `db:"city"`      // 市
+	District  string    `db:"district"`  // 区
+	Longitude float64   `db:"longitude"` // 精度
+	Latitude  float64   `db:"latitude"`  // 纬度
+	UA        string    `db:"ua"`        // user agent
 }
 
 // 访问控制角色

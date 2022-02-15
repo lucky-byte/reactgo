@@ -78,7 +78,7 @@ func profileAcl(acluuid string) (*echo.Map, error) {
 // 查询登录历史
 func profileHistory(user_uuid string) ([]echo.Map, error) {
 	ql := `
-		select create_at, userid, name, ip, city, ua from signin_history
+		select * from signin_history
 		where user_uuid = ? order by create_at desc
 	`
 	var result []db.SigninHistory
@@ -102,7 +102,12 @@ func profileHistory(user_uuid string) ([]echo.Map, error) {
 			"userid":    h.UserId,
 			"name":      h.Name,
 			"ip":        h.IP,
-			"city":      h.City.String,
+			"country":   h.Country,
+			"province":  h.Province,
+			"city":      h.City,
+			"district":  h.District,
+			"longitude": h.Longitude,
+			"latitude":  h.Latitude,
 			"os":        os,
 			"browser":   browser,
 			"is_mobile": ua.Mobile(),

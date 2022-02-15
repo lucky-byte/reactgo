@@ -40,6 +40,14 @@ export default function SignInList() {
     })();
   }, [enqueueSnackbar]);
 
+  // 显示地理位置
+  const geo = row => {
+    if (row.city) {
+      return row.province + row.city;
+    }
+    return row.country + row.province;
+  }
+
   return (
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Paper elevation={3} sx={{ px: 4, py: 3, mt: 4 }}>
@@ -73,7 +81,7 @@ export default function SignInList() {
                   </TableCell>
                   <TableCell align="center">{row.os}</TableCell>
                   <TableCell align="center">{row.browser}</TableCell>
-                  <TableCell align="center">{row.ip} {row.city}</TableCell>
+                  <TableCell align="center">{row.ip} {geo(row)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
