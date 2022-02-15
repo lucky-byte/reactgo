@@ -125,7 +125,7 @@ func main() {
 	// 回滚日志文件
 	// Echo 的日志和 Go log 的日志将保存到 misc.log 文件中
 	rotate_logger_msic := &lumberjack.Logger{
-		Filename:  path.Join(logpath, "reactgo-misc.log"),
+		Filename:  path.Join(logpath, "misc.log"),
 		MaxSize:   20,
 		Compress:  true,
 		LocalTime: true,

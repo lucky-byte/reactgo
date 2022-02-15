@@ -22,6 +22,8 @@ import { mdiMicrosoftEdge } from '@mdi/js';
 import { mdiAppleSafari } from '@mdi/js';
 import { mdiOpera } from '@mdi/js';
 import { useSnackbar } from 'notistack';
+import 'leaflet/dist/leaflet.css';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import isEmail from 'validator/lib/isEmail';
 import isMobile from 'validator/lib/isMobilePhone';
 import InplaceInput from '~/comp/inplace-input';
@@ -296,6 +298,18 @@ function BrowserIcon(props) {
 function Map() {
   return (
     <Paper variant='outlined' sx={{ p: 2 }}>
+      <MapContainer center={[51.505, -0.09]} zoom={13} style={{
+        height: 400, borderRadius: 4 }}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <Marker position={[51.505, -0.09]}>
+          <Popup>
+            A pretty CSS3 popup. <br /> Easily customizable.
+          </Popup>
+        </Marker>
+      </MapContainer>
       <FormHelperText>
         IP 地址通过网络连接获取，地理位置通过 IP 查询而来，这些信息用于增强安全，
         不与任何第三方分享，详情请参考

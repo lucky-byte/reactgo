@@ -39,7 +39,7 @@ export default function SMS() {
   useEffect(() => {
     (async () => {
       try {
-        const resp = await get('/system/settings/sms');
+        const resp = await get('/system/settings/sms/config');
         setAppid(resp.appid);
         setSecretId(resp.secret_id);
         setSecretKey(resp.secret_key);

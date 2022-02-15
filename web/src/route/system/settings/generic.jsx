@@ -14,7 +14,7 @@ export default function Generic() {
   useEffect(() => {
     (async () => {
       try {
-        const resp = await get('/system/settings/generic');
+        const resp = await get('/system/settings/generic/config');
         setBugReport(resp.bugreport);
       } catch (err) {
         enqueueSnackbar(err.message);

@@ -1,4 +1,4 @@
-package settings
+package generic
 
 import (
 	"net/http"
@@ -8,21 +8,6 @@ import (
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
 )
-
-func genericConfig(c echo.Context) error {
-	cc := c.(*ctx.Context)
-
-	ql := `select * from settings`
-	var result db.Setting
-
-	if err := db.SelectOne(ql, &result); err != nil {
-		cc.ErrLog(err).Error("查询系统设置错")
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"bugreport": result.BugReport,
-	})
-}
 
 // 允许报告错误
 func bugreport(c echo.Context) error {

@@ -17,7 +17,7 @@ export default function Secure() {
   useEffect(() => {
     (async () => {
       try {
-        const resp = await get('/system/settings/secure');
+        const resp = await get('/system/settings/secure/config');
         setResetPass(resp.resetpass);
         setDuration(resp.token_duration);
       } catch (err) {

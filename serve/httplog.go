@@ -32,7 +32,7 @@ func (w terminalWriter) Write(bytes []byte) (int, error) {
 // http access log save to file http.log
 func httpLogMiddleware(debug bool, logpath string) echo.MiddlewareFunc {
 	rotate_http_logger := &lumberjack.Logger{
-		Filename:  path.Join(logpath, "reactgo-http.log"),
+		Filename:  path.Join(logpath, "http.log"),
 		MaxSize:   20,
 		Compress:  true,
 		LocalTime: true,

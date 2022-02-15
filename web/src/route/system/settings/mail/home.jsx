@@ -51,7 +51,7 @@ export default function Home() {
     (async () => {
       try {
         if (refresh) {
-          const resp = await get('/system/settings/mail');
+          const resp = await get('/system/settings/mail/list');
           setList(resp.list || []);
         }
       } catch (err) {
