@@ -32,7 +32,7 @@ export default function Event() {
   const setTitle = useSetRecoilState(titleState);
   const [keyword, setKeyword] = useState([]);
   const [days, setDays] = useState(7);
-  const [level, setLevel] = useState(2);
+  const [level, setLevel] = useState(0);
   const [fresh, setFresh] = useState('all');
   const [list, setList] = useState([]);
   const [pageCount, setPageCount] = useState(0);

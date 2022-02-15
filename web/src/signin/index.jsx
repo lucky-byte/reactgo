@@ -4,7 +4,6 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate, Link as RouteLink } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -49,9 +48,10 @@ export default function SignIn() {
 
         const resp = await get('/signin/settings')
         setResetpass(resp.resetpass);
-        setLoading(false);
       } catch (err) {
         enqueueSnackbar(err.message);
+      } finally {
+        setLoading(false);
       }
     })();
   }, [enqueueSnackbar]);
@@ -128,13 +128,13 @@ export default function SignIn() {
     }
   }
 
-  if (loading) {
-    return (
-      <Box sx={{ width: '100%' }}>
-        <LinearProgress />
-      </Box>
-    )
-  }
+  // if (loading) {
+  //   return (
+  //     <Box sx={{ width: '100%' }}>
+  //       <LinearProgress />
+  //     </Box>
+  //   )
+  // }
 
   return (
     <Stack as='main' role='main'>
@@ -146,7 +146,7 @@ export default function SignIn() {
         <Paper elevation={3} sx={{ mt: 8, py: 3, px: 4, width: '100%' }}>
           <Typography as='h1' variant='h6' sx={{ mt: 1 }}>欢迎，请登录</Typography>
           <TextField required label='登录名' placeholder="请输入登录名"
-            fullWidth autoComplete="username"
+            fullWidth autoComplete="username" autoFocus
             variant='standard' value={username} onChange={onUsernameChange}
             InputProps={{
               startAdornment: (
@@ -180,17 +180,7 @@ export default function SignIn() {
             }}
             sx={{ mt: 4 }}
           />
-          {resetpass ?
-            <FormHelperText sx={{ mt: 1, textAlign: 'right' }}>
-              <Link component={RouteLink} to='/resetpass' underline="hover">
-                忘记登录密码？
-              </Link>
-            </FormHelperText>
-            :
-            <FormHelperText sx={{ mt: 2 }}>
-              如忘记登录信息或手机号/邮箱地址发生变更，请联系工作人员重置登录信息。
-            </FormHelperText>
-          }
+          <Help loading={loading} resetpass={resetpass} />
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={submitting}>
             登录
@@ -222,5 +212,27 @@ export default function SignIn() {
         }
       </Container>
     </Stack>
+  )
+}
+
+function Help(props) {
+  const { loading, resetpass } = props;
+
+  if (loading) {
+    return <Box sx={{height: 26}} />
+  }
+  if (resetpass) {
+    return (
+      <FormHelperText sx={{ mt: 1, textAlign: 'right' }}>
+        <Link component={RouteLink} to='/resetpass' underline="hover">
+          忘记登录密码？
+        </Link>
+      </FormHelperText>
+    )
+  }
+  return (
+    <FormHelperText sx={{ mt: 2 }}>
+      如忘记登录信息或手机号/邮箱地址发生变更，请联系工作人员重置登录信息。
+    </FormHelperText>
   )
 }

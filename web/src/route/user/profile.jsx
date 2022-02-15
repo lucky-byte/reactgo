@@ -23,6 +23,7 @@ import { mdiAppleSafari } from '@mdi/js';
 import { mdiOpera } from '@mdi/js';
 import { useSnackbar } from 'notistack';
 import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import isEmail from 'validator/lib/isEmail';
 import isMobile from 'validator/lib/isMobilePhone';
@@ -32,6 +33,15 @@ import titleState from "~/state/title";
 import userState from "~/state/user";
 import { get, put } from "~/rest";
 import AvatarPicker from './avatar';
+
+// https://github.com/PaulLeCam/react-leaflet/issues/255#issuecomment-261904061
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 export default function Profile() {
   const { enqueueSnackbar } = useSnackbar();
@@ -190,7 +200,7 @@ export default function Profile() {
         <Stack sx={{ mt: 3 }}>
           <Typography variant='h6'>访问地图</Typography>
           <Typography variant='caption'>
-            您曾经在下列位置访问您的账号，位置信息通过 IP 获取，可能存在误差
+            您曾经在下列位置登录系统，位置信息通过 IP 获取，可能存在误差，尤其是使用 VPN
           </Typography>
         </Stack>
         <Map />
@@ -296,19 +306,48 @@ function BrowserIcon(props) {
 
 // 访问地图
 function Map() {
+  const { enqueueSnackbar } = useSnackbar();
+  const [geo, setGeo] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const resp = await get('/user/geo');
+        setGeo(resp.geo || []);
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      }
+    })();
+  }, [enqueueSnackbar]);
+
   return (
     <Paper variant='outlined' sx={{ p: 2 }}>
-      <MapContainer center={[51.505, -0.09]} zoom={13} style={{
-        height: 400, borderRadius: 4 }}>
+      <Typography variant='button' paragraph>
+        {geo.map((item, index) => (
+          <span key={item.name}>
+            {item.name}{index < geo.length - 1 ? '，' : ''}
+          </span>
+        ))}
+      </Typography>
+      <MapContainer
+        center={[38.02360535, 15.09230423]}
+        zoom={1.5}
+        minZoom={1}
+        dragging={true}
+        doubleClickZoom={false}
+        scrollWheelZoom={false}
+        attributionControl={false}
+        zoomControl={false}
+        style={{ height: 340, borderRadius: 4 }}>
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Marker position={[51.505, -0.09]}>
-          <Popup>
-            A pretty CSS3 popup. <br /> Easily customizable.
-          </Popup>
-        </Marker>
+        {geo.map(item => (
+          <Marker key={item.name} position={[item.latitude, item.longitude]}>
+            <Popup>{item.name}</Popup>
+          </Marker>
+        ))}
       </MapContainer>
       <FormHelperText>
         IP 地址通过网络连接获取，地理位置通过 IP 查询而来，这些信息用于增强安全，

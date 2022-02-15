@@ -10,6 +10,7 @@ func Attach(up *echo.Group) {
 
 	group.GET("/info", info)
 	group.GET("/devices", devices)
+	group.GET("/geo", geo)
 	group.GET("/signinlist", signinlist)
 	group.PUT("/avatar", avatar)
 	group.PUT("/name", name)

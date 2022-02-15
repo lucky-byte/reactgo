@@ -13,6 +13,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
@@ -20,6 +21,7 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import titleState from "~/state/title";
 import progressState from '~/state/progress';
 import { get } from '~/rest';
+import { geo } from '~/lib/geo';
 
 export default function Profile() {
   const location = useLocation();
@@ -161,14 +163,6 @@ function BaseInfoTable(props) {
 function SigninHistory(props) {
   const { history } = props;
 
-  // 显示地理位置
-  const geo = row => {
-    if (row.city) {
-      return row.province + row.city;
-    }
-    return row.country + row.province;
-  }
-
   return (
     <TableContainer component={OutlinedPaper}>
       <Table>
@@ -196,7 +190,13 @@ function SigninHistory(props) {
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">{row.browser} on {row.os}</TableCell>
-                <TableCell align="center">{row.ip} {geo(row)}</TableCell>
+                <TableCell align="center">
+                  <Tooltip title={row.ip} arrow placement='right'>
+                    <Typography variant='body2' sx={{ cursor: 'default' }}>
+                      {geo(row) || row.ip}
+                    </Typography>
+                  </Tooltip>
+                </TableCell>
               </TableRow>
             ))}
         </TableBody>

@@ -13,12 +13,14 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
 import titleState from "~/state/title";
 import { get } from "~/rest";
+import { geo } from '~/lib/geo';
 
 export default function SignInList() {
   const navigate = useNavigate();
@@ -39,14 +41,6 @@ export default function SignInList() {
       }
     })();
   }, [enqueueSnackbar]);
-
-  // 显示地理位置
-  const geo = row => {
-    if (row.city) {
-      return row.province + row.city;
-    }
-    return row.country + row.province;
-  }
 
   return (
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
@@ -70,7 +64,7 @@ export default function SignInList() {
                 <TableCell align="center">登录时间</TableCell>
                 <TableCell align="center">系统</TableCell>
                 <TableCell align="center">浏览器</TableCell>
-                <TableCell align="center">IP</TableCell>
+                <TableCell align="center">IP/位置</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -81,7 +75,13 @@ export default function SignInList() {
                   </TableCell>
                   <TableCell align="center">{row.os}</TableCell>
                   <TableCell align="center">{row.browser}</TableCell>
-                  <TableCell align="center">{row.ip} {geo(row)}</TableCell>
+                  <TableCell align="center">
+                    <Tooltip title={row.ip} arrow placement='right'>
+                      <Typography variant='body2' sx={{ cursor: 'default' }}>
+                        {geo(row) || row.ip}
+                      </Typography>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

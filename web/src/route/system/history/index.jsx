@@ -15,6 +15,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
+import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
@@ -22,6 +23,7 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import titleState from "~/state/title";
 import usePageData from '~/hook/pagedata';
 import { post } from '~/rest';
+import { geo } from '~/lib/geo';
 
 export default function History() {
   const setTitle = useSetRecoilState(titleState);
@@ -81,14 +83,6 @@ export default function History() {
     setPageData('rowsPerPage', rows);
   }
 
-  // 显示地理位置
-  const geo = row => {
-    if (row.city) {
-      return row.province + row.city;
-    }
-    return row.country + row.province;
-  }
-
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
@@ -119,7 +113,7 @@ export default function History() {
               <TableCell align="center">登录名</TableCell>
               <TableCell align="center">姓名</TableCell>
               <TableCell align="center">设备</TableCell>
-              <TableCell align="center">IP</TableCell>
+              <TableCell align="center">位置</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -131,7 +125,13 @@ export default function History() {
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">{row.browser} on {row.os}</TableCell>
-                <TableCell align="center">{row.ip} {geo(row)}</TableCell>
+                <TableCell align="center">
+                  <Tooltip title={row.ip} arrow placement='right'>
+                    <Typography variant='body2' sx={{ cursor: 'default' }}>
+                      {geo(row) || row.ip}
+                    </Typography>
+                  </Tooltip>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

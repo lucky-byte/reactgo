@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -13,16 +12,6 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
-
-type Info struct {
-	Country   string
-	Province  string
-	City      string
-	District  string
-	ISP       string
-	Longitude float64
-	Latitude  float64
-}
 
 // 通过高德 IP 定位 API 接口查询 IP 对应的地理位置
 func AMapLookup(ip string, ipv4 bool) (*Info, error) {
@@ -84,11 +73,13 @@ func AMapLookup(ip string, ipv4 bool) (*Info, error) {
 	if len(locations) >= 2 {
 		lng, err = strconv.ParseFloat(locations[0], 64)
 		if err != nil {
-			return nil, err
+			xlog.X.WithError(err).Warnf("查询 IP(%s) 位置解析精度错", ip)
+			lng = 0.0
 		}
 		lat, err = strconv.ParseFloat(locations[1], 64)
 		if err != nil {
-			return nil, err
+			xlog.X.WithError(err).Warnf("查询 IP(%s) 位置解析纬度错", ip)
+			lat = 0.0
 		}
 	}
 	info := Info{
@@ -101,19 +92,4 @@ func AMapLookup(ip string, ipv4 bool) (*Info, error) {
 		Latitude:  lat,
 	}
 	return &info, nil
-}
-
-// 通过 IP 查询地理位置
-func Lookup(ip string) (*Info, error) {
-	addr := net.ParseIP(ip)
-	if addr == nil {
-		return nil, fmt.Errorf("%s 不是有效的 ip 地址", ip)
-	}
-	if addr.IsLoopback() {
-		return &Info{City: "本机"}, nil
-	}
-	if addr.IsPrivate() {
-		return &Info{City: "局域网"}, nil
-	}
-	return AMapLookup(ip, addr.To4() != nil)
 }
