@@ -1,11 +1,14 @@
 package secretcode
 
 import (
+	"encoding/hex"
 	"fmt"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lucky-byte/reactgo/serve/secure"
+	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 var tokenCache sync.Map
@@ -21,8 +24,14 @@ const expiryTime = 60 * 30
 
 // 生成 token 并缓存
 func genToken(user_uuid string) string {
-	token := uuid.NewString()
+	var token string
 
+	if r, err := secure.RandomBytes(16); err != nil {
+		xlog.X.WithError(err).Error("生成安全随机数错")
+		token = uuid.NewString()
+	} else {
+		token = hex.EncodeToString(r)
+	}
 	tokenCache.Store(user_uuid, &cacheEntry{
 		timestamp: time.Now().Unix(),
 		token:     token,
