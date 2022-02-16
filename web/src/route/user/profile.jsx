@@ -331,14 +331,14 @@ function Map() {
       </Typography>
       <MapContainer
         center={[38.02360535, 15.09230423]}
-        zoom={1.5}
+        zoom={2}
         minZoom={1}
         dragging={true}
         doubleClickZoom={false}
         scrollWheelZoom={false}
         attributionControl={false}
         zoomControl={false}
-        style={{ height: 340, borderRadius: 4 }}>
+        style={{ height: 500, borderRadius: 4 }}>
         <TileLayer
           attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

@@ -9,7 +9,7 @@ import { useSnackbar } from 'notistack';
 import InplaceInput from '~/comp/inplace-input';
 import { get, put } from "~/rest";
 
-export default function Secure() {
+export default function Account() {
   const { enqueueSnackbar } = useSnackbar();
   const [resetPass, setResetPass] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -17,7 +17,7 @@ export default function Secure() {
   useEffect(() => {
     (async () => {
       try {
-        const resp = await get('/system/settings/secure/config');
+        const resp = await get('/system/settings/account/config');
         setResetPass(resp.resetpass);
         setDuration(resp.token_duration);
       } catch (err) {
@@ -29,7 +29,7 @@ export default function Secure() {
   // 允许用户找回密码
   const onResetPassCheck = async () => {
     try {
-      await put('/system/settings/secure/resetpass', new URLSearchParams({
+      await put('/system/settings/account/resetpass', new URLSearchParams({
         resetpass: !resetPass
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
@@ -42,7 +42,7 @@ export default function Secure() {
   // 修改会话持续时间
   const onChangeDuration = async v => {
     try {
-      await put('/system/settings/secure/duration', new URLSearchParams({
+      await put('/system/settings/account/duration', new URLSearchParams({
         duration: v
       }));
       setDuration(v);

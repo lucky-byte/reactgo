@@ -1,4 +1,4 @@
-package secure
+package account
 
 import (
 	"github.com/labstack/echo/v4"
@@ -7,7 +7,7 @@ import (
 )
 
 func Attach(up *echo.Group, code int) {
-	group := up.Group("/secure", acl.AllowRead(code))
+	group := up.Group("/account", acl.AllowRead(code))
 
 	group.GET("/config", config)
 
