@@ -1,5 +1,6 @@
 import { useTheme } from "@mui/material/styles";
 import MuiMarkdown from 'mui-markdown';
+import Typography from '@mui/material/Typography';
 import vsDark from 'prism-react-renderer/themes/vsDark';
 import github from 'prism-react-renderer/themes/github';
 
@@ -27,6 +28,10 @@ export default function Markdown(props) {
               border: `1px solid ${inlineCodeBorderColor}`,
             }
           },
+        },
+        p: {
+          component: Typography,
+          props: { variant: 'body2', gutterBottom: true }
         },
       }}
     >

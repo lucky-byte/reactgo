@@ -64,7 +64,7 @@ export default function SignInList() {
                 <TableCell align="center">登录时间</TableCell>
                 <TableCell align="center">系统</TableCell>
                 <TableCell align="center">浏览器</TableCell>
-                <TableCell align="center">IP/位置</TableCell>
+                <TableCell align="center">位置</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

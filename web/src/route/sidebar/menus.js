@@ -4,6 +4,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SecurityIcon from '@mui/icons-material/Security';
 import SettingsIcon from '@mui/icons-material/Settings';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 
 const menus = [{
@@ -11,6 +12,12 @@ const menus = [{
   items: [{
     code: 100,
     icon: DashboardIcon,
+  }],
+}, {
+  title: '层级管理',
+  items: [{
+    code: 9200,
+    icon: AccountTreeIcon,
   }],
 }, {
   title: '系统管理',

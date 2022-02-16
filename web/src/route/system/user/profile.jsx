@@ -172,7 +172,7 @@ function SigninHistory(props) {
             <TableCell align="center">登录名</TableCell>
             <TableCell align="center">姓名</TableCell>
             <TableCell align="center">设备</TableCell>
-            <TableCell align="center">IP</TableCell>
+            <TableCell align="center">位置</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
