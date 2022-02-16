@@ -23,6 +23,7 @@ import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
 import { put, get } from "~/rest";
+import ForgetUserid from './userid';
 
 export default function SignIn() {
   const theme = useTheme();
@@ -128,14 +129,6 @@ export default function SignIn() {
     }
   }
 
-  // if (loading) {
-  //   return (
-  //     <Box sx={{ width: '100%' }}>
-  //       <LinearProgress />
-  //     </Box>
-  //   )
-  // }
-
   return (
     <Stack as='main' role='main'>
       <Toolbar>
@@ -152,6 +145,11 @@ export default function SignIn() {
               startAdornment: (
                 <InputAdornment position="start">
                   <PersonIcon />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <ForgetUserid />
                 </InputAdornment>
               ),
             }}
@@ -223,11 +221,11 @@ function Help(props) {
   }
   if (resetpass) {
     return (
-      <FormHelperText sx={{ mt: 1, textAlign: 'right' }}>
-        <Link component={RouteLink} to='/resetpass' underline="hover">
-          忘记登录密码？
-        </Link>
-      </FormHelperText>
+      <Stack direction='row' justifyContent='flex-end'>
+        <Button size='small' LinkComponent={RouteLink} to='/resetpass'>
+          忘记登录密码
+        </Button>
+      </Stack>
     )
   }
   return (
