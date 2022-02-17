@@ -267,7 +267,7 @@ function Appbar(params) {
           aria-haspopup="true"
           aria-expanded={sidebarOpen ? 'true' : undefined}
           onClick={onUserMenuOpen}>
-          {user?.name || user?.userid}
+          {user?.name || user?.userid || 'WhoAmI'}
         </Button>
         <Menu anchorEl={anchorEl} open={sidebarOpen} onClose={onUserMenuClose}>
           <MenuItem onClick={onProfile}>
