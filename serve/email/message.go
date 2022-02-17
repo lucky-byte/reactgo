@@ -20,7 +20,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
-// Attachment represents an email attachment.
+// Attachment 邮件附件
 type Attachment struct {
 	Filename  string // filename
 	Data      []byte // attachment data
@@ -28,13 +28,13 @@ type Attachment struct {
 	ContentId string // content id
 }
 
-// Header represents an additional email header.
+// Header 一个额外的邮件头
 type Header struct {
 	Key   string
 	Value string
 }
 
-// Message represents a smtp message.
+// Message SMTP 消息
 type Message struct {
 	To          []*mail.Address
 	Cc          []*mail.Address
@@ -49,25 +49,25 @@ type Message struct {
 	hasInline   bool
 }
 
-// AddTO add a recipient
+// AddTO 添加一个收件人
 func (m *Message) AddTO(address *mail.Address) []*mail.Address {
 	m.To = append(m.To, address)
 	return m.To
 }
 
-// AddCC add a cc recipient
+// AddCC 添加一个抄送收件人
 func (m *Message) AddCC(address *mail.Address) []*mail.Address {
 	m.Cc = append(m.Cc, address)
 	return m.Cc
 }
 
-// AddBCC add a bcc recipient
+// AddBCC 添加一个密送收件人
 func (m *Message) AddBCC(address *mail.Address) []*mail.Address {
 	m.Bcc = append(m.Bcc, address)
 	return m.Bcc
 }
 
-// AttachBuffer attaches a binary attachment.
+// AttachBuffer 添加一个二进制的附件
 func (m *Message) AttachBuffer(filename string, buf []byte, inline bool, cid string) {
 	m.Attachments[filename] = &Attachment{
 		Filename:  filename,
@@ -99,24 +99,24 @@ func (m *Message) attach(file string, inline bool, cid string) error {
 	return nil
 }
 
-// Attach attaches a file.
+// Attach 添加一个文件作为附件
 func (m *Message) Attach(file string) error {
 	return m.attach(file, false, "")
 }
 
-// Inline includes a file as an inline attachment.
+// Inline 添加一个文件作为内联附件
 func (m *Message) Inline(file string, cid string) error {
 	return m.attach(file, true, cid)
 }
 
-// AddHeader a Header to message
+// AddHeader 添加一个消息头
 func (m *Message) AddHeader(key string, value string) Header {
 	newHeader := Header{Key: key, Value: value}
 	m.Headers = append(m.Headers, newHeader)
 	return newHeader
 }
 
-// bytes returns the mail data
+// bytes 返回邮件数据
 func (m *Message) bytes(sender *mail.Address) []byte {
 	buf := bytes.NewBuffer(nil)
 
@@ -146,13 +146,13 @@ func (m *Message) bytes(sender *mail.Address) []byte {
 	}
 	buf.WriteString("MIME-Version: 1.0\r\n")
 
-	// add custom headers
+	// 添加自定义头
 	if len(m.Headers) > 0 {
 		for _, header := range m.Headers {
 			buf.WriteString(fmt.Sprintf("%s: %s\r\n", header.Key, header.Value))
 		}
 	}
-	// write message body
+	// 写消息正文
 	writeBody := func() {
 		buf.WriteString(fmt.Sprintf(
 			"Content-Type: %s; charset=utf-8\r\n\r\n", m.BodyType,
@@ -160,12 +160,12 @@ func (m *Message) bytes(sender *mail.Address) []byte {
 		buf.WriteString(m.Body)
 		buf.WriteString("\r\n")
 	}
-	// no attachment, write the body and return
+	// 没有附件，写完正文直接返回
 	if len(m.Attachments) == 0 {
 		writeBody()
 		return buf.Bytes()
 	}
-	// write attachment
+	// 写入附件
 	writeAttachment := func(attachment *Attachment) {
 		ext := filepath.Ext(attachment.Filename)
 		mimetype := mime.TypeByExtension(ext)
@@ -177,7 +177,7 @@ func (m *Message) bytes(sender *mail.Address) []byte {
 		}
 		buf.WriteString("Content-Transfer-Encoding: base64\r\n")
 
-		// inline attachment give a content id so body can ref to it by cid:
+		// 内联附件给定一个 content id，这样正文可以通过 cid 引用它
 		if attachment.Inline {
 			buf.WriteString(fmt.Sprintf("Content-ID: <%s>\r\n", attachment.ContentId))
 			buf.WriteString(fmt.Sprintf(
@@ -192,7 +192,7 @@ func (m *Message) bytes(sender *mail.Address) []byte {
 		b := make([]byte, base64.StdEncoding.EncodedLen(len(attachment.Data)))
 		base64.StdEncoding.Encode(b, attachment.Data)
 
-		// write base64 content in lines of up to 76 chars
+		// 每行最多 76 个字符的 base64 内容
 		for i, l := 0, len(b); i < l; i++ {
 			buf.WriteByte(b[i])
 			if (i+1)%76 == 0 {
@@ -200,16 +200,16 @@ func (m *Message) bytes(sender *mail.Address) []byte {
 			}
 		}
 	}
-	// generate a random mixed boundary
+	// 生成随机的 mixed 边界
 	mixed := strings.ToLower(strings.ReplaceAll(uuid.NewString(), "-", ""))
 
-	// mixed begin
+	// mixed 开始
 	buf.WriteString(fmt.Sprintf(
 		"Content-Type: multipart/mixed; boundary=%s\r\n", mixed,
 	))
 	buf.WriteString(fmt.Sprintf("\r\n--%s\r\n", mixed))
 
-	// if has inline attachment, the email will become below structure
+	// 如果有内联附件，邮件将变成下面的结构
 	// + mixed
 	// | + alternative
 	// | | + related
@@ -221,54 +221,54 @@ func (m *Message) bytes(sender *mail.Address) []byte {
 	// | - non-inline attachment 2
 	// | - ...
 	//
-	// if no inline attachment, the email will be below structure
+	// 如果没有内联附件，邮件将是下面的结构
 	// + mixed
 	// | - body
 	// | - non-inline attachment 1
 	// | - non-inline attachment 2
 	// | - ...
 	if m.hasInline {
-		// random generated boundary
+		// 生成随机边界
 		alternative := strings.ToLower(strings.ReplaceAll(uuid.NewString(), "-", ""))
 		related := strings.ToLower(strings.ReplaceAll(uuid.NewString(), "-", ""))
 
-		// alternative begin
+		// alternative 开始
 		buf.WriteString(fmt.Sprintf(
 			"Content-Type: multipart/alternative; boundary=%s\r\n", alternative,
 		))
 		buf.WriteString(fmt.Sprintf("\r\n--%s\r\n", alternative))
 
-		// related begin
+		// related 开始
 		buf.WriteString(fmt.Sprintf(
 			"Content-Type: multipart/related; boundary=%s\r\n", related,
 		))
 		buf.WriteString(fmt.Sprintf("\r\n--%s\r\n", related))
 
-		writeBody() // write body
+		writeBody() // 写入正文
 
-		// write all inline attachments
+		// 写入所有的内联附件
 		for _, attachment := range m.Attachments {
 			if attachment.Inline {
 				buf.WriteString(fmt.Sprintf("\r\n\r\n--%s\r\n", related))
 				writeAttachment(attachment)
 			}
 		}
-		// related end
+		// related 结束
 		buf.WriteString(fmt.Sprintf("\r\n--%s--", related))
 
-		// alternative end
+		// alternative 结束
 		buf.WriteString(fmt.Sprintf("\r\n--%s--", alternative))
 	} else {
-		writeBody() // write body
+		writeBody() // 写入正文
 	}
-	// write all non-inline attachments
+	// 写入所有非内联的附件
 	for _, attachment := range m.Attachments {
 		if !attachment.Inline {
 			buf.WriteString(fmt.Sprintf("\r\n\r\n--%s\r\n", mixed))
 			writeAttachment(attachment)
 		}
 	}
-	// mixed end
+	// mixed 结束
 	buf.WriteString(fmt.Sprintf("\r\n--%s--", mixed))
 
 	return buf.Bytes()
@@ -285,7 +285,7 @@ func (m *Message) Send() error {
 	}
 	sent := false
 
-	// try all of mtas one by one, until meet one which can send the mail
+	// 逐个使用所有的邮件传输代理，直到遇到第一个可以发送邮件的为止
 	for _, mta := range mtas {
 		if err := m.SendWithMta(&mta); err != nil {
 			xlog.X.Warnf("通过 '%s' 发送邮件错: %v", mta.Name, err)
@@ -347,7 +347,7 @@ func (m *Message) SendWithMta(mta *db.MTA) error {
 	return nil
 }
 
-// send with smtp
+// 通过 SMTP 发送邮件
 func (m *Message) send(mta *db.MTA) error {
 	if len(mta.Host) == 0 {
 		return fmt.Errorf("MTA '%s' 的 host 为空", mta.Name)
