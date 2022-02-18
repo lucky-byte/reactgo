@@ -141,7 +141,7 @@ create table if not exists images (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
   update_at   timestamp       not null default current_timestamp,
-  data        bytea           not null,
+  data        mediumblob      not null,
   mime        varchar(128)    not null,
   etag        varchar(32)     not null
 );

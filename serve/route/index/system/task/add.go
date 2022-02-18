@@ -61,14 +61,18 @@ func add(c echo.Context) error {
 	ql := `
 		insert into tasks (uuid, name, cron, type, path, summary)
 		values (?, ?, ?, ?, ?, ?)
-		returning *
 	`
+	u := uuid.NewString()
+
+	err = db.ExecOne(ql, u, name, cron_exp, task_type, fpath, summary)
+	if err != nil {
+		cc.ErrLog(err).Error("添加任务错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	ql = `select * from tasks where uuid = ?`
 	var t db.Task
 
-	err = db.SelectOne(ql, &t,
-		uuid.NewString(), name, cron_exp, task_type, fpath, summary,
-	)
-	if err != nil {
+	if err = db.SelectOne(ql, &t, u); err != nil {
 		cc.ErrLog(err).Error("添加任务错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
