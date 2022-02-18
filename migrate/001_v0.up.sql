@@ -56,8 +56,7 @@ create table if not exists acl (
 );
 
 insert into acl (uuid, code, name, summary) values (
-  '7e9633f6-c83a-49a4-9a96-e120d6ca6055', 0,
-  '系统管理', '可以访问系统所有功能，仅对系统负责人员开放'
+  '7e9633f6-c83a-49a4-9a96-e120d6ca6055', 0, '系统管理', '可以访问系统所有功能'
 );
 
 create table if not exists acl_allows (
@@ -66,24 +65,24 @@ create table if not exists acl_allows (
   code        int             not null,
   title       varchar(64)     not null,
   url         varchar(128)    not null,
-  read        boolean         not null default true,
-  write       boolean         not null default false,
-  admin       boolean         not null default false
+  iread       boolean         not null default true,
+  iwrite      boolean         not null default false,
+  iadmin      boolean         not null default false
 );
 
 create unique index acl_allows_acl_code on acl_allows(acl, code);
 create unique index acl_allows_acl_url on acl_allows(acl, url);
 
 insert into acl_allows (
-  uuid, acl, code, title, url, read, write, admin
+  uuid, acl, code, title, url, iread, iwrite, iadmin
 ) values (
-  gen_random_uuid(), '7e9633f6-c83a-49a4-9a96-e120d6ca6055',
+  'd17a5324-63d4-4bdb-998e-c5ec52c80bc1', '7e9633f6-c83a-49a4-9a96-e120d6ca6055',
   9000, '用户管理', '/system/user', true, true, true
 );
 insert into acl_allows (
-  uuid, acl, code, title, url, read, write, admin
+  uuid, acl, code, title, url, iread, iwrite, iadmin
 ) values (
-  gen_random_uuid(), '7e9633f6-c83a-49a4-9a96-e120d6ca6055',
+  '669d23b1-be43-40c8-8f7f-c013d217b1e8', '7e9633f6-c83a-49a4-9a96-e120d6ca6055',
   9010, '访问控制', '/system/acl', true, true, true
 );
 
@@ -102,7 +101,7 @@ create table if not exists mtas (
   name        varchar(32)     not null unique,
   host        varchar(128)    not null,
   port        int             not null default 465,
-  ssl         boolean         not null default true,
+  sslmode     boolean         not null default true,
   sender      varchar(128)    not null,
   replyto     varchar(128),
   username    varchar(128),

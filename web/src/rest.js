@@ -12,7 +12,6 @@ const rest = async (url, args) => {
   const resp = await fetch('/r' + url, {
     method: args.method,
     headers: {
-      ...args.headers,
       'x-user-agent': 'ReactGo/1',
       'x-csrf-token': csrf || '',
       'x-auth-token': token || '',

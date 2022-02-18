@@ -77,14 +77,14 @@ func importt(c echo.Context) error {
 		// 添加记录
 		ql = `
 			insert into mtas (
-				uuid, name, host, port, ssl, sender, replyto, username, passwd,
+				uuid, name, host, port, sslmode, sender, replyto, username, passwd,
 				cc, bcc, prefix, nsent, sortno
 			) values (
 				?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 			)
 		`
 		_, err = tx.Exec(tx.Rebind(ql), uuid.NewString(),
-			v.Name, v.Host, v.Port, v.SSL, v.Sender, v.ReplyTo,
+			v.Name, v.Host, v.Port, v.SSLMode, v.Sender, v.ReplyTo,
 			v.Username, v.Passwd, v.CC, v.BCC, v.Prefix, v.NSent, sortno+1,
 		)
 		if err != nil {

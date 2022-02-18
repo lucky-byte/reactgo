@@ -28,7 +28,7 @@ func export(c echo.Context) error {
 			"name":     v.Name,
 			"host":     v.Host,
 			"port":     v.Port,
-			"ssl":      v.SSL,
+			"sslmode":  v.SSLMode,
 			"sender":   v.Sender,
 			"replyto":  v.ReplyTo,
 			"username": v.Username,

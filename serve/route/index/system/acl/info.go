@@ -28,7 +28,7 @@ func info(c echo.Context) error {
 	}
 	// 查询允许列表
 	ql = `
-		select code, title, read, write, admin from acl_allows
+		select code, title, iread, iwrite, iadmin from acl_allows
 		where acl = ? order by code
 	`
 	var result []db.ACLAllow
@@ -41,11 +41,11 @@ func info(c echo.Context) error {
 
 	for _, v := range result {
 		allows = append(allows, echo.Map{
-			"code":  v.Code,
-			"title": v.Title,
-			"read":  v.Read,
-			"write": v.Write,
-			"admin": v.Admin,
+			"code":   v.Code,
+			"title":  v.Title,
+			"iread":  v.IRead,
+			"iwrite": v.IWrite,
+			"iadmin": v.IAdmin,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{

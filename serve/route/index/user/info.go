@@ -17,10 +17,10 @@ func info(c echo.Context) error {
 
 	for _, v := range cc.Allows() {
 		allows = append(allows, echo.Map{
-			"code":  v.Code,
-			"read":  v.Read,
-			"write": v.Write,
-			"admin": v.Admin,
+			"code":   v.Code,
+			"iread":  v.IRead,
+			"iwrite": v.IWrite,
+			"iadmin": v.IAdmin,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{

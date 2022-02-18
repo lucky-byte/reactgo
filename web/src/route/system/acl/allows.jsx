@@ -175,50 +175,50 @@ export default function Allows() {
 
   // 修改访问权限
   const onAllowReadCheck = async row => {
-    let { read, write, admin } = row;
+    let { iread, iwrite, iadmin } = row;
 
     // 当前是允许的，改变成不允许，同时也会取消修改和管理权限
-    if (row.read) {
-      [read, write, admin] = [false, false, false];
+    if (row.iread) {
+      [iread, iwrite, iadmin] = [false, false, false];
     } else {
-      read = true;
+      [iread, iwrite, iadmin] = [true, false, false];
     }
-    await onAllowUpdateCheck(row.uuid, read, write, admin);
+    await onAllowUpdateCheck(row.uuid, iread, iwrite, iadmin);
   }
 
   // 修改写权限
   const onAllowWriteCheck = async row => {
-    let { read, write, admin } = row;
+    let { iread, iwrite, iadmin } = row;
 
     // 当前是允许的，改变成不允许，同时也会取消管理权限
-    if (row.write) {
-      [write, admin] = [false, false];
+    if (row.iwrite) {
+      [iwrite, iadmin] = [false, false];
     } else {
-      [read, write] = [true, true];
+      [iread, iwrite] = [true, true];
     }
-    await onAllowUpdateCheck(row.uuid, read, write, admin);
+    await onAllowUpdateCheck(row.uuid, iread, iwrite, iadmin);
   }
 
   // 修改管理权限
   const onAllowAdminCheck = async row => {
-    let { read, write, admin } = row;
+    let { iread, iwrite, iadmin } = row;
 
     // 当前是允许的，改变成不允许
-    if (row.admin) {
-      admin = false
+    if (row.iadmin) {
+      iadmin = false
     } else {
-      [read, write, admin] = [true, true, true];
+      [iread, iwrite, iadmin] = [true, true, true];
     }
-    await onAllowUpdateCheck(row.uuid, read, write, admin);
+    await onAllowUpdateCheck(row.uuid, iread, iwrite, iadmin);
   }
 
   // 修改权限
-  const onAllowUpdateCheck = async (uuid, read, write, admin) => {
+  const onAllowUpdateCheck = async (uuid, iread, iwrite, iadmin) => {
     try {
       setUpdated(true);
 
       await put('/system/acl/allow/update', new URLSearchParams({
-        uuid, read, write, admin,
+        uuid, iread, iwrite, iadmin,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       setRefresh(true);
@@ -329,19 +329,19 @@ export default function Allows() {
                   <TableCell align="center">{row.code}</TableCell>
                   <TableCell align="center">{row.title}</TableCell>
                   <TableCell align="center" padding='checkbox'>
-                    <Checkbox disabled={updated} checked={row.read} color='success'
+                    <Checkbox disabled={updated} checked={row.iread} color='success'
                       onChange={e => { onAllowReadCheck(row); }}
                       inputProps={{ "aria-label": "访问权限" }}
                     />
                   </TableCell>
                   <TableCell align="center" padding='checkbox'>
-                    <Checkbox disabled={updated} checked={row.write} color='success'
+                    <Checkbox disabled={updated} checked={row.iwrite} color='success'
                       onChange={e => { onAllowWriteCheck(row); }}
                       inputProps={{ "aria-label": "修改权限" }}
                     />
                   </TableCell>
                   <TableCell align="center" padding='checkbox'>
-                    <Checkbox disabled={updated} checked={row.admin} color='success'
+                    <Checkbox disabled={updated} checked={row.iadmin} color='success'
                       onChange={e => { onAllowAdminCheck(row); }}
                       inputProps={{ "aria-label": "管理权限" }}
                     />

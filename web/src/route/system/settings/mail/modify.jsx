@@ -34,7 +34,7 @@ export default function Modify() {
     register, handleSubmit, setValue, control, formState: { errors, isSubmitting }
   } = useForm({
     defaultValues: {
-      ssl: 'true',
+      sslmode: 'true',
     }
   });
 
@@ -42,7 +42,7 @@ export default function Modify() {
     setValue("name", info.name);
     setValue("host", info.host);
     setValue("port", info.port);
-    setValue("ssl", info.ssl ? 'true' : 'false');
+    setValue("sslmode", info.sslmode ? 'true' : 'false');
     setValue("sender", info.sender);
     setValue("username", info.username);
     setValue("password", info.passwd);
@@ -147,7 +147,7 @@ export default function Modify() {
                   },
                 })}
               />
-              <Controller name="ssl" control={control}
+              <Controller name="sslmode" control={control}
                 render={({ field: { onChange, value } }) => (
                   <TextField label='加密模式' variant='standard' required
                     disabled={progress}

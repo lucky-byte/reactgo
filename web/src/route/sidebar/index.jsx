@@ -31,7 +31,7 @@ export default function Sidebar() {
 
       for (let i = 0; i < user.allows.length; i++) {
         const allow = user.allows[i];
-        if (allow.read) {
+        if (allow.iread) {
           allows.push(allow.code);
         }
       }

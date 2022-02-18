@@ -66,14 +66,14 @@ type ACL struct {
 
 // 访问控制权限
 type ACLAllow struct {
-	UUID  string `db:"uuid"`  // uuid
-	ACL   string `db:"acl"`   // acl uuid
-	Code  int    `db:"code"`  // 菜单代码
-	Title string `db:"title"` // 菜单标题
-	URL   string `db:"url"`   // url
-	Read  bool   `db:"read"`  // 访问权限
-	Write bool   `db:"write"` // 修改权限
-	Admin bool   `db:"admin"` // 管理权限
+	UUID   string `db:"uuid"`   // uuid
+	ACL    string `db:"acl"`    // acl uuid
+	Code   int    `db:"code"`   // 菜单代码
+	Title  string `db:"title"`  // 菜单标题
+	URL    string `db:"url"`    // url
+	IRead  bool   `db:"iread"`  // 访问权限
+	IWrite bool   `db:"iwrite"` // 修改权限
+	IAdmin bool   `db:"iadmin"` // 管理权限
 }
 
 // 设置
@@ -99,7 +99,7 @@ type MTA struct {
 	Name     string `db:"name"`     // 名称
 	Host     string `db:"host"`     // 主机
 	Port     int    `db:"port"`     // 端口
-	SSL      bool   `db:"ssl"`      // SSL 模式
+	SSLMode  bool   `db:"sslmode"`  // SSL 模式
 	Sender   string `db:"sender"`   // 发送地址
 	Prefix   string `db:"prefix"`   // 标题前缀
 	ReplyTo  string `db:"replyto"`  // 回复地址

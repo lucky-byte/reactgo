@@ -13,22 +13,22 @@ func allowUpdate(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	var uuid string
-	var read, write, admin bool
+	var iread, iwrite, iadmin bool
 
 	err := echo.FormFieldBinder(c).
 		MustString("uuid", &uuid).
-		MustBool("read", &read).
-		MustBool("write", &write).
-		MustBool("admin", &admin).BindError()
+		MustBool("iread", &iread).
+		MustBool("iwrite", &iwrite).
+		MustBool("iadmin", &iadmin).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("请求参数不完整")
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `
-		update acl_allows set read = ?, write = ?, admin = ?
+		update acl_allows set iread = ?, iwrite = ?, iadmin = ?
 		where uuid = ?
 	`
-	if err = db.Exec(ql, read, write, admin, uuid); err != nil {
+	if err = db.Exec(ql, iread, iwrite, iadmin, uuid); err != nil {
 		cc.ErrLog(err).Error("更新访问控制信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}

@@ -24,14 +24,14 @@ func list(c echo.Context) error {
 
 	for _, v := range result {
 		list = append(list, echo.Map{
-			"uuid":   v.UUID,
-			"name":   v.Name,
-			"host":   v.Host,
-			"port":   v.Port,
-			"ssl":    v.SSL,
-			"sender": v.Sender,
-			"sortno": v.SortNo,
-			"nsent":  v.NSent,
+			"uuid":    v.UUID,
+			"name":    v.Name,
+			"host":    v.Host,
+			"port":    v.Port,
+			"sslmode": v.SSLMode,
+			"sender":  v.Sender,
+			"sortno":  v.SortNo,
+			"nsent":   v.NSent,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"list": list})

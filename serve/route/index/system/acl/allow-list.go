@@ -17,7 +17,7 @@ func allowList(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	ql := `
-		select uuid, code, title, read, write, admin from acl_allows
+		select uuid, code, title, iread, iwrite, iadmin from acl_allows
 		where acl = ? order by code
 	`
 	var result []db.ACLAllow
@@ -30,12 +30,12 @@ func allowList(c echo.Context) error {
 
 	for _, v := range result {
 		allows = append(allows, echo.Map{
-			"uuid":  v.UUID,
-			"code":  v.Code,
-			"title": v.Title,
-			"read":  v.Read,
-			"write": v.Write,
-			"admin": v.Admin,
+			"uuid":   v.UUID,
+			"code":   v.Code,
+			"title":  v.Title,
+			"iread":  v.IRead,
+			"iwrite": v.IWrite,
+			"iadmin": v.IAdmin,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"allows": allows})

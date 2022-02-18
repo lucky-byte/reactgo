@@ -67,7 +67,7 @@ func (c *Context) Allows() AclAllows {
 func (c *Context) AllowRead(code int) bool {
 	if c.allows != nil {
 		if v, ok := c.allows[code]; ok {
-			return v.Read
+			return v.IRead
 		}
 	}
 	return false
@@ -76,7 +76,7 @@ func (c *Context) AllowRead(code int) bool {
 func (c *Context) AllowWrite(code int) bool {
 	if c.allows != nil {
 		if v, ok := c.allows[code]; ok {
-			return v.Write
+			return v.IWrite
 		}
 	}
 	return false
@@ -85,7 +85,7 @@ func (c *Context) AllowWrite(code int) bool {
 func (c *Context) AllowAdmin(code int) bool {
 	if c.allows != nil {
 		if v, ok := c.allows[code]; ok {
-			return v.Admin
+			return v.IAdmin
 		}
 	}
 	return false

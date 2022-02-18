@@ -17,13 +17,13 @@ func add(c echo.Context) error {
 
 	var name, host, sender, username, password, prefix, replyto, ccc, bcc string
 	var port int
-	var ssl bool
+	var sslmode bool
 
 	err := echo.FormFieldBinder(c).
 		MustString("name", &name).
 		MustString("host", &host).
 		MustInt("port", &port).
-		MustBool("ssl", &ssl).
+		MustBool("sslmode", &sslmode).
 		MustString("sender", &sender).
 		String("password", &password).
 		String("username", &username).
@@ -59,14 +59,14 @@ func add(c echo.Context) error {
 
 	ql = `
 		insert into mtas (
-			uuid, name, host, port, ssl, sender, prefix, replyto,
+			uuid, name, host, port, sslmode, sender, prefix, replyto,
 			username, passwd, cc, bcc, sortno
 		) values (
 			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 		)
 	`
 	err = db.ExecOne(ql, uuid.NewString(),
-		name, host, port, ssl, sender, prefix, replyto,
+		name, host, port, sslmode, sender, prefix, replyto,
 		username, password, ccc, bcc, sortno+1,
 	)
 	if err != nil {

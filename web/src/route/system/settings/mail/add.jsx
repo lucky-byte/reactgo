@@ -96,7 +96,7 @@ export default function Add() {
               <TextField label='加密模式' variant='standard' required
                 select defaultValue='true'
                 sx={{ flex: 1 }}
-                {...register('ssl')}>
+                {...register('sslmode')}>
                 <MenuItem value='true'>SSL</MenuItem>
                 <MenuItem value='false'>StartTLS</MenuItem>
               </TextField>

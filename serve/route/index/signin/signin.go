@@ -106,7 +106,7 @@ func signin(c echo.Context) error {
 	}
 
 	// 查询用户访问控制
-	ql = `select code, read, write, admin from acl_allows where acl = ?`
+	ql = `select code, iread, iwrite, iadmin from acl_allows where acl = ?`
 	var result []db.ACLAllow
 
 	if err = db.Select(ql, &result, user.ACL); err != nil {
@@ -117,10 +117,10 @@ func signin(c echo.Context) error {
 
 	for _, v := range result {
 		allows = append(allows, echo.Map{
-			"code":  v.Code,
-			"read":  v.Read,
-			"write": v.Write,
-			"admin": v.Admin,
+			"code":   v.Code,
+			"iread":  v.IRead,
+			"iwrite": v.IWrite,
+			"iadmin": v.IAdmin,
 		})
 	}
 	// 记录登录历史

@@ -31,7 +31,7 @@ func info(c echo.Context) error {
 		"name":     result.Name,
 		"host":     result.Host,
 		"port":     result.Port,
-		"ssl":      result.SSL,
+		"sslmode":  result.SSLMode,
 		"sender":   result.Sender,
 		"prefix":   result.Prefix,
 		"replyto":  result.ReplyTo,

@@ -262,19 +262,19 @@ function AclInfo(props) {
                   <TableCell align="center">{row.code}</TableCell>
                   <TableCell align="center">{row.title}</TableCell>
                   <TableCell align="center" padding='checkbox'>
-                    {row.read ?
+                    {row.iread ?
                       <CheckIcon color='success' /> :
                       <BlockIcon color='warning' fontSize='small' />
                     }
                   </TableCell>
                   <TableCell align="center" padding='checkbox'>
-                    {row.write ?
+                    {row.iwrite ?
                       <CheckIcon color='success' /> :
                       <BlockIcon color='warning' fontSize='small' />
                     }
                   </TableCell>
                   <TableCell align="center" padding='checkbox'>
-                    {row.admin ?
+                    {row.iadmin ?
                       <CheckIcon color='success' /> :
                       <BlockIcon color='warning' fontSize='small' />
                     }

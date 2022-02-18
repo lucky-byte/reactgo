@@ -84,7 +84,7 @@ function BaseInfoTable(props) {
           <TableRow>
             <TableCell>主机</TableCell>
             <TableCell colSpan={3} sx={{ borderLeft: '1px solid' }}>
-              {mta.host}:{mta.port} / {mta.ssl ? 'SSL' : 'StartTLS'}
+              {mta.host}:{mta.port} / {mta.sslmode ? 'SSL' : 'StartTLS'}
             </TableCell>
           </TableRow>
           <TableRow>

@@ -16,14 +16,14 @@ func modify(c echo.Context) error {
 
 	var mta_uuid, name, host, sender, username, password, prefix, replyto, ccc, bcc string
 	var port int
-	var ssl bool
+	var sslmode bool
 
 	err := echo.FormFieldBinder(c).
 		MustString("uuid", &mta_uuid).
 		MustString("name", &name).
 		MustString("host", &host).
 		MustInt("port", &port).
-		MustBool("ssl", &ssl).
+		MustBool("sslmode", &sslmode).
 		MustString("sender", &sender).
 		String("password", &password).
 		String("username", &username).
@@ -51,13 +51,13 @@ func modify(c echo.Context) error {
 	}
 	ql := `
 		update mtas set
-			name = ?, host = ?, port = ?, ssl = ?, sender = ?,
+			name = ?, host = ?, port = ?, sslmode = ?, sender = ?,
 			prefix = ?, replyto = ?, username = ?, passwd = ?,
 			cc = ?, bcc = ?
 		where uuid = ?
 	`
 	err = db.ExecOne(ql,
-		name, host, port, ssl, sender, prefix, replyto, username, password,
+		name, host, port, sslmode, sender, prefix, replyto, username, password,
 		ccc, bcc, mta_uuid,
 	)
 	if err != nil {
