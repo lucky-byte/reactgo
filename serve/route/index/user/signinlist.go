@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/mssola/user_agent"
@@ -16,15 +17,16 @@ func signinlist(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 
+	startAt := time.Now().AddDate(0, 0, -180)
+
 	// 查询列表
 	ql := `
-		select * from signin_history
-		where user_uuid = ? and create_at > current_date - interval '6 months'
+		select * from signin_history where user_uuid = ? and create_at > ?
 		order by create_at desc
 	`
 	var records []db.SigninHistory
 
-	err := db.Select(ql, &records, user.UUID)
+	err := db.Select(ql, &records, user.UUID, startAt)
 	if err != nil {
 		cc.ErrLog(err).Error("查询用户登录历史信息错")
 		return c.NoContent(http.StatusInternalServerError)
