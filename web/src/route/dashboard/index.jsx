@@ -15,7 +15,7 @@ export default function Dashboard() {
       <Paper elevation={3} sx={{ px: 4, py: 3, mt: 4 }}>
         <Markdown>
           {`
-###### 欢迎...
+# 欢迎...
 
 欢迎使用 ReactGo，前后端分离的基础开发平台，ReactGo 前端采用 React 技术开发，
 后端采用 Go 语言开发。完整的技术栈请参考文档说明。

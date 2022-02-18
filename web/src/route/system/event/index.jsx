@@ -176,7 +176,7 @@ export default function Event() {
             <AccordionDetails sx={{ pl: 6, backgroundColor: theme =>
                 theme.palette.mode === 'dark' ? 'black' : 'white',
             }}>
-              <Stack sx={{ maxWidth: 660 }} spacing={1}>
+              <Stack spacing={1}>
                 <Markdown>{e.message}</Markdown>
               </Stack>
             </AccordionDetails>

@@ -69,14 +69,14 @@ func add(c echo.Context) error {
 		cc.ErrLog(err).Error("添加任务错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	ql = `select * from tasks where uuid = ?`
-	var t db.Task
-
-	if err = db.SelectOne(ql, &t, u); err != nil {
-		cc.ErrLog(err).Error("添加任务错")
-		return c.NoContent(http.StatusInternalServerError)
-	}
 	// 添加调度
+	t := db.Task{
+		Name:    name,
+		Summary: summary,
+		Cron:    cron_exp,
+		Type:    task_type,
+		Path:    fpath,
+	}
 	if err = task.Add(t); err != nil {
 		cc.ErrLog(err).Error("添加任务调度错")
 		return c.NoContent(http.StatusInternalServerError)
