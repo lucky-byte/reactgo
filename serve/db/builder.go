@@ -22,6 +22,7 @@ func initBuilderDialect(driver string) {
 	}
 }
 
+// 使用数据库方言
 func From(table ...interface{}) *goqu.SelectDataset {
 	return dialect.From(table...)
 }
