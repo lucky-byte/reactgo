@@ -137,7 +137,7 @@ export default function Event() {
         <TextField
           select variant='standard' sx={{ ml: 2, minWidth: 100 }}
           value={level} onChange={onLevelChange}>
-          <MenuItem value={0}>全部</MenuItem>
+          <MenuItem value={0}>全部级别</MenuItem>
           <MenuItem value={1}>信息</MenuItem>
           <MenuItem value={2}>警告</MenuItem>
           <MenuItem value={3}>错误</MenuItem>
@@ -145,13 +145,13 @@ export default function Event() {
         <TextField
           select variant='standard' sx={{ ml: 2, minWidth: 100 }}
           value={fresh} onChange={onFreshChange}>
-          <MenuItem value='all'>全部</MenuItem>
+          <MenuItem value='all'>全部状态</MenuItem>
           <MenuItem value='false'>已读</MenuItem>
           <MenuItem value='true'>未读</MenuItem>
         </TextField>
       </Toolbar>
 
-      <Paper variant='outlined' sx={{ mt: 2 }}>
+      <Paper variant='outlined' sx={{ mt: 0 }}>
         {list.map(e => (
           <Accordion key={e.uuid} elevation={0} disableGutters
             onChange={(evt, expanded) => onAccordionChange(evt, expanded, e)} sx={{
