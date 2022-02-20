@@ -141,8 +141,8 @@ create table if not exists images (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
   update_at   timestamp       not null default current_timestamp,
-  data        bytea           not null,
-  -- data        mediumblob      not null,
+  data        bytea           not null, -- PostgreSQL
+  -- data        mediumblob      not null,  -- MySQL
   mime        varchar(128)    not null,
   etag        varchar(32)     not null
 );
@@ -152,5 +152,20 @@ create table if not exists geoip (
 );
 
 insert into geoip (webkey) values ('');
+
+create table if not exists tree (
+  uuid        varchar(36)     primary key not null,
+  create_at   timestamp       not null default current_timestamp,
+  update_at   timestamp       not null default current_timestamp,
+  name        varchar(64)     not null,
+  summary     varchar(256)    not null,
+  tpath       text            not null,
+  nlevel      int             not null,
+  sortno      int             not null
+);
+
+insert into tree (uuid, name, summary, tpath, nlevel, sortno) values (
+  '6e0c44c6-08ef-48d8-b48e-69c9903cc3f1', '根', '根节点', '0', 1, 1
+);
 
 commit;

@@ -96,13 +96,18 @@ func infoUpdate(c echo.Context) error {
 			name = ?, summary = ?, cron = ?, type = ?, path = ?,
 			update_at = current_timestamp
 		where uuid = ?
-		returning *
 	`
-	var t db.Task
-
-	err = db.SelectOne(ql, &t, name, summary, cron_exp, task_type, fpath, uuid)
+	err = db.ExecOne(ql, name, summary, cron_exp, task_type, fpath, uuid)
 	if err != nil {
 		cc.ErrLog(err).Error("更新任务信息错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	// 重新查询任务信息用于调度，为了兼容 mysql 等数据库，上面不能使用 returning 子句
+	ql = `select * from tasks where uuid = ?`
+	var t db.Task
+
+	if err = db.SelectOne(ql, &t, uuid); err != nil {
+		cc.ErrLog(err).Error("查询任务信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	// 如果没有禁用的话，重新调度

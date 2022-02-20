@@ -54,9 +54,6 @@ func Setup(debug bool, conf *config.ViperConfig) {
 	})
 	X.SetOutput(rotate_logger)
 
-	// 记录系统事件
-	X.AddHook(newEventHook(formatJson))
-
 	if debug {
 		X.AddHook(newTerminalHook())
 		X.SetLevel(logrus.TraceLevel)

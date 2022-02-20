@@ -76,7 +76,7 @@ func Remove(uuid string) error {
 		job := e.Job.(*Job)
 		if job.Task.UUID == uuid {
 			scheduler.cron.Remove(e.ID)
-			xlog.X.Tracef("删除任务'%S'", job.Task.Name)
+			xlog.X.Tracef("删除任务'%s'", job.Task.Name)
 			return nil
 		}
 	}

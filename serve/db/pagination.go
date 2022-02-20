@@ -3,7 +3,7 @@ package db
 import (
 	"github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
-	"github.com/sirupsen/logrus"
+	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 type paginationJoin struct {
@@ -86,7 +86,7 @@ func (p *Pagination) Exec(count *uint, records interface{}) error {
 	if err != nil {
 		return err
 	}
-	logrus.Debugf("SQL: %s", q1)
+	xlog.X.Debugf("SQL: %s", q1)
 
 	b2 := From(p.Table).Select(p.selects...)
 	for _, j := range p.join {
@@ -98,7 +98,7 @@ func (p *Pagination) Exec(count *uint, records interface{}) error {
 	if err != nil {
 		return err
 	}
-	logrus.Debugf("SQL: %s", q2)
+	xlog.X.Debugf("SQL: %s", q2)
 
 	// 查询总数
 	if err = SelectOne(q1, count); err != nil {

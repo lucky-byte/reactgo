@@ -19,7 +19,7 @@ func Rebind(ql string) string {
 func MustAffected1Row(res sql.Result, ql string) error {
 	rows, err := res.RowsAffected()
 	if err != nil {
-		return errors.Wrap(err, "SQL")
+		return errors.Wrap(err, ql)
 	}
 	if rows != 1 {
 		return fmt.Errorf("'%s' 影响了 %d 行, 期望 1 行", ql, rows)
@@ -45,7 +45,7 @@ func SelectOne(ql string, dest interface{}, params ...interface{}) error {
 
 	rows, err := mainDB.Queryx(mainDB.Rebind(ql), params...)
 	if err != nil {
-		return errors.Wrap(err, "SQL")
+		return errors.Wrap(err, ql)
 	}
 	defer rows.Close()
 
@@ -63,12 +63,12 @@ func SelectOne(ql string, dest interface{}, params ...interface{}) error {
 			err = rows.Scan(dest)
 		}
 		if err != nil {
-			return errors.Wrap(err, "SQL")
+			return errors.Wrap(err, ql)
 		}
 		count += 1
 	}
 	if err = rows.Err(); err != nil {
-		return errors.Wrap(err, "SQL")
+		return errors.Wrap(err, ql)
 	}
 	if count == 0 {
 		return fmt.Errorf("SQL: '%s' 未返回结果, 期望 1 行", ql)
@@ -80,25 +80,36 @@ func SelectOne(ql string, dest interface{}, params ...interface{}) error {
 func ExecOne(ql string, params ...interface{}) error {
 	res, err := mainDB.Exec(mainDB.Rebind(ql), params...)
 	if err != nil {
-		return errors.Wrap(err, "SQL")
+		return errors.Wrap(err, ql)
 	}
 	return MustAffected1Row(res, ql)
 }
 
 // a wrapper to sqlx.Get()
 func Get(ql string, dest interface{}, params ...interface{}) error {
-	return mainDB.Get(dest, mainDB.Rebind(ql), params...)
+	err := mainDB.Get(dest, mainDB.Rebind(ql), params...)
+	if err != nil {
+		return errors.Wrap(err, ql)
+	}
+	return nil
 }
 
 // a wrapper to sqlx.Select()
 func Select(ql string, dest interface{}, params ...interface{}) error {
-	return mainDB.Select(dest, mainDB.Rebind(ql), params...)
+	err := mainDB.Select(dest, mainDB.Rebind(ql), params...)
+	if err != nil {
+		return errors.Wrap(err, ql)
+	}
+	return nil
 }
 
 // a wrapper to sqlx.Exec()
 func Exec(ql string, params ...interface{}) error {
 	_, err := mainDB.Exec(mainDB.Rebind(ql), params...)
-	return err
+	if err != nil {
+		return errors.Wrap(err, ql)
+	}
+	return nil
 }
 
 // a wrapper to sqlx.In()

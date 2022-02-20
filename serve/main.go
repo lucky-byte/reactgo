@@ -30,6 +30,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/event"
 	"github.com/lucky-byte/reactgo/serve/image"
 	"github.com/lucky-byte/reactgo/serve/mailfs"
 	"github.com/lucky-byte/reactgo/serve/route/index"
@@ -109,6 +110,9 @@ func main() {
 
 	// 连接数据库，如果失败将会 panic
 	db.Connect(conf.DatabaseDriver(), conf.DatabaseDSN())
+
+	// 日志记录到事件表
+	xlog.X.AddHook(event.NewEventHook(event.FormatJson))
 
 	engine = echo.New()
 	engine.Debug = debug

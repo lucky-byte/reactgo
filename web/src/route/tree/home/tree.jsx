@@ -3,30 +3,51 @@ import { alpha, styled } from '@mui/material/styles';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
 import SvgIcon from '@mui/material/SvgIcon';
-
+import AddIcon from '@mui/icons-material/Add';
+import CircleIcon from '@mui/icons-material/Circle';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import LinearScaleIcon from '@mui/icons-material/LinearScale';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import HdrWeakIcon from '@mui/icons-material/HdrWeak';
+import HdrStrongIcon from '@mui/icons-material/HdrStrong';
+import { useSnackbar } from 'notistack';
+import { get } from '~/rest';
 
 export default function Tree() {
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await get('/system/tree')
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      }
+    })();
+  }, [enqueueSnackbar]);
 
   return (
     <TreeView
-      aria-label="customized"
+      aria-label="层次结构"
       defaultExpanded={['1']}
-      defaultCollapseIcon={<MinusSquare />}
-      defaultExpandIcon={<PlusSquare />}
-      defaultEndIcon={<CloseSquare />}
+      defaultCollapseIcon={<ArrowDropDownIcon />}
+      defaultExpandIcon={<ArrowRightIcon />}
+      defaultEndIcon={<HdrStrongIcon sx={{ color: '#8888' }} />}
       sx={{ height: 264, flexGrow: 1, maxWidth: 300, overflowY: 'auto' }}
     >
       <StyledTreeItem nodeId="1" label="根节点">
-        <StyledTreeItem nodeId="2" label="Hello" />
-        <StyledTreeItem nodeId="3" label="Subtree with children">
+        <TreeItem nodeId="2" label="Hello" />
+        <TreeItem nodeId="3" label="Subtree with children">
           <StyledTreeItem nodeId="6" label="Hello" />
-          <StyledTreeItem nodeId="7" label="Sub-subtree with children">
-            <StyledTreeItem nodeId="9" label="Child 1" />
-            <StyledTreeItem nodeId="10" label="Child 2" />
-            <StyledTreeItem nodeId="11" label="Child 3" />
+          <StyledTreeItem nodeId="7" label="全是中文字符不知道回事什么样子，试一试才能知道">
+            <TreeItem nodeId="9" label="Chilub-subtree with childrend 1" />
+            <TreeItem nodeId="10" label="Child 2" />
+            <TreeItem nodeId="11" label="Child 3" />
           </StyledTreeItem>
           <StyledTreeItem nodeId="8" label="Hello" />
-        </StyledTreeItem>
+        </TreeItem>
         <StyledTreeItem nodeId="4" label="World" />
         <StyledTreeItem nodeId="5" label="Something something" />
       </StyledTreeItem>

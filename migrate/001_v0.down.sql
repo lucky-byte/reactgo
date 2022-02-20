@@ -11,5 +11,6 @@ drop table if exists events;
 drop table if exists tasks;
 drop table if exists images;
 drop table if exists geoip;
+drop table if exists tree;
 
 commit;

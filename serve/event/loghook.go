@@ -1,4 +1,4 @@
-package xlog
+package event
 
 import (
 	"encoding/json"
@@ -6,20 +6,19 @@ import (
 	"path"
 	"strings"
 
-	"github.com/lucky-byte/reactgo/serve/event"
 	"github.com/sirupsen/logrus"
 )
 
 const (
-	formatJson  = 1
-	formatField = 2
+	FormatJson  = 1
+	FormatField = 2
 )
 
 type eventHook struct {
 	format int
 }
 
-func newEventHook(format int) *eventHook {
+func NewEventHook(format int) *eventHook {
 	return &eventHook{format: format}
 }
 
@@ -28,14 +27,14 @@ func (h *eventHook) Fire(entry *logrus.Entry) error {
 
 	switch entry.Level {
 	case logrus.PanicLevel, logrus.ErrorLevel, logrus.FatalLevel:
-		level = event.LevelError
+		level = LevelError
 	case logrus.WarnLevel:
-		level = event.LevelWarn
+		level = LevelWarn
 	default:
-		level = event.LevelInfo
+		level = LevelInfo
 	}
 	// 可以以 2 种格式记录 Markdown
-	if h.format == formatJson {
+	if h.format == FormatJson {
 		return h.fireJson(entry, level)
 	}
 	return h.fireField(entry, level)
@@ -66,7 +65,7 @@ func (h *eventHook) fireJson(entry *logrus.Entry, level int) error {
 	}
 	message = fmt.Sprintf("%s\n\n```json\n%s\n```", message, m)
 
-	event.Add(level, entry.Message, message)
+	Add(level, entry.Message, message)
 	return nil
 }
 
@@ -94,7 +93,7 @@ func (h *eventHook) fireField(entry *logrus.Entry, level int) error {
 	m := strings.Join(fields, ",")
 	message = fmt.Sprintf("%s\n\n%s", message, m)
 
-	event.Add(level, entry.Message, message)
+	Add(level, entry.Message, message)
 	return nil
 }
 
