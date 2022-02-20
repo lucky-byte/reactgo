@@ -35,7 +35,7 @@ export default function Tree() {
       defaultCollapseIcon={<ArrowDropDownIcon />}
       defaultExpandIcon={<ArrowRightIcon />}
       defaultEndIcon={<HdrStrongIcon sx={{ color: '#8888' }} />}
-      sx={{ height: 264, flexGrow: 1, maxWidth: 300, overflowY: 'auto' }}
+      sx={{ flexGrow: 1, maxWidth: 300, overflowY: 'auto' }}
     >
       <StyledTreeItem nodeId="1" label="根节点">
         <TreeItem nodeId="2" label="Hello" />

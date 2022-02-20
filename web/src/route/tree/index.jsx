@@ -1,10 +1,12 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./home";
+import NotFound from "~/route/notfound";
+import Node from "./node";
 
 export default function Tree() {
   return (
     <Routes>
-      <Route path='*' element={<Home />} />
+      <Route path='node/*' element={<Node />} />
+      <Route path='*' element={<NotFound />} />
     </Routes>
   )
 }

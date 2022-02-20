@@ -15,6 +15,7 @@ import (
 	"os/signal"
 	"path"
 	"runtime"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -213,6 +214,21 @@ func main() {
 	// 后台管理
 	index.Attach(engine, conf)
 
+	// 打印所有路由
+	if debug {
+		routes := engine.Routes()
+
+		sort.SliceStable(routes, func(i, j int) bool {
+			return routes[i].Path < routes[j].Path
+		})
+		for i, v := range routes {
+			arr := strings.Split(v.Name, "/")
+			fn := arr[len(arr)-1]
+			if fn != "v4.glob..func1" {
+				xlog.X.Infof("%3d %8s %-36s %s", i, v.Method, v.Path, fn)
+			}
+		}
+	}
 	// 在 goroutine 中启动服务器，这样主 goroutine 不会阻塞
 	go startup(conf)
 

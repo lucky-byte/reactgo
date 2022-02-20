@@ -141,3 +141,15 @@ type Event struct {
 type GeoIP struct {
 	WebKey string `db:"webkey"` // 高德开放平台 web 服务 key
 }
+
+// 层次结构
+type Tree struct {
+	UUID     string    `db:"uuid"`      // uuid
+	CreateAt time.Time `db:"create_at"` // 创建时间
+	UpdateAt time.Time `db:"update_at"` // 更新时间
+	Name     string    `db:"name"`      // 名称
+	Summary  string    `db:"summary"`   // 描述
+	TPath    string    `db:"tpath"`     // 路径
+	NLevel   int       `db:"nlevel"`    // 级别
+	SortNo   int       `db:"sortno"`    // 排序
+}

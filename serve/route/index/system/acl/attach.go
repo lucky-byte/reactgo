@@ -25,5 +25,4 @@ func Attach(up *echo.Group, code int) {
 	group.GET("/allow/list", allowList)
 	group.POST("/allow/remove", allowRemove)
 	group.PUT("/allow/update", allowUpdate)
-
 }
