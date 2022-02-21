@@ -164,11 +164,11 @@ func (d *dumpWriter) dumpResponse(req *http.Request, res *echo.Response) {
 		if err := json.Unmarshal(d.body.Bytes(), &r); err == nil {
 			color.HiRed("{")
 			for k, v := range r {
-				if len(v) <= 401 {
+				if len(v) <= 1001 {
 					color.HiYellow("  %s: %s,", k, color.HiCyanString(v))
 				} else {
 					l := color.HiGreenString("%s bytes", fmt.Sprintf("%d", len(v)))
-					color.HiYellow("  %s: %s...\n%s,", k, color.HiCyanString(v[:400]), l)
+					color.HiYellow("  %s: %s...\n%s,", k, color.HiCyanString(v[:1000]), l)
 				}
 			}
 			color.HiRed("}")
@@ -177,11 +177,11 @@ func (d *dumpWriter) dumpResponse(req *http.Request, res *echo.Response) {
 	}
 	text := d.body.String()
 
-	if len(text) <= 401 {
+	if len(text) <= 1001 {
 		color.HiCyan("%s", text)
 	} else {
 		l := color.HiGreenString("%s bytes", fmt.Sprintf("%d", len(text)))
-		color.HiCyan("%s...\n%s", text[:400], l)
+		color.HiCyan("%s...\n%s", text[:1000], l)
 	}
 }
 

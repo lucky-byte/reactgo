@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# 数据库名
+#
 dbname=reactgo
 
 # Database connection url to migrate, see:

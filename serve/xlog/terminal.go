@@ -34,7 +34,8 @@ func (h *terminalHook) Fire(entry *logrus.Entry) error {
 
 	err, ok := entry.Data["error"].(error)
 	if ok {
-		message = fmt.Sprintf("%s %s: %v", level, entry.Message, err)
+		message = fmt.Sprintf("%s %s: %v", level,
+			color.HiRedString(entry.Message), err)
 	} else {
 		message = fmt.Sprintf("%s %s", level, entry.Message)
 	}

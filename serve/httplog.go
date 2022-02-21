@@ -22,7 +22,7 @@ func (w terminalWriter) Write(bytes []byte) (int, error) {
 		xlog.X.WithError(err).Error("parse http json log error")
 		return len(bytes), nil
 	}
-	xlog.X.Debugf("Done! bytes_in: %v, bytes_out: %v, latency: %v\n",
+	xlog.X.Debugf("完成! 输入 %v 字节, 输出 %v 字节, 延迟: %v\n",
 		data["bytes_in"], data["bytes_out"], data["latency_human"],
 	)
 	return len(bytes), nil

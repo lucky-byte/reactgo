@@ -53,7 +53,7 @@ func list(c echo.Context) error {
 	var count uint
 	var records []db.Event
 
-	pg.Select(pg.Col("*")).Exec(&count, &records)
+	err = pg.Select(pg.Col("*")).Exec(&count, &records)
 	if err != nil {
 		cc.ErrLog(err).Error("查询事件错")
 		return c.NoContent(http.StatusInternalServerError)

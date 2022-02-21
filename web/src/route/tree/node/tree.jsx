@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { alpha, styled } from '@mui/material/styles';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
+import Typography from '@mui/material/Typography';
 import SvgIcon from '@mui/material/SvgIcon';
 import AddIcon from '@mui/icons-material/Add';
 import CircleIcon from '@mui/icons-material/Circle';
@@ -21,7 +22,7 @@ export default function Tree() {
   useEffect(() => {
     (async () => {
       try {
-        await get('/system/tree')
+        await get('/tree/node/');
       } catch (err) {
         enqueueSnackbar(err.message);
       }
@@ -32,19 +33,24 @@ export default function Tree() {
     <TreeView
       aria-label="层次结构"
       defaultExpanded={['1']}
+      defaultParentIcon={<AddIcon />}
       defaultCollapseIcon={<ArrowDropDownIcon />}
       defaultExpandIcon={<ArrowRightIcon />}
       defaultEndIcon={<HdrStrongIcon sx={{ color: '#8888' }} />}
       sx={{ flexGrow: 1, maxWidth: 300, overflowY: 'auto' }}
     >
       <StyledTreeItem nodeId="1" label="根节点">
-        <TreeItem nodeId="2" label="Hello" />
-        <TreeItem nodeId="3" label="Subtree with children">
+        <TreeItem nodeId="2" label="Hello" endIcon={<AddIcon />}/>
+        <TreeItem nodeId="3" label="Subtree with children" sx={{py:1}}>
           <StyledTreeItem nodeId="6" label="Hello" />
           <StyledTreeItem nodeId="7" label="全是中文字符不知道回事什么样子，试一试才能知道">
-            <TreeItem nodeId="9" label="Chilub-subtree with childrend 1" />
+            <TreeItem nodeId="9" label={
+              <Typography sx={{py:1}}>subchild</Typography>
+            }>
+              <Typography sx={{py:1}}>subchild</Typography>
             <TreeItem nodeId="10" label="Child 2" />
-            <TreeItem nodeId="11" label="Child 3" />
+            <TreeItem nodeId="11" label="全是中文字符不知道回事什么样子，试一试才 3" />
+            </TreeItem>
           </StyledTreeItem>
           <StyledTreeItem nodeId="8" label="Hello" />
         </TreeItem>
@@ -87,12 +93,7 @@ function CloseSquare(props) {
   );
 }
 
-const StyledTreeItem = styled((props) => (<TreeItem {...props} />))(({ theme }) => ({
-  [`& .${treeItemClasses.iconContainer}`]: {
-    '& .close': {
-      opacity: 0.3,
-    },
-  },
+const StyledTreeItem = styled(props => (<TreeItem {...props} />))(({ theme }) => ({
   [`& .${treeItemClasses.group}`]: {
     marginLeft: 15,
     paddingLeft: 10,

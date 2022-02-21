@@ -159,10 +159,17 @@ create table if not exists tree (
   update_at   timestamp       not null default current_timestamp,
   name        varchar(64)     not null,
   summary     varchar(256)    not null,
+  up          varchar(36)     not null default '',
   tpath       text            not null,
   nlevel      int             not null,
+  disabled    boolean         default false,
   sortno      int             not null
 );
+
+create unique index tree_level_sortno on tree(nlevel, sortno);
+-- MySQL 不支持下面的语句
+-- https://stackoverflow.com/questions/1827063
+create unique index tree_path on tree(tpath);
 
 insert into tree (uuid, name, summary, tpath, nlevel, sortno) values (
   '6e0c44c6-08ef-48d8-b48e-69c9903cc3f1', '根', '根节点', '0', 1, 1

@@ -8,11 +8,13 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "modernc.org/sqlite"
 )
 
 const (
-	DriverPgx   = "pgx"
-	DriverMySQL = "mysql"
+	DriverSqlite = "sqlite"
+	DriverPgx    = "pgx"
+	DriverMySQL  = "mysql"
 )
 
 // mainDB is global database connection pool

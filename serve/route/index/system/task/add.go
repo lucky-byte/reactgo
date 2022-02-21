@@ -71,6 +71,7 @@ func add(c echo.Context) error {
 	}
 	// 添加调度
 	t := db.Task{
+		UUID:    u,
 		Name:    name,
 		Summary: summary,
 		Cron:    cron_exp,

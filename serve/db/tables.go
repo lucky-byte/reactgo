@@ -151,5 +151,6 @@ type Tree struct {
 	Summary  string    `db:"summary"`   // 描述
 	TPath    string    `db:"tpath"`     // 路径
 	NLevel   int       `db:"nlevel"`    // 级别
+	Disabled bool      `db:"disabled"`  // 禁用
 	SortNo   int       `db:"sortno"`    // 排序
 }
