@@ -65,10 +65,10 @@ func init() {
 //go:embed web
 var embededWebFS embed.FS
 
-//go:embed privacy.html
+//go:embed static/privacy.html
 var privacy_html string
 
-//go:embed terms.html
+//go:embed static/terms.html
 var terms_html string
 
 // WEB 静态文件目录，可以通过配置修改

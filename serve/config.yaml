@@ -18,7 +18,7 @@ proxy: false
 log:
   # 日志文件路径（是目录名，不是文件名）
   #
-  path: /tmp
+  path: /tmp/reactgo
 
 # HTTP 服务器配置
 #
@@ -30,7 +30,7 @@ server:
   #
   # httpurl = (secure ? https : http) :// (domains[0]) : (bind port)
   #
-  httpurl: http://localhost
+  httpurl: http://localhost:4444
 
   # 服务器绑定地址和端口，例如 127.0.0.1:8080 或者 :8080
   # 可以为空，如果为空，将使用协议默认的端口，绑定到所有接口(0.0.0.0)
@@ -59,13 +59,13 @@ server:
 # 数据库配置
 #
 database:
-  # 数据库驱动，当前只支持 pgx(postgresql 家族)
+  # 数据库驱动，支持 sqlite, pgx, mysql
   #
-  driver: pgx
+  driver: sqlite
 
   # 数据源，参考驱动文档
   #
-  dsn: postgres://localhost/demo
+  dsn: /tmp/reactgo.db
 
 # 任务配置
 #

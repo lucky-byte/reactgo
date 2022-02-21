@@ -25,7 +25,3 @@ web
 .idea
 
 **/node_modules/
-
-# 生成的文件
-privacy.html
-terms.html
