@@ -45,6 +45,7 @@ func tree(c echo.Context) error {
 	root := echo.Map{
 		"uuid":     records[0].UUID,
 		"name":     records[0].Name,
+		"tpath":    records[0].TPath,
 		"disabled": records[0].Disabled,
 	}
 	buildTree(root, records[0].UUID, records)
@@ -59,6 +60,7 @@ func buildTree(parent echo.Map, up string, nodes []db.Tree) {
 			child := echo.Map{
 				"uuid":     node.UUID,
 				"name":     node.Name,
+				"tpath":    node.TPath,
 				"disabled": node.Disabled,
 			}
 			if children, ok := parent["children"]; ok {
