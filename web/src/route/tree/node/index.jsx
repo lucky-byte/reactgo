@@ -11,6 +11,8 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -23,10 +25,12 @@ import { get, post } from '~/rest';
 export default function Node() {
   const { enqueueSnackbar } = useSnackbar();
   const setTitle = useSetRecoilState(titleState);
+  const [root, setRoot] = useState('');
   const [tree, setTree] = useState(null);
   const [node, setNode] = useState({});
   const [expanded, setExpanded] = useState([]);
   const [selected, setSelected] = useState('');
+  const [contextMenu, setContextMenu] = useState(null);
   const [reload, setReload] = useState(true);
 
   useEffect(() => { setTitle('层级管理'); }, [setTitle]);
@@ -44,14 +48,23 @@ export default function Node() {
     }
   }, [enqueueSnackbar]);
 
+  // 展开节点
+  const onNodeToggle = (e, nodeIds) => {
+    setExpanded(nodeIds);
+  }
+
+  // 加载树结构
   useEffect(() => {
     (async () => {
       try {
         if (reload) {
-          const resp = await get('/tree/node/');
+          const params = new URLSearchParams({ root: root });
+          const resp = await get('/tree/node/?' + params.toString());
 
           setTree(resp?.tree || null);
-          onNodeSelect(null, resp.tree?.uuid)
+          if (!selected) {
+            onNodeSelect(null, resp.tree?.uuid)
+          }
         }
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -59,11 +72,25 @@ export default function Node() {
         setReload(false);
       }
     })();
-  }, [enqueueSnackbar, reload, onNodeSelect]);
+  }, [enqueueSnackbar, reload, onNodeSelect, selected, root]);
 
-  // 展开节点
-  const onNodeToggle = (e, nodeIds) => {
-    setExpanded(nodeIds);
+  // 设置为显示根节点
+  const onSetRootNode = uuid => {
+    setContextMenu(null);
+    setRoot(selected);
+    setReload(true);
+  }
+
+  // 显示节点菜单
+  const onNodeContextMenu = e => {
+    e.preventDefault();
+
+    setContextMenu(
+      contextMenu === null ? {
+        mouseX: e.clientX - 2,
+        mouseY: e.clientY - 4,
+      } : null,
+    );
   }
 
   // 修改名称
@@ -75,11 +102,13 @@ export default function Node() {
   // 添加子节点
   const onAddClick = async () => {
     try {
-      await post('/tree/node/add', new URLSearchParams({
+      const resp = await post('/tree/node/add', new URLSearchParams({
         uuid: node.uuid,
       }));
       enqueueSnackbar('添加成功', { variant: 'success' });
       setReload(true);
+      setExpanded([...expanded, node.uuid]);
+      onNodeSelect(null, resp.uuid);
     } catch (err) {
       enqueueSnackbar(err.message);
     }
@@ -87,9 +116,23 @@ export default function Node() {
 
   // 渲染树结构
   const renderTree = node => (
-    <StyledTreeItem key={node.uuid} nodeId={node.uuid} label={
-      <Typography sx={{ py: 1 }}>{node.name}</Typography>
-    }>
+    <StyledTreeItem key={node.uuid} nodeId={node.uuid}
+      label={
+        <div onContextMenu={onNodeContextMenu}>
+          <Typography sx={{ py: 1 }}>{node.name}</Typography>
+          <Menu
+            open={contextMenu !== null}
+            onClose={() => setContextMenu(null)}
+            anchorReference="anchorPosition"
+            anchorPosition={
+              contextMenu !== null
+                ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                : undefined
+            }>
+            <MenuItem onClick={onSetRootNode}>作为根节点显示</MenuItem>
+          </Menu>
+        </div>
+      }>
       {Array.isArray(node.children) ? node.children.map(n => renderTree(n)) : null}
     </StyledTreeItem>
   )
@@ -113,7 +156,7 @@ export default function Node() {
             {tree && renderTree(tree)}
           </TreeView>
         </Box>
-        <Paper variant='outlined' sx={{ flex: 8, px: 3, py: 2 }}>
+        <Paper variant='outlined' sx={{ flex: 6, px: 3, py: 2 }}>
           <Stack direction='row' alignItems='center'>
             <InplaceInput variant='h6' sx={{ flex: 1 }} fontSize='large'
               text={node?.name || ''}
