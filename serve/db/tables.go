@@ -149,6 +149,7 @@ type Tree struct {
 	UpdateAt time.Time `db:"update_at"` // 更新时间
 	Name     string    `db:"name"`      // 名称
 	Summary  string    `db:"summary"`   // 描述
+	Up       string    `db:"up"`        // 上级
 	TPath    string    `db:"tpath"`     // 路径
 	NLevel   int       `db:"nlevel"`    // 级别
 	Disabled bool      `db:"disabled"`  // 禁用

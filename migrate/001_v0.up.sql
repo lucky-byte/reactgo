@@ -158,7 +158,7 @@ create table if not exists tree (
   create_at   timestamp       not null default current_timestamp,
   update_at   timestamp       not null default current_timestamp,
   name        varchar(64)     not null,
-  summary     varchar(256)    not null,
+  summary     varchar(256)    not null default '',
   up          varchar(36)     not null default '',
   tpath       text            not null,
   nlevel      int             not null,

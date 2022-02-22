@@ -8,5 +8,10 @@ import (
 func Attach(up *echo.Group, code int) {
 	group := up.Group("/node", acl.AllowRead(code))
 
-	group.GET("/", list)
+	group.GET("/", tree)
+	group.GET("/info", info)
+
+	group.Use(acl.AllowWrite(code))
+
+	group.POST("/add", add)
 }
