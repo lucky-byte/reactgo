@@ -22,7 +22,7 @@ export default function Home() {
     <Stack as='main' role='main' direction='row' alignItems='flex-start'
       spacing={2} sx={{ p: 2, mb: 4 }}>
       <Tree />
-      <Paper variant='outlined' elevation={3} sx={{ flex: 1, px: 4, py: 3, mb: 4 }}>
+      <Paper variant='outlined' sx={{ flex: 1, px: 4, py: 3, mb: 4 }}>
       <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="信息" />
           <Tab label="绑定" />

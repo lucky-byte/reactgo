@@ -42,7 +42,7 @@ export default function Generic() {
           <Stack sx={{ flex: 1 }}>
             <Typography>帮助我们改进产品功能和性能</Typography>
             <FormHelperText>
-              自动将使用情况统计信息和崩溃报告发送至 LuckyByte
+              自动将使用情况统计信息和崩溃报告发送至产品质量监测平台
             </FormHelperText>
           </Stack>
           <Switch checked={bugReport} onChange={onBugReportCheck}

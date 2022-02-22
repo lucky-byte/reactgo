@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import MarkdownJSX from 'markdown-to-jsx';
 import { useTheme } from "@mui/material/styles";
 import Typography from '@mui/material/Typography';
@@ -14,87 +15,104 @@ import TableHead from '@mui/material/TableHead';
 import Highlight, { defaultProps } from 'prism-react-renderer';
 import vsDark from 'prism-react-renderer/themes/vsDark';
 import github from 'prism-react-renderer/themes/github';
+import { useSnackbar } from 'notistack';
 import OutlinedPaper from '~/comp/outlined-paper';
 
 export default function Markdown(props) {
   const theme = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
+  const [content, setContent] = useState('');
 
   const codeColor = theme.palette.mode === 'dark' ? 'white' : 'black';
   const codeBgColor = theme.palette.mode === 'dark' ? '#111' : '#ddd';
 
+  useEffect(() => {
+    if (props.url) {
+      (async () => {
+        try {
+          const resp = await fetch(props.url, { method: 'GET' });
+          const text = await resp.text();
+          setContent(text || '');
+        } catch (err) {
+          enqueueSnackbar(err.message);
+        }
+      })();
+    } else {
+      setContent(props.children);
+    }
+  }, [props.url, props.children, enqueueSnackbar]);
+
   return (
-    <MarkdownJSX children={props.children}
-      options={{
-        wrapper: 'article',
-        overrides: {
-          p: {
-            component: Typography,
-            props: {
-              variant: 'body2', gutterBottom: true
+    <MarkdownJSX children={content} options={{
+      wrapper: 'article',
+      overrides: {
+        p: {
+          component: Typography,
+          props: {
+            variant: 'body2', gutterBottom: true
+          }
+        },
+        hr: {
+          component: Divider,
+          props: {
+            sx: { my: 1 }
+          }
+        },
+        li: {
+          component: 'li',
+          props: {
+            style: { fontSize: '0.9rem' }
+          }
+        },
+        a: {
+          component: Link,
+          props: {
+            underline: 'hover',
+          }
+        },
+        blockquote: {
+          component: Paper,
+          props: {
+            variant: 'outlined', sx: {
+              p: 1, borderLeft: `4px solid #088`, my: 1,
             }
-          },
-          hr: {
-            component: Divider,
-            props: {
-              sx: { my: 1 }
-            }
-          },
-          li: {
-            component: 'li',
-            props: {
-              style: { fontSize: '0.9rem' }
-            }
-          },
-          a: {
-            component: Link,
-            props: {
-              underline: 'hover',
-            }
-          },
-          blockquote: {
-            component: Paper,
-            props: {
-              variant: 'outlined', sx: {
-                p: 1, borderLeft: `4px solid #088`, my: 1,
-              }
-            }
-          },
-          pre: Pre,
-          code: {
-            component: 'code',
-            props: {
-              style: {
-                backgroundColor: codeBgColor,
-                borderRadius: '4px',
-                color: codeColor,
-                margin: '0 0.2rem',
-                padding: '0 0.4rem',
-              },
+          }
+        },
+        pre: Pre,
+        code: {
+          component: 'code',
+          props: {
+            style: {
+              backgroundColor: codeBgColor,
+              borderRadius: '4px',
+              color: codeColor,
+              margin: '0 0.2rem',
+              padding: '0 0.4rem',
             },
           },
-          table: {
-            component: TableWrapper,
-          },
-          tbody: {
-            component: TableBody,
-          },
-          td: {
-            component: TableCell,
-          },
-          tfoot: {
-            component: TableFooter,
-          },
-          thead: {
-            component: TableHead,
-          },
         },
-      }}
-    />
-	)
+        table: {
+          component: TableWrapper,
+        },
+        tbody: {
+          component: TableBody,
+        },
+        td: {
+          component: TableCell,
+        },
+        tfoot: {
+          component: TableFooter,
+        },
+        thead: {
+          component: TableHead,
+        },
+      },
+    }}/>
+  )
 }
 
 // 语法高亮代码块
-function Pre({children}) {
+function Pre({ children }) {
   const theme = useTheme();
 
   if (children?.type !== 'code') {

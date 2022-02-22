@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Table from '@mui/material/Table';
@@ -9,12 +9,16 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import CheckIcon from '@mui/icons-material/Check';
+import BlockIcon from '@mui/icons-material/Block';
 import titleState from "~/state/title";
+import userState from "~/state/user";
 import SearchBar from '~/comp/search-bar';
 import codes from './sidebar/codes';
 
 export default function Codes() {
   const setTitle = useSetRecoilState(titleState);
+  const user = useRecoilValue(userState);
   const [keyword, setKeyword] = useState('');
   const [codeList, setCodeList] = useState(codes);
 
@@ -38,6 +42,10 @@ export default function Codes() {
     setKeyword(e.target.value);
   }
 
+  const allow_codes = user?.allows.map(item => {
+    return parseInt(item.code);
+  });
+
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
@@ -53,6 +61,7 @@ export default function Codes() {
               <TableCell>代码</TableCell>
               <TableCell>菜单</TableCell>
               <TableCell>路径</TableCell>
+              <TableCell padding='checkbox'>授权</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -62,6 +71,15 @@ export default function Codes() {
                 <TableCell>{code}</TableCell>
                 <TableCell>{codes[code].title}</TableCell>
                 <TableCell>{codes[code].to}</TableCell>
+                <TableCell padding='checkbox'>
+                  {
+                    codes[code].omit ? '' :
+                      allow_codes?.includes(parseInt(code)) ?
+                        <CheckIcon color='success' />
+                        :
+                        <BlockIcon color='warning' />
+                  }
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

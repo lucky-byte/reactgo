@@ -57,5 +57,6 @@ test:
 # clean
 clean:
 	go clean
+	rm ${APPNAME} ${APPNAME}-dev ${APPNAME}-linux-amd64 ${APPNAME}-linux-amd64-dev
 
 .PHONY: web build build-dev dev test all clean linux
