@@ -21,7 +21,7 @@ import { useSnackbar } from 'notistack';
 import InplaceInput from '~/comp/inplace-input';
 import titleState from "~/state/title";
 import progressState from "~/state/progress";
-import { get, post } from '~/rest';
+import { get, post, put } from '~/rest';
 
 export default function Node() {
   const { enqueueSnackbar } = useSnackbar();
@@ -197,9 +197,30 @@ export default function Node() {
   }
 
   // 修改名称
-  const onChangeName = (uuid, val) => {
-    // ...
-    console.log(uuid, val)
+  const onChangeName = async val => {
+    try {
+      await put('/tree/node/name', new URLSearchParams({
+        uuid: node.uuid, name: val
+      }));
+      setNode({ ...node, name: val });
+      setReload(true);
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  // 修改描述
+  const onChangeSummary = async val => {
+    try {
+      await put('/tree/node/summary', new URLSearchParams({
+        uuid: node.uuid, summary: val
+      }));
+      setNode({ ...node, summary: val });
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
   }
 
   // 添加子节点
@@ -230,7 +251,7 @@ export default function Node() {
 
   return (
     <Container as='main' role='main' sx={{ mb: 4 }}>
-      <Stack direction='row' alignItems='flex-start' spacing={2} sx={{ mt: 2 }}>
+      <Stack direction='row' alignItems='flex-start' spacing={2} sx={{ mt: 3 }}>
         <Stack sx={{ flex: 4 }} onContextMenu={onNodeContextMenu}>
           {root &&
             <Button sx={{ alignSelf: 'flex-start' }} color='secondary'
@@ -261,7 +282,7 @@ export default function Node() {
                 ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
                 : undefined
             }>
-            <MenuItem onClick={onSetRootNode}>显示为根节点</MenuItem>
+            <MenuItem onClick={onSetRootNode}>作为根节点显示</MenuItem>
             <MenuItem onClick={onExpandAll}>展开全部子节点</MenuItem>
             <MenuItem onClick={onCollapseAll}>收拢全部子节点</MenuItem>
           </Menu>
@@ -269,17 +290,16 @@ export default function Node() {
         <Paper variant='outlined' sx={{ flex: 6, px: 3, py: 2 }}>
           <Stack direction='row' alignItems='center'>
             <InplaceInput variant='h6' sx={{ flex: 1 }} fontSize='large'
-              text={node?.name || ''}
-              onConfirm={val => onChangeName(selected?.uuid, val)}
+              text={node?.name || ''} onConfirm={onChangeName}
             />
             <Button onClick={onAddClick}>添加子节点</Button>
+            <Button onClick={onAddClick}>修改父节点</Button>
             <Tooltip title='删除选择的节点以及所有的子节点' placement='top'>
               <Button color='error'>删除</Button>
             </Tooltip>
           </Stack>
           <InplaceInput variant='body2' sx={{ flex: 1 }}
-            text={node?.summary || ''}
-            onConfirm={val => onChangeName(selected?.uuid, val)}
+            text={node?.summary || ''} onConfirm={onChangeSummary}
           />
           <Divider sx={{ my: 2 }} />
         </Paper>
