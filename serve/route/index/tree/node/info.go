@@ -24,12 +24,15 @@ func info(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"uuid":     node.UUID,
-		"name":     node.Name,
-		"summary":  node.Summary,
-		"up":       node.Up,
-		"nlevel":   node.NLevel,
-		"tpath":    node.TPath,
-		"disabled": node.Disabled,
+		"uuid":      node.UUID,
+		"create_at": node.CreateAt,
+		"update_at": node.UpdateAt,
+		"name":      node.Name,
+		"summary":   node.Summary,
+		"up":        node.Up,
+		"nlevel":    node.NLevel,
+		"tpath":     node.TPath,
+		"disabled":  node.Disabled,
+		"sortno":    node.SortNo,
 	})
 }

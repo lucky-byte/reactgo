@@ -5,7 +5,6 @@ import clsx from 'clsx';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
-import Tooltip from '@mui/material/Tooltip';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
@@ -24,6 +23,8 @@ import HdrStrongIcon from '@mui/icons-material/HdrStrong';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useSnackbar } from 'notistack';
+import dayjs from 'dayjs';
+import { useConfirm } from 'material-ui-confirm';
 import InplaceInput from '~/comp/inplace-input';
 import titleState from "~/state/title";
 import progressState from "~/state/progress";
@@ -31,6 +32,7 @@ import { get, post, put } from '~/rest';
 
 export default function Node() {
   const { enqueueSnackbar } = useSnackbar();
+  const confirm = useConfirm();
   const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const [root, setRoot] = useState('');
@@ -251,15 +253,81 @@ export default function Node() {
     }
   }
 
+  // 禁用
+  const onDisabledClick = async () => {
+    try {
+      await confirm({
+        description: '这将递归禁用该节点以及其下所有的子节点，确定要继续吗？',
+        confirmationText: '确定',
+        confirmationButtonProps: { color: 'warning' },
+        contentProps: { p: 8 },
+      });
+      await put('/tree/node/disable', new URLSearchParams({ uuid: node.uuid }));
+      enqueueSnackbar('更新成功', { variant: 'success' });
+      setReload(true);
+      setNode({ ...node, disabled: true });
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
+  // 启用
+  const onEnabledClick = async () => {
+    try {
+      await confirm({
+        description: '这将递归启用该节点以及其下所有的子节点，确定要继续吗？',
+        confirmationText: '确定',
+        confirmationButtonProps: { color: 'warning' },
+        contentProps: { p: 8 },
+      });
+      await put('/tree/node/enable', new URLSearchParams({ uuid: node.uuid }));
+      enqueueSnackbar('更新成功', { variant: 'success' });
+      setReload(true);
+      setNode({ ...node, disabled: false });
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
+  // 删除
+  const onDeleteClick = async () => {
+    try {
+      await confirm({
+        description: '这将递归删除该节点以及其下所有的子节点，确定要继续吗？',
+        confirmationText: '确定',
+        confirmationButtonProps: { color: 'error' },
+        contentProps: { p: 8 },
+      });
+      await put('/tree/node/delete', new URLSearchParams({ uuid: node.uuid }));
+      enqueueSnackbar('删除成功', { variant: 'success' });
+      setReload(true);
+      setSelected('');
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
   // 渲染树结构
   const renderTree = node => (
-    <StyledTreeItem key={node.uuid} nodeId={node.uuid} disabled={node.disabled}
+    <StyledTreeItem key={node.uuid} nodeId={node.uuid}
       label={
-        <Typography sx={{ py: '4px' }} onMouseEnter={() => { setHoverNode(node.uuid) }}>
-          {node.name}
-        </Typography>
-      }
-    >
+        node.disabled ?
+          <Typography sx={{ py: '4px' }} color='gray' variant='body2'
+            onMouseEnter={() => { setHoverNode(node.uuid) }}>
+            {node.name}
+          </Typography>
+          :
+          <Typography sx={{ py: '4px' }} variant='body2'
+            onMouseEnter={() => { setHoverNode(node.uuid) }}>
+            {node.name}
+          </Typography>
+      }>
       {Array.isArray(node.children) ? node.children.map(n => renderTree(n)) : null}
     </StyledTreeItem>
   )
@@ -311,15 +379,14 @@ export default function Node() {
                 text={node?.name || ''} onConfirm={onChangeName}
               />
             }
-            <Button onClick={onAddClick}>添加子节点</Button>
-            <Button onClick={onAddClick}>修改父节点</Button>
-            <Button onClick={onAddClick} color='warning'>禁用</Button>
-            <Tooltip title='删除选择的节点以及所有的子节点' placement='top'>
-              <Button color='error'>删除</Button>
-            </Tooltip>
-            <IconButton aria-label='展开' onClick={() => { setDetail(!detail) }}>
-              {detail ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </IconButton>
+            {!node.disabled && <Button onClick={onAddClick}>添加子节点</Button>}
+            {!node.disabled && <Button onClick={onAddClick}>修改父节点</Button>}
+            {node.disabled ?
+              <Button onClick={onEnabledClick} color='warning'>启用</Button>
+              :
+              <Button onClick={onDisabledClick} color='warning'>禁用</Button>
+            }
+            <Button color='error' onClick={onDeleteClick}>删除</Button>
           </Stack>
           {nodeLoading ?
             <Typography variant="body2" sx={{ flex: 1 }}><Skeleton /></Typography>
@@ -328,15 +395,28 @@ export default function Node() {
               text={node?.summary || ''} onConfirm={onChangeSummary}
             />
           }
-          <Typography variant='caption' color='gray'>
-            {nodeLoading ? <Skeleton /> : `${node.nlevel} 级节点`}
-          </Typography>
-
+          <Stack direction='row' alignItems='center' sx={{ mt: 1 }}>
+            <Typography variant='caption' color='gray'>
+              {nodeLoading ? <Skeleton /> : `${node.nlevel || 0} 级节点`}
+            </Typography>
+            <IconButton aria-label='展开' sx={{ p: 0, color: '#8888', ml: 1 }}
+              onClick={() => { setDetail(!detail) }}>
+              {detail ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          </Stack>
           <Collapse in={detail}>
-            <Typography>sortno: {node.sortno}</Typography>
-            <Typography>up: {node.up}</Typography>
-            <Typography>tpath: {node.tpath}</Typography>
-            <Typography>level: {node.nlevel}</Typography>
+            <Stack>
+              <Typography variant='caption' color='gray'>
+                创建时间: {dayjs(node.create_at).format('YYYY年MM月DD日 HH:mm:ss')}
+              </Typography>
+              <Typography variant='caption' color='gray'>
+                修改时间: {dayjs(node.update_at).format('YYYY年MM月DD日 HH:mm:ss')}
+              </Typography>
+              <Typography variant='caption' color='gray'>
+                排序序号: {node.sortno}
+              </Typography>
+              <Typography variant='caption' color='gray'>{node.tpath}</Typography>
+            </Stack>
           </Collapse>
           <Divider sx={{ my: 2 }} />
         </Paper>

@@ -21,8 +21,10 @@ func name(c echo.Context) error {
 		cc.ErrLog(err).Error("请求参数无效")
 		return c.NoContent(http.StatusBadRequest)
 	}
-	ql := `update tree set name = ? where uuid = ?`
-
+	ql := `
+		update tree set name = ?, update_at = current_timestamp
+		where uuid = ?
+	`
 	if err := db.ExecOne(ql, name, uuid); err != nil {
 		cc.ErrLog(err).Error("更新节点名称错")
 		return c.NoContent(http.StatusInternalServerError)

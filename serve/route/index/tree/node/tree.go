@@ -69,7 +69,10 @@ func buildTree(parent echo.Map, up string, nodes []db.Tree) {
 			} else {
 				parent["children"] = []echo.Map{child}
 			}
-			buildTree(child, node.UUID, nodes)
+			// 禁用的节点不再继续递归
+			if !node.Disabled {
+				buildTree(child, node.UUID, nodes)
+			}
 		}
 	}
 }
