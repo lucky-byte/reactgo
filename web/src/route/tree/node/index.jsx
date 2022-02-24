@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, forwardRef } from 'react';
 import { useSetRecoilState } from "recoil";
 import { alpha, styled } from '@mui/material/styles';
+import clsx from 'clsx';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
@@ -9,14 +10,19 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import TreeView from '@mui/lab/TreeView';
-import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
+import TreeItem, { treeItemClasses, useTreeItem } from '@mui/lab/TreeItem';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Skeleton from '@mui/material/Skeleton';
+import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
 import ReplayIcon from '@mui/icons-material/Replay';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import HdrStrongIcon from '@mui/icons-material/HdrStrong';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useSnackbar } from 'notistack';
 import InplaceInput from '~/comp/inplace-input';
 import titleState from "~/state/title";
@@ -35,11 +41,15 @@ export default function Node() {
   const [contextMenu, setContextMenu] = useState(null);
   const [hoverNode, setHoverNode] = useState('');
   const [reload, setReload] = useState(true);
+  const [detail, setDetail] = useState(false);
+  const [nodeLoading, setNodeLoading] = useState(true);
 
   useEffect(() => { setTitle('层级管理'); }, [setTitle]);
 
   // 选择节点
   const onNodeSelect = useCallback(async (e, nodeIds) => {
+    const timer = setTimeout(() => setNodeLoading(true), 500);
+
     try {
       setSelected(nodeIds);
 
@@ -48,6 +58,9 @@ export default function Node() {
       setNode(resp);
     } catch (err) {
       enqueueSnackbar(err.message);
+    } finally {
+      clearTimeout(timer);
+      setNodeLoading(false);
     }
   }, [enqueueSnackbar]);
 
@@ -240,11 +253,13 @@ export default function Node() {
 
   // 渲染树结构
   const renderTree = node => (
-    <StyledTreeItem key={node.uuid} nodeId={node.uuid} label={
-      <Typography sx={{ py: 1 }} onMouseEnter={() => { setHoverNode(node.uuid) }}>
-        {node.name}
-      </Typography>
-    }>
+    <StyledTreeItem key={node.uuid} nodeId={node.uuid} disabled={node.disabled}
+      label={
+        <Typography sx={{ py: '4px' }} onMouseEnter={() => { setHoverNode(node.uuid) }}>
+          {node.name}
+        </Typography>
+      }
+    >
       {Array.isArray(node.children) ? node.children.map(n => renderTree(n)) : null}
     </StyledTreeItem>
   )
@@ -289,18 +304,40 @@ export default function Node() {
         </Stack>
         <Paper variant='outlined' sx={{ flex: 6, px: 3, py: 2 }}>
           <Stack direction='row' alignItems='center'>
-            <InplaceInput variant='h6' sx={{ flex: 1 }} fontSize='large'
-              text={node?.name || ''} onConfirm={onChangeName}
-            />
+            {nodeLoading ?
+              <Typography variant="h6" sx={{ flex: 1 }}><Skeleton /></Typography>
+              :
+              <InplaceInput variant='h6' sx={{ flex: 1 }} fontSize='large'
+                text={node?.name || ''} onConfirm={onChangeName}
+              />
+            }
             <Button onClick={onAddClick}>添加子节点</Button>
             <Button onClick={onAddClick}>修改父节点</Button>
+            <Button onClick={onAddClick} color='warning'>禁用</Button>
             <Tooltip title='删除选择的节点以及所有的子节点' placement='top'>
               <Button color='error'>删除</Button>
             </Tooltip>
+            <IconButton aria-label='展开' onClick={() => { setDetail(!detail) }}>
+              {detail ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
           </Stack>
-          <InplaceInput variant='body2' sx={{ flex: 1 }}
-            text={node?.summary || ''} onConfirm={onChangeSummary}
-          />
+          {nodeLoading ?
+            <Typography variant="body2" sx={{ flex: 1 }}><Skeleton /></Typography>
+            :
+            <InplaceInput variant='body2' sx={{ flex: 1 }}
+              text={node?.summary || ''} onConfirm={onChangeSummary}
+            />
+          }
+          <Typography variant='caption' color='gray'>
+            {nodeLoading ? <Skeleton /> : `${node.nlevel} 级节点`}
+          </Typography>
+
+          <Collapse in={detail}>
+            <Typography>sortno: {node.sortno}</Typography>
+            <Typography>up: {node.up}</Typography>
+            <Typography>tpath: {node.tpath}</Typography>
+            <Typography>level: {node.nlevel}</Typography>
+          </Collapse>
           <Divider sx={{ my: 2 }} />
         </Paper>
       </Stack>
@@ -308,10 +345,60 @@ export default function Node() {
   )
 }
 
-const StyledTreeItem = styled(props => (<TreeItem {...props} />))(({ theme }) => ({
+const StyledTreeItem = styled(props => (
+  <TreeItem ContentComponent={CustomContent} {...props} />
+))(({ theme }) => ({
   [`& .${treeItemClasses.group}`]: {
     marginLeft: 15,
     paddingLeft: 10,
     borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
   },
 }));
+
+
+const CustomContent = forwardRef(function CustomContent(props, ref) {
+  const {
+    classes, className, label, nodeId, icon: iconProp, expansionIcon, displayIcon,
+  } = props;
+
+  const {
+    disabled, expanded, selected, focused,
+    handleExpansion, handleSelection, preventSelection,
+  } = useTreeItem(nodeId);
+
+  const icon = iconProp || expansionIcon || displayIcon;
+
+  const handleMouseDown = (event) => {
+    preventSelection(event);
+  };
+
+  const handleExpansionClick = (event) => {
+    handleExpansion(event);
+  };
+
+  const handleSelectionClick = (event) => {
+    handleSelection(event);
+  };
+
+  return (
+    <div
+      className={clsx(className, classes.root, {
+        [classes.expanded]: expanded,
+        [classes.selected]: selected,
+        [classes.focused]: focused,
+        [classes.disabled]: disabled,
+      })}
+      onMouseDown={handleMouseDown}
+      ref={ref}>
+      <div onClick={handleExpansionClick} className={classes.iconContainer}>
+        {icon}
+      </div>
+      <Typography
+        onClick={handleSelectionClick}
+        component="div"
+        className={classes.label}>
+        {label}
+      </Typography>
+    </div>
+  );
+});
