@@ -22,10 +22,13 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import HdrStrongIcon from '@mui/icons-material/HdrStrong';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import { useConfirm } from 'material-ui-confirm';
 import InplaceInput from '~/comp/inplace-input';
+import Splitter from '../../../comp/splitter';
 import titleState from "~/state/title";
 import progressState from "~/state/progress";
 import { get, post, put } from '~/rest';
@@ -47,6 +50,22 @@ export default function Node() {
   const [nodeLoading, setNodeLoading] = useState(true);
 
   useEffect(() => { setTitle('层级管理'); }, [setTitle]);
+
+  // 保存 splitter 的 sizes
+  const onSplitterResize = (_, newSizes) => {
+    localStorage.setItem('tree.splitter.sizes', JSON.stringify(newSizes));
+  }
+
+  // 恢复之前存储的 sizes
+  let splitSizes = [30,70];
+  try {
+    const sizes = localStorage.getItem('tree.splitter.sizes');
+    if (sizes) {
+      splitSizes = JSON.parse(sizes)
+    }
+  } catch (err) {
+    console.error(err.message);
+  }
 
   // 选择节点
   const onNodeSelect = useCallback(async (e, nodeIds) => {
@@ -128,21 +147,24 @@ export default function Node() {
     const nodes = [...expanded];
     let tpath = null;
 
+    // 添加一个展开的节点
+    const addNode = uuid => {
+      if (!nodes.includes(uuid)) {
+        nodes.push(uuid);
+      }
+    }
+
     // 递归展开
     const expand = (arr) => {
       arr.map(n => {
         if (tpath) {
           if (n.tpath?.startsWith(tpath)) {
-            if (!nodes.includes(n.uuid)) {
-              nodes.push(n.uuid);
-            }
+            addNode(n.uuid);
           }
         } else {
           if (n.uuid === target) {
+            addNode(n.uuid);
             tpath = n.tpath;
-            if (!nodes.includes(n.uuid)) {
-              nodes.push(n.uuid);
-            }
           }
         }
         if (n.children) {
@@ -152,9 +174,7 @@ export default function Node() {
       });
     }
     if (target === tree.uuid) {
-      if (!nodes.includes(tree.uuid)) {
-        nodes.push(tree.uuid);
-      }
+      addNode(tree.uuid);
       tpath = tree.tpath;
       expand(tree.children);
     } else {
@@ -172,23 +192,25 @@ export default function Node() {
     const nodes = [...expanded];
     let tpath = null;
 
+    // 删除一个展开的节点
+    const removeNode = uuid => {
+      const i = nodes.indexOf(uuid);
+      if (i >= 0) {
+        nodes.splice(i, 1);
+      }
+    }
+
     // 递归
     const collapse = (arr) => {
       arr.map(n => {
         if (tpath) {
           if (n.tpath?.startsWith(tpath)) {
-            const i = nodes.indexOf(n.uuid);
-            if (i >= 0) {
-              nodes.splice(i, 1);
-            }
+            removeNode(n.uuid);
           }
         } else {
           if (n.uuid === target) {
+            removeNode(n.uuid);
             tpath = n.tpath;
-            const i = nodes.indexOf(n.uuid);
-            if (i >= 0) {
-              nodes.splice(i, 1);
-            }
           }
         }
         if (n.children) {
@@ -198,10 +220,7 @@ export default function Node() {
       });
     }
     if (target === tree.uuid) {
-      const i = nodes.indexOf(tree.uuid);
-      if (i >= 0) {
-        nodes.splice(i, 1);
-      }
+      removeNode(tree.uuid);
       tpath = tree.tpath;
       collapse(tree.children);
     } else {
@@ -245,6 +264,21 @@ export default function Node() {
         uuid: node.uuid,
       }));
       enqueueSnackbar('添加成功', { variant: 'success' });
+      setReload(true);
+      setExpanded([...expanded, node.uuid]);
+      onNodeSelect(null, resp.uuid);
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  // 修改父节点
+  const onReparentClick = async () => {
+    try {
+      const resp = await post('/tree/node/reparent', new URLSearchParams({
+        uuid: node.uuid,
+      }));
+      enqueueSnackbar('修改成功', { variant: 'success' });
       setReload(true);
       setExpanded([...expanded, node.uuid]);
       onNodeSelect(null, resp.uuid);
@@ -333,98 +367,104 @@ export default function Node() {
   )
 
   return (
-    <Container as='main' role='main' sx={{ mb: 4 }}>
-      <Stack direction='row' alignItems='flex-start' spacing={2} sx={{ mt: 3 }}>
-        <Stack sx={{ flex: 4 }} onContextMenu={onNodeContextMenu}>
-          {root &&
-            <Button sx={{ alignSelf: 'flex-start' }} color='secondary'
-              startIcon={<ReplayIcon />} onClick={onResetRootNode}>
-              恢复根节点
-            </Button>
-          }
-          <TreeView
-            aria-label="层次结构"
-            defaultExpanded={['1']}
-            defaultParentIcon={<AddIcon />}
-            defaultCollapseIcon={<ArrowDropDownIcon />}
-            defaultExpandIcon={<ArrowRightIcon />}
-            defaultEndIcon={<HdrStrongIcon sx={{ color: '#8888' }} />}
-            expanded={expanded}
-            selected={selected}
-            onNodeToggle={onNodeToggle}
-            onNodeSelect={onNodeSelect}
-            sx={{ flexGrow: 1, overflowY: 'auto' }}>
-            {tree && renderTree(tree)}
-          </TreeView>
-          <Menu
-            open={contextMenu !== null}
-            onClose={() => setContextMenu(null)}
-            anchorReference="anchorPosition"
-            anchorPosition={
-              contextMenu !== null
-                ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                : undefined
-            }>
-            <MenuItem onClick={onSetRootNode}>作为根节点显示</MenuItem>
-            <MenuItem onClick={onExpandAll}>展开全部子节点</MenuItem>
-            <MenuItem onClick={onCollapseAll}>收拢全部子节点</MenuItem>
-          </Menu>
-        </Stack>
-        <Paper variant='outlined' sx={{ flex: 6, px: 3, py: 2 }}>
-          <Stack direction='row' alignItems='center'>
+    <DndProvider backend={HTML5Backend}>
+      <Container as='main' role='main' sx={{ mb: 4, pt: 3 }}>
+        <Splitter initialSizes={splitSizes} minWidths={[200, 300]}
+          onResizeFinished={onSplitterResize}
+          // onResizeFinished={(e, newSizes) => setSplitSizes(newSizes)}
+          >
+          <Stack onContextMenu={onNodeContextMenu}>
+            {root &&
+              <Button sx={{ alignSelf: 'flex-start' }} color='secondary'
+                startIcon={<ReplayIcon />} onClick={onResetRootNode}>
+                恢复根节点
+              </Button>
+            }
+            <TreeView
+              aria-label="层次结构"
+              defaultExpanded={['1']}
+              defaultParentIcon={<AddIcon />}
+              defaultCollapseIcon={<ArrowDropDownIcon />}
+              defaultExpandIcon={<ArrowRightIcon />}
+              defaultEndIcon={<HdrStrongIcon sx={{ color: '#8888' }} />}
+              expanded={expanded}
+              selected={selected}
+              onNodeToggle={onNodeToggle}
+              onNodeSelect={onNodeSelect}
+              sx={{ flexGrow: 1, overflowY: 'auto' }}>
+              {tree && renderTree(tree)}
+            </TreeView>
+            <Menu
+              open={contextMenu !== null}
+              onClose={() => setContextMenu(null)}
+              anchorReference="anchorPosition"
+              anchorPosition={
+                contextMenu !== null
+                  ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                  : undefined
+              }>
+              <MenuItem onClick={onSetRootNode}>作为根节点显示</MenuItem>
+              <MenuItem onClick={onExpandAll}>展开全部子节点</MenuItem>
+              <MenuItem onClick={onCollapseAll}>收拢全部子节点</MenuItem>
+            </Menu>
+          </Stack>
+          <Paper variant='outlined' sx={{ px: 3, py: 2 }}>
+            <Stack direction='row' alignItems='center'>
+              {nodeLoading ?
+                <Typography variant="h6" sx={{ flex: 1 }}><Skeleton /></Typography>
+                :
+                <InplaceInput variant='h6' sx={{ flex: 1 }} fontSize='large'
+                  text={node?.name || ''} onConfirm={onChangeName}
+                />
+              }
+              {!node.disabled && <Button onClick={onAddClick}>添加子节点</Button>}
+              {!node.disabled && <Button onClick={onReparentClick}>修改父节点</Button>}
+              {node.disabled ?
+                <Button onClick={onEnabledClick} color='warning'>启用</Button>
+                :
+                <Button onClick={onDisabledClick} color='warning'>禁用</Button>
+              }
+              <Button color='error' onClick={onDeleteClick}>删除</Button>
+            </Stack>
             {nodeLoading ?
-              <Typography variant="h6" sx={{ flex: 1 }}><Skeleton /></Typography>
+              <Typography variant="body2" sx={{ flex: 1 }}><Skeleton /></Typography>
               :
-              <InplaceInput variant='h6' sx={{ flex: 1 }} fontSize='large'
-                text={node?.name || ''} onConfirm={onChangeName}
+              <InplaceInput variant='body2' sx={{ flex: 1 }}
+                text={node?.summary || ''} onConfirm={onChangeSummary}
               />
             }
-            {!node.disabled && <Button onClick={onAddClick}>添加子节点</Button>}
-            {!node.disabled && <Button onClick={onAddClick}>修改父节点</Button>}
-            {node.disabled ?
-              <Button onClick={onEnabledClick} color='warning'>启用</Button>
-              :
-              <Button onClick={onDisabledClick} color='warning'>禁用</Button>
-            }
-            <Button color='error' onClick={onDeleteClick}>删除</Button>
-          </Stack>
-          {nodeLoading ?
-            <Typography variant="body2" sx={{ flex: 1 }}><Skeleton /></Typography>
-            :
-            <InplaceInput variant='body2' sx={{ flex: 1 }}
-              text={node?.summary || ''} onConfirm={onChangeSummary}
-            />
-          }
-          <Stack direction='row' alignItems='center' sx={{ mt: 1 }}>
-            <Typography variant='caption' color='gray'>
-              {nodeLoading ? <Skeleton /> : `${node.nlevel || 0} 级节点`}
-            </Typography>
-            <IconButton aria-label='展开' sx={{ p: 0, color: '#8888', ml: 1 }}
-              onClick={() => { setDetail(!detail) }}>
-              {detail ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </IconButton>
-          </Stack>
-          <Collapse in={detail}>
-            <Stack>
+            <Stack direction='row' alignItems='center' sx={{ mt: 1 }}>
               <Typography variant='caption' color='gray'>
-                创建时间: {dayjs(node.create_at).format('YYYY年MM月DD日 HH:mm:ss')}
+                {nodeLoading ? <Skeleton /> : `第 ${node.nlevel || 0} 级`}
               </Typography>
-              <Typography variant='caption' color='gray'>
-                修改时间: {dayjs(node.update_at).format('YYYY年MM月DD日 HH:mm:ss')}
-              </Typography>
-              <Typography variant='caption' color='gray'>
-                排序序号: {node.sortno}
-              </Typography>
-              <Typography variant='caption' color='gray'>{node.tpath}</Typography>
+              <IconButton aria-label='展开' sx={{ p: 0, color: '#8888', ml: 1 }}
+                onClick={() => { setDetail(!detail) }}>
+                {detail ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </IconButton>
             </Stack>
-          </Collapse>
-          <Divider sx={{ my: 2 }} />
-        </Paper>
-      </Stack>
-    </Container>
+            <Collapse in={detail}>
+              <Stack>
+                <Typography variant='caption' color='gray'>
+                  创建时间: {dayjs(node.create_at).format('YYYY年MM月DD日 HH:mm:ss')}
+                </Typography>
+                <Typography variant='caption' color='gray'>
+                  修改时间: {dayjs(node.update_at).format('YYYY年MM月DD日 HH:mm:ss')}
+                </Typography>
+                <Typography variant='caption' color='gray'>
+                  排序序号: {node.sortno}
+                </Typography>
+                <Typography variant='caption' color='gray'>{node.tpath}</Typography>
+              </Stack>
+            </Collapse>
+            <Divider sx={{ my: 2 }} />
+          </Paper>
+        </Splitter>
+      </Container>
+    </DndProvider>
   )
 }
 
+// 加上展开后的虚线
 const StyledTreeItem = styled(props => (
   <TreeItem ContentComponent={CustomContent} {...props} />
 ))(({ theme }) => ({
@@ -435,7 +475,7 @@ const StyledTreeItem = styled(props => (
   },
 }));
 
-
+// 只能通过点击图标开展
 const CustomContent = forwardRef(function CustomContent(props, ref) {
   const {
     classes, className, label, nodeId, icon: iconProp, expansionIcon, displayIcon,

@@ -39,7 +39,7 @@ func add(c echo.Context) error {
 	tpath := node.TPath + "." + newid
 
 	err := db.ExecOne(ql,
-		newid, "新节点", "新节点", id, tpath, node.NLevel+1, maxSortNo+1,
+		newid, "新节点", "新节点说明", id, tpath, node.NLevel+1, maxSortNo+1,
 	)
 	if err != nil {
 		cc.ErrLog(err).Error("插入层次结构错")

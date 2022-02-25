@@ -42,14 +42,16 @@ func tree(c echo.Context) error {
 		cc.Log().Error("层级结构为空")
 		return c.NoContent(http.StatusInternalServerError)
 	}
+	// 以第一个节点作为根节点
 	root := echo.Map{
 		"uuid":     records[0].UUID,
 		"name":     records[0].Name,
 		"tpath":    records[0].TPath,
 		"disabled": records[0].Disabled,
 	}
-	buildTree(root, records[0].UUID, records)
-
+	if !records[0].Disabled {
+		buildTree(root, records[0].UUID, records)
+	}
 	return c.JSON(http.StatusOK, echo.Map{"tree": root})
 }
 
