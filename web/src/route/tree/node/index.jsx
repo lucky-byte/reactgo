@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useState, forwardRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSetRecoilState } from "recoil";
-import { alpha, styled } from '@mui/material/styles';
-import clsx from 'clsx';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
@@ -9,7 +7,6 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import TreeView from '@mui/lab/TreeView';
-import TreeItem, { treeItemClasses, useTreeItem } from '@mui/lab/TreeItem';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -39,6 +36,8 @@ import Splitter from '../../../comp/splitter';
 import titleState from "~/state/title";
 import progressState from "~/state/progress";
 import { get, post, put } from '~/rest';
+import StyledTreeItem from './treeitem';
+import ChangeParent from './parent';
 
 export default function Node() {
   const { enqueueSnackbar } = useSnackbar();
@@ -107,9 +106,14 @@ export default function Node() {
           const params = new URLSearchParams({ root: root });
           const resp = await get('/tree/node/?' + params.toString());
 
-          setTree(resp?.tree || null);
-          if (!selected) {
-            onNodeSelect(null, resp.tree?.uuid)
+          if (resp.tree) {
+            setTree(resp.tree || null);
+            if (!selected) {
+              onNodeSelect(null, resp.tree.uuid)
+            }
+            if (expanded.length === 0) {
+              setExpanded([resp.tree.uuid]);
+            }
           }
         }
       } catch (err) {
@@ -119,7 +123,7 @@ export default function Node() {
         setProgress(false);
       }
     })();
-  }, [enqueueSnackbar, reload, onNodeSelect, selected, root, setProgress]);
+  }, [enqueueSnackbar, reload, onNodeSelect, selected, root, setProgress, expanded]);
 
   // 显示节点菜单
   const onNodeContextMenu = e => {
@@ -335,21 +339,6 @@ export default function Node() {
     }
   }
 
-  // 修改父节点
-  const onReparentClick = async () => {
-    try {
-      const resp = await post('/tree/node/reparent', new URLSearchParams({
-        uuid: node.uuid,
-      }));
-      enqueueSnackbar('修改成功', { variant: 'success' });
-      setReload(true);
-      setExpanded([...expanded, node.uuid]);
-      onNodeSelect(null, resp.uuid);
-    } catch (err) {
-      enqueueSnackbar(err.message);
-    }
-  }
-
   // 禁用
   const onDisabledClick = async () => {
     try {
@@ -446,7 +435,7 @@ export default function Node() {
             }
             <TreeView
               aria-label="层次结构"
-              defaultExpanded={['1']}
+              defaultExpanded={['0']}
               defaultParentIcon={<AddIcon />}
               defaultCollapseIcon={<ArrowDropDownIcon />}
               defaultExpandIcon={<ArrowRightIcon />}
@@ -507,7 +496,11 @@ export default function Node() {
                 />
               }
               {!node.disabled && <Button onClick={onAddClick}>添加子节点</Button>}
-              {!node.disabled && <Button onClick={onReparentClick}>修改父节点</Button>}
+              {(!node.disabled && node.nlevel > 1) &&
+                <ChangeParent name={node.name} uuid={node.uuid} tpath={node.tpath}
+                  reload={setReload}
+                />
+              }
               {node.disabled ?
                 <Button onClick={onEnabledClick} color='warning'>启用</Button>
                 :
@@ -553,62 +546,3 @@ export default function Node() {
     </DndProvider>
   )
 }
-
-// 加上展开后的虚线
-const StyledTreeItem = styled(props => (
-  <TreeItem ContentComponent={CustomContent} {...props} />
-))(({ theme }) => ({
-  [`& .${treeItemClasses.group}`]: {
-    marginLeft: 15,
-    paddingLeft: 10,
-    borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
-  },
-}));
-
-// 只能通过点击图标开展
-const CustomContent = forwardRef(function CustomContent(props, ref) {
-  const {
-    classes, className, label, nodeId, icon: iconProp, expansionIcon, displayIcon,
-  } = props;
-
-  const {
-    disabled, expanded, selected, focused,
-    handleExpansion, handleSelection, preventSelection,
-  } = useTreeItem(nodeId);
-
-  const icon = iconProp || expansionIcon || displayIcon;
-
-  const handleMouseDown = (event) => {
-    preventSelection(event);
-  };
-
-  const handleExpansionClick = (event) => {
-    handleExpansion(event);
-  };
-
-  const handleSelectionClick = (event) => {
-    handleSelection(event);
-  };
-
-  return (
-    <div
-      className={clsx(className, classes.root, {
-        [classes.expanded]: expanded,
-        [classes.selected]: selected,
-        [classes.focused]: focused,
-        [classes.disabled]: disabled,
-      })}
-      onMouseDown={handleMouseDown}
-      ref={ref}>
-      <div onClick={handleExpansionClick} className={classes.iconContainer}>
-        {icon}
-      </div>
-      <Typography
-        onClick={handleSelectionClick}
-        component="div"
-        className={classes.label}>
-        {label}
-      </Typography>
-    </div>
-  );
-});

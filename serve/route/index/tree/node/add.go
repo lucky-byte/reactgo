@@ -24,10 +24,13 @@ func add(c echo.Context) error {
 		cc.ErrLog(err).Error("查询层次结构错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	ql = `select coalesce(max(sortno),0) from tree where nlevel = ?`
+	ql = `
+		select coalesce(max(sortno),0) from tree where nlevel = ? and tpath like ?
+	`
 	var maxSortNo int
 
-	if err := db.SelectOne(ql, &maxSortNo, node.NLevel+1); err != nil {
+	err := db.SelectOne(ql, &maxSortNo, node.NLevel+1, node.TPath+"%")
+	if err != nil {
 		cc.ErrLog(err).Error("查询层次结构错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -38,7 +41,7 @@ func add(c echo.Context) error {
 	newid := uuid.NewString()
 	tpath := node.TPath + "." + newid
 
-	err := db.ExecOne(ql,
+	err = db.ExecOne(ql,
 		newid, "新节点", "新节点说明", id, tpath, node.NLevel+1, maxSortNo+1,
 	)
 	if err != nil {

@@ -23,7 +23,8 @@ func Attach(g *echo.Group, code int) {
 	group.Use(acl.AllowAdmin(code))
 
 	group.POST("/add", add)
+	group.PUT("/delete", del)
 	group.PUT("/disable", disable)
 	group.PUT("/enable", enable)
-	group.PUT("/delete", del)
+	group.PUT("/parent", parent)
 }
