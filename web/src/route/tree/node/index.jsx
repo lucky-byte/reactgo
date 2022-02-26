@@ -12,6 +12,8 @@ import TreeView from '@mui/lab/TreeView';
 import TreeItem, { treeItemClasses, useTreeItem } from '@mui/lab/TreeItem';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Skeleton from '@mui/material/Skeleton';
 import IconButton from '@mui/material/IconButton';
 import Collapse from '@mui/material/Collapse';
@@ -19,9 +21,14 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import HdrStrongIcon from '@mui/icons-material/HdrStrong';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import BlockIcon from '@mui/icons-material/Block';
+import CommitIcon from '@mui/icons-material/Commit';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import VerticalAlignTopIcon from '@mui/icons-material/VerticalAlignTop';
+import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { useSnackbar } from 'notistack';
@@ -230,6 +237,62 @@ export default function Node() {
     setSelected(target);
   }
 
+  // 移到最前
+  const onMoveTop = async () => {
+    setContextMenu(null);
+
+    try {
+      const target = hoverNode || selected;
+      await put('/tree/node/top', new URLSearchParams({ uuid: target }));
+      setReload(true);
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  // 移到最后
+  const onMoveBottom = async () => {
+    setContextMenu(null);
+
+    try {
+      const target = hoverNode || selected;
+      await put('/tree/node/bottom', new URLSearchParams({ uuid: target }));
+      setReload(true);
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  // 上移
+  const onMoveUp = async () => {
+    setContextMenu(null);
+
+    try {
+      const target = hoverNode || selected;
+      await put('/tree/node/up', new URLSearchParams({ uuid: target }));
+      setReload(true);
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  // 下移
+  const onMoveDown = async () => {
+    setContextMenu(null);
+
+    try {
+      const target = hoverNode || selected;
+      await put('/tree/node/down', new URLSearchParams({ uuid: target }));
+      setReload(true);
+      enqueueSnackbar('更新成功', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
   // 修改名称
   const onChangeName = async val => {
     try {
@@ -350,6 +413,9 @@ export default function Node() {
   // 渲染树结构
   const renderTree = node => (
     <StyledTreeItem key={node.uuid} nodeId={node.uuid}
+      endIcon={
+        node.disabled ?  <BlockIcon color='disabled' /> : <CommitIcon />
+      }
       label={
         node.disabled ?
           <Typography sx={{ py: '4px' }} color='gray' variant='body2'
@@ -370,9 +436,7 @@ export default function Node() {
     <DndProvider backend={HTML5Backend}>
       <Container as='main' role='main' sx={{ mb: 4, pt: 3 }}>
         <Splitter initialSizes={splitSizes} minWidths={[200, 300]}
-          onResizeFinished={onSplitterResize}
-          // onResizeFinished={(e, newSizes) => setSplitSizes(newSizes)}
-          >
+          onResizeFinished={onSplitterResize}>
           <Stack onContextMenu={onNodeContextMenu}>
             {root &&
               <Button sx={{ alignSelf: 'flex-start' }} color='secondary'
@@ -386,7 +450,6 @@ export default function Node() {
               defaultParentIcon={<AddIcon />}
               defaultCollapseIcon={<ArrowDropDownIcon />}
               defaultExpandIcon={<ArrowRightIcon />}
-              defaultEndIcon={<HdrStrongIcon sx={{ color: '#8888' }} />}
               expanded={expanded}
               selected={selected}
               onNodeToggle={onNodeToggle}
@@ -406,6 +469,31 @@ export default function Node() {
               <MenuItem onClick={onSetRootNode}>作为根节点显示</MenuItem>
               <MenuItem onClick={onExpandAll}>展开全部子节点</MenuItem>
               <MenuItem onClick={onCollapseAll}>收拢全部子节点</MenuItem>
+              <Divider />
+              <MenuItem onClick={onMoveTop}>
+                <ListItemIcon>
+                  <VerticalAlignTopIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>移到最前</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={onMoveUp}>
+                <ListItemIcon>
+                  <ArrowUpwardIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>上移</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={onMoveDown}>
+                <ListItemIcon>
+                  <ArrowDownwardIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>下移</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={onMoveBottom}>
+                <ListItemIcon>
+                  <VerticalAlignBottomIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>移到最后</ListItemText>
+              </MenuItem>
             </Menu>
           </Stack>
           <Paper variant='outlined' sx={{ px: 3, py: 2 }}>
@@ -415,6 +503,7 @@ export default function Node() {
                 :
                 <InplaceInput variant='h6' sx={{ flex: 1 }} fontSize='large'
                   text={node?.name || ''} onConfirm={onChangeName}
+                  disabled={node.disabled}
                 />
               }
               {!node.disabled && <Button onClick={onAddClick}>添加子节点</Button>}
@@ -431,6 +520,7 @@ export default function Node() {
               :
               <InplaceInput variant='body2' sx={{ flex: 1 }}
                 text={node?.summary || ''} onConfirm={onChangeSummary}
+                disabled={node.disabled}
               />
             }
             <Stack direction='row' alignItems='center' sx={{ mt: 1 }}>

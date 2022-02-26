@@ -5,14 +5,18 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/index/acl"
 )
 
-func Attach(up *echo.Group, code int) {
-	group := up.Group("/node", acl.AllowRead(code))
+func Attach(g *echo.Group, code int) {
+	group := g.Group("/node", acl.AllowRead(code))
 
 	group.GET("/", tree)
 	group.GET("/info", info)
 
 	group.Use(acl.AllowWrite(code))
 
+	group.PUT("/top", top)
+	group.PUT("/bottom", bottom)
+	group.PUT("/up", up)
+	group.PUT("/down", down)
 	group.PUT("/name", name)
 	group.PUT("/summary", summary)
 

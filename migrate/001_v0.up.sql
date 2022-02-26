@@ -166,7 +166,6 @@ create table if not exists tree (
   sortno      int             not null
 );
 
-create unique index tree_level_sortno on tree(nlevel, sortno);
 -- MySQL 不支持下面的语句
 -- https://stackoverflow.com/questions/1827063
 create unique index tree_path on tree(tpath);

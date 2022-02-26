@@ -19,7 +19,9 @@ export default function InplaceInput(props) {
   useEffect(() => { setText(props.text); }, [props.text])
 
   const onEditClick = () => {
-    setEditing(true);
+    if (!props.disabled) {
+      setEditing(true);
+    }
   }
 
   const onTextChange = e => {
@@ -92,22 +94,26 @@ export default function InplaceInput(props) {
         <Typography variant={props.variant} onClick={onEditClick}
           onMouseEnter={() => { setIconVisible(true); }}
           onMouseLeave={() => { setIconVisible(false); }}
-          color={props.color} sx={{ cursor: 'pointer' }}>
+          color={props.disabled ? '#8888' : props.color}
+          sx={{ cursor: props.disabled ? 'not-allowed' : 'pointer' }}>
           {props.text}
         </Typography>
         :
         <Typography variant={props.variant} onClick={onEditClick}
           onMouseEnter={() => { setIconVisible(true); }}
           onMouseLeave={() => { setIconVisible(false); }}
-          sx={{ cursor: 'pointer', color: '#8888' }}>
+          color='#8888'
+          sx={{ cursor: props.disabled ? 'not-allowed' : 'pointer' }}>
           {props.placeholder}
         </Typography>
       }
-      <IconButton aria-label='修改' onClick={onEditClick} sx={{
-        display: iconVisible ? 'visible' : 'none', padding: 0, marginLeft: '4px',
-      }}>
-        <EditIcon sx={{ fontSize: '14px' }} color='primary' />
-      </IconButton>
+      {!props.disabled &&
+        <IconButton aria-label='修改' onClick={onEditClick} sx={{
+          display: iconVisible ? 'visible' : 'none', padding: 0, marginLeft: '4px',
+        }}>
+          <EditIcon sx={{ fontSize: '14px' }} color='primary' />
+        </IconButton>
+      }
     </Stack>
   )
 }
@@ -125,6 +131,7 @@ InplaceInput.propTypes = {
   placeholder: PropTypes.string,
   color: PropTypes.string,
   maxLength: PropTypes.number,
+  disabled: PropTypes.bool,
 }
 
 InplaceInput.defaultProps = {
@@ -136,4 +143,5 @@ InplaceInput.defaultProps = {
   placeholder: '空',
   color: '',
   maxLength: 1000,
+  disabled: false,
 }
