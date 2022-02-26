@@ -138,7 +138,6 @@ export default function Parent(props) {
           </Paper>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
-          <Typography>{selected}</Typography>
           <Button onClick={onClose}>取消</Button>
           <Button variant='contained' onClick={onOK}>确定</Button>
         </DialogActions>

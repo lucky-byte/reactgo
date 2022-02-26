@@ -38,6 +38,9 @@ func parent(c echo.Context) error {
 	if strings.HasPrefix(parentNode.TPath, node.TPath) {
 		return c.String(http.StatusBadRequest, "不能设置子节点作为新的父节点")
 	}
+	if parentNode.TPath+"."+node.UUID == node.TPath {
+		return c.String(http.StatusBadRequest, "新父节点与原父节点相同")
+	}
 
 	tx, err := db.Default().Beginx()
 	if err != nil {
