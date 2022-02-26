@@ -20,11 +20,6 @@ import (
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
-// 短信正文模板 ID 常数
-const (
-	IDVerifyCode = 1 // 验证码
-)
-
 const (
 	host      = "sms.tencentcloudapi.com"
 	algorithm = "TC3-HMAC-SHA256"
@@ -34,42 +29,6 @@ const (
 	region    = "ap-nanjing"
 	headers   = "content-type;host"
 )
-
-// 查询短信配置
-func getSettings() (*db.SmsSetting, error) {
-	ql := `select * from sms_settings`
-	var setting db.SmsSetting
-
-	if err := db.SelectOne(ql, &setting); err != nil {
-		return nil, errors.Wrap(err, "查询短信配置错")
-	}
-	if len(setting.AppId) == 0 {
-		return nil, fmt.Errorf("未配置 SDK AppId")
-	}
-	if len(setting.SecretId) == 0 {
-		return nil, fmt.Errorf("未配置 Secret Id")
-	}
-	if len(setting.SecretKey) == 0 {
-		return nil, fmt.Errorf("未配置 Secret Key")
-	}
-	if len(setting.Sign) == 0 {
-		return nil, fmt.Errorf("未配置短信签名")
-	}
-	return &setting, nil
-}
-
-// 获取短信正文模板编号
-func msgid(settings *db.SmsSetting, n int) (string, error) {
-	ids := []string{"", settings.MsgID1}
-
-	if n > len(ids) {
-		return "", fmt.Errorf("参数 n(%d) 指定的模板不存在", n)
-	}
-	if len(ids[n]) == 0 {
-		return "", fmt.Errorf("短信正文模板 n(%d) 未配置", n)
-	}
-	return ids[n], nil
-}
 
 func hex256(i []byte) string {
 	b := sha256.Sum256(i)
@@ -125,12 +84,8 @@ type response struct {
 }
 
 // 通过接口发送短信
-func send(mobile []string, n int, params []string) error {
+func send(mobile []string, id string, params []string) error {
 	settings, err := getSettings()
-	if err != nil {
-		return err
-	}
-	id, err := msgid(settings, n)
 	if err != nil {
 		return err
 	}
@@ -194,8 +149,8 @@ func send(mobile []string, n int, params []string) error {
 	return nil
 }
 
-// 发送短信，n 是正文模板下标(1代表 msgid1)，params 是短信正文变量
-func Send(mobile []string, n int, params []string) error {
+// 发送短信，id 是正文模板编号，params 是短信正文变量
+func Send(mobile []string, id string, params []string) error {
 	if len(mobile) == 0 {
 		return fmt.Errorf("手机号不能为空")
 	}
@@ -208,5 +163,5 @@ func Send(mobile []string, n int, params []string) error {
 			return fmt.Errorf("手机号格式错误(%s)", m)
 		}
 	}
-	return send(mobile, n, params)
+	return send(mobile, id, params)
 }

@@ -73,7 +73,11 @@ func SendCode(mobile string) (string, error) {
 	code := randomCode()
 	smsid := uuid.NewString()
 
-	err := Send([]string{mobile}, IDVerifyCode, []string{code})
+	id, err := VerifyCodeId()
+	if err != nil {
+		return "", err
+	}
+	err = Send([]string{mobile}, id, []string{code})
 	if err != nil {
 		return "", err
 	}
