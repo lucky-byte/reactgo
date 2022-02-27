@@ -2,11 +2,15 @@ package node
 
 import (
 	"github.com/labstack/echo/v4"
+
 	"github.com/lucky-byte/reactgo/serve/route/index/acl"
+	"github.com/lucky-byte/reactgo/serve/route/index/tree/node/user"
 )
 
 func Attach(g *echo.Group, code int) {
 	group := g.Group("/node", acl.AllowRead(code))
+
+	user.Attach(group, code)
 
 	group.GET("/", tree)
 	group.GET("/info", info)

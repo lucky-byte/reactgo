@@ -155,3 +155,11 @@ type Tree struct {
 	Disabled bool      `db:"disabled"`  // 禁用
 	SortNo   int       `db:"sortno"`    // 排序
 }
+
+type TreeBind struct {
+	UUID     string    `db:"uuid"`      // uuid
+	CreateAt time.Time `db:"create_at"` // 创建时间
+	Node     string    `db:"node"`      // 节点
+	Entity   string    `db:"entity"`    // 资源
+	Type     int       `db:"type"`      // 类型
+}

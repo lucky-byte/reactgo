@@ -174,4 +174,14 @@ insert into tree (uuid, name, summary, tpath, nlevel, sortno) values (
   '6e0c44c6-08ef-48d8-b48e-69c9903cc3f1', '根', '根节点', '0', 1, 1
 );
 
+create table if not exists tree_bind (
+  uuid        varchar(36)     primary key not null,
+  create_at   timestamp       not null default current_timestamp,
+  node        varchar(36)     not null,
+  entity      varchar(36)     not null,
+  type        int             not null
+);
+
+create unique index tree_bind_node_entity_type on tree_bind(node, entity, type);
+
 commit;

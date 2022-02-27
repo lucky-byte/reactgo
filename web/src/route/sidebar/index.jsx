@@ -87,7 +87,7 @@ function Menu({ menu }) {
     }
   }, [code, menu.items]);
 
-  const listBgColor = theme.palette.mode === 'dark' ? 'black' : '#f8f8f8';
+  const listBgColor = theme.palette.mode === 'dark' ? 'black' : '#efefef';
 
   const handleChange = e => {
     setExpanded(!expanded);

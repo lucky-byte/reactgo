@@ -12,5 +12,6 @@ drop table if exists tasks;
 drop table if exists images;
 drop table if exists geoip;
 drop table if exists tree;
+drop table if exists tree_bind;
 
 commit;

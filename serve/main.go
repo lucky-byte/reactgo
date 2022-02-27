@@ -36,6 +36,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/mailfs"
 	"github.com/lucky-byte/reactgo/serve/route/index"
 	"github.com/lucky-byte/reactgo/serve/task"
+	"github.com/lucky-byte/reactgo/serve/ws"
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
@@ -198,6 +199,9 @@ func main() {
 		}
 		engine.Static("/", web_directory)
 	}
+
+	// WebSocket
+	engine.GET("ws", ws.Handle)
 
 	// 隐私政策
 	engine.GET("/privacy", func(c echo.Context) error {

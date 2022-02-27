@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSetRecoilState } from "recoil";
-import { Link as RouteLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
@@ -36,15 +36,18 @@ import InplaceInput from '~/comp/inplace-input';
 import Splitter from '../../../comp/splitter';
 import titleState from "~/state/title";
 import progressState from "~/state/progress";
+import usePageData from '~/hook/pagedata';
 import { get, post, put } from '~/rest';
 import StyledTreeItem from './treeitem';
 import ChangeParent from './parent';
 
 export default function Home() {
+  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const confirm = useConfirm();
   const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
+  const [pageData, setPageData] = usePageData();
   const [root, setRoot] = useState('');
   const [tree, setTree] = useState(null);
   const [node, setNode] = useState({});
@@ -95,6 +98,7 @@ export default function Home() {
   // 展开节点
   const onNodeToggle = (e, nodeIds) => {
     setExpanded(nodeIds);
+    setPageData('expanded', nodeIds);
   }
 
   // 加载树结构
@@ -113,7 +117,13 @@ export default function Home() {
               onNodeSelect(null, resp.tree.uuid)
             }
             if (expanded.length === 0) {
-              setExpanded([resp.tree.uuid]);
+              // 恢复之前展开的状态
+              const saved = pageData('expanded');
+              if (saved && Array.isArray(saved)) {
+                setExpanded(saved);
+              } else {
+                setExpanded([resp.tree.uuid]);
+              }
             }
           }
         }
@@ -124,7 +134,9 @@ export default function Home() {
         setProgress(false);
       }
     })();
-  }, [enqueueSnackbar, reload, onNodeSelect, selected, root, setProgress, expanded]);
+  }, [enqueueSnackbar, reload, onNodeSelect, selected, root, setProgress,
+    expanded, pageData
+  ]);
 
   // 显示节点菜单
   const onNodeContextMenu = e => {
@@ -548,7 +560,9 @@ export default function Home() {
                     绑定的用户可以访问该节点(包含所有子节点)下的资源
                   </Typography>
                 </Stack>
-                <Button variant='contained' LinkComponent={RouteLink} to='user'>
+                <Button disabled={node.disabled} variant='contained' onClick={() => {
+                  navigate('user', { state: { uuid: node.uuid, name: node.name }});
+                }}>
                   查询及绑定
                 </Button>
               </Stack>
