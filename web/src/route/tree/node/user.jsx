@@ -31,20 +31,23 @@ import Collapse from '@mui/material/Collapse';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import AddIcon from '@mui/icons-material/Add';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
+import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from "~/comp/outlined-paper";
 import progressState from "~/state/progress";
 import titleState from "~/state/title";
 import usePageData from '~/hook/pagedata';
-import { post, put } from '~/rest';
+import { post, put, del } from '~/rest';
 
 export default function User() {
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
+  const confirm = useConfirm();
   const setTitle = useSetRecoilState(titleState);
   const [progress, setProgress] = useRecoilState(progressState);
   const [pageData, setPageData] = usePageData();
@@ -105,6 +108,25 @@ export default function User() {
     setPageData('rowsPerPage', rows);
   }
 
+  // 解除绑定
+  const onRemoveClick = async row => {
+    try {
+      await confirm({
+        description: `确定要解除 ${row.user_name} 的绑定吗？`,
+        confirmationText: '确定',
+        confirmationButtonProps: { color: 'warning' },
+        contentProps: { p: 8 },
+      });
+      const params = new URLSearchParams({ uuid: row.uuid });
+      await del('/tree/node/user/delete?' + params.toString());
+      setReload(true);
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
   // uuid 从上个页面通过 state 传入，如果为空，则可能是直接输入 url 进入该页面
   if (!node?.uuid) {
     return <Navigate to='..' replace />;
@@ -147,7 +169,11 @@ export default function User() {
                   <TableCell align="center">
                     {dayjs(row.create_at).format('YYYY/MM/DD HH:mm:ss')}
                   </TableCell>
-                  <TableCell padding='checkbox'></TableCell>
+                  <TableCell padding='checkbox'>
+                    <IconButton color='error' onClick={() => onRemoveClick(row)}>
+                      <RemoveCircleOutlineIcon />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

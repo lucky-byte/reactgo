@@ -15,4 +15,5 @@ func Attach(g *echo.Group, code int) {
 	group.Use(acl.AllowWrite(code))
 
 	group.PUT("/add", add)
+	group.DELETE("/delete", del)
 }
