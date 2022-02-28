@@ -38,25 +38,22 @@ func signin(c echo.Context) error {
 		)
 		return c.String(http.StatusForbidden, "用户名或密码错误")
 	}
+	// 这里的主要作用是给日志增加 user 和 userid 字段
+	cc.SetUser(&user)
+
 	// 检查用户状态
 	if user.Disabled || user.Deleted {
-		cc.Log().WithField("userid", username).Errorf(
-			"用户 %s 已被禁用或删除, 不允许登录", user.Name,
-		)
+		cc.Log().Errorf("用户 %s 已被禁用或删除, 不允许登录", user.Name)
 		return c.String(http.StatusForbidden, "不允许登录")
 	}
 	// 验证密码
 	phc, err := secure.ParsePHC(user.Passwd)
 	if err != nil {
-		cc.ErrLog(err).WithField("userid", username).Errorf(
-			"%s 登录失败, 解析用户密码错", user.Name,
-		)
+		cc.ErrLog(err).Errorf("%s 登录失败, 解析用户密码错", user.Name)
 		return c.String(http.StatusForbidden, "登录名或密码错误")
 	}
 	if err = phc.Verify(password); err != nil {
-		cc.ErrLog(err).WithField("userid", username).Errorf(
-			"%s 登录失败, 验证登录密码错", user.Name,
-		)
+		cc.ErrLog(err).Errorf("%s 登录失败, 验证登录密码错", user.Name)
 		return c.String(http.StatusForbidden, "登录名或密码错误")
 	}
 	// 查询会话保持时间
@@ -64,7 +61,7 @@ func signin(c echo.Context) error {
 	var duration time.Duration
 
 	if err = db.SelectOne(ql, &duration); err != nil {
-		cc.ErrLog(err).WithField("userid", username).Error("查询设置错")
+		cc.ErrLog(err).Error("查询设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	newJwt := auth.NewAuthJWT(user.UUID, true, duration*time.Minute)
@@ -79,9 +76,7 @@ func signin(c echo.Context) error {
 		// 如果没有设置 TOTP，则发送短信验证码
 		if len(user.TOTPSecret) == 0 {
 			if smsid, err = sms.SendCode(user.Mobile); err != nil {
-				cc.ErrLog(err).WithField("userid", username).Errorf(
-					"%s 登录失败, 发送短信验证码错", user.Name,
-				)
+				cc.ErrLog(err).Errorf("%s 登录失败, 发送短信验证码错", user.Name)
 				return c.String(http.StatusInternalServerError, "发送短信验证码失败")
 			}
 		}
@@ -89,9 +84,7 @@ func signin(c echo.Context) error {
 	// 生成 JWT
 	token, err := auth.JWTGenerate(newJwt)
 	if err != nil {
-		cc.ErrLog(err).WithField("userid", username).Errorf(
-			"%s 登录失败, 生成 JWT 错", user.Name,
-		)
+		cc.ErrLog(err).Errorf("%s 登录失败, 生成 JWT 错", user.Name)
 		return c.String(http.StatusForbidden, "服务器内部错")
 	}
 	// 更新用户信息

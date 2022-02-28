@@ -54,6 +54,21 @@ func Authentication(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		cc.SetAllows(allows)
 
+		// 查询用户绑定的层级节点
+		ql = `
+			select * from tree where uuid = (
+				select node from tree_bind where entity = ? and type = 1
+			)
+		`
+		var nodes []db.Tree
+
+		if err = db.Select(ql, &nodes, user.UUID); err != nil {
+			cc.ErrLog(err).Errorf("查询用户 %s 绑定节点错误", user.Name)
+			return c.NoContent(http.StatusUnauthorized)
+		}
+		if len(nodes) == 1 {
+			cc.SetNode(&nodes[0])
+		}
 		return next(c)
 	}
 }
