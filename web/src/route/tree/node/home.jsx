@@ -83,6 +83,7 @@ export default function Home() {
 
     try {
       setSelected(nodeIds);
+      setPageData('selected', nodeIds);
 
       const params = new URLSearchParams({ uuid: nodeIds });
       const resp = await get('/tree/node/info?' + params.toString())
@@ -93,7 +94,7 @@ export default function Home() {
       clearTimeout(timer);
       setNodeLoading(false);
     }
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, setPageData]);
 
   // 展开节点
   const onNodeToggle = (e, nodeIds) => {
@@ -113,11 +114,17 @@ export default function Home() {
 
           if (resp.tree) {
             setTree(resp.tree || null);
+
+            // 恢复之前展开的状态
             if (!selected) {
-              onNodeSelect(null, resp.tree.uuid)
+              const saved = pageData('selected');
+              if (saved) {
+                onNodeSelect(null, saved)
+              } else {
+                onNodeSelect(null, resp.tree.uuid)
+              }
             }
             if (expanded.length === 0) {
-              // 恢复之前展开的状态
               const saved = pageData('expanded');
               if (saved && Array.isArray(saved)) {
                 setExpanded(saved);
@@ -205,8 +212,9 @@ export default function Home() {
       expand(tree.children);
     }
     setExpanded(nodes);
-    setPageData('expanded', nodes);
     setSelected(target);
+    setPageData('expanded', nodes);
+    setPageData('selected', target);
   }
 
   // 收拢全部子节点
@@ -252,8 +260,9 @@ export default function Home() {
       collapse(tree.children);
     }
     setExpanded(nodes);
-    setPageData('expanded', nodes);
     setSelected(target);
+    setPageData('expanded', nodes);
+    setPageData('selected', target);
   }
 
   // 移到最前
@@ -405,8 +414,9 @@ export default function Home() {
       });
       await put('/tree/node/delete', new URLSearchParams({ uuid: node.uuid }));
       enqueueSnackbar('删除成功', { variant: 'success' });
-      setReload(true);
       setSelected('');
+      setPageData('selected', '');
+      setReload(true);
     } catch (err) {
       if (err) {
         enqueueSnackbar(err.message);
