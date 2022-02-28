@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { useSetRecoilState, useRecoilState } from "recoil";
 import {
   useNavigate, useLocation, Navigate, Link as RouteLink
@@ -24,9 +24,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Autocomplete from '@mui/material/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
 import Checkbox from '@mui/material/Checkbox';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -36,7 +35,7 @@ import OutlinedPaper from "~/comp/outlined-paper";
 import progressState from "~/state/progress";
 import titleState from "~/state/title";
 import usePageData from '~/hook/pagedata';
-import { post } from '~/rest';
+import { post, put } from '~/rest';
 
 export default function User() {
   const navigate = useNavigate();
@@ -54,7 +53,7 @@ export default function User() {
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
   useEffect(() => { setTitle('绑定用户'); }, [setTitle]);
 
-  const { uuid, name } = location?.state || {};
+  const { node } = location?.state || {};
 
   // 查询已绑定用户
   useEffect(() => {
@@ -63,7 +62,7 @@ export default function User() {
         setProgress(true);
 
         const resp = await post('/tree/node/user/', new URLSearchParams({
-          node: uuid, page, rows, keyword,
+          node: node?.uuid, page, rows, keyword,
         }));
         setCount(resp.count || 0);
         setList(resp.list || []);
@@ -73,7 +72,7 @@ export default function User() {
         setProgress(false);
       }
     })();
-  }, [enqueueSnackbar, uuid, page, rows, keyword, setProgress]);
+  }, [enqueueSnackbar, node, page, rows, keyword, setProgress]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -96,7 +95,7 @@ export default function User() {
   }
 
   // uuid 从上个页面通过 state 传入，如果为空，则可能是直接输入 url 进入该页面
-  if (!uuid) {
+  if (!node?.uuid) {
     return <Navigate to='..' replace />;
   }
 
@@ -110,14 +109,14 @@ export default function User() {
           <Stack>
             <Typography variant='h6'>绑定用户</Typography>
             <Typography variant='caption'>
-              绑定的用户可以访问节点 <strong>{name}</strong> (包含所有子节点)下的资源
+              绑定的用户可以访问节点 <strong>{node?.name}</strong> (包含所有子节点)下的资源
             </Typography>
           </Stack>
         </Stack>
         <Toolbar sx={{ mt: 2 }} disableGutters>
           <SearchInput isLoading={progress} onChange={onKeywordChange} />
           <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
-          <Add />
+          <Add node={node} />
         </Toolbar>
         <TableContainer component={OutlinedPaper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -159,28 +158,68 @@ export default function User() {
   )
 }
 
-function Add() {
+function Add(props) {
   const { enqueueSnackbar } = useSnackbar();
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  const [list, setList] = useState([]);
+  const [options, setOptions] = useState([]);
+  const [value, setValue] = useState([]);
+  const [force, setForce] = useState(false);
+  const loading = open && options.length === 0;
+
+  const { node } = props;
 
   // 关闭对话框
-  const onClose = () => {
-    setOpen(false);
+  const onDialogClose = () => {
+    setValue([]);
+    setDialogOpen(false);
   }
+
+  // 查询可以选择的用户列表
+  useEffect(() => {
+    let active = true;
+
+    if (!loading) {
+      return undefined;
+    }
+    (async () => {
+      try {
+        const resp = await post('/tree/node/user/candidate', new URLSearchParams({
+          node: node?.uuid,
+        }));
+        if (active) {
+          setOptions(resp.list);
+        }
+      } catch (err) {
+        enqueueSnackbar(err.message);
+        setOpen(false);
+      }
+    })();
+    return () => { active = false; };
+  }, [loading, enqueueSnackbar, node]);
+
+  // 下拉选项关闭时清除选项
+  useEffect(() => {
+    if (!open) {
+      setOptions([]);
+    }
+  }, [open]);
 
   // 确定
   const onOK = async () => {
     try {
-      // if (!selected) {
-      //   return enqueueSnackbar('请选择父节点', { variant: 'warning' });
-      // }
-      // await put('/tree/node/parent', new URLSearchParams({
-      //   uuid, parent: selected,
-      // }));
-      // enqueueSnackbar('修改成功', { variant: 'success' });
+      if (value.length === 0) {
+        return enqueueSnackbar('没有选择用户', { variant: 'warning' });
+      }
+      const users = value.map(v => v.uuid)
+
+      // 检查冲突
+      await put('/tree/node/user/add', new URLSearchParams({
+        node: node.uuid, users, force,
+      }));
+      enqueueSnackbar('添加成功', { variant: 'success' });
       // reload(true);
-      onClose();
+      onDialogClose();
     } catch (err) {
       enqueueSnackbar(err.message);
     }
@@ -188,39 +227,47 @@ function Add() {
 
   return (
     <>
-      <Button startIcon={<AddIcon />} onClick={() => { setOpen(true) }}>
+      <Button startIcon={<AddIcon />} onClick={() => { setDialogOpen(true) }}>
         添加
       </Button>
-      <Dialog onClose={onClose} open={open} maxWidth='sm' fullWidth>
+      <Dialog onClose={onDialogClose} open={dialogOpen} maxWidth='sm' fullWidth>
         <DialogTitle>添加绑定用户</DialogTitle>
         <DialogContent>
-          <Autocomplete
-            multiple
-            options={list}
+          <Autocomplete sx={{ mt: 2 }} fullWidth multiple size='small'
+            handleHomeEndKeys
             disableCloseOnSelect
-            getOptionLabel={(option) => option.title}
+            value={value}
+            onChange={(_, v) => { setValue(v) }}
+            open={open}
+            onOpen={() => { setOpen(true); }}
+            onClose={() => { setOpen(false); }}
+            options={options}
+            loading={loading}
+            isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
+            getOptionLabel={(option) => option.name}
             renderOption={(props, option, { selected }) => (
               <li {...props}>
-                <Checkbox
-                  icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
-                  checkedIcon={<CheckBoxIcon fontSize="small" />}
-                  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option.title}
+                <Checkbox size='small' checked={selected} />
+                {option.name}
               </li>
             )}
-            style={{ width: '100%', marginTop: 10 }}
             renderInput={(params) => (
               <TextField {...params} label="新用户" placeholder="请选择"
-              // variant='standard'
-              // helperText='选好后，点击右边 + 按钮完成添加'
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <Fragment>
+                      {loading ? <CircularProgress size={20} /> : null}
+                      {params.InputProps.endAdornment}
+                    </Fragment>
+                  ),
+                }}
               />
             )}
           />
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
-          <Button onClick={onClose}>取消</Button>
+          <Button onClick={onDialogClose}>取消</Button>
           <Button variant='contained' onClick={onOK}>确定</Button>
         </DialogActions>
       </Dialog>

@@ -1,0 +1,87 @@
+package user
+
+import (
+	"net/http"
+
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+
+	"github.com/lucky-byte/reactgo/serve/ctx"
+	"github.com/lucky-byte/reactgo/serve/db"
+)
+
+type conflictRecord struct {
+	NodeName string `db:"node_name" json:"node_name"`
+	UserName string `db:"user_name" json:"user_name"`
+}
+
+// 绑定用户
+func add(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	var node string
+	var users []string
+	var force bool
+
+	err := echo.FormFieldBinder(c).
+		MustString("node", &node).
+		MustBool("force", &force).
+		MustStrings("users", &users).BindError()
+	if err != nil {
+		cc.ErrLog(err).Error("请求参数不完整")
+		return c.NoContent(http.StatusBadRequest)
+	}
+	// 检查用户是否已经绑定到其它节点
+	if !force {
+		result, err := conflict(users)
+		if err != nil {
+			cc.ErrLog(err).Error("查询绑定用户冲突错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		// 如果有冲突，返回让用户确认
+		if len(result) > 0 {
+			return c.JSON(http.StatusOK, echo.Map{"conflict": true, "list": result})
+		}
+	}
+	// 绑定用户
+	ql := `insert into tree_bind (uuid, node, entity, type) values (?,?,?,1)`
+
+	tx, err := db.Default().Beginx()
+	if err != nil {
+		cc.ErrLog(err).Error("启动数据库事务错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	for _, u := range users {
+		_, err = tx.Exec(tx.Rebind(ql), uuid.NewString(), node, u)
+		if err != nil {
+			tx.Rollback()
+			cc.ErrLog(err).Error("绑定用户错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+	}
+	tx.Commit()
+
+	return c.NoContent(http.StatusOK)
+}
+
+// 检查用户是否已经绑定到其它节点
+func conflict(users []string) ([]conflictRecord, error) {
+	ql := `
+		select coalesce(u.name, '') as user_name,
+			coalesce(t.name, '') as node_name
+		from tree_bind as tb
+		left join users as u on u.uuid = tb.entity
+		left join tree as t on t.uuid = tb.node
+		where tb.entity in (?) and tb.type = 1
+	`
+	var result []conflictRecord
+
+	ql, args, err := db.In(ql, users)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Select(ql, &result, args...); err != nil {
+		return nil, err
+	}
+	return result, nil
+}

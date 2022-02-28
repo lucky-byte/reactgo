@@ -79,7 +79,11 @@ func (p *Pagination) Join(t exp.Expression, on exp.JoinCondition) *Pagination {
 // 这个函数执行 2 个 SQL 查询，第一次查询表的总数，第二次查询当前的分页数据
 // 这个函数应该在上面的条件都准备好之后调用
 func (p *Pagination) Exec(count *uint, records interface{}) error {
-	b1 := From(p.Table).Select(goqu.COUNT('*')).Where(p.where...)
+	b1 := From(p.Table).Select(goqu.COUNT('*'))
+	for _, j := range p.join {
+		b1 = b1.LeftJoin(j.table, j.on)
+	}
+	b1 = b1.Where(p.where...)
 
 	q1, _, err := b1.ToSQL()
 	if err != nil {

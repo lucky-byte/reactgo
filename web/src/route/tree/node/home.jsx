@@ -204,7 +204,8 @@ export default function Home() {
     } else {
       expand(tree.children);
     }
-    setExpanded([...nodes]);
+    setExpanded(nodes);
+    setPageData('expanded', nodes);
     setSelected(target);
   }
 
@@ -250,7 +251,8 @@ export default function Home() {
     } else {
       collapse(tree.children);
     }
-    setExpanded([...nodes]);
+    setExpanded(nodes);
+    setPageData('expanded', nodes);
     setSelected(target);
   }
 
@@ -437,7 +439,7 @@ export default function Home() {
   return (
     <DndProvider backend={HTML5Backend}>
       <Container as='main' role='main' sx={{ mb: 4, pt: 3 }}>
-        <Splitter initialSizes={splitSizes} minWidths={[200, 300]}
+        <Splitter initialSizes={splitSizes} minWidths={[200, 400]}
           onResizeFinished={onSplitterResize}>
           <Stack onContextMenu={onNodeContextMenu}>
             {root &&
@@ -561,7 +563,7 @@ export default function Home() {
                   </Typography>
                 </Stack>
                 <Button disabled={node.disabled} variant='contained' onClick={() => {
-                  navigate('user', { state: { uuid: node.uuid, name: node.name }});
+                  navigate('user', { state: { node }});
                 }}>
                   查询及绑定
                 </Button>
