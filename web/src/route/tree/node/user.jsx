@@ -85,11 +85,13 @@ export default function User() {
   // 搜索
   const onKeywordChange = value => {
     setPage(0);
+    setReload(true);
     setKeyword(value);
   }
 
   // 页面改变
   const onPageChange = (e, newPage) => {
+    setReload(true);
     setPage(newPage);
   }
 
@@ -97,6 +99,7 @@ export default function User() {
   const onRowsPerPageChange = e => {
     const rows = parseInt(e.target.value, 10);
 
+    setReload(true);
     setRows(rows);
     setPage(0);
     setPageData('rowsPerPage', rows);
