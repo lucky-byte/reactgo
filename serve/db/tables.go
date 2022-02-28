@@ -157,9 +157,9 @@ type Tree struct {
 }
 
 type TreeBind struct {
-	UUID     string    `db:"uuid"`      // uuid
-	CreateAt time.Time `db:"create_at"` // 创建时间
-	Node     string    `db:"node"`      // 节点
-	Entity   string    `db:"entity"`    // 资源
-	Type     int       `db:"type"`      // 类型
+	UUID     string    `db:"uuid"      json:"uuid"`      // uuid
+	CreateAt time.Time `db:"create_at" json:"create_at"` // 创建时间
+	Node     string    `db:"node"      json:"node"`      // 节点
+	Entity   string    `db:"entity"    json:"entity"`    // 资源
+	Type     int       `db:"type"      json:"type"`      // 类型
 }

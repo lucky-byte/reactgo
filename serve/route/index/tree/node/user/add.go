@@ -2,6 +2,7 @@ package user
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -11,6 +12,7 @@ import (
 )
 
 type conflictRecord struct {
+	db.TreeBind
 	NodeName string `db:"node_name" json:"node_name"`
 	UserName string `db:"user_name" json:"user_name"`
 }
@@ -19,28 +21,31 @@ type conflictRecord struct {
 func add(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var node string
-	var users []string
+	var node, user string
 	var force bool
 
 	err := echo.FormFieldBinder(c).
 		MustString("node", &node).
 		MustBool("force", &force).
-		MustStrings("users", &users).BindError()
+		MustString("users", &user).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("请求参数不完整")
 		return c.NoContent(http.StatusBadRequest)
 	}
+	users := strings.Split(user, ",")
+
 	// 检查用户是否已经绑定到其它节点
+	conflictList, err := conflict(users)
+	if err != nil {
+		cc.ErrLog(err).Error("查询绑定用户冲突错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	// 如果有冲突，返回让用户确认
 	if !force {
-		result, err := conflict(users)
-		if err != nil {
-			cc.ErrLog(err).Error("查询绑定用户冲突错")
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		// 如果有冲突，返回让用户确认
-		if len(result) > 0 {
-			return c.JSON(http.StatusOK, echo.Map{"conflict": true, "list": result})
+		if len(conflictList) > 0 {
+			return c.JSON(http.StatusOK, echo.Map{
+				"conflict": true, "list": conflictList,
+			})
 		}
 	}
 	// 绑定用户
@@ -52,8 +57,32 @@ func add(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	for _, u := range users {
-		_, err = tx.Exec(tx.Rebind(ql), uuid.NewString(), node, u)
+		// 如果存在冲突，则先解除绑定
+		for _, f := range conflictList {
+			if f.Entity == u {
+				ql2 := `delete from tree_bind where entity = ? and type = 1`
+
+				res, err := tx.Exec(tx.Rebind(ql2), u)
+				if err != nil {
+					tx.Rollback()
+					cc.ErrLog(err).Error("解除用户绑定错")
+					return c.NoContent(http.StatusInternalServerError)
+				}
+				if err = db.MustAffected1Row(res, ql2); err != nil {
+					tx.Rollback()
+					cc.ErrLog(err).Error("解除用户绑定错")
+					return c.NoContent(http.StatusInternalServerError)
+				}
+				break
+			}
+		}
+		res, err := tx.Exec(tx.Rebind(ql), uuid.NewString(), node, u)
 		if err != nil {
+			tx.Rollback()
+			cc.ErrLog(err).Error("绑定用户错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		if err = db.MustAffected1Row(res, ql); err != nil {
 			tx.Rollback()
 			cc.ErrLog(err).Error("绑定用户错")
 			return c.NoContent(http.StatusInternalServerError)
@@ -67,7 +96,8 @@ func add(c echo.Context) error {
 // 检查用户是否已经绑定到其它节点
 func conflict(users []string) ([]conflictRecord, error) {
 	ql := `
-		select coalesce(u.name, '') as user_name,
+		select tb.*,
+			coalesce(u.name, '') as user_name,
 			coalesce(t.name, '') as node_name
 		from tree_bind as tb
 		left join users as u on u.uuid = tb.entity

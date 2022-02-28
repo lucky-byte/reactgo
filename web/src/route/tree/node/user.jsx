@@ -27,9 +27,13 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
+import Collapse from '@mui/material/Collapse';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import AddIcon from '@mui/icons-material/Add';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
+import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from "~/comp/outlined-paper";
 import progressState from "~/state/progress";
@@ -49,6 +53,7 @@ export default function User() {
   const [count, setCount] = useState(0);
   const [list, setList] = useState([]);
   const [keyword, setKeyword] = useState('');
+  const [reload, setReload] = useState(true);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
   useEffect(() => { setTitle('绑定用户'); }, [setTitle]);
@@ -59,20 +64,23 @@ export default function User() {
   useEffect(() => {
     (async () => {
       try {
-        setProgress(true);
+        if (reload) {
+          setProgress(true);
 
-        const resp = await post('/tree/node/user/', new URLSearchParams({
-          node: node?.uuid, page, rows, keyword,
-        }));
-        setCount(resp.count || 0);
-        setList(resp.list || []);
+          const resp = await post('/tree/node/user/', new URLSearchParams({
+            node: node?.uuid, page, rows, keyword,
+          }));
+          setCount(resp.count || 0);
+          setList(resp.list || []);
+        }
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
         setProgress(false);
+        setReload(false);
       }
     })();
-  }, [enqueueSnackbar, node, page, rows, keyword, setProgress]);
+  }, [enqueueSnackbar, node, page, rows, keyword, setProgress, reload]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -116,41 +124,46 @@ export default function User() {
         <Toolbar sx={{ mt: 2 }} disableGutters>
           <SearchInput isLoading={progress} onChange={onKeywordChange} />
           <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
-          <Add node={node} />
+          <Add node={node} reload={setReload} />
         </Toolbar>
         <TableContainer component={OutlinedPaper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <Table sx={{ minWidth: 650 }} aria-label="绑定用户列表">
             <TableHead>
               <TableRow>
-                <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                <TableCell align="right">Protein&nbsp;(g)</TableCell>
+                <TableCell align="center">姓名</TableCell>
+                <TableCell align="center">登录名</TableCell>
+                <TableCell align="center">绑定时间</TableCell>
+                <TableCell padding='checkbox'></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {list.map(row => (
-                <TableRow key={row.uuid}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell align="right">{row.protein}</TableCell>
+                <TableRow key={row.uuid}>
+                  <TableCell align="center">{row.user_name}</TableCell>
+                  <TableCell align="center">{row.userid}</TableCell>
+                  <TableCell align="center">
+                    {dayjs(row.create_at).format('YYYY/MM/DD HH:mm:ss')}
+                  </TableCell>
+                  <TableCell padding='checkbox'></TableCell>
                 </TableRow>
               ))}
             </TableBody>
-          <TableFooter>
-            <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50, 100]}
-                colSpan={10}
-                count={count}
-                rowsPerPage={rows}
-                page={page}
-                SelectProps={{
-                  inputProps: { 'aria-label': '每页行数' }
-                }}
-                onPageChange={onPageChange}
-                onRowsPerPageChange={onRowsPerPageChange}
-              />
-            </TableRow>
-          </TableFooter>
+            <TableFooter>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 50, 100]}
+                  colSpan={10}
+                  count={count}
+                  rowsPerPage={rows}
+                  page={page}
+                  SelectProps={{
+                    inputProps: { 'aria-label': '每页行数' }
+                  }}
+                  onPageChange={onPageChange}
+                  onRowsPerPageChange={onRowsPerPageChange}
+                />
+              </TableRow>
+            </TableFooter>
           </Table>
         </TableContainer>
       </Paper>
@@ -165,13 +178,16 @@ function Add(props) {
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState([]);
   const [force, setForce] = useState(false);
+  const [conflictList, setConflictList] = useState([]);
   const loading = open && options.length === 0;
 
-  const { node } = props;
+  const { node, reload } = props;
 
   // 关闭对话框
   const onDialogClose = () => {
     setValue([]);
+    setForce(false);
+    setConflictList([]);
     setDialogOpen(false);
   }
 
@@ -188,7 +204,7 @@ function Add(props) {
           node: node?.uuid,
         }));
         if (active) {
-          setOptions(resp.list);
+          setOptions(resp.list || []);
         }
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -213,12 +229,15 @@ function Add(props) {
       }
       const users = value.map(v => v.uuid)
 
-      // 检查冲突
-      await put('/tree/node/user/add', new URLSearchParams({
+      const resp = await put('/tree/node/user/add', new URLSearchParams({
         node: node.uuid, users, force,
       }));
+      // 如果存在冲突，则提示用户确认
+      if (resp.conflict) {
+        return setConflictList(resp.list);
+      }
       enqueueSnackbar('添加成功', { variant: 'success' });
-      // reload(true);
+      reload(true);
       onDialogClose();
     } catch (err) {
       enqueueSnackbar(err.message);
@@ -257,7 +276,7 @@ function Add(props) {
                   ...params.InputProps,
                   endAdornment: (
                     <Fragment>
-                      {loading ? <CircularProgress size={20} /> : null}
+                      {loading ? <CircularProgress size={20} sx={{ mr: 4 }} /> : null}
                       {params.InputProps.endAdornment}
                     </Fragment>
                   ),
@@ -265,6 +284,37 @@ function Add(props) {
               />
             )}
           />
+          <Collapse in={conflictList.length > 0} sx={{ mt: 4 }}>
+            <Typography color='error' variant='body2'>
+              下列用户已绑定到其它节点，如果继续，将会解除该用户与其它节点的绑定
+            </Typography>
+            <TableContainer component={OutlinedPaper} sx={{ my: 1 }}>
+              <Table sx={{ minWidth: 650 }} size='small' aria-label="绑定用户冲突列表">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">姓名</TableCell>
+                    <TableCell align="center">节点</TableCell>
+                    <TableCell align="center">绑定时间</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {conflictList.map(row => (
+                    <TableRow key={row.uuid}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      <TableCell align="center">{row.user_name}</TableCell>
+                      <TableCell align="center">{row.node_name}</TableCell>
+                      <TableCell align="center">
+                        {dayjs(row.create_at).format('YYYY/MM/DD HH:mm:ss')}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <FormControlLabel label="我确定要解除上列用户与其它节点的绑定" control={
+              <Switch checked={force} onChange={e => setForce(e.target.checked)} />
+            }/>
+          </Collapse>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
           <Button onClick={onDialogClose}>取消</Button>

@@ -22,7 +22,7 @@ func candidate(c echo.Context) error {
 	}
 	ql := `
 		select * from users where uuid not in (
-			select uuid from tree_bind where node = ?
+			select entity from tree_bind where node = ?
 		) and disabled = false
 		order by create_at desc
 	`
@@ -31,6 +31,9 @@ func candidate(c echo.Context) error {
 	if err = db.Select(ql, &records, node); err != nil {
 		cc.ErrLog(err).Error("查询用户信息错")
 		return c.NoContent(http.StatusInternalServerError)
+	}
+	if len(records) == 0 {
+		return c.String(http.StatusNotFound, "没有可绑定的用户")
 	}
 	var list []echo.Map
 
