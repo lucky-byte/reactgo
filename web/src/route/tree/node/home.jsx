@@ -213,8 +213,7 @@ export default function Home() {
     }
     setExpanded(nodes);
     setSelected(target);
-    setPageData('expanded', nodes);
-    setPageData('selected', target);
+    setPageData('expanded', nodes, 'selected', target);
   }
 
   // 收拢全部子节点
@@ -261,8 +260,7 @@ export default function Home() {
     }
     setExpanded(nodes);
     setSelected(target);
-    setPageData('expanded', nodes);
-    setPageData('selected', target);
+    setPageData('expanded', nodes, 'selected', target);
   }
 
   // 移到最前

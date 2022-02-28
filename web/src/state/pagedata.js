@@ -1,8 +1,8 @@
 import { atom } from 'recoil';
 
-const pageState = atom({
+const pageDataState = atom({
   key: 'pageState',
   default: {},
 });
 
-export default pageState;
+export default pageDataState;

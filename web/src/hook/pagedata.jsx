@@ -1,23 +1,33 @@
 import { useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import pageState from '../state/page';
+import pageDataState from '../state/pagedata';
 
 export default function usePageData() {
   const { pathname } = useLocation();
-  const [page, setPage] = useRecoilState(pageState);
+  const [data, setData] = useRecoilState(pageDataState);
 
   const pageData = useCallback(k => {
     const key = pathname + '/' + k;
-    return page[key];
-  }, [page, pathname])
+    return data[key];
+  }, [data, pathname])
 
-  const setPageData = useCallback((k, v) => {
-    const newData = { ...page };
+  const setPageData = useCallback((k, v, ...rest) => {
     const key = pathname + '/' + k;
+
+    const newData = { ...data };
     newData[key] = v;
-    setPage(newData);
-  }, [page, setPage, pathname])
+
+    if (rest) {
+      if (rest.length % 2 !== 0) {
+        throw new Error('setPageData() 参数数量必须是偶数');
+      }
+      for (let i = 0; i < rest.length; i += 2) {
+        newData[rest[i]] = rest[i + 1];
+      }
+    }
+    setData(newData);
+  }, [data, setData, pathname])
 
   return [pageData, setPageData];
 }
