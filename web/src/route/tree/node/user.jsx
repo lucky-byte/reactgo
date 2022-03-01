@@ -171,11 +171,16 @@ export default function User() {
                   </TableCell>
                   <TableCell padding='checkbox'>
                     <IconButton color='error' onClick={() => onRemoveClick(row)}>
-                      <RemoveCircleOutlineIcon />
+                      <RemoveCircleOutlineIcon fontSize='small' />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
+              {list.length === 0 && (
+                <TableRow disabled>
+                  <TableCell colSpan={6} align="center">空</TableCell>
+                </TableRow>
+              )}
             </TableBody>
             <TableFooter>
               <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -315,7 +320,7 @@ function Add(props) {
           />
           <Collapse in={conflictList.length > 0} sx={{ mt: 4 }}>
             <Typography color='error' variant='body2'>
-              下列用户已绑定到其它节点，如果继续，将会解除该用户与其它节点的绑定
+              下列用户已绑定到其它节点，如要继续，需要先解除该用户与其它节点的绑定
             </Typography>
             <TableContainer component={OutlinedPaper} sx={{ my: 1 }}>
               <Table sx={{ minWidth: 650 }} size='small' aria-label="绑定用户冲突列表">

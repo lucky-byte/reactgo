@@ -36,6 +36,19 @@ export default function App() {
       },
     },
     components: {
+      // 给 Typography 增加 disabled 风格
+      MuiTypography: {
+        styleOverrides: {
+          root: ({ ownerState, theme }) => {
+            if (ownerState.disabled) {
+              return {
+                color: theme.palette.text.disabled,
+                pointerEvents: 'none',
+              }
+            }
+          },
+        }
+      },
       // 给表格行增加 disabled 和 deleted 风格
       MuiTableRow: {
         styleOverrides: {
@@ -44,7 +57,7 @@ export default function App() {
               return {
                 textDecoration: 'line-through',
                 color: theme.palette.error.main,
-                '& td:not(:last-child)': {
+                '& td:not(.action)': {
                   color: theme.palette.text.disabled,
                   pointerEvents: 'none',
                 },
@@ -52,7 +65,7 @@ export default function App() {
             }
             if (ownerState.disabled) {
               return {
-                '& td:not(:last-child)': {
+                '& td:not(.action)': {
                   color: theme.palette.text.disabled,
                   pointerEvents: 'none',
                 },

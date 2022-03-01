@@ -190,7 +190,7 @@ export default function List() {
                     />
                   }
                 </TableCell>
-                <TableCell align="right" padding='checkbox'>
+                <TableCell align="right" padding='checkbox' className='action'>
                   <UserMenuIconButton user={u} requestRefresh={requestRefresh} />
                 </TableCell>
               </TableRow>

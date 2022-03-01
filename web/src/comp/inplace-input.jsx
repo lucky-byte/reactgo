@@ -51,6 +51,7 @@ export default function InplaceInput(props) {
       setText(props.text);
     }
     setEditing(false);
+    setIconVisible(false);
   }
 
   if (editing) {

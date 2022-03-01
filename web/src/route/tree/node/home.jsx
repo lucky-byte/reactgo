@@ -458,7 +458,7 @@ export default function Home() {
             }
             <TreeView
               aria-label="层次结构"
-              defaultExpanded={['0']}
+              defaultExpanded={[]}
               defaultParentIcon={<AddIcon />}
               defaultCollapseIcon={<ArrowDropDownIcon />}
               defaultExpandIcon={<ArrowRightIcon />}
@@ -556,17 +556,23 @@ export default function Home() {
                 <Typography variant='caption' color='gray'>
                   修改时间: {dayjs(node.update_at).format('YYYY年MM月DD日 HH:mm:ss')}
                 </Typography>
-                <Typography variant='caption' color='gray'>
-                  排序序号: {node.sortno}
-                </Typography>
-                <Typography variant='caption' color='gray'>{node.tpath}</Typography>
+                {process.env.NODE_ENV === 'development' &&
+                  <>
+                    <Typography variant='caption' color='gray'>
+                      排序序号: {node.sortno}
+                    </Typography>
+                    <Typography variant='caption' color='gray'>
+                      {node.tpath}
+                    </Typography>
+                  </>
+                }
               </Stack>
             </Collapse>
             <Paper variant='outlined' sx={{ p: 2, mt: 2 }}>
               <Stack direction='row' alignItems='center'>
                 <Stack sx={{ flex: 1 }}>
-                  <Typography variant='h6'>绑定用户</Typography>
-                  <Typography variant='body2'>
+                  <Typography variant='h6' disabled={node.disabled}>绑定用户</Typography>
+                  <Typography variant='body2' disabled={node.disabled}>
                     绑定的用户可以访问该节点(包含所有子节点)下的资源
                   </Typography>
                 </Stack>
