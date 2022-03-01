@@ -34,6 +34,12 @@ func profile(c echo.Context) error {
 		cc.ErrLog(err).Error("查询访问控制信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
+	// 查询绑定节点
+	node, err := profileNode(uuid)
+	if err != nil {
+		cc.ErrLog(err).Error("查询绑定节点信息错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
 	// 查询登录历史
 	history, err := profileHistory(uuid)
 	if err != nil {
@@ -56,16 +62,17 @@ func profile(c echo.Context) error {
 		"disabled":         user.Disabled,
 		"deleted":          user.Deleted,
 		"acl":              acl,
+		"node":             node,
 		"history":          history,
 	})
 }
 
 // 查询访问控制信息
-func profileAcl(acluuid string) (*echo.Map, error) {
+func profileAcl(acl_uuid string) (*echo.Map, error) {
 	ql := `select name, summary from acl where uuid = ?`
 	var result db.ACL
 
-	if err := db.SelectOne(ql, &result, acluuid); err != nil {
+	if err := db.SelectOne(ql, &result, acl_uuid); err != nil {
 		return nil, err
 	}
 	acl := echo.Map{
@@ -73,6 +80,31 @@ func profileAcl(acluuid string) (*echo.Map, error) {
 		"summary": result.Summary,
 	}
 	return &acl, nil
+}
+
+// 查询访问节点
+func profileNode(user_uuid string) (*echo.Map, error) {
+	ql := `
+		select * from tree where uuid = (
+			select node from tree_bind where entity = ? and type = 1
+		)
+	`
+	var nodes []db.Tree
+
+	if err := db.Select(ql, &nodes, user_uuid); err != nil {
+		return nil, err
+	}
+	if len(nodes) == 0 {
+		return nil, nil
+	}
+	if len(nodes) > 1 {
+		return nil, fmt.Errorf("用户绑定了多个节点")
+	}
+	result := echo.Map{
+		"name":   nodes[0].Name,
+		"nlevel": nodes[0].NLevel,
+	}
+	return &result, nil
 }
 
 // 查询登录历史

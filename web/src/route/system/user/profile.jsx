@@ -144,7 +144,7 @@ function BaseInfoTable(props) {
               {profile.acl?.name}（{profile.acl?.summary}）
             </TableCell>
           </TableRow>
-          <TableRow sx={{ td: { borderBottom: 0 } }}>
+          <TableRow>
             <TableCell>安全操作码</TableCell>
             <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
               {profile.secretcode_isset ? '已设置' : '未设置'}
@@ -152,6 +152,12 @@ function BaseInfoTable(props) {
             <TableCell>两因素认证</TableCell>
             <TableCell sx={{ borderLeft: '1px solid' }}>
               {profile.totp_isset ? '已设置' : '未设置'}
+            </TableCell>
+          </TableRow>
+          <TableRow sx={{ td: { borderBottom: 0 } }}>
+            <TableCell>绑定层级</TableCell>
+            <TableCell colSpan={3} sx={{ borderLeft: '1px solid' }}>
+              {profile.node ? `${profile.node.name}，${profile.node.nlevel} 级` : '无'}
             </TableCell>
           </TableRow>
         </TableBody>

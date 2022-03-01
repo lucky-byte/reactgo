@@ -190,15 +190,19 @@ func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 				xlog.FMethod: req.Method,
 				xlog.FIP:     c.RealIP(),
 			})
+			cc := &Context{c, l, conf, nil, nil, nil}
+
 			c.Response().Before(func() {
 				urlpath := c.Request().URL.Path
 
-				// 如果处理请求超出 1 秒，记录一条信息
 				elapsed := time.Since(now).Seconds()
-				if elapsed > 1 {
-					t := fmt.Sprintf("处理 %s 使用了 %f 秒", urlpath, elapsed)
-					l.Info(t)
-					event.Add(event.LevelTodo, t, "请分析该请求的处理方式是否有优化空间")
+				if elapsed > 3 {
+					// 如果处理请求超出 3 秒，记录一条警告
+					cc.Log().Warnf("处理 %s 使用了 %f 秒", urlpath, elapsed)
+				} else if elapsed > 1 {
+					// 如果处理请求超出 1 秒，记录一条信息
+					s := fmt.Sprintf("处理 %s 使用了 %f 秒", urlpath, elapsed)
+					event.Add(event.LevelTodo, s, "请分析该请求的处理方式是否有优化空间")
 				}
 				// 对于下列资源启用客户端缓存
 				if strings.HasPrefix(urlpath, "/static/js/") {
@@ -211,7 +215,6 @@ func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 					c.Response().Header().Set("cache-control", "max-age=31536000")
 				}
 			})
-			cc := &Context{c, l, conf, nil, nil, nil}
 			return next(cc)
 		}
 	}
