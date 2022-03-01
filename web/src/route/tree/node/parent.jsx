@@ -119,9 +119,10 @@ export default function Parent(props) {
     <>
       <LoadingButton loading={loading} onClick={onOpenClick}>修改父节点</LoadingButton>
       <Dialog onClose={onClose} open={open} maxWidth='sm' fullWidth>
-        <DialogTitle>修改父节点</DialogTitle>
-        <DialogContent>
+        <DialogTitle>修改父节点
           <DialogContentText>请选择 {name} 的父节点</DialogContentText>
+        </DialogTitle>
+        <DialogContent>
           <Paper variant='outlined' sx={{ mt: 1, py: 1 }}>
             <TreeView
               aria-label="层次结构"
