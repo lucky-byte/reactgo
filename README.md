@@ -14,14 +14,20 @@ https://reactgo.kross.work
 
 ### 准备工作
 
-需要一台安装了 nodejs 和 go 编译环境的开发机，本文档以 Mac OS X 为例， 其他操作系统需要做适当的调整。
+需要一台安装 nodejs 和 go 编译环境的主机，本文档以 MacOS 为例， 其他系统需要做适当的调整。
 
 ### 创建新仓库
+
+#### GITHUB（新仓库只有代码，没有提交历史）
 
 打开 [ReactGo 仓库](https://github.com/lucky-byte/reactgo)，
 在页面中找到 `Use this template` 绿色按钮，点击它（懒得找直接点
 [这里](https://github.com/lucky-byte/reactgo/generate) 也行），
 将开始创建一个新的仓库，按照页面的提示创建仓库，完成后 clone 到你的开发机。
+
+#### GITEE 及其它平台
+
+在项目页面找到 `Fork` 按钮，点击创建你的 fork 仓库，完成后将你的仓库 clone 到你的开发机。
 
 ### 初始化数据库
 
@@ -30,10 +36,10 @@ ReactGO 支持 `Sqlite`, `MySQL`, 以及 `PostgreSQL`。
 这里以 Sqlite 为例，打开一个终端窗口，进入 `migrate` 子目录，运行
 `./migrate-sqlite.sh` 初始化数据库，创建的数据库文件为 `/tmp/reactgo.db`。
 
-> 修改数据库文件
 > 默认在 `/tmp` 下创建数据库文件，你可以打开 `migrate-sqlite.sh` 进行修改。
 >
-> 如果修改数据库数据库文件名，也需要修改 `config.yaml` 文件中的数据库配置与之对应。
+> 如果修改数据库文件名，也需要修改 `config.yaml` 配置文件中的数据库配置与之对应，
+> 否则无法成功连接数据库。
 
 ### 启动前端
 
@@ -44,10 +50,10 @@ ReactGO 支持 `Sqlite`, `MySQL`, 以及 `PostgreSQL`。
 
 ### 启动后端
 
-运行 `make` ，完了运行 `./reactgo -adduser -config ./config.yaml`，
+运行 &#9332; `make` ，完了运行 &#9333; `./reactgo -adduser -config ./config.yaml`，
 按照提示添加一个后台用户（**注意会在终端打印一个随机密码**，登录需要）。
 
-运行 `make dev` 启动后台服务，然后转到浏览器，使用刚刚创建的用户登录。
+运行 &#9334; `make dev` 启动后台服务，然后转到浏览器，使用刚刚创建的用户登录。
 
 ### 遇到问题
 
