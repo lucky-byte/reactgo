@@ -37,8 +37,8 @@ ReactGO 支持 `Sqlite`, `MySQL`, 以及 `PostgreSQL`。
 
 ### 启动前端
 
-开一个终端窗口，进入仓库 `web` 子目录，运行 `yarn` 安装 npm 模块，
-然后运行 `yarn build` 构建，完了运行 `yarn start` 启动前端开发服务器，
+开一个终端窗口，进入仓库 `web` 子目录，运行 &#9332; `yarn` 安装 npm 模块，
+然后运行 &#9333; `yarn build` 构建，完了运行 &#9334; `yarn start` 启动前端开发服务器，
 会在浏览器打开登录页面。
 一共要运行 3 个命令。
 
