@@ -1,12 +1,5 @@
 # ReactGo
 
-<img style='width: 32px; margin-left: 10px;' alt='React'
-  src='https://cdn.worldvectorlogo.com/logos/react-2.svg'
-/>
-<img style='width: 32px; margin-left: 10px;' alt='Go'
-  src='https://ucarecdn.com/157c4486-7979-4103-a59b-8be08b54a84a/'
-/>
-
 React + Go 项目模板。
 
 ![截屏](screenshot.jpg)
