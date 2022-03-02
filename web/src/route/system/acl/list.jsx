@@ -11,7 +11,6 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
-import Toolbar from '@mui/material/Toolbar';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -202,7 +201,7 @@ function AclInfo(props) {
 
   return (
     <Paper variant='outlined' sx={{ flex: 1, maxHeight: maxHeight, overflow: 'scroll' }}>
-      <Toolbar>
+      <Stack sx={{ mx: 3, mt: 1 }} spacing={1} direction='row'>
         <InplaceInput variant='h6' sx={{ flex: 1 }} text={info.name || ''}
           fontSize='large' onConfirm={onChangeName}
         />
@@ -210,17 +209,17 @@ function AclInfo(props) {
           {collapsed ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
         <Button color='error' onClick={onDelete}>删除</Button>
-      </Toolbar>
-      <Stack sx={{ mx: 3 }} spacing={1}>
+      </Stack>
+      <Stack sx={{ mx: 3, mb: 1 }} spacing={1}>
         <InplaceInput variant='body2' text={info.summary || ''} multiline
           fontSize='small' onConfirm={onChangeSummary}
         />
         <Collapse in={collapsed}>
           <Stack sx={{ mb: 2 }}>
-            <Typography variant='body2' color='gray'>
+            <Typography variant='caption' color='gray'>
               创建时间: {dayjs(info.create_at).format('YYYY/MM/DD HH:mm:ss')}
             </Typography>
-            <Typography variant='body2' color='gray'>
+            <Typography variant='caption' color='gray'>
               更新时间: {dayjs(info.update_at).format('YYYY/MM/DD HH:mm:ss')}
             </Typography>
           </Stack>

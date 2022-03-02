@@ -118,7 +118,7 @@ export default function SignIn() {
       }
       // 跳转到最近访问页面
       let last = localStorage.getItem('last-access');
-      if (last?.startsWith('/signin') || last.startsWith('/resetpass')) {
+      if (last?.startsWith('/signin') || last?.startsWith('/resetpass')) {
         last = '/';
       }
       localStorage.removeItem('last-access');
