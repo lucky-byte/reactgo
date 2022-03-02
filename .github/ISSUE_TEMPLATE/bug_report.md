@@ -1,6 +1,6 @@
 ---
 name: 错误报告
-about: Create a report to help us improve
+about: 提交一个错误报告，帮助我们改进
 title: ''
 labels: ''
 assignees: ''

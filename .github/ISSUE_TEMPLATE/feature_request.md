@@ -1,6 +1,6 @@
 ---
 name: 功能需求
-about: Suggest an idea for this project
+about: 需要新的功能，有好的建议
 title: ''
 labels: ''
 assignees: ''
