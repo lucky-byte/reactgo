@@ -33,8 +33,7 @@ https://reactgo.kross.work
 
 > 继续前，需要安装一个工具 `migrate`，可以从
 > [migrate 项目页](https://github.com/golang-migrate/migrate/releases) 下载，
-> 请注意，这里下载的版本不支持 Sqlite 驱动，如果要用 Sqlite 驱动，需要自己从源码编译，
-> 这有点麻烦。
+> 请注意，这里下载的版本不支持 Sqlite 驱动，如果要用 Sqlite 驱动，需要自己从源码编译。
 >
 > 为了方便，我们编译了一个包含 Sqlite 驱动的版本（Linux amd64 版本），你可以从
 > [这里](https://gitee.com/lucky-byte/reactgo/attach_files/985329/download/migrate-linux-amd64) 下载。
