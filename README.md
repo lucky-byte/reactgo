@@ -10,6 +10,10 @@ React + Go 项目模板。
 
 https://reactgo.kross.work
 
+## DEMO
+
+[演示地址](http://reactgo.lucky-byte.net:23890/)，账号密码: `reactgo`
+
 ## 快速上手
 
 ### 准备工作
