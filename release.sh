@@ -18,7 +18,7 @@ mkdir -p reactgo/conf
 cp serve/config.yaml reactgo/conf/
 
 # 下载 migrate 二进制 for Linux
-curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz > reactgo/bin/migrate.tar.gz
+# curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz > reactgo/bin/migrate.tar.gz
 
 # 数据库脚本
 cp -r migrate reactgo/

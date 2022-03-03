@@ -22,6 +22,9 @@ func AMapLookup(ip string, ipv4 bool) (*Info, error) {
 	if err := db.SelectOne(ql, &webkey); err != nil {
 		return nil, err
 	}
+	if len(webkey) == 0 {
+		return nil, fmt.Errorf("未配置 IP 定位 WEB 服务 KEY")
+	}
 	u, err := url.Parse("https://restapi.amap.com/v5/ip")
 	if err != nil {
 		return nil, err
