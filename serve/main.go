@@ -244,8 +244,11 @@ func main() {
 	}
 	// 捕获系统信号，优雅的退出
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
+	if signal.Ignored(syscall.SIGHUP) {
+		signal.Notify(quit, syscall.SIGHUP)
+	}
 	s := <-quit
 
 	xlog.X.Infof("接收到信号 %s", s.String())
@@ -356,7 +359,7 @@ func httpErrorHandler(err error, c echo.Context) {
 		if e.Code == 404 && c.Request().Method == http.MethodGet {
 			accept := c.Request().Header["Accept"]
 			if len(accept) > 0 && strings.Contains(accept[0], "text/html") {
-				xlog.F("url", url).Warnf("%s 未找到, 返回 index.html", url)
+				xlog.F("url", url).Infof("%s 未找到, 返回 index.html", url)
 				if *webfs == "embed" {
 					content, err := fs.ReadFile(embededWebFS, "web/index.html")
 					if err != nil {
