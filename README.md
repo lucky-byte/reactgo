@@ -37,22 +37,30 @@ https://reactgo.kross.work
 
 ### 初始化数据库
 
-> 继续前，需要安装一个工具 `migrate`，可以从
-> [migrate 项目页](https://github.com/golang-migrate/migrate/releases) 下载，
-> 请注意，这里下载的版本不支持 Sqlite 驱动，如果要用 Sqlite 驱动，需要自己从源码编译。
->
-> 为了方便，我们编译了一个包含 Sqlite 驱动的版本（Linux amd64 版本），你可以从
-> [这里](https://gitee.com/lucky-byte/reactgo/attach_files/985329/download/migrate-linux-amd64) 下载。
+这一步将创建数据库和数据表，ReactGO 支持 `Sqlite`, `MySQL`, 以及 `PostgreSQL`。
 
-ReactGO 支持 `Sqlite`, `MySQL`, 以及 `PostgreSQL`。
+这里以 Sqlite 为例，打开一个终端窗口，进入 `migrate` 子目录，有 2 种方式可用：
 
-这里以 Sqlite 为例，打开一个终端窗口，进入 `migrate` 子目录，运行
-`./migrate-sqlite.sh up` 初始化数据库，创建的数据库文件为 `/tmp/reactgo.db`。
+1. 使用 migrate 命令（推荐）:
 
-> 默认在 `/tmp` 下创建数据库文件，你可以打开 `migrate-sqlite.sh` 进行修改。
->
-> 如果修改数据库文件名，也需要修改 `config.yaml` 配置文件中的数据库配置与之对应，
-> 否则无法成功连接数据库。
+   ```
+   ./migrate-sqlite.sh up
+   ```
+   创建的数据库文件为 `/tmp/reactgo.db`。
+
+   > 安装 migrate
+   >
+   > 可以从 [migrate 项目页](https://github.com/golang-migrate/migrate/releases)
+   > 下载对应的版本安装，
+   > 请注意，该版本不支持 Sqlite 驱动，如果要用 Sqlite 驱动，还需要从源码编译。
+
+2. 使用 sqlite3 命令（不推荐）：
+
+   如果你暂时不想安装 migrate 工具，你可以用 sqlite3 命令初始化数据库，这需要安装 sqlite3 工具。
+
+   ```shell
+   sqlite3 /tmp/reactgo.db -init ./001_v0.up.sql --version
+   ```
 
 ### 启动前端
 
