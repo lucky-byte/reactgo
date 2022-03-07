@@ -13,12 +13,15 @@ import (
 func settings(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	ql := `select resetpass from settings`
-	var resetpass bool
+	ql := `select * from settings`
+	var settings db.Setting
 
-	if err := db.SelectOne(ql, &resetpass); err != nil {
+	if err := db.SelectOne(ql, &settings); err != nil {
 		cc.ErrLog(err).Error("查询设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	return c.JSON(http.StatusOK, echo.Map{"resetpass": resetpass})
+	return c.JSON(http.StatusOK, echo.Map{
+		"lookuserid": settings.LookUserid,
+		"resetpass":  settings.ResetPass,
+	})
 }

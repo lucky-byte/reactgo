@@ -87,7 +87,7 @@ function Menu({ menu }) {
     }
   }, [code, menu.items]);
 
-  const listBgColor = theme.palette.mode === 'dark' ? 'black' : '#efefef';
+  const listBgColor = theme.palette.mode === 'dark' ? 'black' : 'white';
 
   const handleChange = e => {
     setExpanded(!expanded);
@@ -97,7 +97,7 @@ function Menu({ menu }) {
     <Accordion disableGutters elevation={0} square
       expanded={expanded} onChange={handleChange}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="subtitle2">{menu.title}</Typography>
+        <Typography variant="body2">{menu.title}</Typography>
       </AccordionSummary>
       <List sx={{ backgroundColor: listBgColor }}>
         {menu.items.map(i => {

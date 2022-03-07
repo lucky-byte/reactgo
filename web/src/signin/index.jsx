@@ -30,7 +30,8 @@ export default function SignIn() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const setUser = useSetRecoilState(userState);
-  const [resetpass, setResetpass] = useState(false);
+  const [lookUserid, setLookUserid] = useState(false);
+  const [resetPass, setResetPass] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordHide, setPasswordHide] = useState(true);
@@ -48,7 +49,8 @@ export default function SignIn() {
         setLoading(true);
 
         const resp = await get('/signin/settings')
-        setResetpass(resp.resetpass);
+        setLookUserid(resp.lookuserid);
+        setResetPass(resp.resetpass);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
@@ -147,7 +149,7 @@ export default function SignIn() {
                   <PersonIcon />
                 </InputAdornment>
               ),
-              endAdornment: (
+              endAdornment: lookUserid && (
                 <InputAdornment position="end">
                   <ForgetUserid />
                 </InputAdornment>
@@ -178,7 +180,7 @@ export default function SignIn() {
             }}
             sx={{ mt: 4 }}
           />
-          <Help loading={loading} resetpass={resetpass} />
+          <Help loading={loading} resetpass={resetPass} />
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={submitting}>
             登录

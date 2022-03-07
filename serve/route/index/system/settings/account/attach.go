@@ -14,6 +14,7 @@ func Attach(up *echo.Group, code int) {
 	group.Use(acl.AllowWrite(code)) // Write 权限
 	group.Use(acl.AllowAdmin(code)) // Admin 权限
 
+	group.PUT("/lookuserid", lookuserid)
 	group.PUT("/resetpass", resetpass)
 	group.PUT("/duration", duration)
 }

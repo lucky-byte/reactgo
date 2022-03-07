@@ -80,6 +80,7 @@ type ACLAllow struct {
 type Setting struct {
 	UUID          string `db:"uuid"`           // uuid
 	BugReport     bool   `db:"bugreport"`      // 允许报告错误
+	LookUserid    bool   `db:"lookuserid"`     // 允许找回登录名
 	ResetPass     bool   `db:"resetpass"`      // 允许找回密码
 	TokenDuration int    `db:"token_duration"` // 会话持续时间
 }

@@ -11,6 +11,7 @@ import { get, put } from "~/rest";
 
 export default function Account() {
   const { enqueueSnackbar } = useSnackbar();
+  const [lookUserid, setLookUserid] = useState(false);
   const [resetPass, setResetPass] = useState(false);
   const [duration, setDuration] = useState(0);
 
@@ -18,6 +19,7 @@ export default function Account() {
     (async () => {
       try {
         const resp = await get('/system/settings/account/config');
+        setLookUserid(resp.lookuserid);
         setResetPass(resp.resetpass);
         setDuration(resp.token_duration);
       } catch (err) {
@@ -25,6 +27,19 @@ export default function Account() {
       }
     })();
   }, [enqueueSnackbar]);
+
+  // 允许用户找回登录名
+  const onLookUseridCheck = async () => {
+    try {
+      await put('/system/settings/account/lookuserid', new URLSearchParams({
+        lookuserid: !lookUserid,
+      }));
+      enqueueSnackbar('更新成功', { variant: 'success' });
+      setLookUserid(!lookUserid);
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
 
   // 允许用户找回密码
   const onResetPassCheck = async () => {
@@ -65,6 +80,18 @@ export default function Account() {
           <FormHelperText>
             用户登录成功后会话保持时间，以分钟为单位。例如 1440 表示持续时间为 1 天
           </FormHelperText>
+        </Stack>
+        <Divider sx={{ my: 2 }} />
+        <Stack direction='row' alignItems='center'>
+          <Stack sx={{ flex: 1 }}>
+            <Typography>允许用户找回登录名</Typography>
+            <FormHelperText>
+              登录名是用户登录系统的唯一凭证，如果用户忘记了登录名，可以打开此开关允许用户找回登录名
+            </FormHelperText>
+          </Stack>
+          <Switch checked={lookUserid} onChange={onLookUseridCheck}
+            inputProps={{ 'aria-label': '开关' }}
+          />
         </Stack>
         <Divider sx={{ my: 2 }} />
         <Stack direction='row' alignItems='center'>

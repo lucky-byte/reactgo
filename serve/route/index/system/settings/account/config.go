@@ -20,6 +20,7 @@ func config(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
+		"lookuserid":     result.LookUserid,
 		"resetpass":      result.ResetPass,
 		"token_duration": result.TokenDuration,
 	})
