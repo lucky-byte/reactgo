@@ -6,6 +6,7 @@ import History from "./history";
 import Settings from "./settings";
 import Task from "./task";
 import Event from "./event";
+import Node from "./node";
 
 export default function System() {
   return (
@@ -16,6 +17,7 @@ export default function System() {
       <Route path='settings/*' element={<Settings />} />
       <Route path='task/*' element={<Task />} />
       <Route path='event/*' element={<Event />} />
+      <Route path='node/*' element={<Node />} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

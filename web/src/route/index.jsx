@@ -56,7 +56,7 @@ import About from "./about";
 import Codes from "./codes";
 import Dashboard from "./dashboard";
 import System from "./system";
-import Tree from "./tree";
+// import Tree from "./tree";
 import User from "./user";
 
 export default function Index() {
@@ -119,7 +119,7 @@ export default function Index() {
               <Route path='/' element={<Dashboard />} />
               <Route path='user/*' element={<User />} />
               <Route path='system/*' element={<System />} />
-              <Route path='tree/*' element={<Tree />} />
+              {/* <Route path='tree/*' element={<Tree />} /> */}
               <Route path='codes' element={<Codes />} />
               <Route path='about' element={<About />} />
               <Route path='*' element={<NotFound />} />

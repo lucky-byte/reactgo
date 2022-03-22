@@ -13,7 +13,7 @@ const urlCodes = {
   9040: { title: '系统事件', to: '/system/event' },
   9050: { title: '定时任务', to: '/system/task' },
   9051: { title: '任务诊断', to: '/system/task/entries', omit: true },
-  9200: { title: '层级管理', to: '/tree/node' },
+  9060: { title: '层级管理', to: '/system/node' },
 
   // 用户设置
   8000: { title: '用户资料', to: '/user', omit: true },

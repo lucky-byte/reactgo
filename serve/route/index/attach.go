@@ -12,7 +12,6 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/index/secretcode"
 	"github.com/lucky-byte/reactgo/serve/route/index/signin"
 	"github.com/lucky-byte/reactgo/serve/route/index/system"
-	"github.com/lucky-byte/reactgo/serve/route/index/tree"
 	"github.com/lucky-byte/reactgo/serve/route/index/user"
 )
 
@@ -42,5 +41,4 @@ func Attach(up *echo.Echo, conf *config.ViperConfig) {
 
 	user.Attach(group)
 	system.Attach(group)
-	tree.Attach(group)
 }

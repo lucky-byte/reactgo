@@ -14,12 +14,6 @@ const menus = [{
     icon: DashboardIcon,
   }],
 }, {
-  title: '层级管理',
-  items: [{
-    code: 9200,
-    icon: AccountTreeIcon,
-  }],
-}, {
   title: '系统管理',
   items: [{
     code: 9000,
@@ -39,6 +33,9 @@ const menus = [{
   }, {
     code: 9050,
     icon: AccessAlarmIcon,
+  }, {
+    code: 9060,
+    icon: AccountTreeIcon,
   }],
 }]
 

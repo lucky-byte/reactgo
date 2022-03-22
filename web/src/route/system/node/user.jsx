@@ -70,7 +70,7 @@ export default function User() {
         if (reload) {
           setProgress(true);
 
-          const resp = await post('/tree/node/user/', new URLSearchParams({
+          const resp = await post('/system/node/user/', new URLSearchParams({
             node: node?.uuid, page, rows, keyword,
           }));
           setCount(resp.count || 0);
@@ -118,7 +118,7 @@ export default function User() {
         contentProps: { p: 8 },
       });
       const params = new URLSearchParams({ uuid: row.uuid });
-      await del('/tree/node/user/delete?' + params.toString());
+      await del('/system/node/user/delete?' + params.toString());
       setReload(true);
     } catch (err) {
       if (err) {
@@ -234,7 +234,7 @@ function Add(props) {
     }
     (async () => {
       try {
-        const resp = await post('/tree/node/user/candidate', new URLSearchParams({
+        const resp = await post('/system/node/user/candidate', new URLSearchParams({
           node: node?.uuid,
         }));
         if (active) {
@@ -263,7 +263,7 @@ function Add(props) {
       }
       const users = value.map(v => v.uuid)
 
-      const resp = await put('/tree/node/user/add', new URLSearchParams({
+      const resp = await put('/system/node/user/add', new URLSearchParams({
         node: node.uuid, users, force,
       }));
       // 如果存在冲突，则提示用户确认

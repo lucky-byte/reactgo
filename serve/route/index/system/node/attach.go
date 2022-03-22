@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/lucky-byte/reactgo/serve/route/index/acl"
-	"github.com/lucky-byte/reactgo/serve/route/index/tree/node/user"
+	"github.com/lucky-byte/reactgo/serve/route/index/system/node/user"
 )
 
 func Attach(g *echo.Group, code int) {

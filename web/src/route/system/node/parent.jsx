@@ -42,7 +42,7 @@ export default function Parent(props) {
       setLoading(true);
 
       const params = new URLSearchParams({ uuid });
-      const resp = await get('/tree/node/?' + params.toString());
+      const resp = await get('/system/node/?' + params.toString());
       if (resp.tree) {
         setTree(resp.tree);
 
@@ -80,7 +80,7 @@ export default function Parent(props) {
       if (!selected) {
         return enqueueSnackbar('请选择父节点', { variant: 'warning' });
       }
-      await put('/tree/node/parent', new URLSearchParams({
+      await put('/system/node/parent', new URLSearchParams({
         uuid, parent: selected,
       }));
       enqueueSnackbar('修改成功', { variant: 'success' });

@@ -86,7 +86,7 @@ export default function Home() {
       setPageData('selected', nodeIds);
 
       const params = new URLSearchParams({ uuid: nodeIds });
-      const resp = await get('/tree/node/info?' + params.toString())
+      const resp = await get('/system/node/info?' + params.toString())
       setNode(resp);
     } catch (err) {
       enqueueSnackbar(err.message);
@@ -110,7 +110,7 @@ export default function Home() {
           setProgress(true);
 
           const params = new URLSearchParams({ root: root });
-          const resp = await get('/tree/node/?' + params.toString());
+          const resp = await get('/system/node/?' + params.toString());
 
           if (resp.tree) {
             setTree(resp.tree || null);
@@ -269,7 +269,7 @@ export default function Home() {
 
     try {
       const target = hoverNode || selected;
-      await put('/tree/node/top', new URLSearchParams({ uuid: target }));
+      await put('/system/node/top', new URLSearchParams({ uuid: target }));
       setReload(true);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
@@ -283,7 +283,7 @@ export default function Home() {
 
     try {
       const target = hoverNode || selected;
-      await put('/tree/node/bottom', new URLSearchParams({ uuid: target }));
+      await put('/system/node/bottom', new URLSearchParams({ uuid: target }));
       setReload(true);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
@@ -297,7 +297,7 @@ export default function Home() {
 
     try {
       const target = hoverNode || selected;
-      await put('/tree/node/up', new URLSearchParams({ uuid: target }));
+      await put('/system/node/up', new URLSearchParams({ uuid: target }));
       setReload(true);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
@@ -311,7 +311,7 @@ export default function Home() {
 
     try {
       const target = hoverNode || selected;
-      await put('/tree/node/down', new URLSearchParams({ uuid: target }));
+      await put('/system/node/down', new URLSearchParams({ uuid: target }));
       setReload(true);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
@@ -322,7 +322,7 @@ export default function Home() {
   // 修改名称
   const onChangeName = async val => {
     try {
-      await put('/tree/node/name', new URLSearchParams({
+      await put('/system/node/name', new URLSearchParams({
         uuid: node.uuid, name: val
       }));
       setNode({ ...node, name: val });
@@ -336,7 +336,7 @@ export default function Home() {
   // 修改描述
   const onChangeSummary = async val => {
     try {
-      await put('/tree/node/summary', new URLSearchParams({
+      await put('/system/node/summary', new URLSearchParams({
         uuid: node.uuid, summary: val
       }));
       setNode({ ...node, summary: val });
@@ -349,7 +349,7 @@ export default function Home() {
   // 添加子节点
   const onAddClick = async () => {
     try {
-      const resp = await post('/tree/node/add', new URLSearchParams({
+      const resp = await post('/system/node/add', new URLSearchParams({
         uuid: node.uuid,
       }));
       enqueueSnackbar('添加成功', { variant: 'success' });
@@ -370,7 +370,7 @@ export default function Home() {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      await put('/tree/node/disable', new URLSearchParams({ uuid: node.uuid }));
+      await put('/system/node/disable', new URLSearchParams({ uuid: node.uuid }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       setReload(true);
       setNode({ ...node, disabled: true });
@@ -390,7 +390,7 @@ export default function Home() {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      await put('/tree/node/enable', new URLSearchParams({ uuid: node.uuid }));
+      await put('/system/node/enable', new URLSearchParams({ uuid: node.uuid }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       setReload(true);
       setNode({ ...node, disabled: false });
@@ -410,7 +410,7 @@ export default function Home() {
         confirmationButtonProps: { color: 'error' },
         contentProps: { p: 8 },
       });
-      await put('/tree/node/delete', new URLSearchParams({ uuid: node.uuid }));
+      await put('/system/node/delete', new URLSearchParams({ uuid: node.uuid }));
       enqueueSnackbar('删除成功', { variant: 'success' });
       setSelected('');
       setPageData('selected', '');
