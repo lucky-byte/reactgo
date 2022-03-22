@@ -149,7 +149,8 @@ create table if not exists images (
 );
 
 create table if not exists geoip (
-  webkey      varchar(128)
+  webkey      varchar(128),
+  apiver      varchar(8) default 'v3'
 );
 
 insert into geoip (webkey) values ('');

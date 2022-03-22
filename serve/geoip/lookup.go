@@ -3,6 +3,8 @@ package geoip
 import (
 	"fmt"
 	"net"
+
+	"github.com/lucky-byte/reactgo/serve/db"
 )
 
 type Info struct {
@@ -27,5 +29,19 @@ func Lookup(ip string) (*Info, error) {
 	if addr.IsPrivate() {
 		return &Info{City: "局域网"}, nil
 	}
-	return AMapLookup(ip, addr.To4() != nil)
+	ql := `select * from geoip`
+	var r db.GeoIP
+
+	// 查询 web key，访问 api 需要 key
+	if err := db.SelectOne(ql, &r); err != nil {
+		return nil, err
+	}
+	if len(r.WebKey) == 0 {
+		return nil, fmt.Errorf("未配置 IP 定位 WEB 服务 KEY")
+	}
+	if r.ApiVer == "v3" {
+		return AMapLookupV3(ip, r.WebKey)
+	}
+	// 该接口 2022.4.30 下线
+	return AMapLookupV5(ip, addr.To4() != nil, r.WebKey)
 }

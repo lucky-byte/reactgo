@@ -141,6 +141,7 @@ type Event struct {
 // IP 定位
 type GeoIP struct {
 	WebKey string `db:"webkey"` // 高德开放平台 web 服务 key
+	ApiVer string `db:"apiver"` // 高德开放平台 IP 定位接口版本
 }
 
 // 层次结构

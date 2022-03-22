@@ -9,33 +9,17 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lucky-byte/reactgo/serve/db"
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 // 通过高德 IP 定位 API 接口查询 IP 对应的地理位置
-func AMapLookup(ip string, ipv4 bool) (*Info, error) {
-	ql := `select webkey from geoip`
-	var webkey string
-
-	// 查询 web key，访问 api 需要 key
-	if err := db.SelectOne(ql, &webkey); err != nil {
-		return nil, err
-	}
-	if len(webkey) == 0 {
-		return nil, fmt.Errorf("未配置 IP 定位 WEB 服务 KEY")
-	}
-	u, err := url.Parse("https://restapi.amap.com/v5/ip")
+func AMapLookupV3(ip string, webkey string) (*Info, error) {
+	u, err := url.Parse("https://restapi.amap.com/v3/ip")
 	if err != nil {
 		return nil, err
 	}
 	params := url.Values{}
 
-	if ipv4 {
-		params.Set("type", "4")
-	} else {
-		params.Set("type", "6")
-	}
 	params.Set("ip", ip)
 	params.Set("key", webkey)
 
@@ -70,27 +54,27 @@ func AMapLookup(ip string, ipv4 bool) (*Info, error) {
 		return nil, fmt.Errorf("%s", result["info"])
 	}
 	// 解析经纬度
-	locations := strings.Split(result["location"], ",")
 	lng, lat := 0.0, 0.0
 
-	if len(locations) >= 2 {
-		lng, err = strconv.ParseFloat(locations[0], 64)
-		if err != nil {
-			xlog.X.WithError(err).Warnf("查询 IP(%s) 位置解析精度错", ip)
-			lng = 0.0
-		}
-		lat, err = strconv.ParseFloat(locations[1], 64)
-		if err != nil {
-			xlog.X.WithError(err).Warnf("查询 IP(%s) 位置解析纬度错", ip)
-			lat = 0.0
+	rectangle := strings.Split(result["rectangle"], ";")
+	if len(rectangle) > 1 {
+		locations := strings.Split(rectangle[0], ",")
+		if len(locations) >= 2 {
+			lng, err = strconv.ParseFloat(locations[0], 64)
+			if err != nil {
+				xlog.X.WithError(err).Warnf("查询 IP(%s) 位置解析精度错", ip)
+				lng = 0.0
+			}
+			lat, err = strconv.ParseFloat(locations[1], 64)
+			if err != nil {
+				xlog.X.WithError(err).Warnf("查询 IP(%s) 位置解析纬度错", ip)
+				lat = 0.0
+			}
 		}
 	}
 	info := Info{
-		Country:   result["country"],
 		Province:  result["province"],
 		City:      result["city"],
-		District:  result["district"],
-		ISP:       result["isp"],
 		Longitude: lng,
 		Latitude:  lat,
 	}
