@@ -7,7 +7,6 @@ import DateAdapter from '@mui/lab/AdapterDayjs';
 import CssBaseline from "@mui/material/CssBaseline";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ConfirmProvider } from 'material-ui-confirm';
-import useWebSocket from 'react-use-websocket';
 import SignIn from "./signin";
 import SignInSMS from "./signin/sms";
 import SignInOTP from "./signin/otp";
@@ -22,9 +21,6 @@ export const useColorModeContent = () => useContext(ColorModeContext);
 export default function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [mode, setMode] = useState(prefersDarkMode ? 'dark' : 'light');
-  const { sendMessage, lastMessage, readyState } = useWebSocket('ws://localhost:3333/ws');
-
-  console.log(readyState);
 
   const colorMode = useMemo(() => ({
     toggleColorMode: () => {

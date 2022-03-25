@@ -5,26 +5,16 @@ import (
 	"fmt"
 	"io"
 	"net/mail"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 
+	"github.com/lucky-byte/reactgo/serve/ticket"
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
-// 已发送的验证码，内存缓存，重启后失效
-var codeCache sync.Map
-
-type cacheEntry struct {
-	timestamp int64  // 发送时间
-	code      string // 验证码
-	email     string // 邮箱地址
-	failed    int    // 验证失败次数
-}
-
-// 30分钟内有效
-const expiryTime = 60 * 30
+var ticketType = "emailcode"
 
 // 生成 6 位随机数字验证码
 func randomCode() string {
@@ -45,25 +35,16 @@ func randomCode() string {
 
 // 检查 1 分钟内是否有发送短信到邮箱，如果有则返回失败，避免发送太频繁
 func isTooFrequency(email string) bool {
-	ret := false
-
 	t := time.Now().Unix()
 
-	codeCache.Range(func(key, value interface{}) bool {
-		entry, ok := value.(*cacheEntry)
-		if !ok {
-			xlog.X.Error("验证码缓存内容无效")
-			return false
-		}
-		if entry.email == email {
-			if t-entry.timestamp < 60 { // 1分钟内不能重复发送验证码到同一个邮箱地址
-				ret = true
-				return false
+	for _, entry := range ticket.Find(ticketType) {
+		if entry.UserData == email {
+			if t-entry.CreateAt < 60 { // 1分钟内不能重复发送验证码到同一个邮箱地址
+				return true
 			}
 		}
-		return true
-	})
-	return ret
+	}
+	return false
 }
 
 // 发送验证码
@@ -93,53 +74,40 @@ func SendCode(email string, name string) (string, error) {
 		return "", err
 	}
 	// 保存验证码后续验证
-	codeCache.Store(id, &cacheEntry{
-		timestamp: time.Now().Unix(),
-		code:      code,
-		email:     email,
-		failed:    0,
+	err = ticket.Add(id, ticketType, &ticket.TicketEntry{
+		CreateAt: time.Now().Unix(),
+		ExpiryAt: time.Now().Add(30 * time.Minute).Unix(),
+		Code:     code,
+		Failed:   0,
+		UserData: email,
 	})
+	if err != nil {
+		return "", err
+	}
 	return id, nil
 }
 
 // 验证验证码
 func VerifyCode(id string, code string, email string) error {
-	defer clean() // 清理过期记录
-
 	// 获取缓存记录
-	v, ok := codeCache.Load(id)
-	if !ok {
-		return fmt.Errorf("记录不存在")
-	}
-	entry, ok := v.(*cacheEntry)
-	if !ok {
-		return fmt.Errorf("验证码缓存内容无效")
+	entry, err := ticket.Get(id, ticketType)
+	if err != nil {
+		return errors.Wrap(err, "查询验证码缓存错")
 	}
 	// 检查是否在有效期内
-	if time.Now().Unix()-entry.timestamp > expiryTime {
+	if time.Now().Unix() > entry.ExpiryAt {
 		return fmt.Errorf("验证超时，请重新获取验证码")
 	}
 	// 超出最多验证失败次数
-	if entry.failed > 5 {
+	if entry.Failed > 5 {
 		return fmt.Errorf("验证失败次数超限，请重新获取验证码")
 	}
 	// 验证是否匹配，如果不匹配增加失败次数
-	if code != entry.code || email != entry.email {
-		entry.failed += 1
-		codeCache.Store(id, entry)
+	if code != entry.Code || email != entry.UserData {
+		entry.Failed += 1
+		ticket.Add(id, ticketType, entry)
 		return fmt.Errorf("验证失败，验证码不匹配")
 	}
-	return nil
-}
-
-// 清理所有过期的记录
-func clean() {
-	codeCache.Range(func(key, value interface{}) bool {
-		if entry, ok := value.(*cacheEntry); ok {
-			if time.Now().Unix()-entry.timestamp > expiryTime {
-				codeCache.Delete(key)
-			}
-		}
-		return true
-	})
+	// 验证通过，删除记录
+	return ticket.Del(id, ticketType)
 }

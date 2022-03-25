@@ -196,23 +196,23 @@ func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 				urlpath := c.Request().URL.Path
 
 				elapsed := time.Since(now).Seconds()
-				if elapsed > 3 {
-					// 如果处理请求超出 3 秒，记录一条警告
-					cc.Log().Warnf("处理 %s 使用了 %f 秒", urlpath, elapsed)
-				} else if elapsed > 1 {
-					// 如果处理请求超出 1 秒，记录一条信息
-					s := fmt.Sprintf("处理 %s 使用了 %f 秒", urlpath, elapsed)
-					event.Add(event.LevelTodo, s, "请分析该请求的处理方式是否有优化空间")
+				if elapsed > 3 { // 如果处理请求超出 3 秒，记录一条警告
+					cc.Log().Warnf("处理 %s 耗时 %f 秒", urlpath, elapsed)
+				} else if elapsed > 1 { // 如果处理请求超出 1 秒，记录一条信息
+					s := fmt.Sprintf("处理 %s 耗时 %f 秒", urlpath, elapsed)
+					event.Add(event.LevelTodo, s, s)
 				}
 				// 对于下列资源启用客户端缓存
-				if strings.HasPrefix(urlpath, "/static/js/") {
-					c.Response().Header().Set("cache-control", "max-age=31536000")
-				}
-				if strings.HasPrefix(urlpath, "/static/media/") {
-					c.Response().Header().Set("cache-control", "max-age=31536000")
-				}
-				if strings.HasPrefix(urlpath, "/static/css/") {
-					c.Response().Header().Set("cache-control", "max-age=31536000")
+				if c.Request().Method == http.MethodGet {
+					if strings.HasPrefix(urlpath, "/static/js/") {
+						c.Response().Header().Set("cache-control", "max-age=31536000")
+					}
+					if strings.HasPrefix(urlpath, "/static/media/") {
+						c.Response().Header().Set("cache-control", "max-age=31536000")
+					}
+					if strings.HasPrefix(urlpath, "/static/css/") {
+						c.Response().Header().Set("cache-control", "max-age=31536000")
+					}
 				}
 			})
 			return next(cc)

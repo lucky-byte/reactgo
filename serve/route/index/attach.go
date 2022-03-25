@@ -13,6 +13,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/index/signin"
 	"github.com/lucky-byte/reactgo/serve/route/index/system"
 	"github.com/lucky-byte/reactgo/serve/route/index/user"
+	"github.com/lucky-byte/reactgo/serve/route/index/ws"
 )
 
 func Attach(up *echo.Echo, conf *config.ViperConfig) {
@@ -25,20 +26,21 @@ func Attach(up *echo.Echo, conf *config.ViperConfig) {
 		CookieHTTPOnly: false,
 		CookieSecure:   conf.ServerSecure(),
 		CookieSameSite: http.SameSiteStrictMode,
+		TokenLookup:    "header:X-Csrf-Token",
 		Skipper: func(c echo.Context) bool {
 			return false
 		},
 	}))
 
-	// 登录及找回密码
-	signin.Attach(group)
-	resetpass.Attach(group)
+	signin.Attach(group)    // 登录
+	resetpass.Attach(group) // 找回密码
 
-	// 用户认证
-	group.Use(auth.Authentication)
+	ws.Attach(group) // WebSocket
+
+	group.Use(auth.Authentication) // 用户认证
 
 	secretcode.Attach(group) // 验证安全码
 
-	user.Attach(group)
-	system.Attach(group)
+	user.Attach(group)   // 用户设置
+	system.Attach(group) // 系统管理
 }

@@ -39,6 +39,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
+import useWebSocket from 'react-use-websocket';
 import titleState from "~/state/title";
 import userState from "~/state/user";
 import { SecretCodeProvider } from "../comp/secretcode";
@@ -56,7 +57,6 @@ import About from "./about";
 import Codes from "./codes";
 import Dashboard from "./dashboard";
 import System from "./system";
-// import Tree from "./tree";
 import User from "./user";
 
 export default function Index() {
@@ -133,6 +133,7 @@ export default function Index() {
 
 function Appbar(params) {
   const theme = useTheme();
+  const location = useLocation();
   const colorMode = useColorModeContent();
   const navigate = useNavigate();
   const title = useRecoilValue(titleState);
@@ -142,6 +143,15 @@ function Appbar(params) {
   const sidebarOpen = Boolean(anchorEl);
   const { enqueueSnackbar } = useSnackbar();
   const [navigatorOpen, setNavigatorOpen] = useState(false);
+
+  console.log(location)
+  console.log(window.location)
+
+  const {
+    sendMessage, lastMessage, readyState
+  } = useWebSocket(process.env.REACT_APP_WS_HOST + '/r/ws/event/');
+
+  console.log("ready: ", readyState);
 
   useHotkeys('ctrl+k, cmd+k', () => { setNavigatorOpen(true); }, {
     enableOnTags: ['INPUT'],
