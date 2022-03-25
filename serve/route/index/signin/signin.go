@@ -26,6 +26,7 @@ func signin(c echo.Context) error {
 		MustString("username", &username).
 		MustString("password", &password).BindError()
 	if err != nil {
+		cc.ErrLog(err).Error("请求参数不完整")
 		return c.String(http.StatusBadRequest, "请求参数不完整")
 	}
 	ql := `select * from users where userid = ?`
@@ -33,9 +34,7 @@ func signin(c echo.Context) error {
 
 	// 查询用户信息
 	if err = db.SelectOne(ql, &user, username); err != nil {
-		cc.ErrLog(err).WithField("userid", username).Errorf(
-			"登录失败, 用户 %s 不存在", username,
-		)
+		cc.ErrLog(err).Errorf("登录失败, 用户 %s 不存在", username)
 		return c.String(http.StatusForbidden, "用户名或密码错误")
 	}
 	// 这里的主要作用是给日志增加 user 和 userid 字段
@@ -61,7 +60,7 @@ func signin(c echo.Context) error {
 	var duration time.Duration
 
 	if err = db.SelectOne(ql, &duration); err != nil {
-		cc.ErrLog(err).Error("查询设置错")
+		cc.ErrLog(err).Error("查询系统设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	newJwt := auth.NewAuthJWT(user.UUID, true, duration*time.Minute)

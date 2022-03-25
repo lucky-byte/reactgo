@@ -12,7 +12,7 @@ type paginationJoin struct {
 
 type Pagination struct {
 	Table   exp.IdentifierExpression
-	selects []interface{}
+	selects []any
 	where   []exp.Expression
 	order   []exp.OrderedExpression
 	join    []paginationJoin
@@ -23,7 +23,7 @@ type Pagination struct {
 func NewPagination(table string, offset, limit uint) *Pagination {
 	return &Pagination{
 		Table:   goqu.T(table),
-		selects: make([]interface{}, 0),
+		selects: make([]any, 0),
 		where:   make([]exp.Expression, 0),
 		order:   make([]exp.OrderedExpression, 0),
 		join:    make([]paginationJoin, 0),
@@ -34,7 +34,7 @@ func NewPagination(table string, offset, limit uint) *Pagination {
 
 // 返回 "table.column" 而不是 "column"，在连表查询时，应该用这个指定表名，
 // 单表查询无所谓，用 goqu.C() 就可以
-func (p *Pagination) Col(col interface{}) exp.IdentifierExpression {
+func (p *Pagination) Col(col any) exp.IdentifierExpression {
 	return p.Table.Col(col)
 }
 
@@ -44,7 +44,7 @@ func (p *Pagination) Col(col interface{}) exp.IdentifierExpression {
 // select table.name from
 //
 // 可以指定多列，也可以多次调用该函数来添加列
-func (p *Pagination) Select(columns ...interface{}) *Pagination {
+func (p *Pagination) Select(columns ...any) *Pagination {
 	p.selects = append(p.selects, columns...)
 	return p
 }
@@ -78,7 +78,7 @@ func (p *Pagination) Join(t exp.Expression, on exp.JoinCondition) *Pagination {
 
 // 这个函数执行 2 个 SQL 查询，第一次查询表的总数，第二次查询当前的分页数据
 // 这个函数应该在上面的条件都准备好之后调用
-func (p *Pagination) Exec(count *uint, records interface{}) error {
+func (p *Pagination) Exec(count *uint, records any) error {
 	b1 := From(p.Table).Select(goqu.COUNT('*'))
 	for _, j := range p.join {
 		b1 = b1.LeftJoin(j.table, j.on)

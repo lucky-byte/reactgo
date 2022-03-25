@@ -66,15 +66,15 @@ func Setup(debug bool, conf *config.ViperConfig) {
 //
 //   withFields usage:  xlog.withFields(logrus.Fields{"key", value, ...}).Info(...)
 //   F usage: xlog.F("key", value, ...).Info(...)
-func F(args ...interface{}) *logrus.Entry {
+func F(args ...any) *logrus.Entry {
 	if len(args)%2 != 0 {
-		X.Panicf("Number of F(...) args must be even, current %d", len(args))
+		X.Panicf("F(...) 的参数数量必须是偶数，当前是 %d", len(args))
 	}
 	fields := logrus.Fields{}
 
 	for i := 0; i < len(args); i += 2 {
 		if s, ok := args[i].(string); !ok {
-			X.Panicf("#%d arg %[2]v(%[2]T) must be string", i, args[i])
+			X.Panicf("#%d arg %[2]v(%[2]T) 必须是字符串", i, args[i])
 		} else {
 			fields[s] = args[i+1]
 		}

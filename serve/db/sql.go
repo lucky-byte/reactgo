@@ -32,7 +32,7 @@ var _scannerInterface = reflect.TypeOf((*sql.Scanner)(nil)).Elem()
 // 查询单行记录，如果返回 0 行或多行都是错误
 //
 // 注意: 该函数仅支持 structScan 及 Scan，不支持 MapScan 或 SliceScan
-func SelectOne(ql string, dest interface{}, params ...interface{}) error {
+func SelectOne(ql string, dest any, params ...any) error {
 	v := reflect.ValueOf(dest)
 
 	if v.Kind() != reflect.Ptr {
@@ -77,7 +77,7 @@ func SelectOne(ql string, dest interface{}, params ...interface{}) error {
 }
 
 // 执行 insert/update/delete，必须且只能影响 1 行
-func ExecOne(ql string, params ...interface{}) error {
+func ExecOne(ql string, params ...any) error {
 	res, err := mainDB.Exec(mainDB.Rebind(ql), params...)
 	if err != nil {
 		return errors.Wrap(err, ql)
@@ -86,7 +86,7 @@ func ExecOne(ql string, params ...interface{}) error {
 }
 
 // a wrapper to sqlx.Get()
-func Get(ql string, dest interface{}, params ...interface{}) error {
+func Get(ql string, dest any, params ...any) error {
 	err := mainDB.Get(dest, mainDB.Rebind(ql), params...)
 	if err != nil {
 		return errors.Wrap(err, ql)
@@ -95,7 +95,7 @@ func Get(ql string, dest interface{}, params ...interface{}) error {
 }
 
 // a wrapper to sqlx.Select()
-func Select(ql string, dest interface{}, params ...interface{}) error {
+func Select(ql string, dest any, params ...any) error {
 	err := mainDB.Select(dest, mainDB.Rebind(ql), params...)
 	if err != nil {
 		return errors.Wrap(err, ql)
@@ -104,7 +104,7 @@ func Select(ql string, dest interface{}, params ...interface{}) error {
 }
 
 // a wrapper to sqlx.Exec()
-func Exec(ql string, params ...interface{}) error {
+func Exec(ql string, params ...any) error {
 	_, err := mainDB.Exec(mainDB.Rebind(ql), params...)
 	if err != nil {
 		return errors.Wrap(err, ql)
@@ -113,6 +113,6 @@ func Exec(ql string, params ...interface{}) error {
 }
 
 // a wrapper to sqlx.In()
-func In(ql string, args ...interface{}) (string, []interface{}, error) {
+func In(ql string, args ...any) (string, []any, error) {
 	return sqlx.In(ql, args...)
 }

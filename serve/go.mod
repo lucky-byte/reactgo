@@ -1,6 +1,6 @@
 module github.com/lucky-byte/reactgo/serve
 
-go 1.17
+go 1.18
 
 require (
 	github.com/doug-martin/goqu/v9 v9.18.0

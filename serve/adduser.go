@@ -20,7 +20,7 @@ import (
 )
 
 // fatal same as fmt.Fatal(), print error message and exit
-func fatal(format string, args ...interface{}) {
+func fatal(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
 	fmt.Println()
 	color.Red(msg)
