@@ -192,7 +192,7 @@ func main() {
 		engine.GET("/manifest.json", handler)
 		engine.GET("/robots.txt", handler)
 	} else {
-		webdir := conf.Webdir()
+		webdir := conf.ServerWebdir()
 		if len(webdir) > 0 {
 			if info, err := os.Stat(webdir); err != nil || !info.IsDir() {
 				xlog.X.Fatalf("WEB 目录 '%s' 不是一个目录", webdir)

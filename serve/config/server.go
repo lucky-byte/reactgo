@@ -1,5 +1,10 @@
 package config
 
+// server.webdir
+func (c *ViperConfig) ServerWebdir() string {
+	return c.vp.GetString("server.webdir")
+}
+
 // server.httpurl
 func (c *ViperConfig) ServerHttpURL() string {
 	return c.vp.GetString("server.httpurl")
@@ -8,6 +13,16 @@ func (c *ViperConfig) ServerHttpURL() string {
 // server.bind
 func (c *ViperConfig) ServerBind() string {
 	return c.vp.GetString("server.bind")
+}
+
+// server.proxy
+func (c *ViperConfig) ServerProxy() bool {
+	return c.vp.GetBool("server.proxy")
+}
+
+// server.cluster
+func (c *ViperConfig) ServerCluster() bool {
+	return c.vp.GetBool("server.cluster")
 }
 
 // server.secure

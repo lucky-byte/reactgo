@@ -39,7 +39,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
-import useWebSocket from 'react-use-websocket';
 import titleState from "~/state/title";
 import userState from "~/state/user";
 import { SecretCodeProvider } from "../comp/secretcode";
@@ -65,6 +64,19 @@ export default function Index() {
   const progress = useRecoilValue(progressState);
   const setCode = useSetRecoilState(codeState);
   const [progressVisible, setProgressVisible] = useState(false);
+
+  const ws = new WebSocket('ws://localhost:4444/r/ws/event/')
+
+  ws.onopen = () => {
+    console.log('ws open')
+  }
+  ws.onmessage = e => {
+    console.log('msg: ', e.data)
+  }
+  ws.onclose = () => {
+    console.log('closed')
+  }
+  ws.close()
 
   // 延迟显示全局进度条
   useEffect(() => {
@@ -133,7 +145,6 @@ export default function Index() {
 
 function Appbar(params) {
   const theme = useTheme();
-  const location = useLocation();
   const colorMode = useColorModeContent();
   const navigate = useNavigate();
   const title = useRecoilValue(titleState);
@@ -143,15 +154,6 @@ function Appbar(params) {
   const sidebarOpen = Boolean(anchorEl);
   const { enqueueSnackbar } = useSnackbar();
   const [navigatorOpen, setNavigatorOpen] = useState(false);
-
-  console.log(location)
-  console.log(window.location)
-
-  const {
-    sendMessage, lastMessage, readyState
-  } = useWebSocket(process.env.REACT_APP_WS_HOST + '/r/ws/event/');
-
-  console.log("ready: ", readyState);
 
   useHotkeys('ctrl+k, cmd+k', () => { setNavigatorOpen(true); }, {
     enableOnTags: ['INPUT'],

@@ -12,8 +12,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-var ticketType = "secretcode"
-
 // 生成 token 并缓存
 func genToken(user_uuid string) string {
 	var token string
@@ -24,7 +22,7 @@ func genToken(user_uuid string) string {
 	} else {
 		token = hex.EncodeToString(r)
 	}
-	err := ticket.Add(user_uuid, ticketType, &ticket.TicketEntry{
+	err := ticket.Set(user_uuid, &ticket.TicketEntry{
 		CreateAt: time.Now().Unix(),
 		ExpiryAt: time.Now().Add(10 * time.Minute).Unix(),
 		Code:     token,
@@ -38,7 +36,7 @@ func genToken(user_uuid string) string {
 
 // 验证 token 是否正确
 func verifyToken(user_uuid string, token string) error {
-	entry, err := ticket.Get(user_uuid, ticketType)
+	entry, err := ticket.Get(user_uuid)
 	if err != nil {
 		return errors.Wrap(err, "查询验证码缓存错")
 	}
@@ -53,9 +51,9 @@ func verifyToken(user_uuid string, token string) error {
 	// 验证是否匹配，如果不匹配增加失败次数
 	if token != entry.Code {
 		entry.Failed += 1
-		ticket.Add(user_uuid, ticketType, entry)
+		ticket.Set(user_uuid, entry)
 		return fmt.Errorf("验证失败，TOKEN 不匹配")
 	}
 	// 验证成功，删除记录
-	return ticket.Del(user_uuid, ticketType)
+	return ticket.Del(user_uuid)
 }

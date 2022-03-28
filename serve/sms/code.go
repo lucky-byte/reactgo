@@ -13,8 +13,6 @@ import (
 	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
-var ticketType = "smscode"
-
 // 生成 6 位随机数字验证码
 func randomCode() string {
 	table := [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
@@ -34,16 +32,19 @@ func randomCode() string {
 
 // 检查 1 分钟内是否有发送短信到手机号，如果有则返回失败，避免发送太频繁
 func isTooFrequency(mobile string) bool {
+	r := false
 	t := time.Now().Unix()
 
-	for _, entry := range ticket.Find(ticketType) {
-		if entry.UserData == mobile {
-			if t-entry.CreateAt < 60 { // 1分钟内不能重复发送验证码到同一个手机号
-				return true
+	ticket.Range(func(k string, e *ticket.TicketEntry) bool {
+		if e.UserData == mobile {
+			if t-e.CreateAt < 60 { // 1分钟内不能重复发送验证码到同一个手机号
+				r = true
 			}
+			return true
 		}
-	}
-	return false
+		return false
+	})
+	return r
 }
 
 // 发送短信验证码
@@ -63,7 +64,7 @@ func SendCode(mobile string) (string, error) {
 		return "", err
 	}
 	// 保存验证码后续验证
-	err = ticket.Add(smsid, ticketType, &ticket.TicketEntry{
+	err = ticket.Set(smsid, &ticket.TicketEntry{
 		CreateAt: time.Now().Unix(),
 		ExpiryAt: time.Now().Add(10 * time.Minute).Unix(),
 		Code:     code,
@@ -78,7 +79,7 @@ func SendCode(mobile string) (string, error) {
 
 // 验证短信验证码
 func VerifyCode(smsid string, code string, mobile string) error {
-	entry, err := ticket.Get(smsid, ticketType)
+	entry, err := ticket.Get(smsid)
 	if err != nil {
 		return errors.Wrap(err, "查询验证码缓存错")
 	}
@@ -93,9 +94,9 @@ func VerifyCode(smsid string, code string, mobile string) error {
 	// 验证是否匹配，如果不匹配增加失败次数
 	if code != entry.Code || mobile != entry.UserData {
 		entry.Failed += 1
-		ticket.Add(smsid, ticketType, entry)
+		ticket.Set(smsid, entry)
 		return fmt.Errorf("验证失败，验证码不匹配")
 	}
 	// 验证通过，删除记录
-	return ticket.Del(smsid, ticketType)
+	return ticket.Del(smsid)
 }

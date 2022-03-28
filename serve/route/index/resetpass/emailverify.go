@@ -32,20 +32,20 @@ func emailverify(c echo.Context) error {
 	var user db.User
 
 	if err = db.SelectOne(ql, &user, username, email); err != nil {
-		cc.ErrLog(err).Error("查询用户信息错")
+		cc.ErrLog(err).Errorf("查询用户 %s(%s) 信息错", username, email)
 		return c.String(http.StatusBadRequest, "未查询到用户信息")
 	}
 
 	// 验证
 	if err = mailfs.VerifyCode(id, code, email); err != nil {
-		cc.ErrLog(err).Error("验证邮件验证码失败")
+		cc.ErrLog(err).Errorf("用户 %s(%s) 验证邮件验证码失败", username, email)
 		return c.String(http.StatusBadRequest, "验证失败")
 	}
 
 	// 发送验证码
 	smsid, err := sms.SendCode(user.Mobile)
 	if err != nil {
-		cc.ErrLog(err).Error("发送短信验证码失败")
+		cc.ErrLog(err).Errorf("发送短信验证码到 %s 失败", user.Mobile)
 		return c.String(http.StatusInternalServerError, "不能发送短信验证码")
 	}
 	return c.JSON(http.StatusOK, echo.Map{

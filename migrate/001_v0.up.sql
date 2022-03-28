@@ -186,4 +186,13 @@ create table if not exists tree_bind (
 
 create unique index tree_bind_node_entity_type on tree_bind(node, entity, type);
 
+create table if not exists tickets (
+  key         varchar(64)     primary key not null,
+  create_at   bigint          not null,
+  expiry_at   bigint          not null,
+  code        varchar(64)     not null,
+  failed      int             not null default 0,
+  user_data   varchar(128)
+);
+
 commit;

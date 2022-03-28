@@ -29,6 +29,7 @@ export default function ResetPass() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+  const [sending, setSending] = useState(false);
   const [id, setId] = useState('');
   const [time, setTime] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -77,6 +78,8 @@ export default function ResetPass() {
       if (!isEmail(email)) {
         return enqueueSnackbar('邮箱地址格式错误', { variant: 'warning' });
       }
+      setSending(true);
+
       const resp = await post('/resetpass/emailcode', new URLSearchParams({
         username, email,
       }));
@@ -88,6 +91,8 @@ export default function ResetPass() {
       setTime(60);
     } catch (err) {
       enqueueSnackbar(err.message);
+    } finally {
+      setSending(false);
     }
   }
 
@@ -183,7 +188,7 @@ export default function ResetPass() {
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <Button disabled={time > 0} onClick={onSendCode}>
+                  <Button disabled={sending || time > 0} onClick={onSendCode}>
                     {time > 0 ? `${time} 秒` : '获取验证码'}
                   </Button>
                 </InputAdornment>

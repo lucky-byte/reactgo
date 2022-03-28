@@ -3,38 +3,50 @@ package ticket
 import "github.com/lucky-byte/reactgo/serve/config"
 
 type TicketEntry struct {
-	CreateAt int64  // 创建时间
-	ExpiryAt int64  // 过期时间
-	Code     string // 代码
-	Failed   int    // 失败次数
-	UserData string // 用户数据
+	Key      string `db:"key"`       // key
+	CreateAt int64  `db:"create_at"` // 创建时间
+	ExpiryAt int64  `db:"expiry_at"` // 过期时间
+	Code     string `db:"code"`      // 代码
+	Failed   int    `db:"failed"`    // 失败次数
+	UserData string `db:"user_data"` // 用户数据
 }
 
-type Ticket interface {
-	add(k, t string, e *TicketEntry) error
-	del(k, t string) error
-	get(k, t string) (*TicketEntry, error)
-	find(t string) []*TicketEntry
+type ticket interface {
+	Set(k string, e *TicketEntry) error
+	Get(k string) (*TicketEntry, error)
+	Del(k string) error
+	Range(f func(k string, e *TicketEntry) bool)
+	Clean()
 }
 
-var tickets Ticket
+var tickets ticket
 
+// 在单实例模式下，是用内存缓存 tickets，在集群模式下，使用数据库存储 tickets 可以共享
 func Init(conf *config.ViperConfig) {
-	tickets = &memoryTicket{}
+	if conf.ServerCluster() {
+		tickets = &dbTicket{}
+	} else {
+		tickets = &mapTicket{}
+	}
 }
 
-func Add(k, t string, e *TicketEntry) error {
-	return tickets.add(k, t, e)
+// 增加记录，如果存在则更新, k 是记录的 key
+func Set(k string, e *TicketEntry) error {
+	return tickets.Set(k, e)
 }
 
-func Del(k, t string) error {
-	return tickets.del(k, t)
+// 删除记录
+func Del(k string) error {
+	return tickets.Del(k)
 }
 
-func Get(k, t string) (*TicketEntry, error) {
-	return tickets.get(k, t)
+// 获取记录
+func Get(k string) (*TicketEntry, error) {
+	defer tickets.Clean()
+	return tickets.Get(k)
 }
 
-func Find(t string) []*TicketEntry {
-	return tickets.find(t)
+// 遍历
+func Range(f func(k string, e *TicketEntry) bool) {
+	tickets.Range(f)
 }

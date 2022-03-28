@@ -63,7 +63,8 @@ func smsVerify(c echo.Context) error {
 	// 验证短信验证码
 	err = sms.VerifyCode(smsid, code, mobile)
 	if err != nil {
-		cc.ErrLog(err).WithField("mobile", mobile).Error("验证短信验证码失败")
+		cc.ErrLog(err).WithField("mobile", mobile).
+			Errorf("用户 %s 验证短信验证码失败", username)
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	// 查询用户信息
@@ -71,7 +72,7 @@ func smsVerify(c echo.Context) error {
 	var user db.User
 
 	if err = db.SelectOne(ql, &user, username, mobile); err != nil {
-		cc.ErrLog(err).Error("查询用户信息错")
+		cc.ErrLog(err).Errorf("查询用户 %s(%s) 信息错", username, mobile)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	// 生成新密码
@@ -109,7 +110,7 @@ func smsVerify(c echo.Context) error {
 
 	// 发送邮件
 	if err = m.Send(); err != nil {
-		cc.ErrLog(err).Error("发送邮件失败")
+		cc.ErrLog(err).Errorf("发送邮件到 %s 失败", user.Email)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

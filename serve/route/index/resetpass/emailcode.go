@@ -26,7 +26,7 @@ func emailcode(c echo.Context) error {
 	cc.Trim(&username, &email)
 
 	if _, err = mail.ParseAddress(email); err != nil {
-		cc.ErrLog(err).Error("解析邮箱地址错误")
+		cc.ErrLog(err).Errorf("解析邮箱地址(%s)错误", email)
 		c.String(http.StatusBadRequest, "邮箱地址格式错误")
 	}
 
@@ -47,7 +47,7 @@ func emailcode(c echo.Context) error {
 	var user db.User
 
 	if err = db.SelectOne(ql, &user, username, email); err != nil {
-		cc.ErrLog(err).Error("查询用户信息错")
+		cc.ErrLog(err).Errorf("查询用户 %s(%s) 信息错", username, email)
 		return c.String(http.StatusBadRequest, "未查询到用户信息")
 	}
 	if user.Disabled || user.Deleted {
@@ -61,7 +61,7 @@ func emailcode(c echo.Context) error {
 	// 发送验证码到邮箱
 	id, err := mailfs.SendCode(email, user.Name)
 	if err != nil {
-		cc.ErrLog(err).Error("发送验证邮件失败")
+		cc.ErrLog(err).Errorf("发送验证邮件到 %s 失败", email)
 		return c.String(http.StatusInternalServerError, "不能发送验证邮件")
 	}
 	return c.JSON(http.StatusOK, echo.Map{"id": id})
