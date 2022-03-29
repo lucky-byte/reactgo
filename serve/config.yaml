@@ -32,15 +32,6 @@ server:
   #
   cluster: false
 
-  # 服务器对外的访问 URL(包括端口)，例如 http://localhost:3000
-  #
-  # 如果该选项为空，那么 URL 将从下面的 3 个选项获取：
-  # secure, domains, bind
-  #
-  # httpurl = (secure ? https : http) :// (domains[0]) : (bind port)
-  #
-  httpurl: http://localhost:4444
-
   # 是否允许 TLS(https)
   # 如果不是通过反向代理，那么应该设置为 true，并提供相应的证书
   #
@@ -53,12 +44,21 @@ server:
     enabled: false
     domains: [ your-domain, your-domain2 ]
     cachedir: /tmp
-    email: service@lucky-byte.com
+    email: your@email.com
 
   # TLS 私钥和证书文件
   #
   tlscrt: cert.pem
   tlskey: key.pem
+
+  # 服务器对外的访问 URL(包括端口)，例如 http://localhost:3000
+  #
+  # 如果该选项为空，那么 URL 将从下面的 3 个选项获取：
+  # secure, domains, bind
+  #
+  # httpurl = (secure ? https : http) :// (domains[0]) : (bind port)
+  #
+  httpurl: http://localhost:4444
 
 # 数据库配置
 #
@@ -81,3 +81,10 @@ task:
   # 环境变量，名称会转换为大些字母
   env:
     name: value
+
+# nats 配置
+#
+nats:
+  # 服务器地址
+  #
+  servers: [ nats://localhost:4222 ]

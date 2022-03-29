@@ -57,6 +57,7 @@ import Codes from "./codes";
 import Dashboard from "./dashboard";
 import System from "./system";
 import User from "./user";
+import nats from '~/lib/nats';
 
 export default function Index() {
   const location = useLocation();
@@ -64,19 +65,6 @@ export default function Index() {
   const progress = useRecoilValue(progressState);
   const setCode = useSetRecoilState(codeState);
   const [progressVisible, setProgressVisible] = useState(false);
-
-  const ws = new WebSocket('ws://localhost:4444/r/ws/event/')
-
-  ws.onopen = () => {
-    console.log('ws open')
-  }
-  ws.onmessage = e => {
-    console.log('msg: ', e.data)
-  }
-  ws.onclose = () => {
-    console.log('closed')
-  }
-  ws.close()
 
   // 延迟显示全局进度条
   useEffect(() => {
@@ -198,6 +186,32 @@ function Appbar(params) {
       })();
     }
   }, [user, setUser, navigate, enqueueSnackbar]);
+
+  // 连接 nats 服务器
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return;
+    }
+    (async () => {
+      try {
+        // 获取 nats 服务器配置
+        const resp = await get('/nats');
+        if (!resp.servers) {
+          enqueueSnackbar('未配置消息通道，不能接收异步通知', { variant: 'info' });
+        } else {
+          await nats.open(resp.servers, resp.name);
+        }
+      } catch (err) {
+        enqueueSnackbar(err.message || '连接消息通道失败');
+      }
+    })();
+
+    // 关闭连接
+    return async () => {
+      await nats.close();
+    }
+  }, [enqueueSnackbar]);
 
   // 显示/隐藏 菜单栏
   const openSidebarClick = () => {
