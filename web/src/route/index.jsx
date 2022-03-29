@@ -198,9 +198,21 @@ function Appbar(params) {
         // 获取 nats 服务器配置
         const resp = await get('/nats');
         if (!resp.servers) {
-          enqueueSnackbar('未配置消息通道，不能接收异步通知', { variant: 'info' });
-        } else {
-          await nats.open(resp.servers, resp.name);
+          return enqueueSnackbar('未配置消息通道，不能接收异步通知', { variant: 'info' });
+        }
+        // 连接服务器
+        const broker = await nats.open(resp.servers, resp.name);
+
+        const codec = nats.JSONCodec();
+
+        // 订阅事件
+        const sub = broker.subscribe("event")
+
+        // 收到事件时弹出提示
+        for await (const m of sub) {
+          const data = codec.decode(m.data);
+          console.log(JSON.stringify(data, null, 2))
+          console.log(`[${sub.getProcessed()}]: ${codec.decode(m.data)}`)
         }
       } catch (err) {
         enqueueSnackbar(err.message || '连接消息通道失败');

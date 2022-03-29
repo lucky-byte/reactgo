@@ -1,4 +1,4 @@
-import { connect } from "nats.ws";
+import { connect, StringCodec, JSONCodec } from "nats.ws";
 
 let broker = null;
 
@@ -6,8 +6,10 @@ const open = async (servers, name) => {
 	broker = await connect({
 		servers: servers,
 		name: name,
+		reconnectTimeWait: 3000,
 		debug: process.env.NODE_ENV === 'development',
 	});
+	return broker;
 }
 
 const close = async () => {
@@ -18,11 +20,12 @@ const close = async () => {
 	}
 }
 
-const sub = async topic => {
-	broker.subscript(topic)
+const getBorker = () => {
+	return broker;
 }
 
 const exports = {
-	open, close, sub,
+	StringCodec, JSONCodec, open, close, getBorker,
 }
+
 export default exports;

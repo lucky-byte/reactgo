@@ -85,6 +85,7 @@ task:
 # nats 配置
 #
 nats:
-  # 服务器地址
+  # 服务器地址，websocket 是浏览器连接的服务器地址
   #
   servers: [ nats://localhost:4222 ]
+  websocket: [ ws://localhost:4333 ]

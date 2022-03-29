@@ -34,6 +34,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/event"
 	"github.com/lucky-byte/reactgo/serve/image"
 	"github.com/lucky-byte/reactgo/serve/mailfs"
+	"github.com/lucky-byte/reactgo/serve/nats"
 	"github.com/lucky-byte/reactgo/serve/route/index"
 	"github.com/lucky-byte/reactgo/serve/task"
 	"github.com/lucky-byte/reactgo/serve/ticket"
@@ -116,8 +117,13 @@ func main() {
 	// 日志记录到事件表
 	xlog.X.AddHook(event.NewEventHook(event.FormatJson))
 
-	// 验证码存储
+	// 验证码
 	ticket.Init(conf)
+
+	// 连接 nats 服务器
+	if err = nats.Connect(conf); err != nil {
+		log.Fatalf("%v", err)
+	}
 
 	engine = echo.New()
 	engine.Debug = debug
@@ -262,6 +268,7 @@ func main() {
 	}
 	task.Stop()
 	db.Disconnect()
+	nats.Drain()
 }
 
 // 在单独的 goroutine 中启动 http 服务

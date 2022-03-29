@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/nats"
 )
 
 const (
@@ -22,6 +23,17 @@ func Add(level int, title, message string) {
 	err := db.ExecOne(ql, uuid.NewString(), level, title, message)
 	if err != nil {
 		log.Printf("记录事件错: %v", err)
+	}
+	// 发布事件到消息队列
+	if nats.Broker != nil {
+		err = nats.Broker.Publish("event", &nats.Event{
+			Level:   level,
+			Title:   title,
+			Message: message,
+		})
+		if err != nil {
+			log.Printf("发布 nats 事件错: %v", err)
+		}
 	}
 }
 
