@@ -117,7 +117,7 @@ export default function Index() {
           <Appbar />
           <Box sx={{ maxHeight: '100%', overflow: 'scroll' }}>
             <Routes>
-              <Route path='/' element={<Dashboard />} />
+              <Route path='/*' element={<Dashboard />} />
               <Route path='user/*' element={<User />} />
               <Route path='system/*' element={<System />} />
               <Route path='codes' element={<Codes />} />

@@ -6,11 +6,15 @@ import SecurityIcon from '@mui/icons-material/Security';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 
 const menus = [{
-  title: '看板',
+  title: '欢迎',
   items: [{
     code: 100,
+    icon: AccessibilityNewIcon,
+  }, {
+    code: 101,
     icon: DashboardIcon,
   }],
 }, {

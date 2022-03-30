@@ -23,7 +23,8 @@ const urlCodes = {
   8022: { title: '设置两因素认证', to: '/user/security/otp', omit: true },
 
   // 下面自定义业务
-  100: { title: '看板', to: '/' },
+  100: { title: '欢迎', to: '/' },
+  101: { title: '看板', to: '/kanban' },
 }
 
 export default urlCodes;
