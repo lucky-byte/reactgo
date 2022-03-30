@@ -38,6 +38,7 @@ import Portal from '@mui/material/Portal';
 import LinearProgress from '@mui/material/LinearProgress';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { useSnackbar } from 'notistack';
+import Push from 'push.js';
 import { useHotkeys } from 'react-hotkeys-hook';
 import titleState from "~/state/title";
 import userState from "~/state/user";
@@ -119,7 +120,6 @@ export default function Index() {
               <Route path='/' element={<Dashboard />} />
               <Route path='user/*' element={<User />} />
               <Route path='system/*' element={<System />} />
-              {/* <Route path='tree/*' element={<Tree />} /> */}
               <Route path='codes' element={<Codes />} />
               <Route path='about' element={<About />} />
               <Route path='*' element={<NotFound />} />
@@ -127,6 +127,7 @@ export default function Index() {
           </Box>
         </Stack>
       </Box>
+      <Event />
     </SecretCodeProvider>
   )
 }
@@ -140,7 +141,7 @@ function Appbar(params) {
   const [sidebar, setSidebar] = useRecoilState(sidebarState);
   const [anchorEl, setAnchorEl] = useState(null);
   const sidebarOpen = Boolean(anchorEl);
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const [navigatorOpen, setNavigatorOpen] = useState(false);
 
   useHotkeys('ctrl+k, cmd+k', () => { setNavigatorOpen(true); }, {
@@ -186,77 +187,6 @@ function Appbar(params) {
       })();
     }
   }, [user, setUser, navigate, enqueueSnackbar]);
-
-  // 连接 nats 服务器，接收事件通知
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return;
-    }
-    if (!user) {
-      return;
-    }
-    (async () => {
-      try {
-        // 获取 nats 服务器配置
-        const resp = await get('/nats');
-        if (!resp.servers) {
-          return enqueueSnackbar('未配置消息通道，不能接收异步通知', { variant: 'info' });
-        }
-        // 连接服务器
-        const broker = await nats.open(resp.servers, resp.name);
-
-        let event_allow = false;
-
-        for (let i = 0; i < user?.allows?.length; i++) {
-          if (user.allows[i].code === 9040) {
-            event_allow = true;
-            break;
-          }
-        }
-        // 如果用户具有事件访问权限，则订阅事件
-        if (event_allow) {
-          const sub = broker.subscribe("event")
-          const codec = nats.JSONCodec();
-
-          // 收到事件时弹出提示
-          for await (const m of sub) {
-            const event = codec.decode(m.data);
-            if (event.title) {
-              const variants = ['success', 'info', 'warning', 'error']
-
-              enqueueSnackbar(event.title, {
-                variant: variants[parseInt(event.level)] || 'default',
-                preventDuplicate: true,
-                autoHideDuration: 10000,
-                anchorOrigin: {
-                  horizontal: 'right',
-                  vertical: 'top',
-                },
-                action: (
-                  <>
-                    <Button sx={{ color: 'white' }} onClick={() => {
-                      closeSnackbar();
-                      navigate('/system/event');
-                    }}>
-                      查看
-                    </Button>
-                  </>
-                )
-              });
-            }
-          }
-        }
-      } catch (err) {
-        enqueueSnackbar(err.message || '连接消息通道失败');
-      }
-    })();
-
-    // 关闭连接
-    return async () => {
-      await nats.close();
-    }
-  }, [enqueueSnackbar, closeSnackbar, navigate, user]);
 
   // 显示/隐藏 菜单栏
   const openSidebarClick = () => {
@@ -460,5 +390,101 @@ function QuickNavigator(props) {
         }
       </DialogContent>
     </Dialog>
+  )
+}
+
+// 事件推送
+function Event() {
+  const navigate = useNavigate();
+  const user = useRecoilValue(userState);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  // 连接 nats 服务器，接收事件通知
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return;
+    }
+    if (!user) {
+      return;
+    }
+    (async () => {
+      try {
+        // 获取 nats 服务器配置
+        const resp = await get('/nats');
+        if (!resp.servers) {
+          return enqueueSnackbar('未配置消息通道，不能接收异步通知', { variant: 'info' });
+        }
+        // 连接服务器
+        const broker = await nats.open(resp.servers, resp.name);
+
+        let event_allow = false;
+
+        // 检查用户是否有事件访问权限
+        for (let i = 0; i < user?.allows?.length; i++) {
+          if (user.allows[i].code === 9040) {
+            event_allow = true;
+            break;
+          }
+        }
+        // 如果用户具有事件访问权限，则订阅事件
+        if (event_allow) {
+          const sub = broker.subscribe("event")
+          const codec = nats.JSONCodec();
+
+          // 收到事件时弹出提示
+          for await (const m of sub) {
+            const event = codec.decode(m.data);
+            if (event.title) {
+              const variants = ['success', 'info', 'warning', 'error']
+              const variant = variants[parseInt(event.level)] || 'default';
+
+              enqueueSnackbar(event.title, {
+                variant: variant,
+                preventDuplicate: true,
+                autoHideDuration: 10000,
+                anchorOrigin: {
+                  horizontal: 'right',
+                  vertical: 'top',
+                },
+                action: (
+                  <>
+                    <Button sx={{ color: 'white' }} onClick={() => {
+                      closeSnackbar();
+                      navigate('/system/event');
+                    }}>
+                      查看
+                    </Button>
+                  </>
+                )
+              });
+              // web 通知
+              if (Push.Permission.has()) {
+                Push.create(`[${variant}] ${event.title}`, {
+                  timeout: 1000 * 600,
+                  vibrate: [200, 100, 200, 100],
+                  link: '/system/event',
+                  body: '点击查看详情',
+                  icon: '/logo192.png',
+                  onClick: () => {},
+                });
+              }
+            }
+          }
+        }
+      } catch (err) {
+        enqueueSnackbar(err.message || '连接消息通道失败');
+      }
+    })();
+
+    // 关闭连接
+    return async () => {
+      await nats.close();
+    }
+  }, [enqueueSnackbar, closeSnackbar, navigate, user]);
+
+  return (
+    <>
+    </>
   )
 }
