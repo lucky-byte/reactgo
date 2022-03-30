@@ -70,5 +70,18 @@ func list(c echo.Context) error {
 			"fresh":     h.Fresh,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})
+	freshCount := 0
+
+	// 查询未读事件数
+	if fresh != "true" {
+		ql := `select count(*) from events where fresh = true`
+
+		if err = db.SelectOne(ql, &freshCount); err != nil {
+			cc.ErrLog(err).Error("查询事件表错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"count": count, "list": list, "fresh_count": freshCount,
+	})
 }

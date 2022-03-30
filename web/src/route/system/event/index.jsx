@@ -16,13 +16,14 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Pagination from '@mui/material/Pagination';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import SearchInput from '~/comp/search-input';
 import Markdown from '~/comp/markdown';
 import titleState from "~/state/title";
-import Typography from '@mui/material/Typography';
 import { post, put } from '~/rest';
 
 dayjs.extend(relativeTime);
@@ -35,6 +36,7 @@ export default function Event() {
   const [level, setLevel] = useState(0);
   const [fresh, setFresh] = useState('all');
   const [list, setList] = useState([]);
+  const [freshCount, setFreshCount] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [rows] = useState(10);
   const [page, setPage] = useState(0);
@@ -60,6 +62,7 @@ export default function Event() {
           setPageCount(0);
         }
         setList(resp.list || []);
+        setFreshCount(resp.fresh_count || 0);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
@@ -115,6 +118,7 @@ export default function Event() {
           }
           return e;
         }));
+        setFreshCount(freshCount - 1);
       } catch (err) {
         enqueueSnackbar(err.message);
       }
@@ -151,6 +155,14 @@ export default function Event() {
         </TextField>
       </Toolbar>
 
+      {freshCount > 0 &&
+        <Chip label={`${freshCount} 条未读`} size='small' color='info' sx={{ mb: 1 }}
+          onClick={() => {
+            setPage(0);
+            setFresh('true');
+          }}
+        />
+      }
       <Paper variant='outlined' sx={{ mt: 0 }}>
         {list.map(e => (
           <Accordion key={e.uuid} elevation={0} disableGutters

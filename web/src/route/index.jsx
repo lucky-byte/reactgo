@@ -140,7 +140,7 @@ function Appbar(params) {
   const [sidebar, setSidebar] = useRecoilState(sidebarState);
   const [anchorEl, setAnchorEl] = useState(null);
   const sidebarOpen = Boolean(anchorEl);
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [navigatorOpen, setNavigatorOpen] = useState(false);
 
   useHotkeys('ctrl+k, cmd+k', () => { setNavigatorOpen(true); }, {
@@ -187,7 +187,7 @@ function Appbar(params) {
     }
   }, [user, setUser, navigate, enqueueSnackbar]);
 
-  // 连接 nats 服务器
+  // 连接 nats 服务器，接收事件通知
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -203,16 +203,53 @@ function Appbar(params) {
         // 连接服务器
         const broker = await nats.open(resp.servers, resp.name);
 
-        const codec = nats.JSONCodec();
-
         // 订阅事件
         const sub = broker.subscribe("event")
 
+        const codec = nats.JSONCodec();
+
         // 收到事件时弹出提示
         for await (const m of sub) {
-          const data = codec.decode(m.data);
-          console.log(JSON.stringify(data, null, 2))
-          console.log(`[${sub.getProcessed()}]: ${codec.decode(m.data)}`)
+          const event = codec.decode(m.data);
+          if (event.title) {
+            let variant = 'default';
+            switch (parseInt(event.level)) {
+              case 0:
+                variant = 'success';
+                break;
+              case 1:
+                variant = 'info';
+                break;
+              case 2:
+                variant = 'warning';
+                break;
+              case 3:
+                variant = 'error';
+                break;
+              default:
+                variant = 'default';
+                break;
+            }
+            enqueueSnackbar(event.title, {
+              variant: variant,
+              preventDuplicate: true,
+              autoHideDuration: 10000,
+              anchorOrigin: {
+                horizontal: 'right',
+                vertical: 'top',
+              },
+              action: (
+                <>
+                  <Button sx={{ color: 'white' }} onClick={() => {
+                    closeSnackbar();
+                    navigate('/system/event');
+                  }}>
+                    查看
+                  </Button>
+                </>
+              )
+            });
+          }
         }
       } catch (err) {
         enqueueSnackbar(err.message || '连接消息通道失败');
@@ -223,7 +260,7 @@ function Appbar(params) {
     return async () => {
       await nats.close();
     }
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, closeSnackbar, navigate]);
 
   // 显示/隐藏 菜单栏
   const openSidebarClick = () => {

@@ -6,7 +6,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { RecoilRoot } from 'recoil';
 import { SnackbarProvider } from 'notistack';
-import Slide from '@mui/material/Slide';
+import Zoom from '@mui/material/Zoom';
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 import App from './app';
@@ -21,9 +21,12 @@ if (process.env.NODE_ENV === 'production') {
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
-      <SnackbarProvider maxSnack={3} variant='error'
+      <SnackbarProvider
+        maxSnack={3}
+        variant='error'
+        preventDuplicate
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        TransitionComponent={Slide}>
+        TransitionComponent={Zoom}>
         <App />
       </SnackbarProvider>
     </RecoilRoot>
