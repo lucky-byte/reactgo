@@ -193,6 +193,9 @@ function Appbar(params) {
     if (!token) {
       return;
     }
+    if (!user) {
+      return;
+    }
     (async () => {
       try {
         // 获取 nats 服务器配置
@@ -203,52 +206,45 @@ function Appbar(params) {
         // 连接服务器
         const broker = await nats.open(resp.servers, resp.name);
 
-        // 订阅事件
-        const sub = broker.subscribe("event")
+        let event_allow = false;
 
-        const codec = nats.JSONCodec();
+        for (let i = 0; i < user?.allows?.length; i++) {
+          if (user.allows[i].code === 9040) {
+            event_allow = true;
+            break;
+          }
+        }
+        // 如果用户具有事件访问权限，则订阅事件
+        if (event_allow) {
+          const sub = broker.subscribe("event")
+          const codec = nats.JSONCodec();
 
-        // 收到事件时弹出提示
-        for await (const m of sub) {
-          const event = codec.decode(m.data);
-          if (event.title) {
-            let variant = 'default';
-            switch (parseInt(event.level)) {
-              case 0:
-                variant = 'success';
-                break;
-              case 1:
-                variant = 'info';
-                break;
-              case 2:
-                variant = 'warning';
-                break;
-              case 3:
-                variant = 'error';
-                break;
-              default:
-                variant = 'default';
-                break;
+          // 收到事件时弹出提示
+          for await (const m of sub) {
+            const event = codec.decode(m.data);
+            if (event.title) {
+              const variants = ['success', 'info', 'warning', 'error']
+
+              enqueueSnackbar(event.title, {
+                variant: variants[parseInt(event.level)] || 'default',
+                preventDuplicate: true,
+                autoHideDuration: 10000,
+                anchorOrigin: {
+                  horizontal: 'right',
+                  vertical: 'top',
+                },
+                action: (
+                  <>
+                    <Button sx={{ color: 'white' }} onClick={() => {
+                      closeSnackbar();
+                      navigate('/system/event');
+                    }}>
+                      查看
+                    </Button>
+                  </>
+                )
+              });
             }
-            enqueueSnackbar(event.title, {
-              variant: variant,
-              preventDuplicate: true,
-              autoHideDuration: 10000,
-              anchorOrigin: {
-                horizontal: 'right',
-                vertical: 'top',
-              },
-              action: (
-                <>
-                  <Button sx={{ color: 'white' }} onClick={() => {
-                    closeSnackbar();
-                    navigate('/system/event');
-                  }}>
-                    查看
-                  </Button>
-                </>
-              )
-            });
           }
         }
       } catch (err) {
@@ -260,7 +256,7 @@ function Appbar(params) {
     return async () => {
       await nats.close();
     }
-  }, [enqueueSnackbar, closeSnackbar, navigate]);
+  }, [enqueueSnackbar, closeSnackbar, navigate, user]);
 
   // 显示/隐藏 菜单栏
   const openSidebarClick = () => {
@@ -320,7 +316,7 @@ function Appbar(params) {
       <Toolbar>
         <IconButton aria-label="菜单" sx={{ mr: 1 }} color='primary'
           onClick={openSidebarClick}>
-          {sidebar ?  <MenuOpenIcon /> : <MenuIcon />}
+          {sidebar ? <MenuOpenIcon /> : <MenuIcon />}
         </IconButton>
         {!sidebar &&
           <Link component={RouteLink} to='/' sx={{ mr: 2, lineHeight: 1 }}>

@@ -384,7 +384,6 @@ func httpErrorHandler(err error, c echo.Context) {
 		}
 	}
 	xlog.F("url", url, "error", err).Errorf("HTTP服务错误: %v", err)
-	// reportError(err, c)
 
 	// 默认错误处理
 	c.Echo().DefaultHTTPErrorHandler(err, c)
