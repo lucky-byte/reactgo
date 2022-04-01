@@ -27,6 +27,8 @@ func smsVerify(c echo.Context) error {
 		cc.ErrLog(err).Error("请求参数不完整")
 		c.String(http.StatusBadRequest, "请求数据不完整")
 	}
+	cc.Trim(&smsid, &code, &clientid, &historyid)
+
 	// 获取登录 TOKEN
 	authToken := c.Request().Header.Get("x-auth-token")
 	if len(authToken) == 0 {

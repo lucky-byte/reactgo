@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import Kanban from "./kanban";
 import Welcome from "./welcome";
+import Kanban from "./kanban";
 
 export default function Dashboard() {
   return (

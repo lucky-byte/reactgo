@@ -119,9 +119,7 @@ export default function History() {
           <TableBody>
             {list.map((row, index) => (
               <TableRow key={index} hover>
-                <TableCell align="center">
-                  {dayjs(row.create_at).format('YY/MM/DD HH:mm:ss')}
-                </TableCell>
+                <TableCell align="center">{dayjs(row.create_at).fromNow()}</TableCell>
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">{row.browser} on {row.os}</TableCell>

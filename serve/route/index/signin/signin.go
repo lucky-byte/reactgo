@@ -30,6 +30,8 @@ func signin(c echo.Context) error {
 		cc.ErrLog(err).Error("请求参数不完整")
 		return c.String(http.StatusBadRequest, "请求参数不完整")
 	}
+	cc.Trim(&username, &clientid)
+
 	ql := `select * from users where userid = ?`
 	var user db.User
 
