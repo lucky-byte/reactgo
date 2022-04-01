@@ -10,10 +10,12 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from "@mui/material/FormHelperText";
 import Button from "@mui/material/Button";
+import Checkbox from '@mui/material/Checkbox';
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import Banner from '~/img/banner.png';
@@ -27,6 +29,8 @@ export default function SignInOTP() {
   const location = useLocation();
   const user = useRecoilValue(userState);
   const { enqueueSnackbar } = useSnackbar();
+  const [clientId, setClientId] = useState('');
+  const [historyId, setHistoryId] = useState('');
   const [tfa, setTFA] = useState(false);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -40,6 +44,7 @@ export default function SignInOTP() {
     if (!token || !user || !user.userid) {
       return navigate('/signin', { replace: true });
     }
+    setHistoryId(location?.state?.historyid || '');
     setTFA(location?.state?.tfa || false);
   }, [user, navigate, location?.state]);
 
@@ -53,6 +58,15 @@ export default function SignInOTP() {
     }
   }
 
+  // 信任设备
+  const onTrustCheck = e => {
+    if (e.target.checked) {
+      setClientId(localStorage.getItem('client-id'));
+    } else {
+      setClientId('');
+    }
+  }
+
   const onSubmit = async () => {
     if (code.length !== 6) {
       return enqueueSnackbar('请输入完整的口令', {
@@ -62,7 +76,9 @@ export default function SignInOTP() {
     try {
       setLoading(true);
 
-      const resp = await put('/signin/otpverify', new URLSearchParams({ code }));
+      const resp = await put('/signin/otpverify', new URLSearchParams({
+        code, clientid: clientId, historyid: historyId,
+      }));
       if (!resp || !resp.token) {
         return enqueueSnackbar('响应数据不完整', { variant: 'error' });
       }
@@ -91,7 +107,11 @@ export default function SignInOTP() {
       if (!resp.smsid) {
         throw new Error('响应数据无效');
       }
-      navigate('/signin/sms', { state: { smsid: resp.smsid } });
+      navigate('/signin/sms', {
+        state: {
+          smsid: resp.smsid, historyid: historyId,
+        }
+      });
     } catch (err) {
       enqueueSnackbar(err.message)
     }
@@ -137,6 +157,16 @@ export default function SignInOTP() {
               }
             </FormHelperText>
           </FormControl>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={clientId.length > 0}
+                onChange={onTrustCheck}
+                inputProps={{ 'aria-label': '信任当前设备' }}
+              />
+            }
+            label='信任当前设备'
+          />
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={loading}>
             验证

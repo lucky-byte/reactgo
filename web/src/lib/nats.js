@@ -13,8 +13,6 @@ const open = async (servers, name) => {
 }
 
 const close = async () => {
-	console.log('close...')
-
 	if (broker) {
 		await broker.close();
 	}

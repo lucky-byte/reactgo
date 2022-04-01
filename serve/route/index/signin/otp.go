@@ -16,9 +16,12 @@ import (
 func otpVerify(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var code string
+	var code, clientid, historyid string
 
-	err := echo.FormFieldBinder(c).MustString("code", &code).BindError()
+	err := echo.FormFieldBinder(c).
+		MustString("code", &code).
+		String("clientid", &clientid).
+		String("historyid", &historyid).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("请求参数不完整")
 		c.String(http.StatusBadRequest, "请求数据不完整")
@@ -66,6 +69,14 @@ func otpVerify(c echo.Context) error {
 	if err != nil {
 		cc.ErrLog(err).Error("生成登录 TOKEN 错")
 		return c.String(http.StatusInternalServerError, "服务器内部错")
+	}
+	// 记录信任设备
+	if len(clientid) > 0 && len(historyid) > 0 {
+		ql = `update signin_history set clientid = ? where uuid = ?`
+
+		if err = db.ExecOne(ql, clientid, historyid); err != nil {
+			cc.ErrLog(err).Error("更新登录历史错")
+		}
 	}
 	return c.JSON(http.StatusOK, echo.Map{"token": token})
 }

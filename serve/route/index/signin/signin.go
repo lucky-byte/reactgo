@@ -20,11 +20,12 @@ import (
 func signin(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var username, password string
+	var username, password, clientid string
 
 	err := echo.FormFieldBinder(c).
 		MustString("username", &username).
-		MustString("password", &password).BindError()
+		MustString("password", &password).
+		MustString("clientid", &clientid).BindError()
 	if err != nil {
 		cc.ErrLog(err).Error("请求参数不完整")
 		return c.String(http.StatusBadRequest, "请求参数不完整")
@@ -55,7 +56,7 @@ func signin(c echo.Context) error {
 		cc.ErrLog(err).Errorf("%s 登录失败, 验证登录密码错", user.Name)
 		return c.String(http.StatusForbidden, "登录名或密码错误")
 	}
-	// 查询会话保持时间
+	// 从设置中查询会话保持时间
 	ql = `select token_duration from settings`
 	var duration time.Duration
 
@@ -66,17 +67,31 @@ func signin(c echo.Context) error {
 	newJwt := auth.NewAuthJWT(user.UUID, true, duration*time.Minute)
 	smsid := ""
 
-	// 如果开启了短信认证或者设置了 TOTP，需要进入两因素认证
-	if user.TFA || len(user.TOTPSecret) > 0 {
-		// 设置为未激活，JWT 有效期设置为 10 分钟
-		newJwt.Activate = false
-		newJwt.ExpiresAt = &jwt.NumericDate{Time: time.Now().Add(10 * time.Minute)}
+	// 查询登录历史是否有 client id，如果有则表示当前设备受信任，不需要2步认证
+	ql = `
+		select count(*) from signin_history
+		where user_uuid = ? and clientid = ? and create_at > ?
+	`
+	var trust_count int
 
-		// 如果没有设置 TOTP，则发送短信验证码
-		if len(user.TOTPSecret) == 0 {
-			if smsid, err = sms.SendCode(user.Mobile); err != nil {
-				cc.ErrLog(err).Errorf("%s 登录失败, 发送短信验证码错", user.Name)
-				return c.String(http.StatusInternalServerError, "发送短信验证码失败")
+	db.SelectOne(ql, &trust_count, user.UUID, clientid, time.Now().AddDate(0, 0, -7))
+	if err != nil {
+		cc.ErrLog(err).Error("查询登录历史错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	if trust_count == 0 {
+		// 如果开启了短信认证或者设置了 TOTP，需要进入两因素认证
+		if user.TFA || len(user.TOTPSecret) > 0 {
+			// 设置为未激活，JWT 有效期设置为 10 分钟
+			newJwt.Activate = false
+			newJwt.ExpiresAt = &jwt.NumericDate{Time: time.Now().Add(10 * time.Minute)}
+
+			// 如果没有设置 TOTP，则发送短信验证码
+			if len(user.TOTPSecret) == 0 {
+				if smsid, err = sms.SendCode(user.Mobile); err != nil {
+					cc.ErrLog(err).Errorf("%s 登录失败, 发送短信验证码错", user.Name)
+					return c.String(http.StatusInternalServerError, "发送短信验证码失败")
+				}
 			}
 		}
 	}
@@ -115,8 +130,11 @@ func signin(c echo.Context) error {
 			"iadmin": v.IAdmin,
 		})
 	}
-	// 记录登录历史
-	addSignInHistory(c, &user)
+	// 记录登录历史，如果当前设备没有信任历史，则记入随机值
+	if trust_count == 0 {
+		clientid = uuid.NewString()
+	}
+	historyid := addSignInHistory(c, &user, clientid)
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"userid":           user.UserId,
@@ -131,11 +149,13 @@ func signin(c echo.Context) error {
 		"allows":           allows,
 		"smsid":            smsid,
 		"token":            token,
+		"trust":            trust_count > 0,
+		"historyid":        historyid,
 	})
 }
 
 // 记录登录历史
-func addSignInHistory(c echo.Context, user *db.User) {
+func addSignInHistory(c echo.Context, user *db.User, clientid string) string {
 	cc := c.(*ctx.Context)
 
 	// 查询 IP 位置
@@ -144,18 +164,22 @@ func addSignInHistory(c echo.Context, user *db.User) {
 		cc.ErrLog(err).Error("查询 IP 地理位置错")
 		info = new(geoip.Info)
 	}
+	historyid := uuid.NewString()
+
 	ql := `
 		insert into signin_history (
 			uuid, user_uuid, userid, name, ip, country, province, city,
-			district, longitude, latitude, ua
-		) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			district, longitude, latitude, ua, clientid
+		) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
-	err = db.ExecOne(ql, uuid.NewString(),
+	err = db.ExecOne(ql, historyid,
 		user.UUID, user.UserId, user.Name, c.RealIP(), info.Country,
 		info.Province, info.City, info.District, info.Longitude, info.Latitude,
-		c.Request().UserAgent(),
+		c.Request().UserAgent(), clientid,
 	)
 	if err != nil {
 		cc.ErrLog(err).Error("登记用户登录历史错误")
+		return ""
 	}
+	return historyid
 }

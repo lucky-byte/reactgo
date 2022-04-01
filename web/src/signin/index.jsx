@@ -19,6 +19,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
+import uuid from "uuid";
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
@@ -32,6 +33,7 @@ export default function SignIn() {
   const setUser = useSetRecoilState(userState);
   const [lookUserid, setLookUserid] = useState(false);
   const [resetPass, setResetPass] = useState(false);
+  const [clientId, setClientId] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordHide, setPasswordHide] = useState(true);
@@ -58,6 +60,18 @@ export default function SignIn() {
       }
     })();
   }, [enqueueSnackbar]);
+
+  // 查询客户端ID
+  useEffect(() => {
+    const id = localStorage.getItem('client-id');
+    if (id) {
+      setClientId(id);
+    } else {
+      const newid = uuid.v4();
+      localStorage.setItem('client-id', newid);
+      setClientId(newid);
+    }
+  }, []);
 
   // 登录名改变
   const onUsernameChange = e => {
@@ -86,7 +100,9 @@ export default function SignIn() {
     try {
       setSubmitting(true);
 
-      const resp = await put('/signin/', new URLSearchParams({ username, password }));
+      const resp = await put('/signin/', new URLSearchParams({
+        username, password, clientid: clientId
+      }));
       setSubmitting(false);
 
       if (!resp || !resp.token) {
@@ -107,16 +123,27 @@ export default function SignIn() {
         allows: resp.allows,
       });
 
-      // 如果设置了 TOTP，则进入 TOTP 认证
-      if (resp.totp_isset) {
-        return navigate('/signin/otp', { state: { tfa: resp.tfa } });
-      }
-      // 如果设置了短信认证，则进入短信认证
-      if (resp.tfa) {
-        if (!resp.smsid) {
-          return enqueueSnackbar('响应数据不完整', { variant: 'error' });
+      // 当前设备不可信任
+      if (!resp.trust) {
+        // 如果设置了 TOTP，则进入 TOTP 认证
+        if (resp.totp_isset) {
+          return navigate('/signin/otp', {
+            state: {
+              tfa: resp.tfa, historyid: resp.historyid,
+            }
+          });
         }
-        return navigate('/signin/sms', { state: { smsid: resp.smsid } });
+        // 如果设置了短信认证，则进入短信认证
+        if (resp.tfa) {
+          if (!resp.smsid) {
+            return enqueueSnackbar('响应数据不完整', { variant: 'error' });
+          }
+          return navigate('/signin/sms', {
+            state: {
+              smsid: resp.smsid, historyid: resp.historyid,
+            }
+          });
+        }
       }
       // 跳转到最近访问页面
       let last = localStorage.getItem('last-access');

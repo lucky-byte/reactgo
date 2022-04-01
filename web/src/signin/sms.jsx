@@ -10,10 +10,12 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from "@mui/material/FormHelperText";
 import Button from "@mui/material/Button";
+import Checkbox from '@mui/material/Checkbox';
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import Banner from '~/img/banner.png';
@@ -27,6 +29,8 @@ export default function SignInSMS() {
   const location = useLocation();
   const user = useRecoilValue(userState);
   const { enqueueSnackbar } = useSnackbar();
+  const [clientId, setClientId] = useState('');
+  const [historyId, setHistoryId] = useState('');
   const [smsid, setSmsid] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,15 +41,15 @@ export default function SignInSMS() {
   useEffect(() => { document.title = '短信验证'; }, []);
 
   useEffect(() => {
-    if (!location?.state?.smsid) {
-      return navigate('/signin', { replace: true });
-    }
-    setSmsid(location.state.smsid);
-
     const token = localStorage.getItem('token');
     if (!token || !user || !user.userid) {
       return navigate('/signin', { replace: true });
     }
+    if (!location?.state?.smsid) {
+      return navigate('/signin', { replace: true });
+    }
+    setSmsid(location.state.smsid);
+    setHistoryId(location?.state?.historyid || '');
   }, [user, navigate, location?.state]);
 
   useEffect(() => {
@@ -69,6 +73,15 @@ export default function SignInSMS() {
     }
   }
 
+  // 信任设备
+  const onTrustCheck = e => {
+    if (e.target.checked) {
+      setClientId(localStorage.getItem('client-id'));
+    } else {
+      setClientId('');
+    }
+  }
+
   const onSubmit = async () => {
     if (code.length !== 6) {
       return enqueueSnackbar('请输入完整的短信验证码', {
@@ -79,7 +92,7 @@ export default function SignInSMS() {
       setLoading(true);
 
       const resp = await put('/signin/smsverify', new URLSearchParams({
-        smsid, code
+        smsid, code, historyid: historyId, clientid: clientId,
       }));
       if (!resp || !resp.token) {
         return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
@@ -118,7 +131,11 @@ export default function SignInSMS() {
 
   // 切换到 TOTP 认证
   const onSwitchOTP = () => {
-    navigate('/signin/otp', { state: { tfa: true } });
+    navigate('/signin/otp', {
+      state: {
+        tfa: true, historyid: historyId,
+      }
+    });
   }
 
   return (
@@ -169,6 +186,16 @@ export default function SignInSMS() {
               </Button>
             }
           </FormControl>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={clientId.length > 0}
+                onChange={onTrustCheck}
+                inputProps={{ 'aria-label': '信任当前设备' }}
+              />
+            }
+            label='信任当前设备'
+          />
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={loading}>
             验证

@@ -52,6 +52,7 @@ type SigninHistory struct {
 	Longitude float64   `db:"longitude"` // 精度
 	Latitude  float64   `db:"latitude"`  // 纬度
 	UA        string    `db:"ua"`        // user agent
+	ClientId  string    `db:"clientid"`  // 客户端id
 }
 
 // 访问控制角色
