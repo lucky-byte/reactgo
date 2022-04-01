@@ -153,7 +153,8 @@ export default function List() {
               <TableCell align='center'>姓名</TableCell>
               <TableCell align='center'>访问控制</TableCell>
               <TableCell align='center'>创建时间</TableCell>
-              <TableCell align='center'>登录时间 / 次数</TableCell>
+              <TableCell align='center'>最后登录时间</TableCell>
+              <TableCell align='center'>登录次数</TableCell>
               <TableCell as='td' align='right' colSpan={2} padding='checkbox' />
             </TableRow>
           </TableHead>
@@ -172,12 +173,9 @@ export default function List() {
                     <Typography variant='body2'>{u.acl_name}</Typography>
                   }
                 </TableCell>
-                <TableCell align="center">
-                  {dayjs(u.create_at).format('YY-MM-DD HH:mm:ss')}
-                </TableCell>
-                <TableCell align="center">
-                  {dayjs(u.signin_at).format('YY-MM-DD HH:mm:ss')} / {u.n_signin}
-                </TableCell>
+                <TableCell align="center">{dayjs(u.create_at).fromNow()}</TableCell>
+                <TableCell align="center">{dayjs(u.signin_at).fromNow()}</TableCell>
+                <TableCell align="center">{u.n_signin}</TableCell>
                 <TableCell align="right" padding='none'>
                   {u.deleted &&
                     <RemoveCircleOutlineIcon color='error' fontSize='small'

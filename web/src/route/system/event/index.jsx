@@ -20,13 +20,10 @@ import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import SearchInput from '~/comp/search-input';
 import Markdown from '~/comp/markdown';
 import titleState from "~/state/title";
 import { post, put } from '~/rest';
-
-dayjs.extend(relativeTime);
 
 export default function Event() {
   const { enqueueSnackbar } = useSnackbar();

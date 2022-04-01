@@ -8,10 +8,12 @@ import { RecoilRoot } from 'recoil';
 import { SnackbarProvider } from 'notistack';
 import Zoom from '@mui/material/Zoom';
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
 import App from './app';
 
 dayjs.locale('zh-cn');
+dayjs.extend(relativeTime);
 
 // 某些第三方模块(react-pin-input)大量打印 debug 日志
 if (process.env.NODE_ENV === 'production') {
