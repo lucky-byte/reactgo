@@ -17,16 +17,14 @@ import (
 func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var level, page, rows uint
+	var page, rows uint
 	var days int
-	var keyword, fresh string
+	var keyword string
 
 	err := echo.FormFieldBinder(c).
 		MustUint("page", &page).
 		MustUint("rows", &rows).
 		MustInt("days", &days).
-		MustUint("level", &level).
-		MustString("fresh", &fresh).
 		String("keyword", &keyword).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
@@ -40,21 +38,21 @@ func list(c echo.Context) error {
 	pg.Where(goqu.Or(
 		pg.Col("title").ILike(keyword), pg.Col("content").ILike(keyword),
 	))
-	pg.Where(pg.Col("create_at").Gt(startAt), pg.Col("level").Gte(level))
+	pg.Where(pg.Col("create_at").Gt(startAt))
 
-	if fresh == "true" {
-		pg.Where(pg.Col("fresh").Eq(true))
-	} else if fresh == "false" {
-		pg.Where(pg.Col("fresh").Eq(false))
-	}
+	// if fresh == "true" {
+	// 	pg.Where(pg.Col("fresh").Eq(true))
+	// } else if fresh == "false" {
+	// 	pg.Where(pg.Col("fresh").Eq(false))
+	// }
 	pg.OrderBy(pg.Col("create_at").Desc())
 
 	var count uint
-	var records []db.Event
+	var records []db.Bulletin
 
 	err = pg.Select(pg.Col("*")).Exec(&count, &records)
 	if err != nil {
-		cc.ErrLog(err).Error("查询事件错")
+		cc.ErrLog(err).Error("查询公告列表错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	var list []echo.Map
@@ -63,10 +61,8 @@ func list(c echo.Context) error {
 		list = append(list, echo.Map{
 			"uuid":      h.UUID,
 			"create_at": h.CreateAt,
-			"level":     h.Level,
 			"title":     h.Title,
-			"message":   h.Message,
-			"fresh":     h.Fresh,
+			"content":   h.Content,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{

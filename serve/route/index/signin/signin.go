@@ -152,6 +152,7 @@ func signin(c echo.Context) error {
 		"token":            token,
 		"trust":            trust_count > 0,
 		"historyid":        historyid,
+		"activate":         newJwt.Activate,
 	})
 }
 

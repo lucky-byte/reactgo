@@ -121,6 +121,7 @@ export default function SignIn() {
         secretcode_isset: resp.secretcode_isset,
         totp_isset: resp.totp_isset,
         allows: resp.allows,
+        activate: resp.activate,
       });
 
       // 当前设备不可信任

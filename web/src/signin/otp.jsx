@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useRecoilValue } from "recoil"
+import { useRecoilState } from "recoil"
 import { useLocation, useNavigate } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
@@ -27,7 +27,7 @@ export default function SignInOTP() {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useRecoilValue(userState);
+  const [user, setUser] = useRecoilState(userState);
   const { enqueueSnackbar } = useSnackbar();
   const [clientId, setClientId] = useState('');
   const [historyId, setHistoryId] = useState('');
@@ -67,6 +67,7 @@ export default function SignInOTP() {
     }
   }
 
+  // 提交认证
   const onSubmit = async () => {
     if (code.length !== 6) {
       return enqueueSnackbar('请输入完整的口令', {
@@ -82,7 +83,11 @@ export default function SignInOTP() {
       if (!resp || !resp.token) {
         return enqueueSnackbar('响应数据不完整', { variant: 'error' });
       }
+      // 保存新的 token
       localStorage.setItem('token', resp.token);
+
+      // 更新用户信息
+      setUser({ ...user, activate: true });
 
       setLoading(false);
 
@@ -165,7 +170,7 @@ export default function SignInOTP() {
                 inputProps={{ 'aria-label': '信任当前设备' }}
               />
             }
-            label='信任当前设备'
+            label='信任当前使用的设备'
           />
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={loading}>

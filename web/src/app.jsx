@@ -1,4 +1,5 @@
 import { useMemo, useState, createContext, useContext, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useRecoilValue } from 'recoil';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -6,8 +7,9 @@ import { zhCN } from '@mui/material/locale';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DateAdapter from '@mui/lab/AdapterDayjs';
 import CssBaseline from "@mui/material/CssBaseline";
-import Button from '@mui/material/Button';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import CloseIcon from '@mui/icons-material/Close';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
 import Push from 'push.js';
@@ -95,7 +97,7 @@ export default function App() {
     if (!token) {
       return;
     }
-    if (!user) {
+    if (!user || !user.activate) {
       return;
     }
     (async () => {
@@ -139,13 +141,15 @@ export default function App() {
                 },
                 action: (
                   <>
-                    <Button sx={{ color: 'white' }} onClick={() => {
+                    <IconButton onClick={() => {
                       closeSnackbar();
-                      // navigate('/system/event');
                       window.location.href = '/system/event';
                     }}>
-                      查看
-                    </Button>
+                      <MoreHorizIcon sx={{ color: 'white' }} />
+                    </IconButton>
+                    <IconButton onClick={() => { closeSnackbar() }}>
+                      <CloseIcon sx={{ color: 'white' }} />
+                    </IconButton>
                   </>
                 )
               });

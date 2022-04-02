@@ -180,6 +180,7 @@ function Appbar(params) {
             secretcode_isset: resp.secretcode_isset,
             totp_isset: resp.totp_isset,
             allows: resp.allows,
+            activate: true,
           });
         } catch (err) {
           enqueueSnackbar(err.message, { variant: 'error' });
