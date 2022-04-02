@@ -1,8 +1,7 @@
-import { connect, StringCodec, JSONCodec } from "nats.ws";
-
 let broker = null;
 
 const open = async (servers, name) => {
+	const { connect } = await import('nats.ws');
 	broker = await connect({
 		servers: servers,
 		name: name,
@@ -22,8 +21,13 @@ const getBorker = () => {
 	return broker;
 }
 
+const JSONCodec = async () => {
+	const { JSONCodec } = await import('nats.ws');
+	return JSONCodec();
+}
+
 const exports = {
-	StringCodec, JSONCodec, open, close, getBorker,
+	JSONCodec, open, close, getBorker,
 }
 
 export default exports;

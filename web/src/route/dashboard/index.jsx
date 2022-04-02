@@ -1,12 +1,19 @@
+import { Suspense, lazy } from 'react';
 import { Routes, Route } from "react-router-dom";
-import Welcome from "./welcome";
-import Kanban from "./kanban";
+import LinearProgress from '@mui/material/LinearProgress';
+import NotFound from "~/route/notfound";
+import Welcome from './welcome';
+
+const Kanban = lazy(() => import('./kanban'));
 
 export default function Dashboard() {
   return (
-    <Routes>
-      <Route path='/' element={<Welcome />} />
-      <Route path='kanban' element={<Kanban />} />
-    </Routes>
+    <Suspense fallback={<LinearProgress />}>
+      <Routes>
+        <Route path='/' element={<Welcome />} />
+        <Route path='kanban' element={<Kanban />} />
+        <Route path='*' element={<NotFound />} />
+      </Routes>
+    </Suspense>
   )
 }

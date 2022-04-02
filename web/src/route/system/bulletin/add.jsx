@@ -22,6 +22,8 @@ import Tooltip from '@mui/material/Tooltip';
 import { grey } from '@mui/material/colors';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
 import titleState from "~/state/title";
 import progressState from '~/state/progress';
 import { get, post } from '~/rest';
@@ -31,6 +33,7 @@ export default function Add() {
   const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const { enqueueSnackbar } = useSnackbar();
+  const [content, setContent] = useState("Initial value");
   const [ acls, setAcls ] = useState([]);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
@@ -84,9 +87,10 @@ export default function Add() {
           <IconButton aria-label='返回' component={RouteLink} to='..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
-          <Typography variant='h6'>用户资料</Typography>
+          <Typography variant='h6'>公告内容</Typography>
         </Stack>
         <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
+          <SimpleMDE value={content} onChange={setContent} />
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={4}>
               <Stack direction='row' spacing={3}>

@@ -122,7 +122,7 @@ export default function App() {
         // 如果用户具有事件访问权限，则订阅事件
         if (event_allow) {
           const sub = broker.subscribe("event")
-          const codec = nats.JSONCodec();
+          const codec = await nats.JSONCodec();
 
           // 收到事件时弹出提示
           for await (const m of sub) {
