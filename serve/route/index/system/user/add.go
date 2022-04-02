@@ -31,8 +31,7 @@ func add(c echo.Context) error {
 		MustString("acl", &acl).
 		String("address", &address).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数不完整")
-		return c.String(http.StatusBadRequest, "请求参数不完整")
+		return cc.BadRequest(err)
 	}
 	// 删除前后空白字符
 	cc.Trim(&userid, &name, &password, &email, &mobile, &address)

@@ -7,6 +7,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
+import CampaignIcon from '@mui/icons-material/Campaign';
 
 const menus = [{
   title: '欢迎',
@@ -40,6 +41,9 @@ const menus = [{
   }, {
     code: 9060,
     icon: AccountTreeIcon,
+  }, {
+    code: 9070,
+    icon: CampaignIcon,
   }],
 }]
 

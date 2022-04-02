@@ -17,7 +17,7 @@ func settings(c echo.Context) error {
 	var settings db.Setting
 
 	if err := db.SelectOne(ql, &settings); err != nil {
-		cc.ErrLog(err).Error("查询设置错")
+		cc.ErrLog(err).Error("查询系统设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{

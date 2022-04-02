@@ -16,8 +16,7 @@ func verify(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustString("secretcode", &secretcode).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数无效")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	user := cc.User()
 

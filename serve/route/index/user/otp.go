@@ -39,8 +39,7 @@ func otpVerify(c echo.Context) error {
 		MustString("code", &code).
 		MustString("secret", &secret).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数无效")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	// 验证
 	if !totp.Validate(code, secret) {

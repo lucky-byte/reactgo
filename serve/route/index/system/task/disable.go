@@ -17,7 +17,7 @@ func disable(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustString("uuid", &uuid).BindError()
 	if err != nil {
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	ql := `select * from tasks where uuid = ?`
 	var t db.Task

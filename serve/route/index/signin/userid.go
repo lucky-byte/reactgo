@@ -18,8 +18,7 @@ func useridCode(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustString("mobile", &mobile).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数无效")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 
 	// 查询手机号是否存在
@@ -54,8 +53,7 @@ func useridSearch(c echo.Context) error {
 		MustString("smsid", &smsid).
 		MustString("code", &code).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数无效")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 
 	// 验证短信验证码

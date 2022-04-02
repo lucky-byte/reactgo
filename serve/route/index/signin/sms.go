@@ -24,8 +24,7 @@ func smsVerify(c echo.Context) error {
 		String("clientid", &clientid).
 		String("historyid", &historyid).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数不完整")
-		c.String(http.StatusBadRequest, "请求数据不完整")
+		return cc.BadRequest(err)
 	}
 	cc.Trim(&smsid, &code, &clientid, &historyid)
 

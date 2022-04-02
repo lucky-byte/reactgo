@@ -17,7 +17,7 @@ func del(c echo.Context) error {
 
 	err := echo.QueryParamsBinder(c).MustString("uuid", &uuid).BindError()
 	if err != nil {
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	// 停止任务
 	if err = task.Remove(uuid); err != nil {

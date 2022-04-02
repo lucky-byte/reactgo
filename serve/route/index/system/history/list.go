@@ -28,8 +28,7 @@ func list(c echo.Context) error {
 		MustInt("days", &days).
 		String("keyword", &keyword).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数不完整")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
 	startAt := time.Now().AddDate(0, 0, -days)

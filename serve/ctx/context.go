@@ -40,6 +40,11 @@ func (c *Context) ErrLog(err error) *logrus.Entry {
 	return c.logger.WithError(err)
 }
 
+func (c *Context) BadRequest(err error) error {
+	c.ErrLog(err).Errorf("请求参数不完整(%s)", c.Request().URL.Path)
+	return c.NoContent(http.StatusBadRequest)
+}
+
 // 获取配置
 func (c *Context) Config() *config.ViperConfig {
 	return c.config

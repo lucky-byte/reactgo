@@ -7,6 +7,7 @@ import Settings from "./settings";
 import Task from "./task";
 import Event from "./event";
 import Node from "./node";
+import Bulletin from "./bulletin";
 
 export default function System() {
   return (
@@ -18,6 +19,7 @@ export default function System() {
       <Route path='task/*' element={<Task />} />
       <Route path='event/*' element={<Event />} />
       <Route path='node/*' element={<Node />} />
+      <Route path='bulletin/*' element={<Bulletin />} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

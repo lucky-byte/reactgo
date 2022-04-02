@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/lucky-byte/reactgo/serve/route/index/system/acl"
+	"github.com/lucky-byte/reactgo/serve/route/index/system/bulletin"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/event"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/history"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/node"
@@ -20,6 +21,7 @@ const (
 	menuCodeEvent    = 9040
 	menuCodeTask     = 9050
 	menuCodeNode     = 9060
+	menuCodeBulletin = 9070
 )
 
 func Attach(up *echo.Group) {
@@ -32,4 +34,5 @@ func Attach(up *echo.Group) {
 	event.Attach(group, menuCodeEvent)
 	task.Attach(group, menuCodeTask)
 	node.Attach(group, menuCodeNode)
+	bulletin.Attach(group, menuCodeBulletin)
 }

@@ -17,7 +17,7 @@ func del(c echo.Context) error {
 
 	err := echo.QueryParamsBinder(c).MustString("uuid", &mta_uuid).BindError()
 	if err != nil {
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	ql := `delete from mtas where uuid = ?`
 

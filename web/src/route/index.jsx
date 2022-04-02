@@ -35,8 +35,10 @@ import Chip from '@mui/material/Chip';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import Slide from '@mui/material/Slide';
 import Portal from '@mui/material/Portal';
+import Popover from '@mui/material/Popover';
 import LinearProgress from '@mui/material/LinearProgress';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import titleState from "~/state/title";
@@ -57,6 +59,7 @@ import Codes from "./codes";
 import Dashboard from "./dashboard";
 import System from "./system";
 import User from "./user";
+import { Avatar } from "@mui/material";
 
 export default function Index() {
   const location = useLocation();
@@ -221,6 +224,12 @@ function Appbar(params) {
     navigate('user/security');
   }
 
+  // 通知
+  const onNotification = () => {
+    onUserMenuClose();
+    navigate('user/notification');
+  }
+
   // 关于
   const onAbout = () => {
     onUserMenuClose();
@@ -254,21 +263,28 @@ function Appbar(params) {
           {title}
         </Typography>
         <Chip label='CTRL+K' variant='outlined' color='info' icon={<DirectionsIcon />}
-          onClick={onQuickNavigate}
+          onClick={onQuickNavigate} sx={{ mx: 1 }}
         />
+        <Notification />
         <IconButton aria-label="切换色彩模式"
-          onClick={colorMode.toggleColorMode} color="primary" sx={{ mx: 1 }}>
+          onClick={colorMode.toggleColorMode} color="primary">
           {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
-        <Button
-          aria-label="用户菜单"
-          title="用户菜单"
-          aria-controls={sidebarOpen ? '用户菜单' : undefined}
-          aria-haspopup="true"
-          aria-expanded={sidebarOpen ? 'true' : undefined}
-          onClick={onUserMenuOpen}>
-          {user?.name || user?.userid || 'WhoAmI'}
-        </Button>
+        {user?.avatar ?
+          <IconButton onClick={onUserMenuOpen}>
+            <Avatar src={user.avatar} alt={user.name || user.userid} />
+          </IconButton>
+          :
+          <Button
+            aria-label="用户菜单"
+            title="用户菜单"
+            aria-controls={sidebarOpen ? '用户菜单' : undefined}
+            aria-haspopup="true"
+            aria-expanded={sidebarOpen ? 'true' : undefined}
+            onClick={onUserMenuOpen}>
+            {user?.name || user?.userid || 'WhoAmI'}
+          </Button>
+        }
         <Menu anchorEl={anchorEl} open={sidebarOpen} onClose={onUserMenuClose}>
           <MenuItem onClick={onProfile}>
             <ListItemIcon>
@@ -287,6 +303,13 @@ function Appbar(params) {
               <SecurityIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>安全设置</ListItemText>
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={onNotification}>
+            <ListItemIcon>
+              <NotificationsIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>通知</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem onClick={onAbout}>
@@ -387,5 +410,54 @@ function QuickNavigator(props) {
         }
       </DialogContent>
     </Dialog>
+  )
+}
+
+// 通知
+function Notification() {
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const onOpen = e => {
+    setAnchorEl(e.currentTarget);
+  }
+
+  const onClose = () => {
+    setAnchorEl(null);
+  };
+
+  const onMore = () => {
+    onClose();
+    navigate('/user/notification');
+  }
+
+  const open = Boolean(anchorEl);
+
+  return (
+    <>
+      <IconButton aria-label="通知" onClick={onOpen} color="primary">
+        <NotificationsIcon />
+      </IconButton>
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={onClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        PaperProps={{
+          style: { width: '40%' },
+        }}>
+        <Stack sx={{ p: 2 }}>
+          <Typography variant="subtitle2">通知</Typography>
+          <Typography sx={{ p: 2 }}>
+            The content of the Popover.
+            The content of the Popover.
+            </Typography>
+          <Button size='small' onClick={onMore}>查看所有通知</Button>
+        </Stack>
+      </Popover>
+    </>
   )
 }

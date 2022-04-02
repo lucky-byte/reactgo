@@ -17,8 +17,7 @@ func up(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustString("uuid", &uuid).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数无效")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	ql := `select * from tree where uuid = ?`
 	var node db.Tree

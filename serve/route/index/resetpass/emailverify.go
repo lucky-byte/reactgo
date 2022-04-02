@@ -22,8 +22,7 @@ func emailverify(c echo.Context) error {
 		MustString("email", &email).
 		MustString("code", &code).MustString("id", &id).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数无效")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	cc.Trim(&username, &email)
 

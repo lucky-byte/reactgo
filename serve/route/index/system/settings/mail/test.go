@@ -21,8 +21,7 @@ func test(c echo.Context) error {
 		MustString("uuid", &mta_uuid).
 		MustString("email", &address).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数不完整")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	// 解析收件地址
 	addr, err := mail.ParseAddress(address)

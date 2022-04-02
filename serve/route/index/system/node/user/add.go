@@ -29,8 +29,7 @@ func add(c echo.Context) error {
 		MustBool("force", &force).
 		MustString("users", &user).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数不完整")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	users := strings.Split(user, ",")
 

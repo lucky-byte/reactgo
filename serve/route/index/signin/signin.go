@@ -27,8 +27,7 @@ func signin(c echo.Context) error {
 		MustString("password", &password).
 		MustString("clientid", &clientid).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数不完整")
-		return c.String(http.StatusBadRequest, "请求参数不完整")
+		return cc.BadRequest(err)
 	}
 	cc.Trim(&username, &clientid)
 

@@ -17,13 +17,12 @@ func unfresh(c echo.Context) error {
 
 	err := echo.FormFieldBinder(c).MustString("uuid", &uuid).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数不完整")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	ql := `update events set fresh = false where uuid = ?`
 
 	if err = db.ExecOne(ql, uuid); err != nil {
-		cc.ErrLog(err).Error("更新事件错")
+		cc.ErrLog(err).Error("更新事件状态错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

@@ -18,8 +18,7 @@ func name(c echo.Context) error {
 	err := echo.FormFieldBinder(c).
 		MustString("uuid", &uuid).MustString("name", &name).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数不完整")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	cc.Trim(&name)
 

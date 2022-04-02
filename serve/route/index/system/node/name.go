@@ -18,8 +18,7 @@ func name(c echo.Context) error {
 		MustString("uuid", &uuid).
 		MustString("name", &name).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数无效")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	ql := `
 		update tree set name = ?, update_at = current_timestamp

@@ -32,8 +32,7 @@ func add(c echo.Context) error {
 		String("cc", &ccc).
 		String("bcc", &bcc).BindError()
 	if err != nil {
-		cc.ErrLog(err).Error("请求参数不完整")
-		return c.NoContent(http.StatusBadRequest)
+		return cc.BadRequest(err)
 	}
 	// 删除前后空白字符
 	cc.Trim(&name, &host, &sender, &username, &prefix, &replyto, &ccc, &bcc)

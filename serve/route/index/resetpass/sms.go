@@ -23,7 +23,7 @@ func smsResend(c echo.Context) error {
 	err := echo.FormFieldBinder(c).
 		MustString("mobile", &mobile).MustString("username", &username).BindError()
 	if err != nil {
-		c.String(http.StatusBadRequest, "请求数据不完整")
+		return cc.BadRequest(err)
 	}
 	// 检查用户信息
 	ql := `select count(*) from users where userid = ? and mobile = ?`

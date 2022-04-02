@@ -196,4 +196,13 @@ create table if not exists tickets (
   user_data   varchar(128)
 );
 
+create table if not exists bulletins (
+  uuid        varchar(36)     primary key not null,
+  create_at   timestamp       not null default current_timestamp,
+  expiry_at   timestamp       not null default current_timestamp,
+  title       varchar(128)    not null,
+  content     text            not null,
+  read_users  text[]
+);
+
 commit;
