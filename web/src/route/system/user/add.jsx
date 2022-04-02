@@ -92,7 +92,7 @@ export default function Add() {
               <Stack direction='row' spacing={3}>
                 <TextField label='登录名' variant='standard' fullWidth required
                   autoFocus
-                  placeholder='系统登录名，可使用任何字符，建议使用字母和数字'
+                  placeholder='系统登录名，建议使用字母和数字'
                   helperText={errors?.userid?.message}
                   error={errors?.userid}
                   {...register('userid', {

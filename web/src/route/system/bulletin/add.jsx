@@ -22,10 +22,9 @@ import Tooltip from '@mui/material/Tooltip';
 import { grey } from '@mui/material/colors';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import SimpleMDE from "react-simplemde-editor";
-import "easymde/dist/easymde.min.css";
 import titleState from "~/state/title";
 import progressState from '~/state/progress';
+import MDE from './mde';
 import { get, post } from '~/rest';
 
 export default function Add() {
@@ -90,7 +89,21 @@ export default function Add() {
           <Typography variant='h6'>公告内容</Typography>
         </Stack>
         <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
-          <SimpleMDE value={content} onChange={setContent} />
+          <Stack spacing={2}>
+          <TextField label='标题' variant='outlined' fullWidth required
+            autoFocus
+            placeholder='公告标题'
+            helperText={errors?.userid?.message}
+            error={errors?.userid}
+            {...register('userid', {
+              required: "不能为空",
+              maxLength: {
+                value: 32, message: '超出最大长度'
+              },
+            })}
+          />
+          <MDE value={content} onChange={setContent} />
+          </Stack>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={4}>
               <Stack direction='row' spacing={3}>
