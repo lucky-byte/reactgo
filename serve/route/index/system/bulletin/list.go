@@ -40,11 +40,6 @@ func list(c echo.Context) error {
 	))
 	pg.Where(pg.Col("create_at").Gt(startAt))
 
-	// if fresh == "true" {
-	// 	pg.Where(pg.Col("fresh").Eq(true))
-	// } else if fresh == "false" {
-	// 	pg.Where(pg.Col("fresh").Eq(false))
-	// }
 	pg.OrderBy(pg.Col("create_at").Desc())
 
 	var count uint
