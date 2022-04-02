@@ -141,7 +141,8 @@ export default function List() {
           <MenuItem value='all'>不限</MenuItem>
         </TextField>
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
-        <Button startIcon={<AddIcon />} onClick={() => { navigate('add') }}>
+        <Button variant='outlined' size='small' startIcon={<AddIcon />}
+          onClick={() => { navigate('add') }}>
           添加
         </Button>
       </Toolbar>

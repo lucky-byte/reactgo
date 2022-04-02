@@ -9,7 +9,7 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
-import Checkbox from '@mui/material/Checkbox';
+import Switch from '@mui/material/Switch';
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -35,7 +35,7 @@ export default function Add() {
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
 
-  useEffect(() => { setTitle('添加用户'); }, [setTitle]);
+  useEffect(() => { setTitle('发布公告'); }, [setTitle]);
 
   const {
     register, handleSubmit, setValue, formState: {
@@ -225,29 +225,22 @@ export default function Add() {
               />
               <Stack>
                 <FormControlLabel
-                  label={
-                    <Stack spacing={0}>
-                      <Typography>登录时须验证短信验证码，建议开启以保护账户安全</Typography>
-                      <FormHelperText sx={{ mt: 0 }}>
-                        开启前请先正确配置短信服务
-                      </FormHelperText>
-                    </Stack>
-                  }
+                  label="登录时必须验证短信验证码（需正确配置系统短信服务）"
                   control={
-                    <Checkbox defaultChecked {...register('tfa')} />
+                    <Switch defaultChecked {...register('tfa')} />
                   }
                 />
                 <FormControlLabel sx={{ mt: 1 }}
                   label={
                     <Stack spacing={0}>
                       <Typography>将登录信息（网址、登录名及密码）发送到用户邮箱</Typography>
-                      <FormHelperText sx={{ mt: 0 }}>
+                      <FormHelperText sx={{ mt: 0, color: 'orangered' }}>
                         邮件中将包含所有登录需要的信息，请务必确认录入的邮箱地址正确，并属于该用户
                       </FormHelperText>
                     </Stack>
                   }
                   control={
-                    <Checkbox defaultChecked {...register('sendmail')} />
+                    <Switch defaultChecked {...register('sendmail')} />
                   }
                 />
               </Stack>

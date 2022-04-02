@@ -9,7 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import TextField from "@mui/material/TextField";
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import Checkbox from '@mui/material/Checkbox';
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -172,13 +172,13 @@ export default function Modify() {
                   },
                 })}
               />
-              <FormControlLabel label="登录时必须验证短信验证码（非特殊情况必须开启）"
+              <FormControlLabel label="登录时须验证短信验证码，建议开启以保护账户安全"
                 control={
                   <Controller
                     control={control}
                     name="tfa"
                     render={({ field: { value, onChange, ref } }) => (
-                      <Switch checked={value} onChange={onChange}
+                      <Checkbox checked={value} onChange={onChange}
                         disabled={progress}
                         inputRef={ref}
                       />

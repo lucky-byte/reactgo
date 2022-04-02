@@ -155,7 +155,7 @@ export default function App() {
               });
               // web 通知
               if (Push.Permission.has()) {
-                Push.create(`[${variant}] ${event.title}`, {
+                Push.create(event.title, {
                   timeout: 1000 * 600,
                   vibrate: [200, 100, 200, 100],
                   link: '/system/event',

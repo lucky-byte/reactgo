@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useSetRecoilState } from "recoil";
 import Container from "@mui/material/Container";
@@ -7,6 +7,8 @@ import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Fab from '@mui/material/Fab';
+import PrintIcon from '@mui/icons-material/Print';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -17,6 +19,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
+import ReactToPrint from 'react-to-print';
 import OutlinedPaper from '~/comp/outlined-paper';
 import titleState from "~/state/title";
 import progressState from '~/state/progress';
@@ -34,6 +37,8 @@ export default function Profile() {
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
 
   useEffect(() => { setTitle('用户详细资料'); }, [setTitle]);
+
+  const contentRef = useRef();
 
   useEffect(() => {
     (async () => {
@@ -59,7 +64,23 @@ export default function Profile() {
 
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 2 }}>
-      <Paper elevation={3} sx={{ px: 5, py: 3, mt: 5 }}>
+      <ReactToPrint
+        content={() => contentRef.current}
+        trigger={() => (
+          <Tooltip title='打印'>
+            <Fab size='medium' color="primary" aria-label="打印" sx={{
+              position: 'absolute', right: 60, top: 120,
+            }}>
+              <PrintIcon />
+            </Fab>
+          </Tooltip>
+        )}
+      />
+      <Paper ref={contentRef} elevation={3} sx={{
+        px: 5, py: 3, mt: 5, '@media print': {
+          boxShadow: 0, borderWidth: 0,
+        }
+      }}>
         <Stack direction='row' alignItems='center' sx={{ mb: 3 }}>
           <IconButton aria-label='返回' onClick={() => { navigate('..') }}
             sx={{ mr: 1 }}>

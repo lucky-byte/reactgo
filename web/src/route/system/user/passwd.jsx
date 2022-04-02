@@ -6,7 +6,7 @@ import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import Checkbox from '@mui/material/Checkbox';
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -100,7 +100,7 @@ export default function Password() {
               })}
             />
             <FormControlLabel label="将新密码发送到用户邮箱" control={
-              <Switch defaultChecked {...register('sendmail')} />
+              <Checkbox defaultChecked {...register('sendmail')} />
             } />
             <Stack direction='row' spacing={2} justifyContent='flex-end'>
               <Button color='secondary' disabled={isSubmitting}

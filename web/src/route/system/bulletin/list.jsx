@@ -141,7 +141,8 @@ export default function List() {
           <MenuItem value={3}>错误</MenuItem>
         </TextField>
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
-        <Button startIcon={<AddIcon />} onClick={() => { navigate('add') }}>
+        <Button variant='outlined' size='small' startIcon={<AddIcon />}
+          onClick={() => { navigate('add') }}>
           发布新公告
         </Button>
       </Toolbar>
