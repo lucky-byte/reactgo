@@ -45,7 +45,8 @@ create table if not exists signin_history (
   longitude   float,
   latitude    float,
   ua          varchar(512)    not null,
-  clientid    varchar(36)     not null
+  clientid    varchar(36)     not null,
+  trust       boolean
 );
 
 create table if not exists acl (

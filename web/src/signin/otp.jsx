@@ -112,7 +112,7 @@ export default function SignInOTP() {
       if (!resp.smsid) {
         throw new Error('响应数据无效');
       }
-      navigate('/signin/sms', {
+      navigate('../sms', {
         state: {
           smsid: resp.smsid, historyid: historyId,
         }

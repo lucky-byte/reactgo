@@ -75,6 +75,7 @@ func list(c echo.Context) error {
 			"os":        os,
 			"browser":   browser,
 			"is_mobile": ua.Mobile(),
+			"trust":     h.Trust,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})

@@ -73,14 +73,16 @@ func signin(c echo.Context) error {
 		select count(*) from signin_history
 		where user_uuid = ? and clientid = ? and create_at > ?
 	`
-	var trust_count int
+	var count int
 
-	db.SelectOne(ql, &trust_count, user.UUID, clientid, time.Now().AddDate(0, 0, -7))
+	db.SelectOne(ql, &count, user.UUID, clientid, time.Now().AddDate(0, 0, -7))
 	if err != nil {
 		cc.ErrLog(err).Error("查询登录历史错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	if trust_count == 0 {
+	trust := count > 0
+
+	if !trust {
 		// 如果开启了短信认证或者设置了 TOTP，需要进入两因素认证
 		if user.TFA || len(user.TOTPSecret) > 0 {
 			// 设置为未激活，JWT 有效期设置为 10 分钟
@@ -131,11 +133,8 @@ func signin(c echo.Context) error {
 			"iadmin": v.IAdmin,
 		})
 	}
-	// 记录登录历史，如果当前设备没有信任历史，则记入随机值
-	if trust_count == 0 {
-		clientid = uuid.NewString()
-	}
-	historyid := addSignInHistory(c, &user, clientid)
+	// 记录登录历史
+	historyid := addSignInHistory(c, &user, trust, clientid)
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"userid":           user.UserId,
@@ -150,14 +149,14 @@ func signin(c echo.Context) error {
 		"allows":           allows,
 		"smsid":            smsid,
 		"token":            token,
-		"trust":            trust_count > 0,
+		"trust":            trust,
 		"historyid":        historyid,
 		"activate":         newJwt.Activate,
 	})
 }
 
 // 记录登录历史
-func addSignInHistory(c echo.Context, user *db.User, clientid string) string {
+func addSignInHistory(c echo.Context, user *db.User, trust bool, clientid string) string {
 	cc := c.(*ctx.Context)
 
 	// 查询 IP 位置
@@ -166,18 +165,33 @@ func addSignInHistory(c echo.Context, user *db.User, clientid string) string {
 		cc.ErrLog(err).Error("查询 IP 地理位置错")
 		info = new(geoip.Info)
 	}
+	// 如果当前设备不被信任，则记入随机值
+	if !trust {
+		clientid = uuid.NewString()
+	}
 	historyid := uuid.NewString()
 
 	ql := `
 		insert into signin_history (
 			uuid, user_uuid, userid, name, ip, country, province, city,
-			district, longitude, latitude, ua, clientid
-		) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			district, longitude, latitude, ua, clientid, trust
+		) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
-	err = db.ExecOne(ql, historyid,
-		user.UUID, user.UserId, user.Name, c.RealIP(), info.Country,
-		info.Province, info.City, info.District, info.Longitude, info.Latitude,
-		c.Request().UserAgent(), clientid,
+	err = db.ExecOne(ql,
+		historyid,
+		user.UUID,
+		user.UserId,
+		user.Name,
+		c.RealIP(),
+		info.Country,
+		info.Province,
+		info.City,
+		info.District,
+		info.Longitude,
+		info.Latitude,
+		c.Request().UserAgent(),
+		clientid,
+		trust,
 	)
 	if err != nil {
 		cc.ErrLog(err).Error("登记用户登录历史错误")

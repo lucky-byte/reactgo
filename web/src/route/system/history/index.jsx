@@ -16,6 +16,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
@@ -113,6 +115,7 @@ export default function History() {
               <TableCell align="center">登录名</TableCell>
               <TableCell align="center">姓名</TableCell>
               <TableCell align="center">设备</TableCell>
+              <TableCell align="center">信任</TableCell>
               <TableCell align="center">位置</TableCell>
             </TableRow>
           </TableHead>
@@ -123,6 +126,9 @@ export default function History() {
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">{row.browser} on {row.os}</TableCell>
+                <TableCell align="center">
+                  {row.trust ? <CheckIcon /> : <CloseIcon />}
+                </TableCell>
                 <TableCell align="center">
                   <Tooltip title={row.ip} arrow placement='right'>
                     <Typography variant='body2' sx={{ cursor: 'default' }}>

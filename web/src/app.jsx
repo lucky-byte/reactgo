@@ -1,4 +1,4 @@
-import { useMemo, useState, createContext, useContext, useEffect } from "react";
+import { useMemo, useState, createContext, useContext, useEffect, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useRecoilValue } from 'recoil';
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -10,16 +10,13 @@ import CssBaseline from "@mui/material/CssBaseline";
 import IconButton from "@mui/material/IconButton";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CloseIcon from '@mui/icons-material/Close';
+import LinearProgress from '@mui/material/LinearProgress';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
 import Push from 'push.js';
 import userState from "./state/user";
 import SignIn from "./signin";
-import SignInSMS from "./signin/sms";
-import SignInOTP from "./signin/otp";
 import ResetPass from "./resetpass";
-import ResetPassSMS from "./resetpass/sms";
-import ResetPassSuccess from "./resetpass/success";
 import Index from "./route";
 import nats from '~/lib/nats';
 import { get } from "~/rest";
@@ -194,15 +191,13 @@ export default function App() {
             allowClose: false,
           }}>
             <BrowserRouter>
-              <Routes>
-                <Route path='/signin' element={<SignIn />} />
-                <Route path='/signin/sms' element={<SignInSMS />} />
-                <Route path='/signin/otp' element={<SignInOTP />} />
-                <Route path='/resetpass' element={<ResetPass />} />
-                <Route path='/resetpass/sms' element={<ResetPassSMS />} />
-                <Route path='/resetpass/success' element={<ResetPassSuccess />} />
-                <Route path='/*' element={<Index />} />
-              </Routes>
+              <Suspense fallback={<LinearProgress />}>
+                <Routes>
+                  <Route path='/signin/*' element={<SignIn />} />
+                  <Route path='/resetpass/*' element={<ResetPass />} />
+                  <Route path='/*' element={<Index />} />
+                </Routes>
+              </Suspense>
             </BrowserRouter>
           </ConfirmProvider>
         </LocalizationProvider>

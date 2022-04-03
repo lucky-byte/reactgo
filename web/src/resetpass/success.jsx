@@ -13,7 +13,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 
-export default function ResetPassSuccess() {
+export default function Success() {
   const theme = useTheme();
   const location = useLocation();
   const navigate = useNavigate();

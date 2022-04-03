@@ -73,7 +73,7 @@ func otpVerify(c echo.Context) error {
 	}
 	// 记录信任设备
 	if len(clientid) > 0 && len(historyid) > 0 {
-		ql = `update signin_history set clientid = ? where uuid = ?`
+		ql = `update signin_history set clientid = ?, trust = true where uuid = ?`
 
 		if err = db.ExecOne(ql, clientid, historyid); err != nil {
 			cc.ErrLog(err).Error("更新登录历史错")

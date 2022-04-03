@@ -1,10 +1,9 @@
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
 import { Routes, Route } from "react-router-dom";
 import LinearProgress from '@mui/material/LinearProgress';
 import NotFound from "~/route/notfound";
 import List from "./list";
-
-const Add = lazy(() => import('./add'));
+import Add from "./add";
 
 export default function Bulletin() {
   return (

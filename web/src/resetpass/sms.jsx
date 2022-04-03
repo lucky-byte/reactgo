@@ -19,7 +19,7 @@ import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import { post, put } from "~/rest";
 
-export default function ResetPassSMS() {
+export default function SMS() {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -78,7 +78,7 @@ export default function ResetPassSMS() {
         username, mobile, smsid, code
       }));
       setLoading(false);
-      navigate('/resetpass/success', { replace: true, state: { email } });
+      navigate('../success', { replace: true, state: { email } });
     } catch (err) {
       enqueueSnackbar(err.message);
     } finally {

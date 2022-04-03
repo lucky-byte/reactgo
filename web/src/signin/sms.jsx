@@ -136,7 +136,7 @@ export default function SignInSMS() {
 
   // 切换到 TOTP 认证
   const onSwitchOTP = () => {
-    navigate('/signin/otp', {
+    navigate('../otp', {
       state: {
         tfa: true, historyid: historyId,
       }

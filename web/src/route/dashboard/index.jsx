@@ -1,10 +1,9 @@
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
 import { Routes, Route } from "react-router-dom";
 import LinearProgress from '@mui/material/LinearProgress';
 import NotFound from "~/route/notfound";
 import Welcome from './welcome';
-
-const Kanban = lazy(() => import('./kanban'));
+import Kanban from './kanban';
 
 export default function Dashboard() {
   return (
