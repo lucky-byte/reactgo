@@ -13,13 +13,16 @@ export default function MDEditor(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [options, setOptions] = useState({});
 
+  const { placeholder } = props;
+
   // 异步加载模块，代码拆分
   useEffect(() => {
     (async () => {
       const marked = await import('marked');
       const hljs = await import('highlight.js');
+      const DOMPurify = (await import('dompurify')).default;
 
-      //TODO: 切换主题后，2 个 css 都被引入了，这不是期望的效果
+      // TODO: 切换主题后，2 个 css 都被引入了，这不是期望的效果
       if (theme.palette.mode === 'dark') {
         await import("highlight.js/styles/srcery.css");
       } else {
@@ -28,7 +31,9 @@ export default function MDEditor(props) {
 
       // 设置 simpleMde 选项
       setOptions({
+        placeholder: placeholder || '',
         spellChecker: false,
+        indentWithTabs: false,
         lineNumbers: false,
         uploadImage: true,
         imageMaxSize: 8 * 1024 * 1024,
@@ -56,17 +61,30 @@ export default function MDEditor(props) {
             langPrefix: 'hljs language-',
             highlight: (code, lang) => {
               if (lang && hljs.getLanguage(lang)) {
-                return hljs.highlight(lang, code).value;
+                return hljs.highlight(code, {
+                  language: lang, ignoreIllegals: true,
+                }).value;
               } else {
                 return hljs.highlightAuto(code).value;
               }
             },
           });
-          return marked.parse(text);
+          let html = marked.parse(text);
+
+          // 链接在新窗口打开
+          html = addAnchorTargetBlank(html);
+
+          // Remove list-style when rendering checkboxes
+          html = removeListStyleWhenCheckbox(html);
+
+          // 清洗 HTML 代码，避免恶意代码
+          html = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+
+          return html;
         },
       });
     })();
-  }, [theme.palette.mode, enqueueSnackbar]);
+  }, [theme.palette.mode, enqueueSnackbar, placeholder]);
 
   const MDE = theme.palette.mode === 'light' ? SimpleMDE : SimpleMDEDark;
 
@@ -101,4 +119,55 @@ function SimpleMDEDark(props) {
       }}
     />
   )
+}
+
+// 下面 2 个函数直接取自于 easy-markdown-editor
+// https://github.com/Ionaru/easy-markdown-editor
+
+/**
+ * Modify HTML to add 'target="_blank"' to links so they open in new tabs by default.
+ * @param {string} htmlText - HTML to be modified.
+ * @return {string} The modified HTML text.
+ */
+const anchorToExternalRegex = new RegExp(/(<a.*?https?:\/\/.*?[^a]>)+?/g);
+function addAnchorTargetBlank(htmlText) {
+  let match;
+
+  while ((match = anchorToExternalRegex.exec(htmlText)) !== null) {
+    // With only one capture group in the RegExp,
+    // we can safely take the first index from the match.
+    const linkString = match[0];
+
+    if (linkString.indexOf('target=') === -1) {
+      const fixedLinkString = linkString.replace(/>$/, ' target="_blank">');
+      htmlText = htmlText.replace(linkString, fixedLinkString);
+    }
+  }
+  return htmlText;
+}
+
+/**
+ * Modify HTML to remove the list-style when rendering checkboxes.
+ * @param {string} htmlText - HTML to be modified.
+ * @return {string} The modified HTML text.
+ */
+function removeListStyleWhenCheckbox(htmlText) {
+  const parser = new DOMParser();
+  const htmlDoc = parser.parseFromString(htmlText, 'text/html');
+  const listItems = htmlDoc.getElementsByTagName('li');
+
+  for (let i = 0; i < listItems.length; i++) {
+    const listItem = listItems[i];
+
+    for (let j = 0; j < listItem.children.length; j++) {
+      const listItemChild = listItem.children[j];
+
+      if (listItemChild instanceof HTMLInputElement && listItemChild.type === 'checkbox') {
+        // From Github: margin: 0 .2em .25em -1.6em;
+        listItem.style.marginLeft = '-1.5em';
+        listItem.style.listStyleType = 'none';
+      }
+    }
+  }
+  return htmlDoc.documentElement.innerHTML;
 }

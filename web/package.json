@@ -26,6 +26,7 @@
     "autoprefixer": "^10.4.4",
     "babel-loader": "^8.2.4",
     "dayjs": "^1.11.0",
+    "dompurify": "^2.3.6",
     "easymde": "^2.16.1",
     "file-saver": "^2.0.5",
     "leaflet": "^1.7.1",

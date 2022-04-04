@@ -72,7 +72,6 @@ export default function Add() {
 
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
-      <MDEditor id='editor2' value={content} onChange={setContent} />
       <Paper elevation={3} sx={{ px: 4, py: 3, mt: 5 }}>
         <Stack direction='row' alignItems='center' spacing={1} sx={{ mb: 3 }}>
           <IconButton aria-label='返回' component={RouteLink} to='..'>
@@ -88,8 +87,9 @@ export default function Add() {
             helperText={errors?.userid?.message}
             error={errors?.userid}
           />
-          <MDEditor id='editor' value={content} onChange={setContent} />
-            {/* <SimpleMDE /> */}
+          <MDEditor id='editor' value={content} onChange={setContent}
+            placeholder='公告内容'
+          />
           </Stack>
         </Paper>
       </Paper>
