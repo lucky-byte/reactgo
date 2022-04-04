@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useEffect, useRef } from "react";
 import ReactPinField from "react-pin-field";
-import styles from './pin-input.module.scss';
+import styles from './index.module.scss';
 
 export default function PinInput(props) {
   const ref = useRef();
