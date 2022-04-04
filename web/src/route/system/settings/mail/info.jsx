@@ -13,21 +13,19 @@ import TableRow from '@mui/material/TableRow';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import OutlinedPaper from '~/comp/outlined-paper';
-import titleState from "~/state/title";
 import progressState from '~/state/progress';
+import useTitle from "~/hook/title";
 import { get } from '~/rest';
 
 export default function Info() {
   const location = useLocation();
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const { enqueueSnackbar } = useSnackbar();
   const [mta, setMta] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-
-  useEffect(() => { setTitle('邮件传输代理配置信息'); }, [setTitle]);
+  useTitle('邮件传输代理配置信息');
 
   useEffect(() => {
     (async () => {

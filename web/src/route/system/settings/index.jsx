@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useSetRecoilState } from "recoil";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Paper from '@mui/material/Paper';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 import NotFound from "~/route/notfound";
 import Generic from './generic';
 import Mail from './mail';
@@ -15,10 +14,9 @@ import Account from './account';
 
 export default function Settings() {
   const location = useLocation();
-  const setTitle = useSetRecoilState(titleState);
   const [tabValue, setTabValue] = useState(1);
 
-  useEffect(() => { setTitle('系统设置'); }, [setTitle]);
+  useTitle('系统设置');
 
   useEffect(() => {
     const pathname = location?.pathname;

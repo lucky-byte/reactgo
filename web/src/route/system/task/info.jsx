@@ -16,20 +16,19 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
-import titleState from "~/state/title";
 import progressState from '~/state/progress';
+import useTitle from "~/hook/title";
 import { get } from '~/rest';
 
 export default function Info() {
   const location = useLocation();
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const { enqueueSnackbar } = useSnackbar();
   const [info, setInfo] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useEffect(() => { setTitle('定时任务信息'); }, [setTitle]);
+  useTitle('定时任务信息');
 
   useEffect(() => {
     (async () => {

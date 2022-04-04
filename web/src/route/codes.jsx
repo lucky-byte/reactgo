@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSetRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Table from '@mui/material/Table';
@@ -11,18 +11,17 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import CheckIcon from '@mui/icons-material/Check';
 import BlockIcon from '@mui/icons-material/Block';
-import titleState from "~/state/title";
 import userState from "~/state/user";
+import useTitle from "~/hook/title";
 import SearchBar from '~/comp/search-bar';
 import codes from './sidebar/codes';
 
 export default function Codes() {
-  const setTitle = useSetRecoilState(titleState);
   const user = useRecoilValue(userState);
   const [keyword, setKeyword] = useState('');
   const [codeList, setCodeList] = useState(codes);
 
-  useEffect(() => { setTitle('导航代码'); }, [setTitle]);
+  useTitle('导航代码');
 
   useEffect(() => {
     const trimed = keyword.trim();

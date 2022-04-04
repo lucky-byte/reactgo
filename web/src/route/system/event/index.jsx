@@ -1,5 +1,4 @@
 import { lazy, useEffect, useState } from 'react';
-import { useSetRecoilState } from "recoil";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import TextField from '@mui/material/TextField';
@@ -21,7 +20,7 @@ import Chip from '@mui/material/Chip';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 import { post, put } from '~/rest';
 
 // 代码拆分
@@ -29,7 +28,6 @@ const Markdown = lazy(() => import('~/comp/markdown'));
 
 export default function Event() {
   const { enqueueSnackbar } = useSnackbar();
-  const setTitle = useSetRecoilState(titleState);
   const [keyword, setKeyword] = useState('');
   const [days, setDays] = useState(7);
   const [level, setLevel] = useState(0);
@@ -42,7 +40,7 @@ export default function Event() {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { setTitle('系统事件'); }, [setTitle]);
+  useTitle('系统事件');
 
   useEffect(() => {
     (async () => {

@@ -18,19 +18,18 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Tooltip from '@mui/material/Tooltip';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import titleState from "~/state/title";
 import progressState from '~/state/progress';
+import useTitle from "~/hook/title";
 import { get, post } from '~/rest';
 
 export default function Add() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const [funcList, setFuncList] = useState([]);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useEffect(() => { setTitle('添加定时任务'); }, [setTitle]);
+  useTitle('添加定时任务');
 
   const {
     register, handleSubmit, watch, formState: {
@@ -95,8 +94,8 @@ export default function Add() {
             </FormHelperText>
           </Stack>
         </Stack>
-        <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
             <Stack spacing={4}>
               <Stack direction='row' spacing={3}>
                 <TextField label='任务名称' variant='standard' fullWidth
@@ -181,20 +180,20 @@ export default function Add() {
                   },
                 })}
               />
-              <Stack direction='row' spacing={2} justifyContent='flex-end'>
-                <Button color='secondary' disabled={isSubmitting}
-                  onClick={() => { navigate('..') }}>
-                  取消
-                </Button>
-                <Button type='reset' disabled={isSubmitting}>重置</Button>
-                <LoadingButton variant='contained' type='submit'
-                  loading={isSubmitting}>
-                  提交
-                </LoadingButton>
-              </Stack>
             </Stack>
-          </form>
-        </Paper>
+          </Paper>
+          <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 2 }}>
+            <Button color='secondary' disabled={isSubmitting}
+              onClick={() => { navigate('..') }}>
+              取消
+            </Button>
+            <Button type='reset' disabled={isSubmitting}>重置</Button>
+            <LoadingButton variant='contained' type='submit'
+              loading={isSubmitting}>
+              提交
+            </LoadingButton>
+          </Stack>
+        </form>
       </Paper>
     </Container>
   )

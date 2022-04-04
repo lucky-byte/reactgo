@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { useSetRecoilState } from "recoil";
 import { useForm } from "react-hook-form";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
@@ -14,18 +12,16 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 import { put } from '~/rest';
 
 export default function Password() {
   const location = useLocation();
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const { enqueueSnackbar } = useSnackbar();
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-
-  useEffect(() => { setTitle('修改登录密码'); }, [setTitle]);
+  useTitle('修改登录密码');
 
   const { register, handleSubmit, setValue, formState: {
     errors, isSubmitting
@@ -64,54 +60,56 @@ export default function Password() {
           {location?.state?.name}
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={4}>
-            <TextField label='登录密码' variant='standard' focused fullWidth
-              required type='password' autoComplete='new-password'
-              placeholder='登录密码不能少于6个字符'
-              InputProps={{
-                endAdornment:
-                  <InputAdornment position="end">
-                    <Button size='small' onClick={onNewPassword}>随机密码</Button>
-                  </InputAdornment>
-              }}
-              helperText={errors?.password?.message}
-              {...register('password', {
-                required: "不能为空",
-                minLength: {
-                  value: 6, message: '长度不足6位'
-                },
-                maxLength: {
-                  value: 64, message: '超出最大长度'
-                },
-              })}
-            />
-            <TextField label='确认登录密码' variant='standard' focused fullWidth
-              required type='password' autoComplete='new-password'
-              placeholder='再次输入登录密码'
-              helperText={errors?.password2?.message}
-              {...register('password2', {
-                required: "不能为空",
-                minLength: {
-                  value: 6, message: '长度不足6位'
-                },
-                maxLength: {
-                  value: 64, message: '超出最大长度'
-                },
-              })}
-            />
-            <FormControlLabel label="将新密码发送到用户邮箱" control={
-              <Checkbox defaultChecked {...register('sendmail')} />
-            } />
-            <Stack direction='row' spacing={2} justifyContent='flex-end'>
-              <Button color='secondary' disabled={isSubmitting}
-                onClick={() => { navigate('..') }}>
-                取消
-              </Button>
-              <LoadingButton variant='contained' type='submit'
-                loading={isSubmitting}>
-                提交
-              </LoadingButton>
+          <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
+            <Stack spacing={4}>
+              <TextField label='登录密码' variant='standard' focused fullWidth
+                required type='password' autoComplete='new-password'
+                placeholder='登录密码不能少于6个字符'
+                InputProps={{
+                  endAdornment:
+                    <InputAdornment position="end">
+                      <Button size='small' onClick={onNewPassword}>随机密码</Button>
+                    </InputAdornment>
+                }}
+                helperText={errors?.password?.message}
+                {...register('password', {
+                  required: "不能为空",
+                  minLength: {
+                    value: 6, message: '长度不足6位'
+                  },
+                  maxLength: {
+                    value: 64, message: '超出最大长度'
+                  },
+                })}
+              />
+              <TextField label='确认登录密码' variant='standard' focused fullWidth
+                required type='password' autoComplete='new-password'
+                placeholder='再次输入登录密码'
+                helperText={errors?.password2?.message}
+                {...register('password2', {
+                  required: "不能为空",
+                  minLength: {
+                    value: 6, message: '长度不足6位'
+                  },
+                  maxLength: {
+                    value: 64, message: '超出最大长度'
+                  },
+                })}
+              />
+              <FormControlLabel label="将新密码发送到用户邮箱" control={
+                <Checkbox defaultChecked {...register('sendmail')} />
+              } />
             </Stack>
+          </Paper>
+          <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 2 }}>
+            <Button color='secondary' disabled={isSubmitting}
+              onClick={() => { navigate('..') }}>
+              取消
+            </Button>
+            <LoadingButton variant='contained' type='submit'
+              loading={isSubmitting}>
+              提交
+            </LoadingButton>
           </Stack>
         </form>
       </Paper>

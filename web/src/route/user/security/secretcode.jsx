@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useSetRecoilState, useRecoilState } from "recoil";
+import { useState } from 'react';
+import { useRecoilState } from "recoil";
 import { useNavigate, Link } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
@@ -16,14 +16,13 @@ import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import PinInput from '~/comp/pin-input';
 import { useSecretCode } from '~/comp/secretcode';
-import titleState from "~/state/title";
 import userState from "~/state/user";
+import useTitle from "~/hook/title";
 import { put } from '~/rest';
 
 export default function SecretCode() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const setTitle = useSetRecoilState(titleState);
   const secretCode = useSecretCode();
   const [user, setUser] = useRecoilState(userState);
   const [code1, setCode1] = useState('');
@@ -37,8 +36,8 @@ export default function SecretCode() {
   const [clear, setClear] = useState(Math.random());
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => { setTitle('设置安全操作码'); }, [setTitle]);
   useHotkeys('esc', () => { navigate('..'); });
+  useTitle('设置安全操作码');
 
   const onCodeComplete1 = code => {
     setCode1(code);

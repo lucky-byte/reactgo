@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { Link as RouteLink } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
@@ -29,8 +29,8 @@ import isEmail from 'validator/lib/isEmail';
 import isMobile from 'validator/lib/isMobilePhone';
 import InplaceInput from '~/comp/inplace-input';
 import { useSecretCode } from '~/comp/secretcode';
-import titleState from "~/state/title";
 import userState from "~/state/user";
+import useTitle from "~/hook/title";
 import { get, put } from "~/rest";
 import AvatarPicker from './avatar';
 
@@ -45,11 +45,10 @@ L.Icon.Default.mergeOptions({
 
 export default function Profile() {
   const { enqueueSnackbar } = useSnackbar();
-  const setTitle = useSetRecoilState(titleState);
   const secretCode = useSecretCode();
   const [user, setUser] = useRecoilState(userState);
 
-  useEffect(() => { setTitle('个人资料'); }, [setTitle]);
+  useTitle('个人资料');
 
   // 修改姓名
   const onChangeName = async value => {

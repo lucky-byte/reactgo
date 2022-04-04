@@ -14,14 +14,13 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { grey } from '@mui/material/colors';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import titleState from "~/state/title";
 import progressState from '~/state/progress';
+import useTitle from "~/hook/title";
 import { get, put } from '~/rest';
 
 export default function ACL() {
   const location = useLocation();
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const { enqueueSnackbar } = useSnackbar();
   const [ acls, setAcls ] = useState([]);
@@ -29,8 +28,7 @@ export default function ACL() {
   const [ submitting, setSubmitting ] = useState(false);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-
-  useEffect(() => { setTitle('修改访问控制'); }, [setTitle]);
+  useTitle('修改访问控制');
 
   useEffect(() => {
     (async () => {
@@ -86,37 +84,39 @@ export default function ACL() {
         <Typography variant='subtitle1' sx={{ mb: 3 }} color='secondary'>
           {location?.state?.name}
         </Typography>
-        <Stack spacing={4}>
-          <TextField id='acl' label='访问控制角色' variant='standard' fullWidth
-            required select
-            value={acl} onChange={onAclChange}>
-            {acls.map(acl => (
-              <MenuItem key={acl.uuid} value={acl.uuid}>
-                <Stack direction='row' alignItems='center' sx={{ width: '100%' }}>
-                  {acl.code === 0 ?
-                    <Typography sx={{ flex: 1 }} color='secondary'>
-                      {acl.name}
-                    </Typography>
-                    :
-                    <Typography sx={{ flex: 1 }}>{acl.name}</Typography>
-                  }
-                  <Tooltip title={acl.summary} placement="top-start">
-                    <HelpOutlineIcon fontSize='small' sx={{ ml: 2, color: grey[600] }} />
-                  </Tooltip>
-                </Stack>
-              </MenuItem>
-            ))}
-          </TextField>
-          <Stack direction='row' spacing={2} justifyContent='flex-end'>
-            <Button color='secondary' disabled={submitting}
-              onClick={() => { navigate('..') }}>
-              取消
-            </Button>
-            <LoadingButton variant='contained' type='submit'
-              loading={submitting} onClick={onSubmit}>
-              提交
-            </LoadingButton>
+        <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
+          <Stack spacing={4}>
+            <TextField id='acl' label='访问控制角色' variant='standard' fullWidth
+              required select
+              value={acl} onChange={onAclChange}>
+              {acls.map(acl => (
+                <MenuItem key={acl.uuid} value={acl.uuid}>
+                  <Stack direction='row' alignItems='center' sx={{ width: '100%' }}>
+                    {acl.code === 0 ?
+                      <Typography sx={{ flex: 1 }} color='secondary'>
+                        {acl.name}
+                      </Typography>
+                      :
+                      <Typography sx={{ flex: 1 }}>{acl.name}</Typography>
+                    }
+                    <Tooltip title={acl.summary} placement="top-start">
+                      <HelpOutlineIcon fontSize='small' sx={{ ml: 2, color: grey[600] }} />
+                    </Tooltip>
+                  </Stack>
+                </MenuItem>
+              ))}
+            </TextField>
           </Stack>
+        </Paper>
+        <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 2 }}>
+          <Button color='secondary' disabled={submitting}
+            onClick={() => { navigate('..') }}>
+            取消
+          </Button>
+          <LoadingButton variant='contained' type='submit'
+            loading={submitting} onClick={onSubmit}>
+            提交
+          </LoadingButton>
         </Stack>
       </Paper>
     </Container>

@@ -21,22 +21,20 @@ import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import ReactToPrint from 'react-to-print';
 import OutlinedPaper from '~/comp/outlined-paper';
-import titleState from "~/state/title";
 import progressState from '~/state/progress';
+import useTitle from "~/hook/title";
 import { get } from '~/rest';
 import { geo } from '~/lib/geo';
 
 export default function Profile() {
   const location = useLocation();
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const { enqueueSnackbar } = useSnackbar();
   const [profile, setProfile] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-
-  useEffect(() => { setTitle('用户详细资料'); }, [setTitle]);
+  useTitle('用户详细资料');
 
   const contentRef = useRef();
 

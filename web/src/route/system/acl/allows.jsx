@@ -19,14 +19,13 @@ import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import OutlinedPaper from "~/comp/outlined-paper";
 import urlCodes from "~/route/sidebar/codes";
-import titleState from "~/state/title";
 import progressState from '~/state/progress';
+import useTitle from "~/hook/title";
 import { post, get, put } from '~/rest';
 
 export default function Allows() {
   const location = useLocation();
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const { enqueueSnackbar } = useSnackbar();
   const [refresh, setRefresh] = useState(true);
@@ -41,7 +40,7 @@ export default function Allows() {
   const [updated, setUpdated] = useState(false);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useEffect(() => { setTitle('修改访问控制'); }, [setTitle]);
+  useTitle('修改访问控制');
 
   // 查询已经允许的列表
   useEffect(() => {

@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-import { useSetRecoilState } from "recoil";
 import { useNavigate, Link as RouteLink } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
@@ -15,15 +13,14 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useHotkeys } from 'react-hotkeys-hook';
 import OutlinedPaper from "~/comp/outlined-paper";
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 import CronJPG from '~/img/cron.jpg';
 
 export default function Cron() {
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useEffect(() => { setTitle('CRON 表达式说明'); }, [setTitle]);
+  useTitle('CRON 表达式说明');
 
   return (
     <Container as='main' role='main' maxWidth='lg' sx={{ mb: 4 }}>

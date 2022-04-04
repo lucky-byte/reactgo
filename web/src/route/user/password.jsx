@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link as RouteLink } from 'react-router-dom';
-import { useSetRecoilState } from "recoil";
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -13,14 +12,13 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSecretCode } from '~/comp/secretcode';
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 import { put } from "~/rest";
 import { Typography } from '@mui/material';
 
 export default function Password() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const setTitle = useSetRecoilState(titleState);
   const secretCode = useSecretCode();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -30,9 +28,8 @@ export default function Password() {
   const [newPassword2Hide, setNewPassword2Hide] = useState(true);
   const [disabled, setDisabled] = useState(false);
 
-  useEffect(() => { setTitle('修改密码'); }, [setTitle]);
-
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
+  useTitle('修改密码');
 
   const onChangeClick = async () => {
     if (!oldPassword || !newPassword) {

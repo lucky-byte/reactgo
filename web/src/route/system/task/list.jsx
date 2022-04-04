@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
@@ -31,17 +31,16 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
-import titleState from "~/state/title";
 import progressState from "~/state/progress";
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
+import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
 import { post, del } from '~/rest';
 
 export default function List() {
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const [progress, setProgress] = useRecoilState(progressState);
   const [pageData, setPageData] = usePageData();
   const { enqueueSnackbar } = useSnackbar();
@@ -52,7 +51,7 @@ export default function List() {
   const [rows, setRows] = useState(pageData('rowsPerPage') || 10);
   const [refresh, setRefresh] = useState(true);
 
-  useEffect(() => { setTitle('定时任务'); }, [setTitle]);
+  useTitle('定时任务');
 
   const requestRefresh = () => { setRefresh(!refresh); }
 
@@ -103,7 +102,8 @@ export default function List() {
         />
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Stack direction='row' spacing={1}>
-          <Button startIcon={<AddIcon />} onClick={() => { navigate('add') }}>
+          <Button variant='outlined' startIcon={<AddIcon />}
+            onClick={() => { navigate('add') }}>
             添加
           </Button>
           <Button color='warning' onClick={() => { navigate('entries') }}>

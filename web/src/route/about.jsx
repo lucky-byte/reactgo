@@ -1,17 +1,13 @@
-import { useEffect } from 'react';
-import { useSetRecoilState } from "recoil";
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Link from '@mui/material/Link';
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 
 export default function About() {
-  const setTitle = useSetRecoilState(titleState);
-
-  useEffect(() => { setTitle('关于'); }, [setTitle]);
+  useTitle('关于');
 
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>

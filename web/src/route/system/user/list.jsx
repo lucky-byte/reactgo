@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
@@ -36,9 +36,9 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
-import titleState from "~/state/title";
 import userState from "~/state/user";
 import progressState from "~/state/progress";
+import useTitle from "~/hook/title";
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
@@ -47,7 +47,6 @@ import { post, del, get } from '~/rest';
 
 export default function List() {
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const [progress, setProgress] = useRecoilState(progressState);
   const [pageData, setPageData] = usePageData();
   const { enqueueSnackbar } = useSnackbar();
@@ -60,7 +59,7 @@ export default function List() {
   const [rows, setRows] = useState(pageData('rowsPerPage') || 10);
   const [refresh, setRefresh] = useState(true);
 
-  useEffect(() => { setTitle('用户管理'); }, [setTitle]);
+  useTitle('用户管理');
 
   const requestRefresh = () => { setRefresh(!refresh); }
 

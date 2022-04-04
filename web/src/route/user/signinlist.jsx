@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useSetRecoilState } from "recoil";
 import { useNavigate, Link } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
@@ -18,18 +17,17 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 import { get } from "~/rest";
 import { geo } from '~/lib/geo';
 
 export default function SignInList() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const setTitle = useSetRecoilState(titleState);
   const [list, setList] = useState([]);
 
   useHotkeys('esc', () => { navigate('..'); });
-  useEffect(() => { setTitle('登录历史'); }, [setTitle]);
+  useTitle('登录历史');
 
   useEffect(() => {
     (async () => {

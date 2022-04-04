@@ -1,6 +1,5 @@
-import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -10,16 +9,15 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Button from '@mui/material/Button';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useHotkeys } from 'react-hotkeys-hook';
-import titleState from "~/state/title";
 import userState from "~/state/user";
+import useTitle from "~/hook/title";
 
 export default function SecurityHome() {
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const user = useRecoilValue(userState);
 
-  useEffect(() => { setTitle('安全设置'); }, [setTitle]);
   useHotkeys('esc', () => { navigate('../..'); });
+  useTitle('安全设置');
 
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>

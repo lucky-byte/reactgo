@@ -26,20 +26,19 @@ import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import InplaceInput from '~/comp/inplace-input';
-import titleState from "~/state/title";
 import progressState from "~/state/progress";
+import useTitle from "~/hook/title";
 import { get, post, del, put } from '~/rest';
 
 export default function List() {
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const { enqueueSnackbar } = useSnackbar();
   const [tabValue, setTabValue] = useState('');
   const [acls, setAcls] = useState([]);
   const [info, setInfo] = useState({});
 
-  useEffect(() => { setTitle('访问控制'); }, [setTitle]);
+  useTitle('访问控制');
 
   const loadInfo = useCallback(async uuid => {
     try {

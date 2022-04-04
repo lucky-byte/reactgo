@@ -34,8 +34,8 @@ import dayjs from 'dayjs';
 import { useConfirm } from 'material-ui-confirm';
 import InplaceInput from '~/comp/inplace-input';
 import Splitter from '../../../comp/splitter';
-import titleState from "~/state/title";
 import progressState from "~/state/progress";
+import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
 import { get, post, put } from '~/rest';
 import StyledTreeItem from './treeitem';
@@ -45,7 +45,6 @@ export default function Home() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const confirm = useConfirm();
-  const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const [pageData, setPageData] = usePageData();
   const [root, setRoot] = useState('');
@@ -59,7 +58,7 @@ export default function Home() {
   const [detail, setDetail] = useState(false);
   const [nodeLoading, setNodeLoading] = useState(true);
 
-  useEffect(() => { setTitle('层级管理'); }, [setTitle]);
+  useTitle('层级管理');
 
   // 保存 splitter 的 sizes
   const onSplitterResize = (_, newSizes) => {

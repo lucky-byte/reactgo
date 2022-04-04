@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { useNavigate, Link as RouteLink } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
@@ -17,14 +17,13 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import QRCode from 'qrcode.react';
 import { useSnackbar } from 'notistack';
 import { useSecretCode } from '~/comp/secretcode';
-import titleState from "~/state/title";
 import userState from "~/state/user";
+import useTitle from "~/hook/title";
 import { get, post } from '~/rest';
 
 export default function OTP() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const setTitle = useSetRecoilState(titleState);
   const secretCode = useSecretCode();
   const [user, setUser] = useRecoilState(userState);
   const [code, setCode] = useState('');
@@ -32,7 +31,7 @@ export default function OTP() {
   const [secret, setSecret] = useState('');
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useEffect(() => { setTitle('两因素认证'); }, [setTitle]);
+  useTitle('两因素认证');
 
   useEffect(() => {
     (async () => {

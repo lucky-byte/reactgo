@@ -1,5 +1,5 @@
 import { useEffect, useState, Fragment } from 'react';
-import { useSetRecoilState, useRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import {
   useNavigate, useLocation, Navigate, Link as RouteLink
 } from 'react-router-dom';
@@ -39,7 +39,7 @@ import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from "~/comp/outlined-paper";
 import progressState from "~/state/progress";
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
 import { post, put, del } from '~/rest';
 
@@ -48,7 +48,6 @@ export default function User() {
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
   const confirm = useConfirm();
-  const setTitle = useSetRecoilState(titleState);
   const [progress, setProgress] = useRecoilState(progressState);
   const [pageData, setPageData] = usePageData();
   const [page, setPage] = useState(0);
@@ -59,7 +58,7 @@ export default function User() {
   const [reload, setReload] = useState(true);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useEffect(() => { setTitle('绑定用户'); }, [setTitle]);
+  useTitle('绑定用户');
 
   const { node } = location?.state || {};
 

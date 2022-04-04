@@ -16,20 +16,19 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
-import titleState from "~/state/title";
 import progressState from '~/state/progress';
+import useTitle from "~/hook/title";
 import { get } from "~/rest";
 
 export default function Entries() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const [refresh, setRefresh] = useState(true);
   const [entries, setEntries] = useState([]);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useEffect(() => { setTitle('任务诊断'); }, [setTitle]);
+  useTitle('任务诊断');
 
   useEffect(() => {
     (async () => {

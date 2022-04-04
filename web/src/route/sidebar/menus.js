@@ -1,13 +1,13 @@
 import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import HistoryIcon from '@mui/icons-material/History';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import SecurityIcon from '@mui/icons-material/Security';
 import SettingsIcon from '@mui/icons-material/Settings';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import CampaignIcon from '@mui/icons-material/Campaign';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import ShareIcon from '@mui/icons-material/Share';
 
 const menus = [{
   title: '欢迎',
@@ -15,6 +15,12 @@ const menus = [{
     code: 100,
     icon: AccessibilityNewIcon,
   }, {
+    code: 101,
+    icon: DashboardIcon,
+  }],
+}, {
+  title: '资源管理',
+  items: [{
     code: 101,
     icon: DashboardIcon,
   }],
@@ -34,13 +40,13 @@ const menus = [{
     icon: SettingsIcon,
   }, {
     code: 9040,
-    icon: NotificationsIcon,
+    icon: ReportGmailerrorredIcon,
   }, {
     code: 9050,
     icon: AccessAlarmIcon,
   }, {
     code: 9060,
-    icon: AccountTreeIcon,
+    icon: ShareIcon,
   }, {
     code: 9070,
     icon: CampaignIcon,

@@ -1,5 +1,4 @@
 import { lazy, useEffect, useState } from 'react';
-import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
@@ -23,7 +22,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 import { post, put } from '~/rest';
 
 // 代码拆分
@@ -32,7 +31,6 @@ const Markdown = lazy(() => import('~/comp/markdown'));
 export default function List() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const setTitle = useSetRecoilState(titleState);
   const [keyword, setKeyword] = useState([]);
   const [days, setDays] = useState(7);
   const [level, setLevel] = useState(0);
@@ -45,7 +43,7 @@ export default function List() {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { setTitle('发布公告'); }, [setTitle]);
+  useTitle('公告列表');
 
   useEffect(() => {
     (async () => {

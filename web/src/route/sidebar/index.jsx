@@ -102,7 +102,9 @@ function Menu({ menu }) {
       <List sx={{ backgroundColor: listBgColor }}>
         {menu.items.map(i => {
           const I = i.icon;
-          return <Item key={i.code} code={i.code} icon={<I color='primary' />} />
+          return (
+            <Item key={i.code} code={i.code} icon={<I sx={{ color: '#888b' }} />} />
+          )
         })}
       </List>
     </Accordion>

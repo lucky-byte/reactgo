@@ -1,17 +1,14 @@
-import { lazy, useEffect } from 'react';
-import { useSetRecoilState } from "recoil";
+import { lazy } from 'react';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 import md from './welcome.md';
 
 // 代码拆分
 const Markdown = lazy(() => import('~/comp/markdown'));
 
 export default function Welcome() {
-  const setTitle = useSetRecoilState(titleState);
-
-  useEffect(() => { setTitle('欢迎'); }, [setTitle]);
+  useTitle('欢迎');
 
   return (
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>

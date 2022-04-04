@@ -1,16 +1,13 @@
-import { useEffect } from 'react';
-import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 
 export default function NotFound() {
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
 
-  useEffect(() => { setTitle('页面不存在'); }, [setTitle]);
+  useTitle('页面不存在');
 
   return (
     <Stack alignItems='center' spacing={1}>

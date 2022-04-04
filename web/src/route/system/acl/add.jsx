@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from "recoil";
 import { useForm } from "react-hook-form";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
@@ -11,17 +9,15 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import titleState from "~/state/title";
+import useTitle from "~/hook/title";
 import { post } from '~/rest';
 
 export default function Add() {
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const { enqueueSnackbar } = useSnackbar();
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-
-  useEffect(() => { setTitle('添加角色'); }, [setTitle]);
+  useTitle('添加角色');
 
   const { register, handleSubmit, formState: {
     errors, isSubmitting

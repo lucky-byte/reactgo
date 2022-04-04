@@ -22,22 +22,20 @@ import Tooltip from '@mui/material/Tooltip';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import MDEditor from '~/comp/mdeditor';
-import titleState from "~/state/title";
 import progressState from '~/state/progress';
+import useTitle from "~/hook/title";
 import { get, post } from '~/rest';
-// import SimpleMDE from 'react-simplemde-editor';
-// import "easymde/dist/easymde.min.css";
 
 export default function Add() {
   const navigate = useNavigate();
-  const setTitle = useSetRecoilState(titleState);
   const setProgress = useSetRecoilState(progressState);
   const { enqueueSnackbar } = useSnackbar();
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [submitting, setSubmitting] = useState('');
 
+  useTitle('发布公告');
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-
-  useEffect(() => { setTitle('发布公告'); }, [setTitle]);
 
   const {
     register, handleSubmit, setValue, formState: {
@@ -57,13 +55,10 @@ export default function Add() {
     })();
   }, [enqueueSnackbar, setProgress]);
 
-  const onSubmit = async data => {
-    if (data.password !== data.password2) {
-      return enqueueSnackbar('2次密码输入不一致');
-    }
+  const onSubmit = async () => {
     try {
-      await post('/system/user/add', new URLSearchParams(data));
-      enqueueSnackbar(`用户 ${data.name} 添加成功`, { variant: 'success' });
+      await post('/system/user/add', new URLSearchParams());
+      // enqueueSnackbar(`用户 ${data.name} 添加成功`, { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message);
@@ -77,21 +72,35 @@ export default function Add() {
           <IconButton aria-label='返回' component={RouteLink} to='..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
-          <Typography variant='h6'>公告内容</Typography>
+          <Typography variant='h6'>发布公告</Typography>
         </Stack>
         <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
           <Stack spacing={2}>
-          <TextField label='标题' variant='outlined' fullWidth required
-            autoFocus
+          <TextField label='标题' variant='outlined' fullWidth required autoFocus
             placeholder='公告标题'
-            helperText={errors?.userid?.message}
-            error={errors?.userid}
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            // helperText={errors?.userid?.message}
+            // error={errors?.userid}
           />
           <MDEditor id='editor' value={content} onChange={setContent}
             placeholder='公告内容'
           />
           </Stack>
         </Paper>
+          <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 2 }}>
+            <Button color='secondary' disabled={isSubmitting}
+              onClick={() => { navigate('..') }}>
+              取消
+            </Button>
+            <Button variant='outlined' color='success' disabled={submitting}>
+              预览
+            </Button>
+            <LoadingButton variant='contained' onClick={onSubmit}
+              loading={submitting}>
+              提交
+            </LoadingButton>
+          </Stack>
       </Paper>
     </Container>
   )
