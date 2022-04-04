@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
@@ -23,9 +23,11 @@ import AddIcon from '@mui/icons-material/Add';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
-import Markdown from '~/comp/markdown';
 import titleState from "~/state/title";
 import { post, put } from '~/rest';
+
+// 代码拆分
+const Markdown = lazy(() => import('~/comp/markdown'));
 
 export default function List() {
   const navigate = useNavigate();

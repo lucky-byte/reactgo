@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { useSetRecoilState } from "recoil";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
@@ -21,9 +21,11 @@ import Chip from '@mui/material/Chip';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
-import Markdown from '~/comp/markdown';
 import titleState from "~/state/title";
 import { post, put } from '~/rest';
+
+// 代码拆分
+const Markdown = lazy(() => import('~/comp/markdown'));
 
 export default function Event() {
   const { enqueueSnackbar } = useSnackbar();
