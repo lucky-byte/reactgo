@@ -152,7 +152,7 @@ export default function List() {
             <TableRow sx={{ whiteSpace:'nowrap' }}>
               <TableCell align='center'>登录名</TableCell>
               <TableCell align='center'>姓名</TableCell>
-              <TableCell align='center'>访问控制</TableCell>
+              <TableCell align='center'>角色</TableCell>
               <TableCell align='center'>创建时间</TableCell>
               <TableCell align='center'>最后登录时间</TableCell>
               <TableCell align='center'>登录次数</TableCell>

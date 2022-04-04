@@ -1,6 +1,6 @@
 {
   "name": "reactgo",
-  "version": "1.0.0-beta",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.17.8",
@@ -30,6 +30,7 @@
     "file-saver": "^2.0.5",
     "leaflet": "^1.7.1",
     "markdown-to-jsx": "^7.1.7",
+    "marked": "^4.0.12",
     "material-ui-confirm": "^3.0.3",
     "nats.ws": "^1.7.2",
     "notistack": "^2.0.3",

@@ -127,7 +127,9 @@ export default function History() {
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">{row.browser} on {row.os}</TableCell>
                 <TableCell align="center">
-                  {row.trust ? <CheckIcon /> : <CloseIcon />}
+                  {row.trust ?
+                    <CheckIcon fontSize='small' /> : <CloseIcon fontSize='small' />
+                  }
                 </TableCell>
                 <TableCell align="center">
                   <Tooltip title={row.ip} arrow placement='right'>

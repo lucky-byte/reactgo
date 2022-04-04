@@ -87,7 +87,7 @@ export default function ACL() {
           {location?.state?.name}
         </Typography>
         <Stack spacing={4}>
-          <TextField id='acl' label='访问控制' variant='standard' fullWidth
+          <TextField id='acl' label='访问控制角色' variant='standard' fullWidth
             required select
             value={acl} onChange={onAclChange}>
             {acls.map(acl => (

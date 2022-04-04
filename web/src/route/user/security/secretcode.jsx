@@ -102,8 +102,8 @@ export default function SecretCode() {
           <Stack>
             <Typography variant='h6'>设置安全操作码</Typography>
             <FormHelperText>
-              安全操作码由 6 位数字组成，用于保护带有风险的操作，例如修改个人重要信息、
-              资金类操作等。
+              安全操作码由 6 位数字组成，用于保护风险类操作，例如修改个人重要信息、
+              资金类操作等
             </FormHelperText>
           </Stack>
         </Stack>
