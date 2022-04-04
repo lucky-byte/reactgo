@@ -12,14 +12,15 @@ export default function SearchInput(props) {
   const [value, setValue] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const { onChange, isLoading, placeholder, sx } = props;
+
   // 延迟反应
-  const debounceChange = useMemo(() => debounce(props.onChange, 500), [props.onChange]);
-  useEffect(() => { return () => { debounceChange.cancel(); } }, [debounceChange]);
+  const debounceChange = useMemo(() => debounce(onChange, 500), [onChange]);
 
   // 外部可以控制 loading 状态
-  useEffect(() => { setLoading(props.isLoading); }, [props.isLoading]);
+  useEffect(() => { setLoading(isLoading); }, [isLoading]);
 
-  const onChange = e => {
+  const onInputChange = e => {
     setValue(e.target.value);
     setLoading(true);
     debounceChange(e.target.value);
@@ -28,14 +29,14 @@ export default function SearchInput(props) {
   // 清除
   const onClear = () => {
     setValue('');
-    props.onChange('');
+    onChange('');
   }
 
   useHotkeys('esc', onClear, { enableOnTags: ["INPUT"] });
 
   return (
-    <TextField variant="standard" placeholder='搜索...'
-      value={value} onChange={onChange}
+    <TextField variant="standard" placeholder={placeholder || '搜索...'}
+      value={value} onChange={onInputChange}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start" sx={{ width: '32px' }}>
@@ -53,6 +54,7 @@ export default function SearchInput(props) {
         )
       }}
       inputProps={{ 'aria-label': '搜索' }}
+      sx={sx}
     />
   )
 }

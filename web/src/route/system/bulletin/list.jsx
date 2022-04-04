@@ -38,6 +38,7 @@ export default function List() {
   const [level, setLevel] = useState(0);
   const [fresh, setFresh] = useState('all');
   const [list, setList] = useState([]);
+  const [count, setCount] = useState(0);
   const [freshCount, setFreshCount] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [rows] = useState(10);
@@ -63,6 +64,7 @@ export default function List() {
         } else {
           setPageCount(0);
         }
+        setCount(resp.count);
         setList(resp.list || []);
         setFreshCount(resp.fresh_count || 0);
       } catch (err) {
@@ -124,7 +126,10 @@ export default function List() {
   return (
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
-        <SearchInput isLoading={loading} onChange={onKeywordChange} />
+        <SearchInput isLoading={loading} onChange={onKeywordChange}
+          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
+          sx={{ minWidth: 300 }}
+        />
         <TextField
           select variant='standard' sx={{ ml: 2, minWidth: 100 }}
           value={days} onChange={onDaysChange}>
@@ -132,7 +137,7 @@ export default function List() {
           <MenuItem value={30}>近一月</MenuItem>
           <MenuItem value={90}>近三月</MenuItem>
           <MenuItem value={365}>近一年</MenuItem>
-          <MenuItem value={365000}>全部</MenuItem>
+          <MenuItem value={365000}>不限时间</MenuItem>
         </TextField>
         <TextField
           select variant='standard' sx={{ ml: 2, minWidth: 100 }}

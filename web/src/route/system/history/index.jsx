@@ -88,7 +88,10 @@ export default function History() {
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
-        <SearchInput isLoading={loading} onChange={onKeywordChange} />
+        <SearchInput isLoading={loading} onChange={onKeywordChange}
+          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
+          sx={{ minWidth: 300 }}
+        />
         <TextField
           select variant='standard' sx={{ ml: 2, minWidth: 140 }}
           value={days} onChange={onDaysChange}
@@ -104,7 +107,7 @@ export default function History() {
           <MenuItem value={30}>近一月</MenuItem>
           <MenuItem value={90}>近三月</MenuItem>
           <MenuItem value={365}>近一年</MenuItem>
-          <MenuItem value={365000}>全部</MenuItem>
+          <MenuItem value={365000}>不限时间</MenuItem>
         </TextField>
       </Toolbar>
       <TableContainer component={OutlinedPaper}>

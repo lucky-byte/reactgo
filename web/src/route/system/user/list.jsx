@@ -122,13 +122,16 @@ export default function List() {
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
-        <SearchInput isLoading={progress} onChange={onKeywordChange} />
+        <SearchInput isLoading={progress} onChange={onKeywordChange}
+          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
+          sx={{ minWidth: 300 }}
+        />
         <TextField select variant='standard' sx={{ ml: 2, minWidth: 140 }}
           value={acl} onChange={onAclChange}
           InputProps={{
             startAdornment:
               <InputAdornment position="start">
-                <Tooltip title='通过访问控制筛选'>
+                <Tooltip title='通过访问控制角色筛选'>
                   <SecurityIcon fontSize='small' sx={{
                     cursor: 'help', color: '#8888'
                   }} />
@@ -138,7 +141,7 @@ export default function List() {
           {acls.map(a => (
             <MenuItem key={a.uuid} value={a.uuid}>{a.name}</MenuItem>
           ))}
-          <MenuItem value='all'>不限</MenuItem>
+          <MenuItem value='all'>所有角色</MenuItem>
         </TextField>
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Button variant='outlined' size='small' startIcon={<AddIcon />}

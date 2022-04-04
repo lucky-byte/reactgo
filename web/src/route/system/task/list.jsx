@@ -97,7 +97,10 @@ export default function List() {
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
-        <SearchInput isLoading={progress} onChange={onKeywordChange} />
+        <SearchInput isLoading={progress} onChange={onKeywordChange}
+          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
+          sx={{ minWidth: 300 }}
+        />
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Stack direction='row' spacing={1}>
           <Button startIcon={<AddIcon />} onClick={() => { navigate('add') }}>
