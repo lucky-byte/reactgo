@@ -24,7 +24,7 @@ export default function Markdown(props) {
   const [content, setContent] = useState('');
 
   const codeColor = theme.palette.mode === 'dark' ? 'white' : 'black';
-  const codeBgColor = theme.palette.mode === 'dark' ? '#111' : '#ddd';
+  const codeBgColor = theme.palette.mode === 'dark' ? '#333' : '#eee';
 
   useEffect(() => {
     if (props.url) {
@@ -49,7 +49,7 @@ export default function Markdown(props) {
         p: {
           component: Typography,
           props: {
-            variant: 'body2', gutterBottom: true
+            variant: 'body1', paragraph: true,
           }
         },
         hr: {
@@ -61,7 +61,7 @@ export default function Markdown(props) {
         li: {
           component: 'li',
           props: {
-            style: { fontSize: '0.9rem' }
+            style: { fontSize: '0.95rem', marginBottom: '6px', },
           }
         },
         a: {
@@ -96,6 +96,9 @@ export default function Markdown(props) {
         },
         tbody: {
           component: TableBody,
+        },
+        th: {
+          component: TableCell,
         },
         td: {
           component: TableCell,
