@@ -170,10 +170,10 @@ type TreeBind struct {
 
 // 公告
 type Bulletin struct {
-	UUID      string    `db:"uuid"`       // uuid
-	CreateAt  time.Time `db:"create_at"`  // 创建时间
-	ExpiryAt  time.Time `db:"expiry_at"`  // 过期时间
-	Title     string    `db:"title"`      // 标题
-	Content   string    `db:"content"`    // 征文
-	ReadUsers int       `db:"read_users"` // 阅读用户
+	UUID     string    `db:"uuid"`      // uuid
+	CreateAt time.Time `db:"create_at"` // 创建时间
+	ExpiryAt time.Time `db:"expiry_at"` // 过期时间
+	Title    string    `db:"title"`     // 标题
+	Content  string    `db:"content"`   // 征文
+	Users    string    `db:"users"`     // 已阅读用户
 }

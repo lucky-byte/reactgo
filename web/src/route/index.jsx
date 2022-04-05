@@ -31,6 +31,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from "@mui/material/FormHelperText";
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
+import Avatar from "@mui/material/Avatar";
 import Chip from '@mui/material/Chip';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import Slide from '@mui/material/Slide';
@@ -59,7 +60,7 @@ import Codes from "./codes";
 import Dashboard from "./dashboard";
 import System from "./system";
 import User from "./user";
-import { Avatar } from "@mui/material";
+import ErrorBoundary from "~/error";
 
 export default function Index() {
   const location = useLocation();
@@ -117,14 +118,16 @@ export default function Index() {
         <Stack sx={{ flex: 1, height: '100vh', '@media print': { height: '100%' } }}>
           <Appbar />
           <Box sx={{ maxHeight: '100%', overflow: 'scroll' }}>
-            <Routes>
-              <Route path='/*' element={<Dashboard />} />
-              <Route path='user/*' element={<User />} />
-              <Route path='system/*' element={<System />} />
-              <Route path='codes' element={<Codes />} />
-              <Route path='about' element={<About />} />
-              <Route path='*' element={<NotFound />} />
-            </Routes>
+            <ErrorBoundary>
+              <Routes>
+                <Route path='/*' element={<Dashboard />} />
+                <Route path='user/*' element={<User />} />
+                <Route path='system/*' element={<System />} />
+                <Route path='codes' element={<Codes />} />
+                <Route path='about' element={<About />} />
+                <Route path='*' element={<NotFound />} />
+              </Routes>
+            </ErrorBoundary>
           </Box>
         </Stack>
       </Box>

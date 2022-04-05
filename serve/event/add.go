@@ -26,7 +26,7 @@ func Add(level int, title, message string) {
 	}
 	// 发布事件到消息队列
 	if nats.Broker != nil {
-		err = nats.Broker.Publish("event", &nats.Event{
+		err = nats.Broker.Publish("reactgo.system.event", &nats.Event{
 			Level:   level,
 			Title:   title,
 			Message: message,

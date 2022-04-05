@@ -14,12 +14,13 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
 import Push from 'push.js';
+import nats from '~/lib/nats';
 import userState from "./state/user";
+import { get } from "~/rest";
 import SignIn from "./signin";
 import ResetPass from "./resetpass";
 import Index from "./route";
-import nats from '~/lib/nats';
-import { get } from "~/rest";
+import ErrorBoundary from "./error";
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
 export const useColorModeContent = () => useContext(ColorModeContext);
@@ -118,7 +119,7 @@ export default function App() {
         }
         // 如果用户具有事件访问权限，则订阅事件
         if (event_allow) {
-          const sub = broker.subscribe("event")
+          const sub = broker.subscribe("reactgo.system.event")
           const codec = await nats.JSONCodec();
 
           // 收到事件时弹出提示
@@ -190,15 +191,17 @@ export default function App() {
             dialogProps: { maxWidth: 'xs' },
             allowClose: false,
           }}>
-            <BrowserRouter>
-              <Suspense fallback={<LinearProgress />}>
-                <Routes>
-                  <Route path='/signin/*' element={<SignIn />} />
-                  <Route path='/resetpass/*' element={<ResetPass />} />
-                  <Route path='/*' element={<Index />} />
-                </Routes>
-              </Suspense>
-            </BrowserRouter>
+            <ErrorBoundary>
+              <BrowserRouter>
+                <Suspense fallback={<LinearProgress />}>
+                  <Routes>
+                    <Route path='/signin/*' element={<SignIn />} />
+                    <Route path='/resetpass/*' element={<ResetPass />} />
+                    <Route path='/*' element={<Index />} />
+                  </Routes>
+                </Suspense>
+              </BrowserRouter>
+            </ErrorBoundary>
           </ConfirmProvider>
         </LocalizationProvider>
       </ThemeProvider>

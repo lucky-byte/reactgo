@@ -1,4 +1,4 @@
-import { lazy, useEffect, useState } from 'react';
+import { lazy, useState } from 'react';
 import { useNavigate, Link as RouteLink } from 'react-router-dom';
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
@@ -66,9 +66,9 @@ export default function Add() {
       }
       setSubmitting(true);
 
-      await post('/system/bulletin/add', new URLSearchParams(
+      await post('/system/bulletin/add', new URLSearchParams({
         title, content,
-      ));
+      }));
       enqueueSnackbar('提交成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {

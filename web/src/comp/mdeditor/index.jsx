@@ -35,7 +35,7 @@ export default function MDEditor(props) {
         spellChecker: false,
         indentWithTabs: false,
         lineNumbers: false,
-        maxHeight: '500px',
+        maxHeight: '400px',
         uploadImage: true,
         imageMaxSize: 8 * 1024 * 1024,
         imageTexts: {

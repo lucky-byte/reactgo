@@ -36,10 +36,10 @@ func SelectOne(ql string, dest any, params ...any) error {
 	v := reflect.ValueOf(dest)
 
 	if v.Kind() != reflect.Ptr {
-		return fmt.Errorf("GetOne() 必须传一个指针，而不是值")
+		return fmt.Errorf("SelectOne() 必须传一个指针，而不是值")
 	}
 	if v.IsNil() {
-		return fmt.Errorf("GetOne() 传了 nil 指针")
+		return fmt.Errorf("SelectOne() 传了 nil 指针")
 	}
 	t := reflectx.Deref(v.Type())
 
