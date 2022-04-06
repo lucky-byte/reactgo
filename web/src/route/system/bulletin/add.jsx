@@ -1,4 +1,4 @@
-import { lazy, useState } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { useNavigate, Link as RouteLink } from 'react-router-dom';
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
@@ -15,7 +15,7 @@ import DialogContent from '@mui/material/DialogContent';
 import CloseIcon from '@mui/icons-material/Close';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import MDEditor from '~/comp/mdeditor';
+import MDEditor, { getAutoSaved, delAutoSaved } from '~/comp/mdeditor';
 import useTitle from "~/hook/title";
 import { post } from '~/rest';
 
@@ -32,6 +32,17 @@ export default function Add() {
 
   useTitle('发布公告');
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
+
+  // MD editor 唯一标识，用于自动保存
+  const mdeUniqueId = 'add-bulletin-id';
+
+  // 恢复自动保存数据
+  useEffect(() => {
+    const saved = getAutoSaved(mdeUniqueId);
+    if (saved) {
+      setContent(saved);
+    }
+  }, []);
 
   // 修改标题
   const onTitleChange = e => {
@@ -71,6 +82,10 @@ export default function Add() {
       await post('/system/bulletin/add', new URLSearchParams({
         title, content,
       }));
+
+      // 清除自动保存数据
+      delAutoSaved(mdeUniqueId);
+
       enqueueSnackbar('提交成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
@@ -99,6 +114,7 @@ export default function Add() {
           />
           <MDEditor id='editor' value={content} onChange={setContent}
             placeholder='公告内容，支持 Markdown 语法'
+            uniqueId={mdeUniqueId}
           />
           </Stack>
         </Paper>

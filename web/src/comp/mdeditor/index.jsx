@@ -23,7 +23,7 @@ export default function MDEditor(props) {
   const [options, setOptions] = useState({});
   const [helpOpen, setHelpOpen] = useState(false);
 
-  const { placeholder } = props;
+  const { placeholder, uniqueId, ...others } = props;
 
   // 异步加载模块，代码拆分
   useEffect(() => {
@@ -70,8 +70,8 @@ export default function MDEditor(props) {
           table: ['', '\n标题 | 标题\n------ | ------\n内容 | 内容\n\n'],
         },
         autosave: {
-          enabled: true,
-          uniqueId: 'abcdef',
+          enabled: uniqueId ? true : false,
+          uniqueId: uniqueId || 'x',
           delay: 10 * 1000,
           text: '自动保存:',
         },
@@ -124,7 +124,7 @@ export default function MDEditor(props) {
         },
       });
     })();
-  }, [theme.palette.mode, enqueueSnackbar, placeholder]);
+  }, [theme.palette.mode, enqueueSnackbar, placeholder, uniqueId]);
 
   const onHelpClose = () => {
     setHelpOpen(false);
@@ -134,7 +134,7 @@ export default function MDEditor(props) {
 
   return (
     <>
-      <MDE {...props} options={options} />
+      <MDE {...others} options={options} />
       <Dialog open={helpOpen} maxWidth='md' fullWidth onClose={onHelpClose}>
         <DialogTitle>
           <Stack direction='row' alignItems='center' justifyContent='space-between'>
@@ -235,4 +235,14 @@ function removeListStyleWhenCheckbox(htmlText) {
     }
   }
   return htmlDoc.documentElement.innerHTML;
+}
+
+// 获取自动保存数据
+export function getAutoSaved(uniqueId) {
+  return localStorage.getItem('smde_' + uniqueId);
+}
+
+// 清除自动保存数据
+export function delAutoSaved(uniqueId) {
+  localStorage.removeItem('smde_' + uniqueId);
 }
