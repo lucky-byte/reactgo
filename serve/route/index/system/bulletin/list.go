@@ -59,6 +59,7 @@ func list(c echo.Context) error {
 		list = append(list, echo.Map{
 			"uuid":      r.UUID,
 			"create_at": r.CreateAt,
+			"expiry_at": r.ExpiryAt,
 			"title":     r.Title,
 			"content":   r.Content,
 			"draft":     r.Draft,

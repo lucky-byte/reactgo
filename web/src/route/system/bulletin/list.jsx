@@ -14,6 +14,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
@@ -136,9 +137,9 @@ export default function List() {
       </Toolbar>
 
       <Paper variant='outlined' sx={{ mt: 0 }}>
-        {list.map(e => (
-          <Accordion key={e.uuid} elevation={0} disableGutters
-            onChange={(evt, expanded) => onAccordionChange(evt, expanded, e)} sx={{
+        {list.map(b => (
+          <Accordion key={b.uuid} elevation={0} disableGutters
+            onChange={(evt, expanded) => onAccordionChange(evt, expanded, b)} sx={{
             borderBottom: '1px solid #8884',
             '&:before': { display: 'none', },
             '&:last-child': { borderBottom: 0, }
@@ -147,12 +148,17 @@ export default function List() {
               <Stack direction='row' alignItems='center' spacing={1}
                 sx={{ flex: 1, mr: 2 }}>
                 <Typography variant='subtitle1' sx={{
-                  flex: 1, fontWeight: e.fresh ? 'bold' : 'normal',
+                  flex: 1, fontWeight: b.fresh ? 'bold' : 'normal',
                 }}>
-                  {e.title}
+                  {b.title}
                 </Typography>
+                {b.draft && <Chip label="草稿" size='small' />}
+                {dayjs().isAfter(dayjs(b.expiry_at)) &&
+                  <Chip label='过期' size='small' color='warning' />
+                }
                 <Typography variant='caption' sx={{ color: 'gray' }}>
-                  {e.timeAgo || dayjs(e.create_at).fromNow()}
+                  已读：{b.nreaders}/{b.ntargets}，
+                  {b.timeAgo || dayjs(b.create_at).fromNow()}
                 </Typography>
               </Stack>
             </AccordionSummary>
@@ -161,7 +167,7 @@ export default function List() {
                 theme.palette.mode === 'dark' ? 'black' : 'white',
             }}>
               <Box sx={{ position: 'relative' }}>
-                <Markdown>{e.content}</Markdown>
+                <Markdown>{b.content}</Markdown>
                 <Tooltip title='在新窗口打开'>
                   <Fab size='small' color="primary" aria-label="在新窗口打开" sx={{
                     position: 'absolute', top: 10, right: 10,
