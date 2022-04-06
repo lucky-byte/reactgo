@@ -14,13 +14,13 @@ import Button from "@mui/material/Button";
 import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Tooltip from '@mui/material/Tooltip';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
 import { get, post } from '~/rest';
+import CronHelp from './cronhelp';
 
 export default function Add() {
   const navigate = useNavigate();
@@ -120,11 +120,7 @@ export default function Add() {
                         <Tooltip title='测试表达式是否有效'>
                           <Button onClick={onTestCron}>验证</Button>
                         </Tooltip>
-                        <Tooltip title='查看帮助'>
-                          <IconButton LinkComponent={RouteLink} to='../cron'>
-                            <HelpOutlineIcon fontSize='small' color='primary' />
-                          </IconButton>
-                        </Tooltip>
+                        <CronHelp />
                       </InputAdornment>
                     )
                   }}
