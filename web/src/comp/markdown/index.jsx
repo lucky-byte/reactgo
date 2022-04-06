@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import MarkdownJSX from 'markdown-to-jsx';
 import { useTheme } from "@mui/material/styles";
 import Typography from '@mui/material/Typography';
@@ -23,14 +23,16 @@ export default function Markdown(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [content, setContent] = useState('');
 
+  const { url, children } = props;
+
   const codeColor = theme.palette.mode === 'dark' ? 'white' : 'black';
   const codeBgColor = theme.palette.mode === 'dark' ? '#333' : '#eee';
 
   useEffect(() => {
-    if (props.url) {
+    if (url) {
       (async () => {
         try {
-          const resp = await fetch(props.url, { method: 'GET' });
+          const resp = await fetch(url, { method: 'GET' });
           const text = await resp.text();
           setContent(text || '');
         } catch (err) {
@@ -38,79 +40,81 @@ export default function Markdown(props) {
         }
       })();
     } else {
-      setContent(props.children);
+      setContent(children);
     }
-  }, [props.url, props.children, enqueueSnackbar]);
+  }, [url, children, enqueueSnackbar]);
 
-  return (
-    <MarkdownJSX children={content || ''} options={{
-      wrapper: 'article',
-      overrides: {
-        p: {
-          component: Typography,
-          props: {
-            variant: 'body1', paragraph: true,
+  const options = useMemo(() => ({
+    wrapper: 'article',
+    overrides: {
+      p: {
+        component: Typography,
+        props: {
+          variant: 'body1', paragraph: true,
+        }
+      },
+      hr: {
+        component: Divider,
+        props: {
+          sx: { my: 1 }
+        }
+      },
+      li: {
+        component: 'li',
+        props: {
+          style: { fontSize: '0.95rem', marginBottom: '6px', },
+        }
+      },
+      a: {
+        component: Link,
+        props: {
+          underline: 'hover',
+        }
+      },
+      blockquote: {
+        component: Paper,
+        props: {
+          variant: 'outlined', sx: {
+            p: 1, borderLeft: `4px solid #088`, my: 1,
           }
-        },
-        hr: {
-          component: Divider,
-          props: {
-            sx: { my: 1 }
-          }
-        },
-        li: {
-          component: 'li',
-          props: {
-            style: { fontSize: '0.95rem', marginBottom: '6px', },
-          }
-        },
-        a: {
-          component: Link,
-          props: {
-            underline: 'hover',
-          }
-        },
-        blockquote: {
-          component: Paper,
-          props: {
-            variant: 'outlined', sx: {
-              p: 1, borderLeft: `4px solid #088`, my: 1,
-            }
-          }
-        },
-        pre: Pre,
-        code: {
-          component: 'code',
-          props: {
-            style: {
-              backgroundColor: codeBgColor,
-              borderRadius: '4px',
-              color: codeColor,
-              margin: '0 0.2rem',
-              padding: '0 0.4rem',
-            },
+        }
+      },
+      pre: Pre,
+      code: {
+        component: 'code',
+        props: {
+          style: {
+            backgroundColor: codeBgColor,
+            borderRadius: '4px',
+            color: codeColor,
+            margin: '0 0.2rem',
+            padding: '0 0.4rem',
           },
         },
-        table: {
-          component: TableWrapper,
-        },
-        tbody: {
-          component: TableBody,
-        },
-        th: {
-          component: TableCell,
-        },
-        td: {
-          component: TableCell,
-        },
-        tfoot: {
-          component: TableFooter,
-        },
-        thead: {
-          component: TableHead,
-        },
       },
-    }}/>
+      table: {
+        component: TableWrapper,
+      },
+      tbody: {
+        component: TableBody,
+      },
+      th: {
+        component: TableCell,
+      },
+      td: {
+        component: TableCell,
+      },
+      tfoot: {
+        component: TableFooter,
+      },
+      thead: {
+        component: TableHead,
+      },
+    },
+  }), [codeBgColor, codeColor]);
+
+  return (
+    <MarkdownJSX children={content || ''} options={options} />
   )
 }
 

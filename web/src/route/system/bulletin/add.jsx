@@ -29,11 +29,12 @@ export default function Add() {
   const [content, setContent] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(0);
 
   useTitle('发布公告');
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
 
-  // MD editor 唯一标识，用于自动保存
+  // 编辑器自动保存唯一标识
   const mdeUniqueId = 'add-bulletin-id';
 
   // 恢复自动保存数据
@@ -67,8 +68,20 @@ export default function Add() {
     setPreviewOpen(false);
   }
 
-  // 提交
+  // 保存草稿
+  const onSubmitDraft = async () => {
+    setLoading(1);
+    await submit(true);
+  }
+
+  // 发布
   const onSubmit = async () => {
+    setLoading(2);
+    await submit(false);
+  }
+
+  // 提交
+  const submit = async draft => {
     try {
       if (!title) {
         setTitleHelpText('不能为空');
@@ -80,7 +93,7 @@ export default function Add() {
       setSubmitting(true);
 
       await post('/system/bulletin/add', new URLSearchParams({
-        title, content,
+        draft, title, content,
       }));
 
       // 清除自动保存数据
@@ -92,6 +105,7 @@ export default function Add() {
       enqueueSnackbar(err.message);
     } finally {
       setSubmitting(false);
+      setLoading(0);
     }
   }
 
@@ -122,10 +136,15 @@ export default function Add() {
           <Button color='secondary' disabled={submitting} onClick={() => { navigate('..') }}>
             取消
           </Button>
-          <Button variant='outlined' color='success' disabled={submitting} onClick={onPreview}>
+          <Button color='success' disabled={submitting} onClick={onPreview}>
             预览
           </Button>
-          <LoadingButton variant='contained' onClick={onSubmit} loading={submitting}>
+          <LoadingButton onClick={onSubmitDraft}
+            disabled={submitting} loading={loading === 1}>
+            保存草稿
+          </LoadingButton>
+          <LoadingButton variant='contained' onClick={onSubmit}
+            disabled={submitting} loading={loading === 2}>
             发布
           </LoadingButton>
         </Stack>

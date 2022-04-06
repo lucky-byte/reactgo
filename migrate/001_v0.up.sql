@@ -203,6 +203,7 @@ create table if not exists bulletins (
   expiry_at   timestamp       not null default current_timestamp,
   title       varchar(128)    not null,
   content     text            not null,
+  draft       boolean         not null,
   targets     text            default '',
   readers     text            default ''
 );

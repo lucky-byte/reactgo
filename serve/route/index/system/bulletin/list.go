@@ -52,15 +52,19 @@ func list(c echo.Context) error {
 	}
 	var list []echo.Map
 
-	for _, h := range records {
+	for _, r := range records {
+		targets := strings.Split(r.Targets, ",")
+		readers := strings.Split(r.Readers, ",")
+
 		list = append(list, echo.Map{
-			"uuid":      h.UUID,
-			"create_at": h.CreateAt,
-			"title":     h.Title,
-			"content":   h.Content,
+			"uuid":      r.UUID,
+			"create_at": r.CreateAt,
+			"title":     r.Title,
+			"content":   r.Content,
+			"draft":     r.Draft,
+			"ntargets":  len(targets),
+			"nreaders":  len(readers),
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"count": count, "list": list,
-	})
+	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})
 }

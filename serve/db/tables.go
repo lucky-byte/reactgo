@@ -174,7 +174,8 @@ type Bulletin struct {
 	CreateAt time.Time `db:"create_at"` // 创建时间
 	ExpiryAt time.Time `db:"expiry_at"` // 过期时间
 	Title    string    `db:"title"`     // 标题
-	Content  string    `db:"content"`   // 征文
+	Content  string    `db:"content"`   // 内容
+	Draft    bool      `db:"draft"`     // 草稿
 	Targets  string    `db:"targets"`   // 目标用户
 	Readers  string    `db:"readers"`   // 已读用户
 }

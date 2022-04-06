@@ -8,6 +8,8 @@ import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 import ShareIcon from '@mui/icons-material/Share';
+import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
+import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 
 const menus = [{
   title: '欢迎',
@@ -21,8 +23,11 @@ const menus = [{
 }, {
   title: '资源管理',
   items: [{
-    code: 101,
-    icon: DashboardIcon,
+    code: 8100,
+    icon: PhotoCameraBackIcon,
+  }, {
+    code: 8200,
+    icon: OndemandVideoIcon,
   }],
 }, {
   title: '系统管理',

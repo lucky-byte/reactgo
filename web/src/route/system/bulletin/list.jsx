@@ -6,24 +6,23 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import Fab from '@mui/material/Fab';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import InfoIcon from '@mui/icons-material/Info';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import useTitle from "~/hook/title";
 import { post, put } from '~/rest';
+import { Tooltip } from '@mui/material';
 
 // 代码拆分
 const Markdown = lazy(() => import('~/comp/markdown'));
@@ -33,8 +32,6 @@ export default function List() {
   const { enqueueSnackbar } = useSnackbar();
   const [keyword, setKeyword] = useState([]);
   const [days, setDays] = useState(7);
-  const [level, setLevel] = useState(0);
-  const [fresh, setFresh] = useState('all');
   const [list, setList] = useState([]);
   const [count, setCount] = useState(0);
   const [freshCount, setFreshCount] = useState(0);
@@ -71,7 +68,7 @@ export default function List() {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rows, keyword, days, level, fresh]);
+  }, [enqueueSnackbar, page, rows, keyword, days]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -93,12 +90,6 @@ export default function List() {
   const onDaysChange = e => {
     setPage(0);
     setDays(e.target.value);
-  }
-
-  // 级别
-  const onLevelChange = e => {
-    setPage(0);
-    setLevel(e.target.value);
   }
 
   // 展开时更新通知为已读
@@ -137,14 +128,6 @@ export default function List() {
           <MenuItem value={365}>近一年</MenuItem>
           <MenuItem value={365000}>不限时间</MenuItem>
         </TextField>
-        <TextField
-          select variant='standard' sx={{ ml: 2, minWidth: 100 }}
-          value={level} onChange={onLevelChange}>
-          <MenuItem value={0}>全部级别</MenuItem>
-          <MenuItem value={1}>信息</MenuItem>
-          <MenuItem value={2}>警告</MenuItem>
-          <MenuItem value={3}>错误</MenuItem>
-        </TextField>
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Button variant='outlined' size='small' startIcon={<AddIcon />}
           onClick={() => { navigate('add') }}>
@@ -163,7 +146,6 @@ export default function List() {
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Stack direction='row' alignItems='center' spacing={1}
                 sx={{ flex: 1, mr: 2 }}>
-                <LevelIcon level={e.level} />
                 <Typography variant='subtitle1' sx={{
                   flex: 1, fontWeight: e.fresh ? 'bold' : 'normal',
                 }}>
@@ -174,37 +156,29 @@ export default function List() {
                 </Typography>
               </Stack>
             </AccordionSummary>
-            <AccordionDetails sx={{ pl: 6, backgroundColor: theme =>
+            <AccordionDetails sx={{
+              maxHeight: 300, overflow: 'auto', backgroundColor: theme =>
                 theme.palette.mode === 'dark' ? 'black' : 'white',
             }}>
-              <Stack spacing={1}>
-                <Markdown>{e.message}</Markdown>
-              </Stack>
+              <Box sx={{ position: 'relative' }}>
+                <Markdown>{e.content}</Markdown>
+                <Tooltip title='在新窗口打开'>
+                  <Fab size='small' color="primary" aria-label="在新窗口打开" sx={{
+                    position: 'absolute', top: 10, right: 10,
+                  }}>
+                    <OpenInNewIcon />
+                  </Fab>
+                </Tooltip>
+              </Box>
             </AccordionDetails>
           </Accordion>
         ))}
       </Paper>
       <Stack alignItems='center' sx={{ mt: 2 }}>
         <Pagination count={pageCount} color="primary" page={page + 1}
-          onChange={(e, newPage) => { setPage(newPage - 1)}}
+          onChange={(e, newPage) => { setPage(newPage - 1) }}
         />
       </Stack>
     </Container>
   )
-}
-
-// 事件级别图标
-function LevelIcon(props) {
-  switch (props.level) {
-    case 0:
-      return <CheckBoxOutlineBlankIcon color='success' />
-    case 1:
-      return <InfoIcon color='info' />
-    case 2:
-      return <WarningAmberIcon color='warning' />
-    case 3:
-      return <ErrorOutlineIcon color='error' />
-    default:
-      return <HelpOutlineIcon color='disabled' />
-  }
 }

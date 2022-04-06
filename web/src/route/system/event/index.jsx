@@ -187,12 +187,10 @@ export default function Event() {
                 </Typography>
               </Stack>
             </AccordionSummary>
-            <AccordionDetails sx={{ pl: 6, backgroundColor: theme =>
-                theme.palette.mode === 'dark' ? 'black' : 'white',
+            <AccordionDetails sx={{ backgroundColor: theme =>
+              theme.palette.mode === 'dark' ? 'black' : 'white',
             }}>
-              <Stack spacing={1}>
-                <Markdown>{e.message}</Markdown>
-              </Stack>
+              <Markdown>{e.message}</Markdown>
             </AccordionDetails>
           </Accordion>
         ))}

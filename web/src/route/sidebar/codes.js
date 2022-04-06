@@ -23,6 +23,10 @@ const urlCodes = {
   8021: { title: '设置安全操作码', to: '/user/security/secretcode', omit: true },
   8022: { title: '设置两因素认证', to: '/user/security/otp', omit: true },
 
+  // 资源管理
+  8100: { title: '图片管理', to: '/media/images' },
+  8200: { title: '视频管理', to: '/media/videos' },
+
   // 下面自定义业务
   100: { title: '欢迎', to: '/' },
   101: { title: '看板', to: '/kanban' },
