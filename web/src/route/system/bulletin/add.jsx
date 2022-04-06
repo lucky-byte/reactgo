@@ -28,7 +28,7 @@ export default function Add() {
   const [titleHelpText, setTitleHelpText] = useState('');
   const [content, setContent] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [submitting, setSubmitting] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   useTitle('发布公告');
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
@@ -42,7 +42,8 @@ export default function Add() {
   // 预览
   const onPreview = () => {
     if (!title) {
-      return setTitleHelpText('不能为空');
+      setTitleHelpText('不能为空');
+      return enqueueSnackbar('请输入公告标题', { variant: 'warning' });
     }
     if (!content) {
       return enqueueSnackbar('请输入公告内容', { variant: 'warning' });
@@ -59,7 +60,8 @@ export default function Add() {
   const onSubmit = async () => {
     try {
       if (!title) {
-        return setTitleHelpText('不能为空');
+        setTitleHelpText('不能为空');
+        return enqueueSnackbar('请输入公告标题', { variant: 'warning' });
       }
       if (!content) {
         return enqueueSnackbar('请输入公告内容', { variant: 'warning' });
@@ -96,7 +98,7 @@ export default function Add() {
             error={titleHelpText.length > 0}
           />
           <MDEditor id='editor' value={content} onChange={setContent}
-            placeholder='公告内容'
+            placeholder='公告内容，支持 Markdown 语法'
           />
           </Stack>
         </Paper>
@@ -113,12 +115,13 @@ export default function Add() {
         </Stack>
       </Paper>
       <Dialog onClose={onPreviewClose} open={previewOpen} maxWidth='md' fullWidth>
-        <DialogTitle>发布预览
-          <IconButton aria-label="关闭" onClick={onPreviewClose} sx={{
-            position: 'absolute', right: 8, top: 8, color: theme => theme.palette.grey[500],
-          }}>
-            <CloseIcon />
-          </IconButton>
+        <DialogTitle>
+          <Stack direction='row' alignItems='center' justifyContent='space-between'>
+            <span>发布预览</span>
+            <IconButton aria-label="关闭" onClick={onPreviewClose}>
+              <CloseIcon />
+            </IconButton>
+          </Stack>
         </DialogTitle>
         <DialogContent>
           <Paper variant='outlined' sx={{ p: 2 }}>

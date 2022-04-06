@@ -175,5 +175,6 @@ type Bulletin struct {
 	ExpiryAt time.Time `db:"expiry_at"` // 过期时间
 	Title    string    `db:"title"`     // 标题
 	Content  string    `db:"content"`   // 征文
-	Users    string    `db:"users"`     // 已阅读用户
+	Targets  string    `db:"targets"`   // 目标用户
+	Readers  string    `db:"readers"`   // 已读用户
 }

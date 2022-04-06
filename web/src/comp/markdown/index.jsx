@@ -43,7 +43,7 @@ export default function Markdown(props) {
   }, [props.url, props.children, enqueueSnackbar]);
 
   return (
-    <MarkdownJSX children={content} options={{
+    <MarkdownJSX children={content || ''} options={{
       wrapper: 'article',
       overrides: {
         p: {
@@ -155,7 +155,7 @@ function TableWrapper(props) {
   const { children, ...otherProps } = props;
 
   return (
-    <TableContainer component={OutlinedPaper} sx={{ pt: 2 }}>
+    <TableContainer component={OutlinedPaper} sx={{ my: 2 }}>
       <Table {...otherProps}>{children}</Table>
     </TableContainer>
   );

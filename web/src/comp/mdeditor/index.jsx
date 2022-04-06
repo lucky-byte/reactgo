@@ -3,15 +3,25 @@ import { useTheme } from "@mui/material/styles";
 import Box from '@mui/material/Box';
 import { useSnackbar } from 'notistack';
 import "easymde/dist/easymde.min.css";
+import Stack from '@mui/material/Stack';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from '@mui/icons-material/Close';
+import help from './help.md';
 
 // 代码拆分
 const SimpleMDE = lazy(() => import('react-simplemde-editor'));
+const Markdown = lazy(() => import('~/comp/markdown'));
 
 // Markdown 编辑器
 export default function MDEditor(props) {
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
   const [options, setOptions] = useState({});
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const { placeholder } = props;
 
@@ -31,11 +41,40 @@ export default function MDEditor(props) {
 
       // 设置 simpleMde 选项
       setOptions({
-        placeholder: placeholder || '',
+        placeholder: placeholder || '支持 Markdown 语法',
         spellChecker: false,
         indentWithTabs: false,
         lineNumbers: false,
         maxHeight: '400px',
+        toolbar: [
+          'bold', 'italic', 'strikethrough', 'heading', 'code', 'quote',
+          'unordered-list', 'ordered-list', '|',
+          'image', 'link', 'table', 'horizontal-rule', '|',
+          'preview', 'side-by-side', 'fullscreen', '|',
+          {
+            name: "help",
+            className: "fa fa-question",
+            title: "帮助",
+            action: editor => {
+              setHelpOpen(true);
+              console.log('help')
+            },
+          }
+        ],
+        promptURLs: true,
+        promptTexts: {
+          image: '图片 URL:',
+          link: '链接 URL:',
+        },
+        insertTexts: {
+          table: ['', '\n标题 | 标题\n------ | ------\n内容 | 内容\n\n'],
+        },
+        autosave: {
+          enabled: true,
+          uniqueId: 'abcdef',
+          delay: 10 * 1000,
+          text: '自动保存:',
+        },
         uploadImage: true,
         imageMaxSize: 8 * 1024 * 1024,
         imageTexts: {
@@ -87,10 +126,31 @@ export default function MDEditor(props) {
     })();
   }, [theme.palette.mode, enqueueSnackbar, placeholder]);
 
+  const onHelpClose = () => {
+    setHelpOpen(false);
+  }
+
   const MDE = theme.palette.mode === 'light' ? SimpleMDE : SimpleMDEDark;
 
   return (
-    <MDE {...props} options={options} />
+    <>
+      <MDE {...props} options={options} />
+      <Dialog open={helpOpen} maxWidth='md' fullWidth onClose={onHelpClose}>
+        <DialogTitle>
+          <Stack direction='row' alignItems='center' justifyContent='space-between'>
+            <span>Markdown 语法参考手册 / 速查表</span>
+            <IconButton aria-label="关闭" onClick={onHelpClose}>
+              <CloseIcon />
+            </IconButton>
+          </Stack>
+        </DialogTitle>
+        <DialogContent>
+          <Paper variant='outlined' sx={{ p: 2 }}>
+            <Markdown url={help} />
+          </Paper>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
@@ -117,6 +177,9 @@ function SimpleMDEDark(props) {
         },
         "& .editor-preview pre, .cm-comment": {
           backgroundColor: theme.palette.background.paper
+        },
+        "& .editor-preview a": {
+          color: theme.palette.info.light,
         },
       }}
     />
