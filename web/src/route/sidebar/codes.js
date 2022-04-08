@@ -14,7 +14,7 @@ const urlCodes = {
   9050: { title: '定时任务', to: '/system/task' },
   9051: { title: '任务诊断', to: '/system/task/entries', omit: true },
   9060: { title: '层级管理', to: '/system/node' },
-  9070: { title: '发布公告', to: '/system/bulletin' },
+  9070: { title: '系统公告', to: '/system/bulletin' },
 
   // 用户设置
   8000: { title: '用户资料', to: '/user', omit: true },

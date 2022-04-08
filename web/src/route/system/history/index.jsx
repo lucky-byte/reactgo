@@ -127,9 +127,10 @@ export default function History() {
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">{row.browser} on {row.os}</TableCell>
-                <TableCell align="center">
+                <TableCell align="center" padding='none'>
                   {row.trust ?
-                    <CheckIcon fontSize='small' /> : <CloseIcon fontSize='small' />
+                    <CheckIcon fontSize='small' sx={{ verticalAlign: 'middle' }} /> :
+                    <CloseIcon fontSize='small' sx={{ verticalAlign: 'middle' }} />
                   }
                 </TableCell>
                 <TableCell align="center">

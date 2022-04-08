@@ -41,8 +41,9 @@ export default function List() {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  useTitle('公告列表');
+  useTitle('系统公告');
 
+  // 获取列表数据
   useEffect(() => {
     (async () => {
       try {
@@ -71,6 +72,7 @@ export default function List() {
     })();
   }, [enqueueSnackbar, page, rows, keyword, days]);
 
+  // 更新时间
   useEffect(() => {
     const timer = setInterval(() => {
       setList(list.map(e => {
@@ -132,7 +134,7 @@ export default function List() {
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Button variant='outlined' size='small' startIcon={<AddIcon />}
           onClick={() => { navigate('add') }}>
-          发布新公告
+          发布公告
         </Button>
       </Toolbar>
 
@@ -153,9 +155,6 @@ export default function List() {
                   {b.title}
                 </Typography>
                 {b.draft && <Chip label="草稿" size='small' />}
-                {dayjs().isAfter(dayjs(b.expiry_at)) &&
-                  <Chip label='过期' size='small' color='warning' />
-                }
                 <Typography variant='caption' sx={{ color: 'gray' }}>
                   已读：{b.nreaders}/{b.ntargets}，
                   {b.timeAgo || dayjs(b.create_at).fromNow()}
@@ -163,15 +162,19 @@ export default function List() {
               </Stack>
             </AccordionSummary>
             <AccordionDetails sx={{
-              maxHeight: 300, overflow: 'auto', backgroundColor: theme =>
-                theme.palette.mode === 'dark' ? 'black' : 'white',
-            }}>
+                minHeight: 80,
+                maxHeight: 300,
+                overflow: 'auto',
+                backgroundColor: theme =>
+                  theme.palette.mode === 'dark' ? 'black' : 'white',
+              }}>
               <Box sx={{ position: 'relative' }}>
                 <Markdown>{b.content}</Markdown>
                 <Tooltip title='在新窗口打开'>
-                  <Fab size='small' color="primary" aria-label="在新窗口打开" sx={{
-                    position: 'absolute', top: 10, right: 10,
-                  }}>
+                  <Fab size='small' color="primary" aria-label="在新窗口打开"
+                    sx={{ position: 'absolute', top: 10, right: 10 }}
+                    // onClick={onView}
+                    >
                     <OpenInNewIcon />
                   </Fab>
                 </Tooltip>

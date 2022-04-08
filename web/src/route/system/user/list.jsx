@@ -158,7 +158,7 @@ export default function List() {
               <TableCell align='center'>创建时间</TableCell>
               <TableCell align='center'>最后登录时间</TableCell>
               <TableCell align='center'>登录次数</TableCell>
-              <TableCell as='td' align='right' colSpan={2} padding='checkbox' />
+              <TableCell as='td' align='right' colSpan={2} padding='none' />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -191,7 +191,7 @@ export default function List() {
                     />
                   }
                 </TableCell>
-                <TableCell align="right" padding='checkbox' className='action'>
+                <TableCell align="right" padding='none' className='action'>
                   <UserMenuIconButton user={u} requestRefresh={requestRefresh} />
                 </TableCell>
               </TableRow>

@@ -17,10 +17,10 @@ import Push from 'push.js';
 import nats from '~/lib/nats';
 import userState from "./state/user";
 import { get } from "~/rest";
+import ErrorBoundary from "./error";
 import SignIn from "./signin";
 import ResetPass from "./resetpass";
 import Index from "./route";
-import ErrorBoundary from "./error";
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
 export const useColorModeContent = () => useContext(ColorModeContext);

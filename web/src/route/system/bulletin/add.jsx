@@ -13,8 +13,10 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import CloseIcon from '@mui/icons-material/Close';
+import DateTimePicker from '@mui/lab/DateTimePicker';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
+import dayjs from 'dayjs';
 import MDEditor, { getAutoSaved, delAutoSaved } from '~/comp/mdeditor';
 import useTitle from "~/hook/title";
 import { post } from '~/rest';
@@ -27,6 +29,7 @@ export default function Add() {
   const [title, setTitle] = useState('');
   const [titleHelpText, setTitleHelpText] = useState('');
   const [content, setContent] = useState('');
+  const [sendTime, setSendTime] = useState(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(0);
@@ -35,9 +38,9 @@ export default function Add() {
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
 
   // 编辑器自动保存唯一标识
-  const mdeUniqueId = 'add-bulletin-id';
+  const mdeUniqueId = 'add.bulletin.id';
 
-  // 恢复自动保存数据
+  // 恢复编辑器自动保存数据
   useEffect(() => {
     const saved = getAutoSaved(mdeUniqueId);
     if (saved) {
@@ -49,6 +52,11 @@ export default function Add() {
   const onTitleChange = e => {
     setTitle(e.target.value);
     setTitleHelpText('');
+  }
+
+  // 修改发布时间
+  const onSendTimeChange = time => {
+    setSendTime(time);
   }
 
   // 预览
@@ -90,10 +98,15 @@ export default function Add() {
       if (!content) {
         return enqueueSnackbar('请输入公告内容', { variant: 'warning' });
       }
+      if (sendTime) {
+        if (sendTime.isBefore(dayjs().add(3, 'minute'))) {
+          return enqueueSnackbar('发布时间至少要在3分钟后', { variant: 'warning' });
+        }
+      }
       setSubmitting(true);
 
       await post('/system/bulletin/add', new URLSearchParams({
-        draft, title, content,
+        draft, title, content, send_time: sendTime ? sendTime.utc().format('') : '',
       }));
 
       // 清除自动保存数据
@@ -120,15 +133,29 @@ export default function Add() {
         </Stack>
         <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
           <Stack spacing={2}>
-          <TextField label='标题' variant='outlined' fullWidth required autoFocus
-            placeholder='公告标题'
-            value={title} onChange={onTitleChange}
-            helperText={titleHelpText}
-            error={titleHelpText.length > 0}
-          />
-          <MDEditor id='editor' value={content} onChange={setContent}
-            placeholder='公告内容，支持 Markdown 语法'
-            uniqueId={mdeUniqueId}
+            <TextField label='标题' variant='outlined' fullWidth required autoFocus
+              placeholder='公告标题'
+              value={title} onChange={onTitleChange}
+              helperText={titleHelpText}
+              error={titleHelpText.length > 0}
+            />
+            <MDEditor id='editor' value={content} onChange={setContent}
+              placeholder='公告内容，支持 Markdown 语法'
+              uniqueId={mdeUniqueId}
+            />
+          <DateTimePicker
+            label="发布时间"
+            minDateTime={dayjs().add(3, 'minute')}
+            maxDateTime={dayjs().add(7, 'day')}
+            value={sendTime}
+            onChange={onSendTimeChange}
+            renderInput={props => (
+              <TextField
+                {...props}
+                variant='standard'
+                helperText='可以设置未来一周内的发布时间，如果不设置时间则立即发布'
+              />
+            )}
           />
           </Stack>
         </Paper>

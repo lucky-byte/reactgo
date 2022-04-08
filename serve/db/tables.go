@@ -168,13 +168,13 @@ type TreeBind struct {
 	Type     int       `db:"type"      json:"type"`      // 类型
 }
 
-// 公告
+// 系统公告
 type Bulletin struct {
 	UUID     string    `db:"uuid"`      // uuid
 	CreateAt time.Time `db:"create_at"` // 创建时间
-	ExpiryAt time.Time `db:"expiry_at"` // 过期时间
 	Title    string    `db:"title"`     // 标题
 	Content  string    `db:"content"`   // 内容
+	SendTime time.Time `db:"send_time"` // 发布时间
 	Draft    bool      `db:"draft"`     // 草稿
 	Targets  string    `db:"targets"`   // 目标用户
 	Readers  string    `db:"readers"`   // 已读用户

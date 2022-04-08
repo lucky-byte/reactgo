@@ -182,6 +182,7 @@ export default function Event() {
                 }}>
                   {e.title}
                 </Typography>
+                {e.fresh && <Chip label='新' size='small' color='info' />}
                 <Typography variant='caption' sx={{ color: 'gray' }}>
                   {e.timeAgo || dayjs(e.create_at).fromNow()}
                 </Typography>
