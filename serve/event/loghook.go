@@ -48,7 +48,7 @@ func (h *eventHook) fireJson(entry *logrus.Entry, level int) error {
 	for k, v := range entry.Data {
 		switch v := v.(type) {
 		case error:
-			message = escapeMarkdown(v.Error())
+			message = markdownEscape(v.Error())
 		default:
 			fields[k] = v
 		}
@@ -77,7 +77,7 @@ func (h *eventHook) fireField(entry *logrus.Entry, level int) error {
 	for k, v := range entry.Data {
 		switch v := v.(type) {
 		case error:
-			message = escapeMarkdown(v.Error())
+			message = markdownEscape(v.Error())
 		default:
 			fields = append(fields, fmt.Sprintf("`%s`=`%s`", k, v))
 		}
@@ -107,7 +107,7 @@ func (h *eventHook) Levels() []logrus.Level {
 }
 
 // Escape Markdown 特殊字符
-func escapeMarkdown(s string) string {
+func markdownEscape(s string) string {
 	var sb strings.Builder
 
 	for _, c := range s {

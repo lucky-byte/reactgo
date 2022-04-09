@@ -1,4 +1,4 @@
-import { lazy, useEffect, useState } from 'react';
+import { lazy, useEffect, useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
@@ -6,7 +6,6 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -16,14 +15,19 @@ import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import Zoom from '@mui/material/Zoom';
 import AddIcon from '@mui/icons-material/Add';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import CloseIcon from '@mui/icons-material/Close';
+import PrintIcon from '@mui/icons-material/Print';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import useTitle from "~/hook/title";
+import usePrint from "~/hook/print";
 import { post, put } from '~/rest';
-import { Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 
 // 代码拆分
 const Markdown = lazy(() => import('~/comp/markdown'));
@@ -168,17 +172,10 @@ export default function List() {
                 backgroundColor: theme =>
                   theme.palette.mode === 'dark' ? 'black' : 'white',
               }}>
-              <Box sx={{ position: 'relative' }}>
-                <Markdown>{b.content}</Markdown>
-                <Tooltip title='在新窗口打开'>
-                  <Fab size='small' color="primary" aria-label="在新窗口打开"
-                    sx={{ position: 'absolute', top: 10, right: 10 }}
-                    // onClick={onView}
-                    >
-                    <OpenInNewIcon />
-                  </Fab>
-                </Tooltip>
-              </Box>
+              <Stack direction='row' spacing={2}>
+                <Markdown sx={{ flex: 1 }}>{b.content}</Markdown>
+                <Tools bulletin={b} />
+              </Stack>
             </AccordionDetails>
           </Accordion>
         ))}
@@ -189,5 +186,49 @@ export default function List() {
         />
       </Stack>
     </Container>
+  )
+}
+
+function Tools(props) {
+  const [fullScreenOpen, setFullScreenOpen] = useState(false);
+
+  const { bulletin } = props;
+
+  const contentRef = useRef();
+  const print = usePrint(contentRef.current);
+
+  const onOpenFullScreen = () => {
+    setFullScreenOpen(true);
+  }
+
+  const onCloseFullScreen = () => {
+    setFullScreenOpen(false);
+  }
+
+  return (
+    <>
+      <Tooltip title='全屏'>
+        <Fab size='small' color="primary" aria-label="全屏"
+          sx={{ position: 'sticky', top: 0, right: 0 }}
+          onClick={onOpenFullScreen}>
+          <OpenInFullIcon fontSize='small' />
+        </Fab>
+      </Tooltip>
+      <Dialog onClose={onCloseFullScreen} open={fullScreenOpen} fullScreen
+        TransitionComponent={Zoom}>
+        <Container maxWidth='md' sx={{ my: 4 }} ref={contentRef}>
+          <Typography variant='h4' textAlign='center'>{bulletin.title}</Typography>
+          <Markdown>{bulletin.content}</Markdown>
+        </Container>
+        <Stack direction='row' spacing={2} sx={{ position: 'fixed', top: 10, right: 10 }}>
+          <IconButton color='primary' onClick={print}>
+            <PrintIcon />
+          </IconButton>
+          <IconButton onClick={onCloseFullScreen}>
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+      </Dialog>
+    </>
   )
 }

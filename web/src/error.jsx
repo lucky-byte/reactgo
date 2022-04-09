@@ -5,7 +5,7 @@ import Paper from "@mui/material/Paper";
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import { useReactToPrint } from 'react-to-print';
+import usePrint from '~/hook/print';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -45,16 +45,14 @@ function Content(props) {
 
   const contentRef = useRef();
 
-  const printContent = useReactToPrint({
-    content: () => contentRef.current,
-  });
+  const print = usePrint(contentRef.current);
 
   const onPrint = () => {
     if (expanded) {
-      printContent();
+      print();
     } else {
       setExpanded(true);
-      setTimeout(printContent, 1000);
+      setTimeout(print, 1000);
     }
   }
 

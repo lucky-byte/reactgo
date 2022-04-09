@@ -23,7 +23,7 @@ export default function Markdown(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [content, setContent] = useState('');
 
-  const { url, children } = props;
+  const { url, children, sx } = props;
 
   const codeColor = theme.palette.mode === 'dark' ? 'white' : 'black';
   const codeBgColor = theme.palette.mode === 'dark' ? '#333' : '#eee';
@@ -45,12 +45,13 @@ export default function Markdown(props) {
   }, [url, children, enqueueSnackbar]);
 
   const options = useMemo(() => ({
-    wrapper: 'article',
+    wrapper: Wrapper,
+    forceWrapper: true,
     overrides: {
       p: {
         component: Typography,
         props: {
-          variant: 'body1', paragraph: true,
+          variant: 'body1', paragraph: true, textAlign: 'justify',
         }
       },
       hr: {
@@ -62,7 +63,7 @@ export default function Markdown(props) {
       li: {
         component: 'li',
         props: {
-          style: { fontSize: '0.95rem', marginBottom: '6px', },
+          style: { fontSize: '0.95rem', marginBottom: '6px', textAlign: 'justify' },
         }
       },
       a: {
@@ -114,7 +115,7 @@ export default function Markdown(props) {
   }), [codeBgColor, codeColor]);
 
   return (
-    <MarkdownJSX children={content || ''} options={options} />
+    <MarkdownJSX children={content || ''} options={options} sx={sx || {}} />
   )
 }
 
@@ -163,4 +164,10 @@ function TableWrapper(props) {
       <Table {...otherProps}>{children}</Table>
     </TableContainer>
   );
+}
+
+function Wrapper(props) {
+  const { children, sx } = props;
+
+  return <Box as='article' children={children} sx={sx || {}} />
 }

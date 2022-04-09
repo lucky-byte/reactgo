@@ -19,10 +19,10 @@ import Tooltip from '@mui/material/Tooltip';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
-import ReactToPrint from 'react-to-print';
 import OutlinedPaper from '~/comp/outlined-paper';
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
+import usePrint from '~/hook/print';
 import { get } from '~/rest';
 import { geo } from '~/lib/geo';
 
@@ -37,6 +37,7 @@ export default function Profile() {
   useTitle('用户详细资料');
 
   const contentRef = useRef();
+  const print = usePrint(contentRef.current);
 
   useEffect(() => {
     (async () => {
@@ -62,18 +63,12 @@ export default function Profile() {
 
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 2 }}>
-      <ReactToPrint
-        content={() => contentRef.current}
-        trigger={() => (
-          <Tooltip title='打印'>
-            <Fab size='medium' color="primary" aria-label="打印" sx={{
-              position: 'absolute', right: 60, top: 120,
-            }}>
-              <PrintIcon />
-            </Fab>
-          </Tooltip>
-        )}
-      />
+      <Tooltip title='打印'>
+        <Fab size='medium' color="primary" onClick={print} aria-label="打印"
+          sx={{ position: 'absolute', right: 60, top: 120 }}>
+          <PrintIcon />
+        </Fab>
+      </Tooltip>
       <Paper ref={contentRef} elevation={3} sx={{
         px: 5, py: 3, mt: 5, '@media print': {
           boxShadow: 0, borderWidth: 0,
