@@ -9,6 +9,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/nats"
 )
 
 // 添加
@@ -46,7 +47,9 @@ func add(c echo.Context) error {
 	}
 	// 如果发布时间在未来 1 分钟内则直接发送
 	if time.Now().Add(1 * time.Minute).UTC().After(send_time) {
-		pub(id, title, content)
+		if err = nats.PublishBulletin(id, title, content); err != nil {
+			cc.ErrLog(err).Error("发布公告错")
+		}
 	} else {
 	}
 	return c.NoContent(http.StatusOK)

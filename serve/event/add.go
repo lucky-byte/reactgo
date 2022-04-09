@@ -25,15 +25,8 @@ func Add(level int, title, message string) {
 		log.Printf("记录事件错: %v", err)
 	}
 	// 发布事件到消息队列
-	if nats.Broker != nil {
-		err = nats.Broker.Publish("reactgo.system.event", &nats.Event{
-			Level:   level,
-			Title:   title,
-			Message: message,
-		})
-		if err != nil {
-			log.Printf("发布 nats 事件错: %v", err)
-		}
+	if err = nats.PublishEvent(level, title, message); err != nil {
+		log.Printf("发布 nats 事件错: %v", err)
 	}
 }
 
