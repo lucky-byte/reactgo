@@ -18,10 +18,15 @@ func clearTOTP(c echo.Context) error {
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	// 检查是否可修改
+	if _, err = isUpdatable(uuid); err != nil {
+		cc.ErrLog(err).Error("清除用户 OTP 错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
 	// 清除 TOTP
 	ql := `
 		update users set totp_secret = '', update_at = current_timestamp
-		where uuid = ?
+		where uuid = ? and disabled = false and deleted = false
 	`
 	if err := db.ExecOne(ql, uuid); err != nil {
 		cc.ErrLog(err).Error("清除 TOTP 错")

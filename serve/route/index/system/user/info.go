@@ -61,6 +61,11 @@ func infoUpdate(c echo.Context) error {
 	// 删除前后空白字符
 	cc.Trim(&userid, &name, &email, &mobile, &address)
 
+	// 检查是否可修改
+	if _, err = isUpdatable(uuid); err != nil {
+		cc.ErrLog(err).Error("修改用户资料错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
 	// 查询 userid 是否冲突
 	ql := `select count(*) from users where userid = ? and uuid <> ?`
 	var count int
@@ -77,7 +82,7 @@ func infoUpdate(c echo.Context) error {
 		update users set
 			userid = ?, name = ?, email = ?, mobile = ?, address = ?, tfa = ?,
 			update_at = current_timestamp
-		where uuid = ?
+		where uuid = ? and disabled = false and deleted = false
 	`
 	err = db.ExecOne(ql, userid, name, email, mobile, address, tfa, uuid)
 	if err != nil {

@@ -28,6 +28,12 @@ func passwd(c echo.Context) error {
 	// 删除前后空白字符
 	cc.Trim(&password)
 
+	// 检查是否可修改
+	user, err := isUpdatable(uuid)
+	if err != nil {
+		cc.ErrLog(err).Error("修改用户密码错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
 	// 更新信息
 	passwdHash, err := secure.DefaultPHC().Hash(password)
 	if err != nil {
@@ -36,24 +42,15 @@ func passwd(c echo.Context) error {
 	}
 	ql := `
 		update users set passwd = ?, update_at = current_timestamp
-		where uuid = ?
+		where uuid = ? and disabled = false and deleted = false
 	`
 	err = db.ExecOne(ql, passwdHash, uuid)
 	if err != nil {
 		cc.ErrLog(err).Error("更新用户信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-
+	// 发送邮件
 	if sendmail {
-		// 查询用户信息，用于发送邮件
-		ql = `select * from users where uuid = ?`
-		var user db.User
-
-		if err = db.SelectOne(ql, &user, uuid); err != nil {
-			cc.ErrLog(err).Error("查询用户信息错")
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		// 生成邮件
 		m, err := mailfs.Message("请查收新密码", "resetpass", map[string]interface{}{
 			"name":     user.Name,
 			"password": password,

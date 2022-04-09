@@ -20,11 +20,15 @@ func aclUpdate(c echo.Context) error {
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-
-	// 更新用户状态
+	// 检查是否可修改
+	if _, err = isUpdatable(uuid); err != nil {
+		cc.ErrLog(err).Error("修改用户 ACL 错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	// 更新
 	ql := `
 		update users set acl = ?, update_at = current_timestamp
-		where uuid = ?
+		where uuid = ? and disabled = false and deleted = false
 	`
 	if err := db.ExecOne(ql, acl, uuid); err != nil {
 		cc.ErrLog(err).Error("更新用户信息错")
