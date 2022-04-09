@@ -176,6 +176,8 @@ type Bulletin struct {
 	Content  string    `db:"content"`   // 内容
 	SendTime time.Time `db:"send_time"` // 发布时间
 	Draft    bool      `db:"draft"`     // 草稿
+	UserUUID string    `db:"user_uuid"` // 用户
 	Targets  string    `db:"targets"`   // 目标用户
 	Readers  string    `db:"readers"`   // 已读用户
+	Deleted  bool      `db:"deleted"`   // 删除
 }

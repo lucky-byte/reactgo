@@ -11,12 +11,14 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 import utc from 'dayjs/plugin/utc';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 import App from './app';
 
 // dayjs locale 和插件配置
 dayjs.locale('zh-cn');
-dayjs.extend(relativeTime);
 dayjs.extend(utc);
+dayjs.extend(relativeTime);
+dayjs.extend(localizedFormat);
 
 // 某些第三方模块(react-pin-input)大量打印 debug 日志
 if (process.env.NODE_ENV === 'production') {

@@ -35,18 +35,30 @@ func list(c echo.Context) error {
 
 	pg := db.NewPagination("bulletins", offset, rows)
 
+	userTable := goqu.T("users")
+
+	pg.Join(userTable, goqu.On(pg.Col("user_uuid").Eq(userTable.Col("uuid"))))
+
 	pg.Where(goqu.Or(
 		pg.Col("title").ILike(keyword), pg.Col("content").ILike(keyword),
 	))
 	pg.Where(pg.Col("create_at").Gt(startAt))
 
+	pg.Select(pg.Col("*"),
+		userTable.Col("name").As("user_name"),
+		userTable.Col("userid").As("userid"),
+	)
 	pg.OrderBy(pg.Col("create_at").Desc())
 
+	type record struct {
+		db.Bulletin
+		UserName string `db:"user_name"`
+		Userid   string `db:"userid"`
+	}
 	var count uint
-	var records []db.Bulletin
+	var records []record
 
-	err = pg.Select(pg.Col("*")).Exec(&count, &records)
-	if err != nil {
+	if err = pg.Exec(&count, &records); err != nil {
 		cc.ErrLog(err).Error("查询公告列表错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -69,8 +81,11 @@ func list(c echo.Context) error {
 			"content":   r.Content,
 			"send_time": r.SendTime,
 			"draft":     r.Draft,
+			"user_name": r.UserName,
+			"userid":    r.Userid,
 			"ntargets":  ntargets,
 			"nreaders":  nreaders,
+			"deleted":   r.Deleted,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})

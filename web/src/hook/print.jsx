@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material/styles";
 import { useReactToPrint } from 'react-to-print';
-import { useColorModeContent } from "~/app";
+import useColorModeContent from "./mode";
 
 export default function usePrint(comp) {
   const theme = useTheme();

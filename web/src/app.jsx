@@ -1,4 +1,4 @@
-import { useMemo, useState, createContext, useContext, useEffect, Suspense } from "react";
+import { useMemo, useState, useEffect, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useRecoilValue } from 'recoil';
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -16,14 +16,12 @@ import { useSnackbar } from 'notistack';
 import Push from 'push.js';
 import nats from '~/lib/nats';
 import userState from "./state/user";
+import { ColorModeContext } from "./hook/mode";
 import { get } from "~/rest";
 import ErrorBoundary from "./error";
 import SignIn from "./signin";
 import ResetPass from "./resetpass";
 import Index from "./route";
-
-const ColorModeContext = createContext({ toggleColorMode: () => {} });
-export const useColorModeContent = () => useContext(ColorModeContext);
 
 export default function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");

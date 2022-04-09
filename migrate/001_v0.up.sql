@@ -204,8 +204,10 @@ create table if not exists bulletins (
   content     text            not null,
   send_time   timestamp       not null,
   draft       boolean         not null,
+  user_uuid   varchar(36)     not null,
   targets     text            default '',
-  readers     text            default ''
+  readers     text            default '',
+  deleted     boolean         not null default false
 );
 
 commit;
