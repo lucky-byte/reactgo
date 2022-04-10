@@ -6,6 +6,7 @@ const urlCodes = {
   9000: { title: '用户管理', to: '/system/user' },
   9010: { title: '访问控制', to: '/system/acl' },
   9020: { title: '登录历史', to: '/system/history' },
+  9025: { title: '操作记录', to: '/system/ops' },
   9030: { title: '系统设置', to: '/system/settings' },
   9031: { title: '邮件设置', to: '/system/settings/mail', omit: true },
   9032: { title: '短信设置', to: '/system/settings/sms', omit: true },

@@ -16,7 +16,7 @@ import { useSnackbar } from 'notistack';
 import Push from 'push.js';
 import nats from '~/lib/nats';
 import userState from "./state/user";
-import { ColorModeContext } from "./hook/mode";
+import { ColorModeContext } from "./hook/colormode";
 import { get } from "~/rest";
 import ErrorBoundary from "./error";
 import SignIn from "./signin";

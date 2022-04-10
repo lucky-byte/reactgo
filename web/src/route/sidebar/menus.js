@@ -7,9 +7,10 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
-import ShareIcon from '@mui/icons-material/Share';
 import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 
 const menus = [{
   title: '欢迎',
@@ -41,6 +42,9 @@ const menus = [{
     code: 9020,
     icon: HistoryIcon,
   }, {
+    code: 9025,
+    icon: AppRegistrationIcon,
+  }, {
     code: 9030,
     icon: SettingsIcon,
   }, {
@@ -51,7 +55,7 @@ const menus = [{
     icon: AccessAlarmIcon,
   }, {
     code: 9060,
-    icon: ShareIcon,
+    icon: AcUnitIcon,
   }, {
     code: 9070,
     icon: CampaignIcon,

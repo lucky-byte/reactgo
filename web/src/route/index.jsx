@@ -51,7 +51,7 @@ import codeState from "~/state/code";
 import { get } from "~/rest";
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
-import useColorModeContent from "~/hook/mode";
+import useColorModeContent from "~/hook/colormode";
 import Sidebar from "./sidebar";
 import urlCodes from "./sidebar/codes";
 import NotFound from "./notfound";

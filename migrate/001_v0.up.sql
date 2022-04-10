@@ -200,13 +200,17 @@ create table if not exists tickets (
 create table if not exists bulletins (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
+  user_uuid   varchar(36)     not null,
   title       varchar(128)    not null,
   content     text            not null,
   send_time   timestamp       not null,
-  draft       boolean         not null,
-  user_uuid   varchar(36)     not null,
   targets     text            default '',
   readers     text            default '',
+  status      int             not null default 1,
+                              -- 1. 草稿
+                              -- 2. 等待发布
+                              -- 3. 发布成功
+                              -- 4. 发布失败
   deleted     boolean         not null default false
 );
 

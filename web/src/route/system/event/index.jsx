@@ -174,8 +174,7 @@ export default function Event() {
             '&:last-child': { borderBottom: 0, }
           }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Stack direction='row' alignItems='center' spacing={1}
-                sx={{ flex: 1, mr: 2 }}>
+              <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 2 }}>
                 <LevelIcon level={e.level} />
                 <Typography variant='subtitle1' sx={{
                   flex: 1, fontWeight: e.fresh ? 'bold' : 'normal',

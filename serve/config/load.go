@@ -15,7 +15,10 @@ type ViperConfig struct {
 	vp   *viper.Viper
 }
 
-func Load(filepath string) (*ViperConfig, error) {
+// 来自命令行选项
+var Master bool = false
+
+func Load(filepath string, master bool) (*ViperConfig, error) {
 	vp := viper.NewWithOptions()
 
 	vp.SetDefault("log.path", path.Join(os.TempDir(), "log"))
@@ -54,6 +57,8 @@ func Load(filepath string) (*ViperConfig, error) {
 			return nil, err
 		}
 	}
+	Master = master
+
 	return config, nil
 }
 

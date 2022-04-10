@@ -38,11 +38,11 @@ export default function Add() {
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
 
   // 编辑器自动保存唯一标识
-  const mdeUniqueId = 'add.bulletin.id';
+  const editorId = 'system.bulletin';
 
   // 恢复编辑器自动保存数据
   useEffect(() => {
-    const saved = getAutoSaved(mdeUniqueId);
+    const saved = getAutoSaved(editorId);
     if (saved) {
       setContent(saved);
     }
@@ -79,17 +79,17 @@ export default function Add() {
   // 保存草稿
   const onSubmitDraft = async () => {
     setLoading(1);
-    await submit(true);
+    await submit(1);
   }
 
   // 发布
   const onSubmit = async () => {
     setLoading(2);
-    await submit(false);
+    await submit(2);
   }
 
   // 提交
-  const submit = async draft => {
+  const submit = async status => {
     try {
       if (!title) {
         setTitleHelpText('不能为空');
@@ -106,11 +106,11 @@ export default function Add() {
       setSubmitting(true);
 
       await post('/system/bulletin/add', new URLSearchParams({
-        draft, title, content, send_time: sendTime ? sendTime.utc().format('') : '',
+        status, title, content, send_time: sendTime ? sendTime.utc().format('') : '',
       }));
 
       // 清除自动保存数据
-      delAutoSaved(mdeUniqueId);
+      delAutoSaved(editorId);
 
       enqueueSnackbar('提交成功', { variant: 'success' });
       navigate('..', { replace: true });
@@ -141,7 +141,7 @@ export default function Add() {
             />
             <MDEditor id='editor' value={content} onChange={setContent}
               placeholder='公告内容，支持 Markdown 语法'
-              uniqueId={mdeUniqueId}
+              uniqueId={editorId}
             />
           <DateTimePicker
             label="发布时间"
@@ -153,7 +153,7 @@ export default function Add() {
               <TextField
                 {...props}
                 variant='standard'
-                helperText='可以设置未来一周内的发布时间，如果不设置时间则立即发布'
+                helperText='可以设置在未来一周内的某个时间发布，如果不设置则立即发布'
               />
             )}
           />

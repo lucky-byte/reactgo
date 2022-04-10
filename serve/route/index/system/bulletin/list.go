@@ -80,11 +80,11 @@ func list(c echo.Context) error {
 			"title":     r.Title,
 			"content":   r.Content,
 			"send_time": r.SendTime,
-			"draft":     r.Draft,
 			"user_name": r.UserName,
 			"userid":    r.Userid,
 			"ntargets":  ntargets,
 			"nreaders":  nreaders,
+			"status":    r.Status,
 			"deleted":   r.Deleted,
 		})
 	}

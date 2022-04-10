@@ -49,7 +49,7 @@ var (
 	configFile = flag.String("config", "", "配置`文件路径`")
 	webfs      = flag.String("webfs", "embed", "WEB资产, 可以是'embed'或者'osdir'")
 	mailFS     = flag.String("mailfs", "embed", "邮件模板, 可以是'embed'或者'osdir'")
-	cron       = flag.Bool("cron", true, "启动任务调度器")
+	master     = flag.Bool("master", true, "是否为主服务器")
 	version    = flag.Bool("version", false, "打印版本信息")
 	addUser    = flag.Bool("adduser", false, "添加第一个管理员")
 )
@@ -89,7 +89,7 @@ func main() {
 		os.Exit(0)
 	}
 	// 从文件中加载配置
-	conf, err := config.Load(*configFile)
+	conf, err := config.Load(*configFile, *master)
 	if err != nil {
 		log.Fatalf("加载配置文件错: %v", err)
 	}
@@ -242,8 +242,8 @@ func main() {
 	// 在 goroutine 中启动服务器，这样主 goroutine 不会阻塞
 	go startup(conf)
 
-	// 启动任务调度
-	if *cron {
+	// 主服务器启动任务调度
+	if *master {
 		if err = task.Startup(conf); err != nil {
 			xlog.X.WithError(err).Fatal("启动任务调度失败")
 		}

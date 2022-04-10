@@ -18,6 +18,11 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Zoom from '@mui/material/Zoom';
 import AddIcon from '@mui/icons-material/Add';
+import SaveAsIcon from '@mui/icons-material/SaveAs';
+import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
+import SendIcon from '@mui/icons-material/Send';
+import CancelScheduleSendIcon from '@mui/icons-material/CancelScheduleSend';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CloseIcon from '@mui/icons-material/Close';
@@ -148,13 +153,13 @@ export default function List() {
               '&:last-child': { borderBottom: 0, }
             }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Stack direction='row' alignItems='center' spacing={1}
-                sx={{ flex: 1, mr: 1 }}>
+              <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 1 }}>
+                <StatusIcon status={b.status} />
                 <Typography variant='subtitle1' sx={{ flex: 1 }}
                   onClick={() => onAccordionTitleClick(b)}>
                   {b.title}
                 </Typography>
-                {b.deleted && <Chip label="已删除" size='small' color='error' />}
+                {b.deleted && <Chip variant='outlined' label="已删除" size='small' color='error' />}
                 {b.draft && <Chip label="草稿" size='small' />}
                 <Typography variant='caption' sx={{ color: 'gray' }}
                   onClick={() => onAccordionTitleClick(b)}>
@@ -186,6 +191,22 @@ export default function List() {
       </Stack>
     </Container>
   )
+}
+
+// 状态图标
+function StatusIcon(props) {
+  switch (props.status) {
+    case 1:
+      return <SaveAsIcon color='disabled' />
+    case 2:
+      return <ScheduleSendIcon color='disabled' />
+    case 3:
+      return <SendIcon color='success' />
+    case 4:
+      return <CancelScheduleSendIcon color='error' />
+    default:
+      return <HelpOutlineIcon color='disabled' />
+  }
 }
 
 function MenuIcon(props) {
