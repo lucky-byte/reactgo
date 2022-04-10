@@ -172,6 +172,7 @@ create table if not exists tree (
 
 -- MySQL 不支持下面的语句
 -- https://stackoverflow.com/questions/1827063
+--
 create unique index tree_path on tree(tpath);
 
 insert into tree (uuid, name, summary, tpath, nlevel, sortno) values (
@@ -189,7 +190,7 @@ create table if not exists tree_bind (
 create unique index tree_bind_node_entity_type on tree_bind(node, entity, type);
 
 create table if not exists tickets (
-  key         varchar(64)     primary key not null,
+  ticket      varchar(64)     primary key not null,
   create_at   bigint          not null,
   expiry_at   bigint          not null,
   code        varchar(64)     not null,
@@ -204,8 +205,8 @@ create table if not exists bulletins (
   title       varchar(128)    not null,
   content     text            not null,
   send_time   timestamp       not null,
-  targets     text            default '',
-  readers     text            default '',
+  targets     text,
+  readers     text,
   status      int             not null default 1,
                               -- 1. 草稿
                               -- 2. 等待发布

@@ -38,8 +38,11 @@ func add(c echo.Context) error {
 		send_time = time.Now().UTC()
 	}
 	ql := `
-		insert into bulletins (uuid, user_uuid, title, content, send_time, status)
-		values (?, ?, ?, ?, ?, ?)
+		insert into bulletins (
+			uuid, user_uuid, title, content, send_time, status, targets, readers
+		) values (
+			?, ?, ?, ?, ?, ?, '', ''
+		)
 	`
 	newid := uuid.NewString()
 

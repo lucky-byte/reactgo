@@ -12,10 +12,10 @@ type dbTicket struct {
 }
 
 // 添加
-func (d *dbTicket) Set(k string, e *TicketEntry) error {
+func (d *dbTicket) Set(t string, e *TicketEntry) error {
 	ql := `
 		insert into tickets (
-			key, create_at, expiry_at, code, failed, user_data
+			ticket, create_at, expiry_at, code, failed, user_data
 		) values (?,?,?,?,?,?) on conflict (key) do update set
 			create_at = ?,
 			expiry_at = ?,
@@ -23,24 +23,24 @@ func (d *dbTicket) Set(k string, e *TicketEntry) error {
 			failed = ?,
 			user_data = ?
 	`
-	return db.ExecOne(ql, k,
+	return db.ExecOne(ql, t,
 		e.CreateAt, e.ExpiryAt, e.Code, e.Failed, e.UserData,
 		e.CreateAt, e.ExpiryAt, e.Code, e.Failed, e.UserData,
 	)
 }
 
 // 删除
-func (d *dbTicket) Del(k string) error {
-	ql := `delete from tickets where key = ?`
-	return db.ExecOne(ql, k)
+func (d *dbTicket) Del(t string) error {
+	ql := `delete from tickets where ticket = ?`
+	return db.ExecOne(ql, t)
 }
 
 // 获取
-func (d *dbTicket) Get(k string) (*TicketEntry, error) {
-	ql := `select * from tickets where key = ?`
+func (d *dbTicket) Get(t string) (*TicketEntry, error) {
+	ql := `select * from tickets where ticket = ?`
 	var e TicketEntry
 
-	err := db.SelectOne(ql, &e, k)
+	err := db.SelectOne(ql, &e, t)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (d *dbTicket) Get(k string) (*TicketEntry, error) {
 }
 
 // 遍历
-func (d *dbTicket) Range(f func(k string, e *TicketEntry) bool) {
+func (d *dbTicket) Range(f func(t string, e *TicketEntry) bool) {
 	ql := `select * from tickets`
 	var es []TicketEntry
 
@@ -57,7 +57,7 @@ func (d *dbTicket) Range(f func(k string, e *TicketEntry) bool) {
 		return
 	}
 	for _, e := range es {
-		if f(e.Key, &e) {
+		if f(e.Ticket, &e) {
 			return
 		}
 	}

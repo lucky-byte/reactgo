@@ -27,6 +27,9 @@ func send(uuid, title, content string) {
 
 // 在指定时间发布公告
 func sendAt(uuid, title, content string, send_time time.Time) {
+	xlog.X.Infof("local sub: %v", send_time.Sub(time.Now()))
+	xlog.X.Infof("utc sub: %v", send_time.UTC().Sub(time.Now()))
+
 	// 如果发布时间在未来 1 分钟内则直接发送
 	if time.Now().Add(1 * time.Minute).After(send_time) {
 		send(uuid, title, content)

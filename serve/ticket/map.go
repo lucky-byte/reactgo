@@ -12,34 +12,34 @@ type mapTicket struct {
 }
 
 // 添加或替换
-func (m *mapTicket) Set(k string, e *TicketEntry) error {
-	m.cache.Store(k, e)
+func (m *mapTicket) Set(t string, e *TicketEntry) error {
+	m.cache.Store(t, e)
 	return nil
 }
 
 // 删除
-func (m *mapTicket) Del(k string) error {
-	if _, loaded := m.cache.LoadAndDelete(k); !loaded {
-		return fmt.Errorf("删除 ticket 错误: %s 不存在", k)
+func (m *mapTicket) Del(t string) error {
+	if _, loaded := m.cache.LoadAndDelete(t); !loaded {
+		return fmt.Errorf("删除 ticket 错误: %s 不存在", t)
 	}
 	return nil
 }
 
 // 获取
-func (m *mapTicket) Get(k string) (*TicketEntry, error) {
-	v, ok := m.cache.Load(k)
+func (m *mapTicket) Get(t string) (*TicketEntry, error) {
+	v, ok := m.cache.Load(t)
 	if !ok {
-		return nil, fmt.Errorf("ticket %s 不存在", k)
+		return nil, fmt.Errorf("ticket %s 不存在", t)
 	}
 	entry, ok := v.(*TicketEntry)
 	if !ok {
-		return nil, fmt.Errorf("ticket %s 无效", k)
+		return nil, fmt.Errorf("ticket %s 无效", t)
 	}
 	return entry, nil
 }
 
 // 遍历
-func (m *mapTicket) Range(f func(k string, v *TicketEntry) bool) {
+func (m *mapTicket) Range(f func(t string, v *TicketEntry) bool) {
 	m.cache.Range(func(key, val any) bool {
 		k := key.(string)
 		v := val.(*TicketEntry)
