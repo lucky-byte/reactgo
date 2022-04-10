@@ -144,8 +144,8 @@ create table if not exists images (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
   update_at   timestamp       not null default current_timestamp,
-  data        bytea           not null, -- PostgreSQL, Sqlite
-  -- data        mediumblob      not null,  -- MySQL
+  -- data        bytea           not null, -- PostgreSQL, Sqlite
+  data        mediumblob      not null,  -- MySQL
   mime        varchar(128)    not null,
   etag        varchar(32)     not null
 );
@@ -165,18 +165,17 @@ create table if not exists tree (
   summary     varchar(256)    not null default '',
   up          varchar(36)     not null default '',
   tpath       text            not null,
+  tpath_hash  varchar(32)     not null,
   nlevel      int             not null,
   disabled    boolean         default false,
   sortno      int             not null
 );
 
--- MySQL 不支持下面的语句
--- https://stackoverflow.com/questions/1827063
---
-create unique index tree_path on tree(tpath);
+create unique index tree_path_hash on tree(tpath_hash);
 
-insert into tree (uuid, name, summary, tpath, nlevel, sortno) values (
-  '6e0c44c6-08ef-48d8-b48e-69c9903cc3f1', '根', '根节点', '0', 1, 1
+insert into tree (uuid, name, summary, tpath, tpath_hash, nlevel, sortno) values (
+  '6e0c44c6-08ef-48d8-b48e-69c9903cc3f1',
+  '根', '根节点', '0', 'cfcd208495d565ef66e7dff9f98764da', 1, 1
 );
 
 create table if not exists tree_bind (
@@ -190,7 +189,7 @@ create table if not exists tree_bind (
 create unique index tree_bind_node_entity_type on tree_bind(node, entity, type);
 
 create table if not exists tickets (
-  ticket      varchar(64)     primary key not null,
+  keyid       varchar(64)     primary key not null,
   create_at   bigint          not null,
   expiry_at   bigint          not null,
   code        varchar(64)     not null,
@@ -205,8 +204,8 @@ create table if not exists bulletins (
   title       varchar(128)    not null,
   content     text            not null,
   send_time   timestamp       not null,
-  targets     text,
-  readers     text,
+  targets     text            not null,
+  readers     text            not null,
   status      int             not null default 1,
                               -- 1. 草稿
                               -- 2. 等待发布

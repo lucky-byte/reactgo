@@ -1,6 +1,8 @@
 package node
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -35,14 +37,19 @@ func add(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	ql = `
-		insert into tree (uuid, name, summary, up, tpath, nlevel, sortno)
-		values (?, ?, ?, ?, ?, ?, ?)
+		insert into tree (
+			uuid, name, summary, up, tpath, tpath_hash, nlevel, sortno
+		) values (
+			?, ?, ?, ?, ?, ?, ?, ?
+		)
 	`
 	newid := uuid.NewString()
 	tpath := node.TPath + "." + newid
+	sum := md5.Sum([]byte(tpath))
+	hash := hex.EncodeToString(sum[:])
 
 	err = db.ExecOne(ql,
-		newid, "新节点", "新节点说明", id, tpath, node.NLevel+1, maxSortNo+1,
+		newid, "新节点", "新节点说明", id, tpath, hash, node.NLevel+1, maxSortNo+1,
 	)
 	if err != nil {
 		cc.ErrLog(err).Error("插入层次结构错")

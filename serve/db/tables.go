@@ -148,16 +148,17 @@ type GeoIP struct {
 
 // 层次结构
 type Tree struct {
-	UUID     string    `db:"uuid"`      // uuid
-	CreateAt time.Time `db:"create_at"` // 创建时间
-	UpdateAt time.Time `db:"update_at"` // 更新时间
-	Name     string    `db:"name"`      // 名称
-	Summary  string    `db:"summary"`   // 描述
-	Up       string    `db:"up"`        // 上级
-	TPath    string    `db:"tpath"`     // 路径
-	NLevel   int       `db:"nlevel"`    // 级别
-	Disabled bool      `db:"disabled"`  // 禁用
-	SortNo   int       `db:"sortno"`    // 排序
+	UUID      string    `db:"uuid"`       // uuid
+	CreateAt  time.Time `db:"create_at"`  // 创建时间
+	UpdateAt  time.Time `db:"update_at"`  // 更新时间
+	Name      string    `db:"name"`       // 名称
+	Summary   string    `db:"summary"`    // 描述
+	Up        string    `db:"up"`         // 上级
+	TPath     string    `db:"tpath"`      // 路径
+	TPathHash string    `db:"tpath_hash"` // 路径 md5 hash 值
+	NLevel    int       `db:"nlevel"`     // 级别
+	Disabled  bool      `db:"disabled"`   // 禁用
+	SortNo    int       `db:"sortno"`     // 排序
 }
 
 type TreeBind struct {

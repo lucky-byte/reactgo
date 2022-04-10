@@ -1,6 +1,8 @@
 package node
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"net/http"
 	"strings"
 
@@ -25,12 +27,12 @@ func parent(c echo.Context) error {
 
 	// 查询准备转移的节点
 	if err := db.SelectOne(ql, &node, uuid); err != nil {
-		cc.ErrLog(err).Error("查询节点错")
+		cc.ErrLog(err).Error("查询层级节点错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	// 查询新的父节点
 	if err := db.SelectOne(ql, &parentNode, parent); err != nil {
-		cc.ErrLog(err).Error("查询节点错")
+		cc.ErrLog(err).Error("查询层级节点错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	// 不能以当前节点的子节点作为新的父节点
@@ -47,24 +49,34 @@ func parent(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	// 更新当前节点的父节点
-	ql = `
-		update tree set up = ?, sortno = (
-			select coalesce(max(sortno), 0) + 1 from tree where up = ?
-		) where uuid = ?
-	`
+	if db.DriverName() == db.DriverMySQL {
+		ql = `
+			update tree set up = ?, sortno = (
+				select maxno from (
+					select coalesce(max(sortno), 0) + 1 as maxno from tree where up = ?
+				) as c
+			) where uuid = ?
+		`
+	} else {
+		ql = `
+			update tree set up = ?, sortno = (
+				select coalesce(max(sortno), 0) + 1 from tree where up = ?
+			) where uuid = ?
+		`
+	}
 	_, err = tx.Exec(tx.Rebind(ql), parentNode.UUID, parentNode.UUID, uuid)
 	if err != nil {
 		tx.Rollback()
-		cc.ErrLog(err).Error("更新节点错")
+		cc.ErrLog(err).Error("更新层级节点错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	// 更新当前节点所有子节点的 tpath 和 nlevel
+	// 更新当前节点及所有子节点的 tpath 和 nlevel
 	ql = `select * from tree where tpath like ?`
 	var nodes []db.Tree
 
 	if err = tx.Select(&nodes, tx.Rebind(ql), node.TPath+"%"); err != nil {
 		tx.Rollback()
-		cc.ErrLog(err).Error("查询节点错")
+		cc.ErrLog(err).Error("查询层级节点错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	newPath := strings.Split(parentNode.TPath, ".")
@@ -75,12 +87,15 @@ func parent(c echo.Context) error {
 		p := strings.Replace(n.TPath, node.TPath, newPrefix, 1)
 		l := len(strings.Split(p, "."))
 
-		ql = `update tree set tpath = ?, nlevel = ? where uuid = ?`
+		sum := md5.Sum([]byte(p))
+		hash := hex.EncodeToString(sum[:])
 
-		_, err = tx.Exec(tx.Rebind(ql), p, l, n.UUID)
+		ql = `update tree set tpath = ?, tpath_hash = ?, nlevel = ? where uuid = ?`
+
+		_, err = tx.Exec(tx.Rebind(ql), p, hash, l, n.UUID)
 		if err != nil {
 			tx.Rollback()
-			cc.ErrLog(err).Error("更新节点错")
+			cc.ErrLog(err).Error("更新层级节点错")
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	}
