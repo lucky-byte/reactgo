@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, Suspense } from "react";
+import { useMemo, useState, useEffect, Suspense, useCallback } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useRecoilValue } from 'recoil';
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -14,6 +14,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
 import Push from 'push.js';
+import uuid from "uuid";
 import nats from '~/lib/nats';
 import userState from "./state/user";
 import { ColorModeContext } from "./hook/colormode";
@@ -87,6 +88,61 @@ export default function App() {
   // 更新色彩模式
   useEffect(() => { setMode(prefersDarkMode ? 'dark' : 'light'); }, [prefersDarkMode]);
 
+  // 弹出提示信息
+  const popupEvent = useCallback(event => {
+    if (!event.title) {
+      return;
+    }
+    const variants = ['success', 'info', 'warning', 'error']
+    const variant = variants[parseInt(event.level)] || 'default';
+
+    enqueueSnackbar(event.title, {
+      variant: variant,
+      preventDuplicate: true,
+      autoHideDuration: 10000,
+      anchorOrigin: {
+        horizontal: 'right', vertical: 'top',
+      },
+      action: (
+        <>
+          <IconButton onClick={() => {
+            closeSnackbar();
+            window.location.href = '/system/event';
+          }}>
+            <MoreHorizIcon sx={{ color: 'white' }} />
+          </IconButton>
+          <IconButton onClick={() => { closeSnackbar() }}>
+            <CloseIcon sx={{ color: 'white' }} />
+          </IconButton>
+        </>
+      )
+    });
+  }, [enqueueSnackbar, closeSnackbar]);
+
+  // 推送浏览器通知
+  const pushWebNotification = event => {
+    if (!event.title) {
+      return;
+    }
+    const tag = uuid.v4();
+
+    // web 通知
+    if (Push.Permission.has()) {
+      Push.create(event.title, {
+        icon: '/logo192.png',
+        body: '点击查看详情',
+        tag: tag,
+        timeout: 1000 * 600,
+        vibrate: [200, 100, 200, 100],
+        link: '/system/event',
+        onClick: () => {
+          window.focus();
+          Push.close(tag);
+        },
+      });
+    }
+  }
+
   // 连接 nats 服务器，接收事件通知
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -94,6 +150,19 @@ export default function App() {
       return;
     }
     if (!user || !user.activate) {
+      return;
+    }
+    // 检查用户是否有事件访问权限
+    let event_allow = false;
+
+    for (let i = 0; i < user.allows?.length; i++) {
+      if (user.allows[i].code === 9040) {
+        event_allow = true;
+        break;
+      }
+    }
+    // 如果没有权限，则不订阅事件通知
+    if (!event_allow) {
       return;
     }
     (async () => {
@@ -106,62 +175,15 @@ export default function App() {
         // 连接服务器
         const broker = await nats.open(resp.servers, resp.name);
 
-        let event_allow = false;
+        const sub = broker.subscribe("reactgo.system.event");
+        const codec = await nats.JSONCodec();
 
-        // 检查用户是否有事件访问权限
-        for (let i = 0; i < user?.allows?.length; i++) {
-          if (user.allows[i].code === 9040) {
-            event_allow = true;
-            break;
-          }
-        }
-        // 如果用户具有事件访问权限，则订阅事件
-        if (event_allow) {
-          const sub = broker.subscribe("reactgo.system.event")
-          const codec = await nats.JSONCodec();
+        // 收到事件时弹出提示
+        for await (const m of sub) {
+          const event = codec.decode(m.data);
 
-          // 收到事件时弹出提示
-          for await (const m of sub) {
-            const event = codec.decode(m.data);
-            if (event.title) {
-              const variants = ['success', 'info', 'warning', 'error']
-              const variant = variants[parseInt(event.level)] || 'default';
-
-              enqueueSnackbar(event.title, {
-                variant: variant,
-                preventDuplicate: true,
-                autoHideDuration: 10000,
-                anchorOrigin: {
-                  horizontal: 'right',
-                  vertical: 'top',
-                },
-                action: (
-                  <>
-                    <IconButton onClick={() => {
-                      closeSnackbar();
-                      window.location.href = '/system/event';
-                    }}>
-                      <MoreHorizIcon sx={{ color: 'white' }} />
-                    </IconButton>
-                    <IconButton onClick={() => { closeSnackbar() }}>
-                      <CloseIcon sx={{ color: 'white' }} />
-                    </IconButton>
-                  </>
-                )
-              });
-              // web 通知
-              if (Push.Permission.has()) {
-                Push.create(event.title, {
-                  timeout: 1000 * 600,
-                  vibrate: [200, 100, 200, 100],
-                  link: '/system/event',
-                  body: '点击查看详情',
-                  icon: '/logo192.png',
-                  onClick: () => {},
-                });
-              }
-            }
-          }
+          popupEvent(event);
+          pushWebNotification(event);
         }
       } catch (err) {
         enqueueSnackbar(err.message || '连接消息通道失败');
@@ -169,10 +191,8 @@ export default function App() {
     })();
 
     // 关闭连接
-    return async () => {
-      await nats.close();
-    }
-  }, [enqueueSnackbar, closeSnackbar, user]);
+    return async () => { await nats.close(); }
+  }, [enqueueSnackbar, closeSnackbar, user, popupEvent]);
 
   return (
     <ColorModeContext.Provider value={colorMode}>

@@ -144,8 +144,8 @@ create table if not exists images (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
   update_at   timestamp       not null default current_timestamp,
-  -- data        bytea           not null, -- PostgreSQL, Sqlite
-  data        mediumblob      not null,  -- MySQL
+  data        bytea           not null, -- PostgreSQL, Sqlite
+  -- data        mediumblob      not null, -- MySQL
   mime        varchar(128)    not null,
   etag        varchar(32)     not null
 );
@@ -212,6 +212,17 @@ create table if not exists bulletins (
                               -- 3. 发布成功
                               -- 4. 发布失败
   deleted     boolean         not null default false
+);
+
+create table if not exists notifications (
+  uuid        varchar(36)     primary key not null,
+  create_at   timestamp       not null default current_timestamp,
+  user_uuid   varchar(36)     not null,
+  title       varchar(128)    not null,
+  content     text            not null,
+  status      int             not null default 1
+                              -- 1. 未读
+                              -- 2. 已读
 );
 
 commit;

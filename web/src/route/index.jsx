@@ -1,4 +1,4 @@
-import { useEffect, useState, forwardRef } from "react";
+import { useEffect, useState, forwardRef, useCallback } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { useTheme } from "@mui/material/styles";
 import { Routes, Route, useNavigate, Link as RouteLink, useLocation } from "react-router-dom";
@@ -40,27 +40,32 @@ import Popover from '@mui/material/Popover';
 import LinearProgress from '@mui/material/LinearProgress';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
+import Push from 'push.js';
+import uuid from "uuid";
 import titleState from "~/state/title";
 import userState from "~/state/user";
-import { SecretCodeProvider } from "../comp/secretcode";
 import sidebarState from "~/state/sidebar";
 import progressState from "~/state/progress";
 import codeState from "~/state/code";
+import { SecretCodeProvider } from "../comp/secretcode";
+import nats from '~/lib/nats';
 import { get } from "~/rest";
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import useColorModeContent from "~/hook/colormode";
 import Sidebar from "./sidebar";
 import urlCodes from "./sidebar/codes";
+import ErrorBoundary from "~/error";
 import NotFound from "./notfound";
 import About from "./about";
 import Codes from "./codes";
 import Dashboard from "./dashboard";
 import System from "./system";
 import User from "./user";
-import ErrorBoundary from "~/error";
 
 export default function Index() {
   const location = useLocation();
@@ -174,6 +179,7 @@ function Appbar(params) {
             return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
           }
           setUser({
+            uuid: resp.uuid,
             userid: resp.userid,
             avatar: resp.avatar ? `/image/?u=${resp.avatar}` : '',
             name: resp.name,
@@ -260,7 +266,7 @@ function Appbar(params) {
         </IconButton>
         {!sidebar &&
           <Link component={RouteLink} to='/' sx={{ mr: 2, lineHeight: 1 }}>
-            <img src={Logo} alt='Logo' height='30px' width='126px' />
+            <img src={Logo} alt='Logo' height='24px' width='100px' />
           </Link>
         }
         <Typography component='h1' variant="h6" sx={{ flexGrow: 1 }}>
@@ -420,7 +426,101 @@ function QuickNavigator(props) {
 // 通知
 function Notification() {
   const navigate = useNavigate();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const user = useRecoilValue(userState);
+  const [retry, setRetry] = useState(true);
+  const [broker, setBroker] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+
+  // 获取 nats 连接，如果系统没有配置 nats 服务器，则这个函数会一直执行，但没有太大影响
+  useEffect(() => {
+    const b = nats.getBroker();
+
+    // 如果还没有连接成功，则等待 1 秒后重试
+    if (!b) {
+      return setTimeout(() => setRetry(!retry), 1000);
+    }
+    setBroker(b);
+  }, [retry]);
+
+  // 弹出提示信息
+  const popupNotification = useCallback(notification => {
+    if (!notification.title) {
+      return;
+    }
+    enqueueSnackbar(notification.title, {
+      variant: 'info',
+      preventDuplicate: true,
+      autoHideDuration: 10000,
+      anchorOrigin: {
+        horizontal: 'right', vertical: 'top',
+      },
+      action: (
+        <>
+          <IconButton onClick={() => {
+            closeSnackbar();
+            window.location.href = '/system/event';
+          }}>
+            <MoreHorizIcon sx={{ color: 'white' }} />
+          </IconButton>
+          <IconButton onClick={() => { closeSnackbar() }}>
+            <CloseIcon sx={{ color: 'white' }} />
+          </IconButton>
+        </>
+      )
+    });
+  }, [enqueueSnackbar, closeSnackbar]);
+
+  // 推送浏览器通知
+  const pushWebNotification = notification => {
+    if (!notification.title) {
+      return;
+    }
+    const tag = uuid.v4();
+
+    // web 通知
+    if (Push.Permission.has()) {
+      Push.create(notification.title, {
+        icon: '/logo192.png',
+        body: '点击查看详情',
+        tag: tag,
+        timeout: 1000 * 600,
+        vibrate: [200, 100, 200, 100],
+        link: '/user/notification',
+        onClick: () => {
+          window.focus();
+          Push.close(tag);
+        },
+      });
+    }
+  }
+
+  // 订阅用户通知
+  useEffect(() => {
+    if (!user?.uuid || !broker) {
+      return;
+    }
+    let sub = null;
+
+    (async () => {
+      try {
+        sub = broker.subscribe("reactgo.user.notification." + user.uuid);
+        const codec = await nats.JSONCodec();
+
+        for await (const m of sub) {
+          const notification = codec.decode(m.data);
+
+          popupNotification(notification);
+          pushWebNotification(notification);
+        }
+      } catch (err) {
+        enqueueSnackbar(err.message || '连接消息通道失败');
+      }
+    })();
+
+    // 取消订阅
+    return () => { sub && sub.unsubscribe(); }
+  }, [enqueueSnackbar, closeSnackbar, user, broker, popupNotification]);
 
   const onOpen = e => {
     setAnchorEl(e.currentTarget);
@@ -435,15 +535,13 @@ function Notification() {
     navigate('/user/notification');
   }
 
-  const open = Boolean(anchorEl);
-
   return (
     <>
       <IconButton aria-label="通知" onClick={onOpen} color="primary">
         <NotificationsIcon />
       </IconButton>
       <Popover
-        open={open}
+        open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={onClose}
         anchorOrigin={{

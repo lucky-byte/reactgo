@@ -17,7 +17,7 @@ const close = async () => {
 	}
 }
 
-const getBorker = () => {
+const getBroker = () => {
 	return broker;
 }
 
@@ -27,7 +27,7 @@ const JSONCodec = async () => {
 }
 
 const exports = {
-	JSONCodec, open, close, getBorker,
+	JSONCodec, open, close, getBroker,
 }
 
 export default exports;

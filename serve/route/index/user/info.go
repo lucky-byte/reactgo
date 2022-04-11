@@ -24,6 +24,7 @@ func info(c echo.Context) error {
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{
+		"uuid":             user.UUID,
 		"userid":           user.UserId,
 		"avatar":           user.Avatar,
 		"name":             user.Name,

@@ -53,7 +53,7 @@ func add(c echo.Context) error {
 	}
 	// 如果不是草稿则发布公告
 	if status == 2 {
-		sendAt(newid, title, content, send_time.Local())
+		sendAt(newid, title, content, send_time)
 	}
 	return c.NoContent(http.StatusOK)
 }
