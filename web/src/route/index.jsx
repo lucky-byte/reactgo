@@ -549,15 +549,15 @@ function Notification() {
           horizontal: 'left',
         }}
         PaperProps={{
-          style: { width: '40%' },
+          style: { width: '30%' },
         }}>
         <Stack sx={{ p: 2 }}>
+          <Button size='small' onClick={onMore}>查看所有通知</Button>
           <Typography variant="subtitle2">通知</Typography>
           <Typography sx={{ p: 2 }}>
             The content of the Popover.
             The content of the Popover.
             </Typography>
-          <Button size='small' onClick={onMore}>查看所有通知</Button>
         </Stack>
       </Popover>
     </>

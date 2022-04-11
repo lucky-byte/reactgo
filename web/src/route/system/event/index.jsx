@@ -5,6 +5,8 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -30,7 +32,7 @@ export default function Event() {
   const { enqueueSnackbar } = useSnackbar();
   const [keyword, setKeyword] = useState('');
   const [days, setDays] = useState(7);
-  const [level, setLevel] = useState(0);
+  const [level, setLevel] = useState('0');
   const [fresh, setFresh] = useState('all');
   const [list, setList] = useState([]);
   const [count, setCount] = useState(0);
@@ -93,15 +95,19 @@ export default function Event() {
   }
 
   // 级别
-  const onLevelChange = e => {
-    setPage(0);
-    setLevel(e.target.value);
+  const onLevelChange = (e, v) => {
+    if (v !== null) {
+      setLevel(v);
+      setPage(0);
+    }
   }
 
   // 状态
-  const onFreshChange = e => {
-    setPage(0);
-    setFresh(e.target.value);
+  const onFreshChange = (e, v) => {
+    if (v !== null) {
+      setFresh(v);
+      setPage(0);
+    }
   }
 
   // 展开时更新通知为已读
@@ -140,39 +146,34 @@ export default function Event() {
           <MenuItem value={365}>近一年</MenuItem>
           <MenuItem value={365000}>不限时间</MenuItem>
         </TextField>
-        <TextField
-          select variant='standard' sx={{ ml: 2, minWidth: 100 }}
-          value={level} onChange={onLevelChange}>
-          <MenuItem value={0}>全部级别</MenuItem>
-          <MenuItem value={1}>信息</MenuItem>
-          <MenuItem value={2}>警告</MenuItem>
-          <MenuItem value={3}>错误</MenuItem>
-        </TextField>
-        <TextField
-          select variant='standard' sx={{ ml: 2, minWidth: 100 }}
-          value={fresh} onChange={onFreshChange}>
-          <MenuItem value='all'>全部状态</MenuItem>
-          <MenuItem value='false'>已读</MenuItem>
-          <MenuItem value='true'>未读</MenuItem>
-        </TextField>
+
+        <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ flex: 1 }}>
+          <ToggleButtonGroup exclusive size='small' color='primary' aria-label="级别"
+            value={level} onChange={onLevelChange}>
+            <ToggleButton value='0' aria-label="全部">全部</ToggleButton>
+            <ToggleButton value='1' aria-label="信息">信息</ToggleButton>
+            <ToggleButton value='2' aria-label="警告">警告</ToggleButton>
+            <ToggleButton value='3' aria-label="错误">错误</ToggleButton>
+          </ToggleButtonGroup>
+          <ToggleButtonGroup exclusive size='small' color='primary' aria-label="状态"
+            value={fresh} onChange={onFreshChange}>
+            <ToggleButton value='all' aria-label="全部">全部</ToggleButton>
+            <ToggleButton value='false' aria-label="全部">已读</ToggleButton>
+            <ToggleButton value='true' aria-label="全部">
+              未读 ({freshCount})
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
       </Toolbar>
 
-      {freshCount > 0 &&
-        <Chip label={`${freshCount} 条未读`} size='small' color='info' sx={{ mb: 1 }}
-          onClick={() => {
-            setPage(0);
-            setFresh('true');
-          }}
-        />
-      }
       <Paper variant='outlined' sx={{ mt: 0 }}>
         {list.map(e => (
           <Accordion key={e.uuid} elevation={0} disableGutters
             onChange={(evt, expanded) => onAccordionChange(evt, expanded, e)} sx={{
-            borderBottom: '1px solid #8884',
-            '&:before': { display: 'none', },
-            '&:last-child': { borderBottom: 0, }
-          }}>
+              borderBottom: '1px solid #8884',
+              '&:before': { display: 'none', },
+              '&:last-child': { borderBottom: 0, }
+            }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 2 }}>
                 <LevelIcon level={e.level} />
