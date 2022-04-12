@@ -29,10 +29,13 @@ import Link from "@mui/material/Link";
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from "@mui/material/FormHelperText";
+import Badge from '@mui/material/Badge';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
 import Avatar from "@mui/material/Avatar";
 import Chip from '@mui/material/Chip';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import Slide from '@mui/material/Slide';
 import Portal from '@mui/material/Portal';
@@ -428,9 +431,22 @@ function Notification() {
   const navigate = useNavigate();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const user = useRecoilValue(userState);
+  const [last, setLast] = useState([]);
   const [retry, setRetry] = useState(true);
   const [broker, setBroker] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+
+  // 查询最近通知
+  useEffect(() => {
+    (async () => {
+      try {
+        const resp = await get('/user/notification/last');
+        setLast(resp.list || []);
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      }
+    })();
+  }, [enqueueSnackbar]);
 
   // 获取 nats 连接，如果系统没有配置 nats 服务器，则这个函数会一直执行，但没有太大影响
   useEffect(() => {
@@ -538,26 +554,59 @@ function Notification() {
   return (
     <>
       <IconButton aria-label="通知" onClick={onOpen} color="primary">
-        <NotificationsIcon />
+        <Badge variant="dot" color="secondary">
+          <NotificationsIcon />
+        </Badge>
       </IconButton>
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={onClose}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
+          vertical: 'bottom', horizontal: 'left',
         }}
         PaperProps={{
           style: { width: '30%' },
         }}>
-        <Stack sx={{ p: 2 }}>
-          <Button size='small' onClick={onMore}>查看所有通知</Button>
-          <Typography variant="subtitle2">通知</Typography>
-          <Typography sx={{ p: 2 }}>
-            The content of the Popover.
-            The content of the Popover.
-            </Typography>
+        <Stack sx={{ p: 2 }} spacing={1}>
+          <Stack direction='row' justifyContent='space-between' alignItems='center'>
+            <Typography variant="subtitle2">通知</Typography>
+            <Button size='small' onClick={onMore} sx={{ alignSelf: 'flex-end' }}>
+              全部
+            </Button>
+          </Stack>
+          <List>
+            {last.map(item => (
+              <ListItemButton alignItems="flex-start">
+                <ListItemIcon>
+                  <NotificationsIcon color="info" />
+                </ListItemIcon>
+                <ListItemText primary={item.title} secondary={item.content}
+                  primaryTypographyProps={{
+                    sx: {
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 1,
+                      WebkitBoxOrient: 'vertical',
+                    }
+                  }}
+                  secondaryTypographyProps={{
+                    sx: {
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                    }
+                  }}
+                />
+              </ListItemButton>
+            ))}
+          </List>
+          {last.length === 0 &&
+            <Typography variant="caption" textAlign='center'>没有通知</Typography>
+          }
         </Stack>
       </Popover>
     </>

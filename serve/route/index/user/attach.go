@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/lucky-byte/reactgo/serve/route/index/secretcode"
+	"github.com/lucky-byte/reactgo/serve/route/index/user/notification"
 )
 
 func Attach(up *echo.Group) {
@@ -22,4 +23,6 @@ func Attach(up *echo.Group) {
 	group.PUT("/secretcode", scode, secretcode.Verify())
 	group.GET("/otp/url", otpURL)
 	group.POST("/otp/verify", otpVerify, secretcode.Verify())
+
+	notification.Attach(group)
 }

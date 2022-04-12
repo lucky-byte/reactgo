@@ -9,6 +9,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/notification"
 )
 
 // 添加
@@ -55,5 +56,7 @@ func add(c echo.Context) error {
 	if status == 2 {
 		sendAt(newid, title, content, send_time)
 	}
+	notification.Send(user.UUID, title, content, 2)
+
 	return c.NoContent(http.StatusOK)
 }

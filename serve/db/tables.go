@@ -182,3 +182,14 @@ type Bulletin struct {
 	Status   int       `db:"status"`    // 状态
 	Deleted  bool      `db:"deleted"`   // 删除
 }
+
+// 通知
+type Notification struct {
+	UUID     string    `db:"uuid"`      // uuid
+	CreateAt time.Time `db:"create_at"` // 创建时间
+	UserUUID string    `db:"user_uuid"` // 用户
+	Title    string    `db:"title"`     // 标题
+	Content  string    `db:"content"`   // 内容
+	Type     int       `db:"type"`      // 类型
+	Status   int       `db:"status"`    // 状态
+}
