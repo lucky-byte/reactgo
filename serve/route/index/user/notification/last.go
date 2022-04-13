@@ -13,9 +13,18 @@ func last(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 
-	ql := `
+	// 查询未读通知数量
+	ql := `select count(*) from notifications where user_uuid = ? and status = 1`
+	var count int
+
+	if err := db.SelectOne(ql, &count, user.UUID); err != nil {
+		cc.ErrLog(err).Error("查询通知错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	// 查询最近的 3 条记录
+	ql = `
 		select * from notifications where user_uuid = ?
-		order by create_at, status
+		order by create_at desc, status
 		limit 3
 	`
 	var result []db.Notification
@@ -30,10 +39,11 @@ func last(c echo.Context) error {
 		records = append(records, echo.Map{
 			"uuid":      n.UUID,
 			"create_at": n.CreateAt,
+			"type":      n.Type,
 			"title":     n.Title,
 			"content":   n.Content,
 			"status":    n.Status,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"list": records})
+	return c.JSON(http.StatusOK, echo.Map{"unread": count, "last": records})
 }

@@ -43,6 +43,7 @@ import Popover from '@mui/material/Popover';
 import LinearProgress from '@mui/material/LinearProgress';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import CampaignIcon from '@mui/icons-material/Campaign';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
@@ -164,6 +165,7 @@ function Appbar(params) {
 
   const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
 
+  // 自动更新文档标题
   useEffect(() => { document.title = title; }, [title])
 
   useEffect(() => {
@@ -431,22 +433,30 @@ function Notification() {
   const navigate = useNavigate();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const user = useRecoilValue(userState);
-  const [last, setLast] = useState([]);
+  const [notification, setNotification] = useState({});
+  const [needUpdate, setNeedUpdate] = useState(true);
   const [retry, setRetry] = useState(true);
   const [broker, setBroker] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  // 查询最近通知
+  // 更新未读通知数量以及最近通知
   useEffect(() => {
-    (async () => {
-      try {
-        const resp = await get('/user/notification/last');
-        setLast(resp.list || []);
-      } catch (err) {
-        enqueueSnackbar(err.message);
-      }
-    })();
-  }, [enqueueSnackbar]);
+    if (needUpdate) {
+      (async () => {
+        try {
+          const resp = await get('/user/notification/last');
+
+          setNotification({
+            last: resp.last || [], unread: resp.unread,
+          });
+        } catch (err) {
+          enqueueSnackbar(err.message);
+        } finally {
+          setNeedUpdate(false);
+        }
+      })();
+    }
+  }, [enqueueSnackbar, setNotification, needUpdate]);
 
   // 获取 nats 连接，如果系统没有配置 nats 服务器，则这个函数会一直执行，但没有太大影响
   useEffect(() => {
@@ -528,6 +538,8 @@ function Notification() {
 
           popupNotification(notification);
           pushWebNotification(notification);
+
+          setNeedUpdate(true);
         }
       } catch (err) {
         enqueueSnackbar(err.message || '连接消息通道失败');
@@ -546,15 +558,20 @@ function Notification() {
     setAnchorEl(null);
   };
 
-  const onMore = () => {
+  const onAllClick = () => {
     onClose();
     navigate('/user/notification');
+  }
+
+  const onItemClick = item => {
+    onClose();
+    navigate('/user/notification/item', { state: { uuid: item.uuid }});
   }
 
   return (
     <>
       <IconButton aria-label="通知" onClick={onOpen} color="primary">
-        <Badge variant="dot" color="secondary">
+        <Badge color="secondary" badgeContent={notification.unread} max={99}>
           <NotificationsIcon />
         </Badge>
       </IconButton>
@@ -568,29 +585,35 @@ function Notification() {
         PaperProps={{
           style: { width: '30%' },
         }}>
-        <Stack sx={{ p: 2 }} spacing={1}>
+        <Stack sx={{ p: 2 }} spacing={0}>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Typography variant="subtitle2">通知</Typography>
-            <Button size='small' onClick={onMore} sx={{ alignSelf: 'flex-end' }}>
+            <Button size='small' onClick={onAllClick} sx={{ alignSelf: 'flex-end' }}>
               全部
             </Button>
           </Stack>
           <List>
-            {last.map(item => (
-              <ListItemButton alignItems="flex-start">
-                <ListItemIcon>
-                  <NotificationsIcon color="info" />
-                </ListItemIcon>
-                <ListItemText primary={item.title} secondary={item.content}
-                  primaryTypographyProps={{
-                    sx: {
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 1,
-                      WebkitBoxOrient: 'vertical',
-                    }
-                  }}
+            {notification.last?.map(item => (
+              <ListItemButton alignItems="flex-start" onClick={() => onItemClick(item)}>
+                <ListItemText
+                  primary={
+                    <Stack direction='row' alignItems='center' spacing={1}>
+                      {item.status === 1 && <Badge variant="dot" color="secondary" />}
+                      <Typography variant="subtitle1" sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 1,
+                        WebkitBoxOrient: 'vertical',
+                        flex: 1,
+                      }}>
+                        {item.title}
+                      </Typography>
+                      {item.type === 1 && <NotificationsIcon color="info" />}
+                      {item.type === 2 && <CampaignIcon color="info" />}
+                    </Stack>
+                  }
+                  secondary={item.content}
                   secondaryTypographyProps={{
                     sx: {
                       overflow: 'hidden',
@@ -604,9 +627,6 @@ function Notification() {
               </ListItemButton>
             ))}
           </List>
-          {last.length === 0 &&
-            <Typography variant="caption" textAlign='center'>没有通知</Typography>
-          }
         </Stack>
       </Popover>
     </>
