@@ -174,10 +174,10 @@ export default function Appbar(params) {
           {title}
         </Typography>
         <Chip label='CTRL+K' variant='outlined' color='info' icon={<DirectionsIcon />}
-          onClick={onQuickNavigate} sx={{ mx: 1 }}
+          onClick={onQuickNavigate} sx={{ mx: 2 }}
         />
         <Notification />
-        <IconButton aria-label="切换色彩模式"
+        <IconButton aria-label="切换色彩模式" sx={{ mx: 1 }}
           onClick={colorMode.toggleColorMode} color="primary">
           {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>

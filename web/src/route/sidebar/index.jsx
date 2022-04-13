@@ -64,7 +64,7 @@ export default function Sidebar() {
     }}>
       <Toolbar disableGutters sx={{ ml: 2 }}>
         <Link component={RouteLink} to='/'>
-          <img src={Logo} alt='Logo' height='24px' width='100px' />
+          <img src={Logo} alt='Logo' height='28px' width='117px' />
         </Link>
       </Toolbar>
       <Box sx={{ flexGrow: 1, overflowY: 'scroll' }}>

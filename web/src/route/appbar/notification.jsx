@@ -152,7 +152,7 @@ export default function Notification() {
 
   const onItemClick = item => {
     onClose();
-    navigate('/user/notification/item', { state: { uuid: item.uuid }});
+    navigate(`/user/notification/item/${item.uuid}`);
   }
 
   return (
