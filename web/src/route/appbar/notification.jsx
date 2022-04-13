@@ -17,9 +17,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
 import uuid from "uuid";
 import Push from 'push.js';
-import userState from "~/state/user";
-import notificationState from "~/state/notification";
 import nats from '~/lib/nats';
+import userState from "~/state/user";
+import natsState from "~/state/nats";
+import notificationState from "~/state/notification";
 import { get } from "~/rest";
 
 export default function Notification() {
@@ -27,8 +28,7 @@ export default function Notification() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const user = useRecoilValue(userState);
   const [notification, setNotification] = useRecoilState(notificationState);
-  const [retry, setRetry] = useState(true);
-  const [broker, setBroker] = useState(null);
+  const natsActivate = useRecoilValue(natsState);
   const [anchorEl, setAnchorEl] = useState(null);
 
   // 更新未读通知数量以及最近通知
@@ -47,17 +47,6 @@ export default function Notification() {
       })();
     }
   }, [enqueueSnackbar, setNotification, notification.outdated]);
-
-  // 获取 nats 连接，如果系统没有配置 nats 服务器，则这个函数会一直执行，但没有太大影响
-  useEffect(() => {
-    const b = nats.getBroker();
-
-    // 如果还没有连接成功，则等待 1 秒后重试
-    if (!b) {
-      return setTimeout(() => setRetry(!retry), 1000);
-    }
-    setBroker(b);
-  }, [retry]);
 
   // 弹出提示信息
   const popupNotification = useCallback(notification => {
@@ -87,8 +76,8 @@ export default function Notification() {
     });
   }, [enqueueSnackbar, closeSnackbar]);
 
-  // 推送浏览器通知
-  const pushWebNotification = notification => {
+  // 弹出浏览器通知
+  const popupWebNotification = notification => {
     if (!notification.title) {
       return;
     }
@@ -113,7 +102,11 @@ export default function Notification() {
 
   // 订阅用户通知
   useEffect(() => {
-    if (!user?.uuid || !broker) {
+    if (!user?.uuid || !natsActivate) {
+      return;
+    }
+    const broker = nats.getBroker();
+    if (!broker) {
       return;
     }
     let sub = null;
@@ -127,8 +120,9 @@ export default function Notification() {
           const n = codec.decode(m.data);
 
           popupNotification(n);
-          pushWebNotification(n);
+          popupWebNotification(n);
 
+          // 更新通知数量和最近的通知项
           setNotification({ ...notification, outdated: true });
         }
       } catch (err) {
@@ -139,7 +133,7 @@ export default function Notification() {
     // 取消订阅
     return () => { sub && sub.unsubscribe(); }
   }, [
-    enqueueSnackbar, closeSnackbar, user, broker, popupNotification,
+    enqueueSnackbar, closeSnackbar, natsActivate, user?.uuid, popupNotification,
     notification, setNotification
   ]);
 

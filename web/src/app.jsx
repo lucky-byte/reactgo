@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, Suspense, useCallback } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { zhCN } from '@mui/material/locale';
@@ -17,6 +17,7 @@ import Push from 'push.js';
 import uuid from "uuid";
 import nats from '~/lib/nats';
 import userState from "./state/user";
+import natsState from "./state/nats";
 import { ColorModeContext } from "./hook/colormode";
 import { get } from "~/rest";
 import ErrorBoundary from "./error";
@@ -29,6 +30,7 @@ export default function App() {
   const [mode, setMode] = useState(prefersDarkMode ? 'dark' : 'light');
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const user = useRecoilValue(userState);
+  const setNatsActivate = useSetRecoilState(natsState);
 
   const colorMode = useMemo(() => ({
     toggleColorMode: () => {
@@ -89,7 +91,7 @@ export default function App() {
   useEffect(() => { setMode(prefersDarkMode ? 'dark' : 'light'); }, [prefersDarkMode]);
 
   // 弹出提示信息
-  const popupEvent = useCallback(event => {
+  const popupNotification = useCallback(event => {
     if (!event.title) {
       return;
     }
@@ -120,7 +122,7 @@ export default function App() {
   }, [enqueueSnackbar, closeSnackbar]);
 
   // 推送浏览器通知
-  const pushWebNotification = event => {
+  const popupWebNotification = event => {
     if (!event.title) {
       return;
     }
@@ -149,7 +151,7 @@ export default function App() {
     if (!token) {
       return;
     }
-    if (!user || !user.activate) {
+    if (!user?.activate) {
       return;
     }
     // 检查用户是否有事件访问权限
@@ -165,6 +167,8 @@ export default function App() {
     if (!event_allow) {
       return;
     }
+    let broker = null;
+
     (async () => {
       try {
         // 获取 nats 服务器配置
@@ -173,7 +177,8 @@ export default function App() {
           return enqueueSnackbar('未配置消息通道，不能接收异步通知', { variant: 'info' });
         }
         // 连接服务器
-        const broker = await nats.open(resp.servers, resp.name);
+        broker = await nats.open(resp.servers, resp.name);
+        setNatsActivate(true);
 
         const sub = broker.subscribe("reactgo.system.event");
         const codec = await nats.JSONCodec();
@@ -182,8 +187,8 @@ export default function App() {
         for await (const m of sub) {
           const event = codec.decode(m.data);
 
-          popupEvent(event);
-          pushWebNotification(event);
+          popupNotification(event);
+          popupWebNotification(event);
         }
       } catch (err) {
         enqueueSnackbar(err.message || '连接消息通道失败');
@@ -191,8 +196,14 @@ export default function App() {
     })();
 
     // 关闭连接
-    return async () => { await nats.close(); }
-  }, [enqueueSnackbar, closeSnackbar, user, popupEvent]);
+    return async () => {
+      setNatsActivate(false);
+      broker && await broker.close();
+    }
+  }, [
+    setNatsActivate, enqueueSnackbar, closeSnackbar, popupNotification,
+    user?.activate, user?.allows,
+  ]);
 
   return (
     <ColorModeContext.Provider value={colorMode}>

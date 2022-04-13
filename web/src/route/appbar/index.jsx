@@ -158,7 +158,8 @@ export default function Appbar(params) {
   }
 
   return (
-    <AppBar position="static" color='transparent' elevation={1} sx={{ zIndex: 1 }}>
+    <AppBar position="static" color='transparent' elevation={0}
+      sx={{ zIndex: 1, borderBottom: `1px solid #8882` }}>
       <Toolbar>
         <IconButton aria-label="菜单" sx={{ mr: 1 }} color='primary'
           onClick={openSidebarClick}>

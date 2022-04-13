@@ -58,7 +58,7 @@ export default function Sidebar() {
   return (
     <Box sx={{
       display: "flex", flexDirection: "column", width: '220px', height: '100vh',
-      borderRight: '1px solid #8888', '@media print': {
+      borderRight: '1px solid #8882', '@media print': {
         height: '100%',
       }
     }}>
