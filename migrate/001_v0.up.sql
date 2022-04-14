@@ -218,11 +218,11 @@ create table if not exists notifications (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
   user_uuid   varchar(36)     not null,
-  title       varchar(256)    not null,
-  content     text            not null,
   type        int             not null default 1,
                               -- 1. 通知
                               -- 2. 公告
+  title       varchar(256)    not null,
+  content     text            not null,
   status      int             not null default 1
                               -- 1. 未读
                               -- 2. 已读

@@ -19,17 +19,17 @@ import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
-import { post, put } from '~/rest';
+import { post } from '~/rest';
 
 export default function Event() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [keyword, setKeyword] = useState('');
-  const [level, setLevel] = useState('0');
-  const [fresh, setFresh] = useState('all');
+  const [type, setType] = useState('0');
+  const [status, setStatus] = useState('0');
   const [list, setList] = useState([]);
   const [count, setCount] = useState(0);
-  const [freshCount, setFreshCount] = useState(0);
+  const [unread, setUnread] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [rows] = useState(10);
   const [page, setPage] = useState(0);
@@ -43,7 +43,7 @@ export default function Event() {
         setLoading(true);
 
         const resp = await post('/user/notification/', new URLSearchParams({
-          page, rows, keyword, level, fresh,
+          page, rows, keyword, type, status,
         }));
         if (resp.count > 0) {
           let pages = resp.count / rows;
@@ -56,14 +56,14 @@ export default function Event() {
         }
         setCount(resp.count);
         setList(resp.list || []);
-        // setFreshCount(resp.fresh_count || 0);
+        setUnread(resp.unread || 0);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rows, keyword, level, fresh]);
+  }, [enqueueSnackbar, page, rows, keyword, type, status]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -81,24 +81,24 @@ export default function Event() {
     setKeyword(value);
   }
 
-  // 级别
-  const onLevelChange = (e, v) => {
+  // 类型
+  const onTypeChange = (e, v) => {
     if (v !== null) {
-      setLevel(v);
+      setType(v);
       setPage(0);
     }
   }
 
   // 状态
-  const onFreshChange = (e, v) => {
+  const onStatusChange = (e, v) => {
     if (v !== null) {
-      setFresh(v);
+      setStatus(v);
       setPage(0);
     }
   }
 
   const onItemClick = item => {
-    navigate(`/user/notification/${item.uuid}`);
+    navigate(`/user/notification/${item.uuid}`, { state: { status: item.status } });
   }
 
   return (
@@ -109,20 +109,16 @@ export default function Event() {
           sx={{ minWidth: 300 }}
         />
         <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ flex: 1 }}>
-          <ToggleButtonGroup exclusive size='small' color='primary' aria-label="级别"
-            value={level} onChange={onLevelChange}>
+          <ToggleButtonGroup exclusive size='small' color='primary' aria-label="类型"
+            value={type} onChange={onTypeChange}>
             <ToggleButton value='0' aria-label="全部">全部</ToggleButton>
-            <ToggleButton value='1' aria-label="信息">信息</ToggleButton>
-            <ToggleButton value='2' aria-label="警告">警告</ToggleButton>
-            <ToggleButton value='3' aria-label="错误">错误</ToggleButton>
+            <ToggleButton value='1' aria-label="警告">通知</ToggleButton>
+            <ToggleButton value='2' aria-label="信息">公告</ToggleButton>
           </ToggleButtonGroup>
           <ToggleButtonGroup exclusive size='small' color='primary' aria-label="状态"
-            value={fresh} onChange={onFreshChange}>
-            <ToggleButton value='all' aria-label="全部">全部</ToggleButton>
-            <ToggleButton value='false' aria-label="全部">已读</ToggleButton>
-            <ToggleButton value='true' aria-label="全部">
-              未读 ({freshCount})
-            </ToggleButton>
+            value={status} onChange={onStatusChange}>
+            <ToggleButton value='0' aria-label="全部">全部</ToggleButton>
+            <ToggleButton value='1' aria-label="未读">未读 ({unread})</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
       </Toolbar>

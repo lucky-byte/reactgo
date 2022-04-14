@@ -76,7 +76,7 @@ export default function Index() {
         </Collapse>
         <Stack sx={{ flex: 1, height: '100vh', '@media print': { height: '100%' } }}>
           <Appbar />
-          <Box sx={{ maxHeight: '100%', overflow: 'scroll' }}>
+          <Box sx={{ maxHeight: '100%', overflow: 'auto' }}>
             <ErrorBoundary>
               <Routes>
                 <Route path='/*' element={<Dashboard />} />

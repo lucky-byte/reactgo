@@ -158,8 +158,8 @@ export default function Event() {
           <ToggleButtonGroup exclusive size='small' color='primary' aria-label="状态"
             value={fresh} onChange={onFreshChange}>
             <ToggleButton value='all' aria-label="全部">全部</ToggleButton>
-            <ToggleButton value='false' aria-label="全部">已读</ToggleButton>
-            <ToggleButton value='true' aria-label="全部">
+            <ToggleButton value='false' aria-label="已读">已读</ToggleButton>
+            <ToggleButton value='true' aria-label="未读">
               未读 ({freshCount})
             </ToggleButton>
           </ToggleButtonGroup>

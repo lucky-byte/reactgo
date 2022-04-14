@@ -17,14 +17,14 @@ func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 
-	var level, page, rows uint
-	var keyword, fresh string
+	var Type, status, page, rows uint
+	var keyword string
 
 	err := echo.FormFieldBinder(c).
 		MustUint("page", &page).
 		MustUint("rows", &rows).
-		MustUint("level", &level).
-		MustString("fresh", &fresh).
+		MustUint("type", &Type).
+		MustUint("status", &status).
 		String("keyword", &keyword).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
@@ -39,34 +39,31 @@ func list(c echo.Context) error {
 	))
 	pg.Where(pg.Col("user_uuid").Eq(user.UUID))
 
-	// pg.Where(pg.Col("create_at").Gt(startAt), pg.Col("level").Gte(level))
-
-	// if fresh == "true" {
-	// 	pg.Where(pg.Col("fresh").Eq(true))
-	// } else if fresh == "false" {
-	// 	pg.Where(pg.Col("fresh").Eq(false))
-	// }
+	if Type > 0 {
+		pg.Where(pg.Col("type").Eq(Type))
+	}
+	if status > 0 {
+		pg.Where(pg.Col("status").Eq(status))
+	}
 	pg.OrderBy(pg.Col("create_at").Desc())
 
 	var count uint
-	var records []db.Notification
+	var list []db.Notification
 
-	err = pg.Select(pg.Col("*")).Exec(&count, &records)
+	err = pg.Select(pg.Col("*")).Exec(&count, &list)
 	if err != nil {
 		cc.ErrLog(err).Error("查询通知错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var list []echo.Map
+	// 查询未读数量
+	ql := `select count(*) from notifications where status = 1 and user_uuid = ?`
+	var unread int
 
-	for _, n := range records {
-		list = append(list, echo.Map{
-			"uuid":      n.UUID,
-			"create_at": n.CreateAt,
-			"type":      n.Type,
-			"title":     n.Title,
-			"content":   n.Content,
-			"status":    n.Status,
-		})
+	if err = db.SelectOne(ql, &unread, user.UUID); err != nil {
+		cc.ErrLog(err).Error("查询通知错")
+		return c.NoContent(http.StatusInternalServerError)
 	}
-	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})
+	return c.JSON(http.StatusOK, echo.Map{
+		"count": count, "list": list, "unread": unread,
+	})
 }

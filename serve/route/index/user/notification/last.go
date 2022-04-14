@@ -23,27 +23,16 @@ func last(c echo.Context) error {
 	}
 	// 查询最近的 3 条记录
 	ql = `
-		select * from notifications where user_uuid = ?
-		order by status, create_at desc
-		limit 3
+		select uuid, create_at, type, title, content, status
+		from notifications
+		where user_uuid = ?
+		order by status, create_at desc limit 3
 	`
-	var result []db.Notification
+	var last []db.Notification
 
-	if err := db.Select(ql, &result, user.UUID); err != nil {
+	if err := db.Select(ql, &last, user.UUID); err != nil {
 		cc.ErrLog(err).Error("查询通知错")
 		return c.NoContent(http.StatusInternalServerError)
-	}
-	var last []echo.Map
-
-	for _, n := range result {
-		last = append(last, echo.Map{
-			"uuid":      n.UUID,
-			"create_at": n.CreateAt,
-			"type":      n.Type,
-			"title":     n.Title,
-			"content":   n.Content,
-			"status":    n.Status,
-		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"unread": unread, "last": last})
 }
