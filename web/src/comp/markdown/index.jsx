@@ -40,7 +40,7 @@ export default function Markdown(props) {
         }
       })();
     } else {
-      setContent(children.replace(/ {8,}/g, ' '));
+      setContent((children || '').replace(/ {8,}/g, ' '));
     }
   }, [url, children, enqueueSnackbar]);
 

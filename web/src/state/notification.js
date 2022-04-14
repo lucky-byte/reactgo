@@ -1,10 +1,15 @@
 import { atom } from 'recoil';
 
-const notificationState = atom({
-  key: 'notificationState',
-  default: {
-    outdated: true,
-  },
+const lastNotificationState = atom({
+  key: 'lastNotificationState',
+  default: {},
 });
 
-export default notificationState;
+export default lastNotificationState;
+
+const notificationOutdatedState = atom({
+  key: 'notificationOutdatedState',
+  default: true,
+});
+
+export { notificationOutdatedState }

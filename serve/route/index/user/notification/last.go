@@ -24,7 +24,7 @@ func last(c echo.Context) error {
 	// 查询最近的 3 条记录
 	ql = `
 		select * from notifications where user_uuid = ?
-		order by create_at desc, status
+		order by status, create_at desc
 		limit 3
 	`
 	var result []db.Notification

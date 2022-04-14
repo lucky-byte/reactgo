@@ -81,12 +81,6 @@ export default function Event() {
     setKeyword(value);
   }
 
-  // 时间段
-  // const onDaysChange = e => {
-  //   setPage(0);
-  //   setDays(e.target.value);
-  // }
-
   // 级别
   const onLevelChange = (e, v) => {
     if (v !== null) {
@@ -104,7 +98,7 @@ export default function Event() {
   }
 
   const onItemClick = item => {
-    navigate(`/user/notification/item/${item.uuid}`);
+    navigate(`/user/notification/${item.uuid}`);
   }
 
   return (
@@ -144,6 +138,7 @@ export default function Event() {
               </Badge>
             </ListItemIcon>
             <ListItemText
+              disableTypography
               primary={
                 <Stack direction='row' alignItems='center' spacing={1}>
                   <Ellipsis variant="subtitle1" sx={{ flex: 1, fontWeight: 'bold' }}>

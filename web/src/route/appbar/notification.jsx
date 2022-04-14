@@ -21,33 +21,34 @@ import nats from '~/lib/nats';
 import userState from "~/state/user";
 import natsState from "~/state/nats";
 import Ellipsis from "~/comp/ellipsis";
-import notificationState from "~/state/notification";
+import lastNotificationState from "~/state/notification";
+import { notificationOutdatedState } from "~/state/notification";
 import { get } from "~/rest";
 
 export default function Notification() {
   const navigate = useNavigate();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const user = useRecoilValue(userState);
-  const [notification, setNotification] = useRecoilState(notificationState);
+  const [lastNotification, setLastNotification] = useRecoilState(lastNotificationState);
+  const [outdated, setOutdated] = useRecoilState(notificationOutdatedState);
   const natsActivate = useRecoilValue(natsState);
   const [anchorEl, setAnchorEl] = useState(null);
 
   // 更新未读通知数量以及最近通知
   useEffect(() => {
-    if (notification.outdated) {
+    if (outdated) {
       (async () => {
         try {
           const resp = await get('/user/notification/last');
 
-          setNotification({
-            last: resp.last || [], unread: resp.unread, outdated: false,
-          });
+          setLastNotification({ last: resp.last || [], unread: resp.unread });
+          setOutdated(false);
         } catch (err) {
           enqueueSnackbar(err.message);
         }
       })();
     }
-  }, [enqueueSnackbar, setNotification, notification.outdated]);
+  }, [ enqueueSnackbar, setLastNotification, outdated, setOutdated ]);
 
   // 弹出提示信息
   const popupNotification = useCallback(notification => {
@@ -124,7 +125,7 @@ export default function Notification() {
           popupWebNotification(n);
 
           // 更新通知数量和最近的通知项
-          setNotification({ ...notification, outdated: true });
+          setLastNotification({ ...lastNotification, outdated: true });
         }
       } catch (err) {
         enqueueSnackbar(err.message || '连接消息通道失败');
@@ -135,7 +136,7 @@ export default function Notification() {
     return () => { sub && sub.unsubscribe(); }
   }, [
     enqueueSnackbar, closeSnackbar, natsActivate, user?.uuid, popupNotification,
-    notification, setNotification
+    lastNotification, setLastNotification
   ]);
 
   const onOpen = e => {
@@ -153,13 +154,13 @@ export default function Notification() {
 
   const onItemClick = item => {
     onClose();
-    navigate(`/user/notification/item/${item.uuid}`);
+    navigate(`/user/notification/${item.uuid}`);
   }
 
   return (
     <>
       <IconButton aria-label="通知" onClick={onOpen} color="primary">
-        <Badge color="secondary" badgeContent={notification.unread} max={99}>
+        <Badge color="secondary" badgeContent={lastNotification.unread} max={99}>
           <NotificationsIcon />
         </Badge>
       </IconButton>
@@ -181,10 +182,11 @@ export default function Notification() {
             </Button>
           </Stack>
           <List>
-            {notification.last?.map(item => (
+            {lastNotification.last?.map(item => (
               <ListItemButton key={item.uuid} alignItems="flex-start"
                 onClick={() => onItemClick(item)}>
                 <ListItemText
+                  disableTypography
                   primary={
                     <Stack direction='row' alignItems='center' spacing={1}>
                       {item.status === 1 && <Badge variant="dot" color="secondary" />}
@@ -195,7 +197,9 @@ export default function Notification() {
                       {item.type === 2 && <CampaignIcon color="info" />}
                     </Stack>
                   }
-                  secondary={<Ellipsis lines={3}>{item.content}</Ellipsis>}
+                  secondary={
+                    <Ellipsis variant='body2' lines={3}>{item.content}</Ellipsis>
+                  }
                 />
               </ListItemButton>
             ))}
