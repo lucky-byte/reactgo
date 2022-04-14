@@ -20,6 +20,7 @@ import Push from 'push.js';
 import nats from '~/lib/nats';
 import userState from "~/state/user";
 import natsState from "~/state/nats";
+import Ellipsis from "~/comp/ellipsis";
 import notificationState from "~/state/notification";
 import { get } from "~/rest";
 
@@ -187,30 +188,14 @@ export default function Notification() {
                   primary={
                     <Stack direction='row' alignItems='center' spacing={1}>
                       {item.status === 1 && <Badge variant="dot" color="secondary" />}
-                      <Typography variant="subtitle1" sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 1,
-                        WebkitBoxOrient: 'vertical',
-                        flex: 1,
-                      }}>
+                      <Ellipsis variant="subtitle1" sx={{ flex: 1, fontWeight: 'bold' }}>
                         {item.title}
-                      </Typography>
+                      </Ellipsis>
                       {item.type === 1 && <NotificationsIcon color="info" />}
                       {item.type === 2 && <CampaignIcon color="info" />}
                     </Stack>
                   }
-                  secondary={item.content}
-                  secondaryTypographyProps={{
-                    sx: {
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: 'vertical',
-                    }
-                  }}
+                  secondary={<Ellipsis lines={3}>{item.content}</Ellipsis>}
                 />
               </ListItemButton>
             ))}

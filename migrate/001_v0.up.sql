@@ -201,7 +201,7 @@ create table if not exists bulletins (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
   user_uuid   varchar(36)     not null,
-  title       varchar(128)    not null,
+  title       varchar(256)    not null,
   content     text            not null,
   send_time   timestamp       not null,
   targets     text            not null,
@@ -218,7 +218,7 @@ create table if not exists notifications (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
   user_uuid   varchar(36)     not null,
-  title       varchar(128)    not null,
+  title       varchar(256)    not null,
   content     text            not null,
   type        int             not null default 1,
                               -- 1. 通知

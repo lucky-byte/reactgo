@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/reflectx"
@@ -33,6 +34,8 @@ var _scannerInterface = reflect.TypeOf((*sql.Scanner)(nil)).Elem()
 //
 // 注意: 该函数仅支持 structScan 及 Scan，不支持 MapScan 或 SliceScan
 func SelectOne(ql string, dest any, params ...any) error {
+	ql = strings.TrimSpace(ql)
+
 	v := reflect.ValueOf(dest)
 
 	if v.Kind() != reflect.Ptr {
@@ -78,6 +81,8 @@ func SelectOne(ql string, dest any, params ...any) error {
 
 // 执行 insert/update/delete，必须且只能影响 1 行
 func ExecOne(ql string, params ...any) error {
+	ql = strings.TrimSpace(ql)
+
 	res, err := mainDB.Exec(mainDB.Rebind(ql), params...)
 	if err != nil {
 		return errors.Wrap(err, ql)
@@ -87,6 +92,8 @@ func ExecOne(ql string, params ...any) error {
 
 // a wrapper to sqlx.Get()
 func Get(ql string, dest any, params ...any) error {
+	ql = strings.TrimSpace(ql)
+
 	err := mainDB.Get(dest, mainDB.Rebind(ql), params...)
 	if err != nil {
 		return errors.Wrap(err, ql)
@@ -96,6 +103,8 @@ func Get(ql string, dest any, params ...any) error {
 
 // a wrapper to sqlx.Select()
 func Select(ql string, dest any, params ...any) error {
+	ql = strings.TrimSpace(ql)
+
 	err := mainDB.Select(dest, mainDB.Rebind(ql), params...)
 	if err != nil {
 		return errors.Wrap(err, ql)
@@ -105,6 +114,8 @@ func Select(ql string, dest any, params ...any) error {
 
 // a wrapper to sqlx.Exec()
 func Exec(ql string, params ...any) error {
+	ql = strings.TrimSpace(ql)
+
 	_, err := mainDB.Exec(mainDB.Rebind(ql), params...)
 	if err != nil {
 		return errors.Wrap(err, ql)

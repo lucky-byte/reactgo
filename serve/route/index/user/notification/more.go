@@ -8,35 +8,36 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-// 获取最近通知
-func last(c echo.Context) error {
+// 获取通知列表
+func more(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 
-	// 查询未读通知数量
-	ql := `select count(*) from notifications where user_uuid = ? and status = 1`
-	var unread int
+	var page int
+	rows_per_page := 3
 
-	if err := db.SelectOne(ql, &unread, user.UUID); err != nil {
-		cc.ErrLog(err).Error("查询通知错")
-		return c.NoContent(http.StatusInternalServerError)
+	err := echo.FormFieldBinder(c).MustInt("page", &page).BindError()
+	if err != nil {
+		return cc.BadRequest(err)
 	}
-	// 查询最近的 3 条记录
-	ql = `
+	offset := (page - 1) * rows_per_page
+
+	ql := `
 		select * from notifications where user_uuid = ?
 		order by create_at desc, status
-		limit 3
+		offset ? limit ?
 	`
 	var result []db.Notification
 
-	if err := db.Select(ql, &result, user.UUID); err != nil {
+	err = db.Select(ql, &result, user.UUID, offset, rows_per_page)
+	if err != nil {
 		cc.ErrLog(err).Error("查询通知错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var last []echo.Map
+	var list []echo.Map
 
 	for _, n := range result {
-		last = append(last, echo.Map{
+		list = append(list, echo.Map{
 			"uuid":      n.UUID,
 			"create_at": n.CreateAt,
 			"type":      n.Type,
@@ -45,5 +46,7 @@ func last(c echo.Context) error {
 			"status":    n.Status,
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"unread": unread, "last": last})
+	return c.JSON(http.StatusOK, echo.Map{
+		"list": list, "has_more": len(result) == rows_per_page,
+	})
 }

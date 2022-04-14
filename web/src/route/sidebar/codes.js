@@ -23,6 +23,7 @@ const urlCodes = {
   8020: { title: '安全设置', to: '/user/security', omit: true },
   8021: { title: '设置安全操作码', to: '/user/security/secretcode', omit: true },
   8022: { title: '设置两因素认证', to: '/user/security/otp', omit: true },
+  8030: { title: '通知', to: '/user/notification', omit: true },
 
   // 资源管理
   8100: { title: '图片管理', to: '/media/images' },

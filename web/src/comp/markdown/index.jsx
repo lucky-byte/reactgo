@@ -34,13 +34,13 @@ export default function Markdown(props) {
         try {
           const resp = await fetch(url, { method: 'GET' });
           const text = await resp.text();
-          setContent(text || '');
+          setContent((text || '').replace(/ {8,}/g, ' '));
         } catch (err) {
           enqueueSnackbar(err.message);
         }
       })();
     } else {
-      setContent(children);
+      setContent(children.replace(/ {8,}/g, ' '));
     }
   }, [url, children, enqueueSnackbar]);
 

@@ -7,5 +7,6 @@ import (
 func Attach(up *echo.Group) {
 	group := up.Group("/notification")
 
+	group.POST("/", list)
 	group.GET("/last", last)
 }

@@ -9,7 +9,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import Link from "@mui/material/Link";
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { useSnackbar } from 'notistack';
-import validator from "validator";
+import isInt from "validator/lib/isInt";
 import urlCodes from "../sidebar/codes";
 
 const SlideTransition = forwardRef(function Transition(props, ref) {
@@ -32,7 +32,7 @@ export default function Navigator(props) {
   const onCodeChange = e => {
     const v = e.target.value;
 
-    if (v.length === 0 || validator.isNumeric(v)) {
+    if (v.length === 0 || isInt(v)) {
       setMessage('');
       setCodeInput(v);
     }

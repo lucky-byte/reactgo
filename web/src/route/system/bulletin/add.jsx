@@ -138,6 +138,7 @@ export default function Add() {
               value={title} onChange={onTitleChange}
               helperText={titleHelpText}
               error={titleHelpText.length > 0}
+              inputProps={{ maxLength: 256 }}
             />
             <MDEditor id='editor' value={content} onChange={setContent}
               placeholder='公告内容，支持 Markdown 语法'
@@ -160,7 +161,10 @@ export default function Add() {
           </Stack>
         </Paper>
         <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 2 }}>
-          <Button color='secondary' disabled={submitting} onClick={() => { navigate('..') }}>
+          <Button color='secondary' disabled={submitting} onClick={() => {
+            delAutoSaved(editorId);
+            navigate('..');
+          }}>
             取消
           </Button>
           <Button color='success' disabled={submitting} onClick={onPreview}>
