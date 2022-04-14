@@ -69,7 +69,7 @@ export default function Markdown(props) {
       a: {
         component: Link,
         props: {
-          underline: 'hover',
+          underline: 'hover', target: '_blank', rel: 'noopener',
         }
       },
       blockquote: {

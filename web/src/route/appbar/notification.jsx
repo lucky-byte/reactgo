@@ -15,6 +15,7 @@ import CampaignIcon from '@mui/icons-material/Campaign';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
+import dayjs from 'dayjs';
 import uuid from "uuid";
 import Push from 'push.js';
 import nats from '~/lib/nats';
@@ -124,8 +125,8 @@ export default function Notification() {
           popupNotification(n);
           popupWebNotification(n);
 
-          // 更新通知数量和最近的通知项
-          setLastNotification({ ...lastNotification, outdated: true });
+          // 更新最近通知
+          setOutdated(true);
         }
       } catch (err) {
         enqueueSnackbar(err.message || '连接消息通道失败');
@@ -136,7 +137,7 @@ export default function Notification() {
     return () => { sub && sub.unsubscribe(); }
   }, [
     enqueueSnackbar, closeSnackbar, natsActivate, user?.uuid, popupNotification,
-    lastNotification, setLastNotification
+    setOutdated,
   ]);
 
   const onOpen = e => {
@@ -198,7 +199,12 @@ export default function Notification() {
                     </Stack>
                   }
                   secondary={
-                    <Ellipsis variant='body2' lines={3}>{item.content}</Ellipsis>
+                    <Stack>
+                      <Typography variant="caption">
+                        {dayjs(item.create_at).fromNow()}
+                      </Typography>
+                      <Ellipsis variant='body2' lines={3}>{item.content}</Ellipsis>
+                    </Stack>
                   }
                 />
               </ListItemButton>

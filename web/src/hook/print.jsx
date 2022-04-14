@@ -7,7 +7,7 @@ export default function usePrint(comp) {
   const colorMode = useColorModeContent();
 
   const printContent = useReactToPrint({
-    onAfterPrint: () => {
+    onBeforePrint: () => {
       if (theme.palette.mode === 'dark') {
         colorMode.toggleColorMode();
       }
