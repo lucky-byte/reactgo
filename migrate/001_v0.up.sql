@@ -204,14 +204,11 @@ create table if not exists bulletins (
   title       varchar(256)    not null,
   content     text            not null,
   send_time   timestamp       not null,
-  targets     text            not null,
-  readers     text            not null,
-  status      int             not null default 1,
+  status      int             not null default 1
                               -- 1. 草稿
                               -- 2. 等待发布
                               -- 3. 发布成功
                               -- 4. 发布失败
-  deleted     boolean         not null default false
 );
 
 create table if not exists notifications (
@@ -223,9 +220,10 @@ create table if not exists notifications (
                               -- 2. 公告
   title       varchar(256)    not null,
   content     text            not null,
-  status      int             not null default 1
+  status      int             not null default 1,
                               -- 1. 未读
                               -- 2. 已读
+  refer       varchar(36)
 );
 
 commit;

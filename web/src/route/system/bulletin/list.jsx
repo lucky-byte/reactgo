@@ -6,7 +6,6 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Fab from '@mui/material/Fab';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -18,28 +17,23 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Zoom from '@mui/material/Zoom';
 import AddIcon from '@mui/icons-material/Add';
-import SaveAsIcon from '@mui/icons-material/SaveAs';
-import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
-import SendIcon from '@mui/icons-material/Send';
-import CancelScheduleSendIcon from '@mui/icons-material/CancelScheduleSend';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import PrintIcon from '@mui/icons-material/Print';
 import Menu from '@mui/material/Menu';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
-import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
-import { post, put, del } from '~/rest';
+import { post, put } from '~/rest';
 import { IconButton, Tooltip } from '@mui/material';
 
 // 代码拆分
@@ -56,44 +50,58 @@ export default function List() {
   const [rows] = useState(10);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(true);
 
   useTitle('系统公告');
 
   // 获取列表数据
   useEffect(() => {
     (async () => {
-      try {
-        setLoading(true);
+      if (refresh) {
+        try {
+          setLoading(true);
 
-        const resp = await post('/system/bulletin/', new URLSearchParams({
-          page, rows, keyword, days,
-        }));
-        if (resp.count > 0) {
-          let pages = resp.count / rows;
-          if (resp.count % rows > 0) {
-            pages += 1;
+          const resp = await post('/system/bulletin/', new URLSearchParams({
+            page, rows, keyword, days,
+          }));
+          if (resp.count > 0) {
+            let pages = resp.count / rows;
+            if (resp.count % rows > 0) {
+              pages += 1;
+            }
+            setPageCount(parseInt(pages));
+          } else {
+            setPageCount(0);
           }
-          setPageCount(parseInt(pages));
-        } else {
-          setPageCount(0);
+          setCount(resp.count);
+          setList(resp.list || []);
+        } catch (err) {
+          enqueueSnackbar(err.message);
+        } finally {
+          setLoading(false);
+          setRefresh(false);
         }
-        setCount(resp.count);
-        setList(resp.list || []);
-      } catch (err) {
-        enqueueSnackbar(err.message);
-      } finally {
-        setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rows, keyword, days]);
+  }, [enqueueSnackbar, page, rows, keyword, days, refresh]);
 
   // 更新时间
   useEffect(() => {
     const timer = setInterval(() => {
-      setList(list.map(e => {
-        e.timeAgo = dayjs(e.create_at).fromNow();
-        return e;
-      }));
+      let outdated = false;
+
+      const newlist = list.map(item => {
+        if (item.status === 2 && dayjs().isAfter(item.send_time)) {
+          outdated = true;
+        }
+        item.timeAgo = dayjs(item.create_at).fromNow();
+        return item;
+      });
+      if (outdated) {
+        setRefresh(true);
+      } else {
+        setList(newlist);
+      }
     }, 1000);
     return () => clearInterval(timer)
   }, [list]);
@@ -154,19 +162,29 @@ export default function List() {
             }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 1 }}>
-                <StatusIcon status={b.status} />
                 <Typography variant='subtitle1' sx={{ flex: 1 }}
                   onClick={() => onAccordionTitleClick(b)}>
                   {b.title}
                 </Typography>
-                {b.deleted && <Chip variant='outlined' label="已删除" size='small' color='error' />}
-                {b.draft && <Chip label="草稿" size='small' />}
+                {b.status === 1 && <Chip label="草稿" size='small' />}
+                {b.status === 2 &&
+                  <Tooltip title={`${dayjs(b.send_time).format('LLL')} 发布`}>
+                    <Chip
+                      icon={<ScheduleIcon />}
+                      label={`${dayjs().to(b.send_time, true)}后发布`}
+                      size='small' color='info' variant='outlined'
+                    />
+                  </Tooltip>
+                }
+                {b.status === 4 &&
+                  <Chip label="失败" color='error' size='small' variant='outlined' />
+                }
                 <Typography variant='caption' sx={{ color: 'gray' }}
                   onClick={() => onAccordionTitleClick(b)}>
-                  已读：{b.nreaders}/{b.ntargets}，
+                  {/* 已读：{b.nreaders}/{b.ntargets}， */}
                   {b.timeAgo || dayjs(b.create_at).fromNow()}
                 </Typography>
-                <MenuIcon bulletin={b} />
+                <MenuIcon bulletin={b} requestRefresh={() => setRefresh(true)} />
               </Stack>
             </AccordionSummary>
             <AccordionDetails sx={{
@@ -176,10 +194,7 @@ export default function List() {
                 backgroundColor: theme =>
                   theme.palette.mode === 'dark' ? 'black' : 'white',
               }}>
-              <Stack direction='row' spacing={2}>
-                <Markdown sx={{ flex: 1 }}>{b.content}</Markdown>
-                <Tools bulletin={b} />
-              </Stack>
+              <Markdown sx={{ flex: 1 }}>{b.content}</Markdown>
             </AccordionDetails>
           </Accordion>
         ))}
@@ -193,28 +208,9 @@ export default function List() {
   )
 }
 
-// 状态图标
-function StatusIcon(props) {
-  switch (props.status) {
-    case 1:
-      return <SaveAsIcon color='disabled' />
-    case 2:
-      return <ScheduleSendIcon color='disabled' />
-    case 3:
-      return <SendIcon color='success' />
-    case 4:
-      return <CancelScheduleSendIcon color='error' />
-    default:
-      return <HelpOutlineIcon color='disabled' />
-  }
-}
-
 function MenuIcon(props) {
-  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  // const [currentUser, setCurrentUser] = useRecoilState(userState);
   const confirm = useConfirm();
-  const secretCode = useSecretCode();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
@@ -231,100 +227,21 @@ function MenuIcon(props) {
     setAnchorEl(null);
   };
 
-  // 用户资料
-  const onProfileClick = () => {
-    // setAnchorEl(null);
-    // navigate('profile', { state: { uuid: user.uuid } });
-  };
-
-  // 修改资料
-  const onModifyClick = () => {
-    setAnchorEl(null);
-    // navigate('modify', { state: { uuid: user.uuid } });
-  };
-
-  // 修改密码
-  const onPasswdClick = () => {
-    setAnchorEl(null);
-    // navigate('passwd', { state: { uuid: user.uuid, name: user.name } });
-  };
-
-  // 访问控制
-  const onACLClick = () => {
-    setAnchorEl(null);
-    // navigate('acl', { state: { uuid: user.uuid, name: user.name, acl: user.acl } });
-  };
-
-  // 清除两因素认证
-  // const onClearTOTP = async () => {
-  //   try {
-  //     setAnchorEl(null);
-
-  //     await confirm({
-  //       description: `确定要清除 ${user.name} 的两因素认证吗？`,
-  //       confirmationText: '清除',
-  //       confirmationButtonProps: { color: 'warning' },
-  //       contentProps: { p: 8 },
-  //     });
-  //     await post('/system/user/cleartotp',
-  //       new URLSearchParams({ uuid: user.uuid })
-  //     );
-  //     enqueueSnackbar('已清除', { variant: 'success' });
-
-  //     if (currentUser.userid === user.userid) {
-  //       setCurrentUser({ ...currentUser, totp_isset: false });
-  //     }
-  //   } catch (err) {
-  //     if (err) {
-  //       enqueueSnackbar(err.message);
-  //     }
-  //   }
-  // }
-
-  // 禁用/启用
-  // const onDisableClick = async () => {
-  //   try {
-  //     setAnchorEl(null);
-
-  //     await confirm({
-  //       description: user.disabled ?
-  //         `确定要恢复 ${user.name} 的账号吗？恢复后该账号可正常使用。`
-  //         :
-  //         `确定要禁用 ${user.name} 的账号吗？禁用后该账号不可以继续使用，直到恢复为止。`,
-  //       confirmationText: user.disabled ? '恢复' : '禁用',
-  //       confirmationButtonProps: { color: 'warning' },
-  //       contentProps: { p: 8 },
-  //     });
-  //     await post('/system/user/disable',
-  //       new URLSearchParams({ uuid: user.uuid })
-  //     );
-  //     enqueueSnackbar('用户状态更新成功', { variant: 'success' });
-  //     requestRefresh();
-  //   } catch (err) {
-  //     if (err) {
-  //       enqueueSnackbar(err.message);
-  //     }
-  //   }
-  // }
-
-  // 删除
-  const onDeleteClick = async () => {
+  // 立即发布
+  const onSendNowClick = async () => {
     try {
       onClose();
 
       await confirm({
-        description: `确定要删除该记录吗？删除后无法恢复!`,
-        confirmationText: '删除',
-        confirmationButtonProps: { color: 'error' },
+        description: `确定要立即发布吗？`,
+        confirmationText: '发布',
+        confirmationButtonProps: { color: 'success' },
       });
 
-      const token = await secretCode();
-
-      const params = new URLSearchParams({
-        uuid: bulletin.uuid, secretcode_token: token
-      });
-      await del('/system/bulletin/del?' + params.toString());
-      enqueueSnackbar('已删除', { variant: 'success' });
+      await put('/system/bulletin/sendnow', new URLSearchParams({
+        uuid: bulletin.uuid,
+      }));
+      enqueueSnackbar('已发布', { variant: 'success' });
       requestRefresh();
     } catch (err) {
       if (err) {
@@ -341,72 +258,39 @@ function MenuIcon(props) {
         aria-controls={open ? '菜单' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
-        onClick={onOpenClick}
-        >
+        onClick={onOpenClick}>
         <MoreVertIcon fontSize='small' />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
-        {/* <MenuItem disabled={user.disabled || user.deleted} onClick={onModifyClick}>
+        <FullScreenMenuItem bulletin={bulletin} closeMenu={onClose} />
+        <MenuItem onClick={onSendNowClick}>
           <ListItemIcon>
-            <ManageAccountsIcon fontSize="small" />
+            <SendIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>修改资料</ListItemText>
+          <ListItemText>编辑</ListItemText>
         </MenuItem>
-        <MenuItem disabled={user.disabled || user.deleted} onClick={onPasswdClick}>
+        <MenuItem onClick={onSendNowClick}>
           <ListItemIcon>
-            <KeyIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>修改密码</ListItemText>
-        </MenuItem>
-        <MenuItem disabled={user.disabled || user.deleted} onClick={onACLClick}>
-          <ListItemIcon>
-            <SecurityIcon fontSize="small" color='info' />
-          </ListItemIcon>
-          <ListItemText>访问控制</ListItemText>
-        </MenuItem>
-        <Divider />
-        <MenuItem disabled={user.disabled || user.deleted} onClick={onClearSecretCode}>
-          <ListItemIcon>
-            <KeyOffIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>清除安全操作码</ListItemText>
-        </MenuItem>
-        <MenuItem disabled={user.disabled || user.deleted} onClick={onClearTOTP}>
-          <ListItemIcon>
-            <DeleteForeverIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>清除两因素认证</ListItemText>
-        </MenuItem>
-        <Divider /> */}
-        {/* <MenuItem disabled={user.deleted} onClick={onDisableClick}>
-          <ListItemIcon>
-            {user.disabled ?
-              <SettingsBackupRestoreIcon fontSize="small" color='warning' />
-              :
-              <BlockIcon fontSize="small" color='warning' />
-            }
-          </ListItemIcon>
-          {user.disabled ?
-            <ListItemText>恢复</ListItemText>
-            :
-            <ListItemText>禁用</ListItemText>
-          }
-        </MenuItem> */}
-        <MenuItem disabled={bulletin.deleted} onClick={onDeleteClick}>
-          <ListItemIcon>
-            <RemoveCircleOutlineIcon fontSize="small" color='error' />
+            <SendIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>删除</ListItemText>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={onSendNowClick}>
+          <ListItemIcon>
+            <SendIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>立即发布</ListItemText>
         </MenuItem>
       </Menu>
     </>
   )
 }
 
-function Tools(props) {
+function FullScreenMenuItem(props) {
   const [fullScreenOpen, setFullScreenOpen] = useState(false);
 
-  const { bulletin } = props;
+  const { bulletin, closeMenu } = props;
 
   const contentRef = useRef();
   const print = usePrint(contentRef.current);
@@ -416,17 +300,18 @@ function Tools(props) {
   }
 
   const onCloseFullScreen = () => {
+    closeMenu();
     setFullScreenOpen(false);
   }
 
   return (
     <>
-      <Tooltip title='全屏'>
-        <Fab size='small' aria-label="全屏" color='primary' onClick={onOpenFullScreen}
-          sx={{ position: 'sticky', top: 0, right: 0 }}>
+      <MenuItem onClick={onOpenFullScreen}>
+        <ListItemIcon>
           <OpenInFullIcon fontSize='small' />
-        </Fab>
-      </Tooltip>
+        </ListItemIcon>
+        <ListItemText>查看</ListItemText>
+      </MenuItem>
       <Dialog onClose={onCloseFullScreen} open={fullScreenOpen} fullScreen
         TransitionComponent={Zoom}>
         <Container maxWidth='md' sx={{ my: 4 }} ref={contentRef}>

@@ -177,10 +177,7 @@ type Bulletin struct {
 	Content  string    `db:"content"   json:"content"`   // 内容
 	SendTime time.Time `db:"send_time" json:"send_time"` // 发布时间
 	UserUUID string    `db:"user_uuid" json:"user_uuid"` // 用户
-	Targets  string    `db:"targets"   json:"targets"`   // 目标用户
-	Readers  string    `db:"readers"   json:"readers"`   // 已读用户
 	Status   int       `db:"status"    json:"status"`    // 状态
-	Deleted  bool      `db:"deleted"   json:"deleted"`   // 删除
 }
 
 // 通知
@@ -192,4 +189,5 @@ type Notification struct {
 	Title    string    `db:"title"     json:"title"`     // 标题
 	Content  string    `db:"content"   json:"content"`   // 内容
 	Status   int       `db:"status"    json:"status"`    // 状态
+	Refer    string    `db:"refer"    json:"refer"`      // 引用
 }

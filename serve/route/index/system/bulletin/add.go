@@ -9,7 +9,6 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
-	"github.com/lucky-byte/reactgo/serve/notification"
 )
 
 // 添加
@@ -40,9 +39,9 @@ func add(c echo.Context) error {
 	}
 	ql := `
 		insert into bulletins (
-			uuid, user_uuid, title, content, send_time, status, targets, readers
+			uuid, user_uuid, title, content, send_time, status
 		) values (
-			?, ?, ?, ?, ?, ?, '', ''
+			?, ?, ?, ?, ?, ?
 		)
 	`
 	newid := uuid.NewString()
@@ -52,11 +51,12 @@ func add(c echo.Context) error {
 		cc.ErrLog(err).Error("添加公告记录错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	// 如果不是草稿则发布公告
-	if status == 2 {
-		sendAt(newid, title, content, send_time)
+	// 如果是草稿则无需发布
+	if status == 1 {
+		return c.NoContent(http.StatusOK)
 	}
-	notification.Send(user.UUID, title, content, 2)
+	// 发布
+	sendAt(newid, title, content, send_time)
 
 	return c.NoContent(http.StatusOK)
 }

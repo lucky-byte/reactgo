@@ -65,15 +65,6 @@ func list(c echo.Context) error {
 	var list []echo.Map
 
 	for _, r := range records {
-		ntargets, nreaders := 0, 0
-
-		if len(r.Targets) > 0 {
-			ntargets = len(strings.Split(r.Targets, ","))
-		}
-		if len(r.Readers) > 0 {
-			nreaders = len(strings.Split(r.Readers, ","))
-		}
-
 		list = append(list, echo.Map{
 			"uuid":      r.UUID,
 			"create_at": r.CreateAt,
@@ -82,10 +73,7 @@ func list(c echo.Context) error {
 			"send_time": r.SendTime,
 			"user_name": r.UserName,
 			"userid":    r.Userid,
-			"ntargets":  ntargets,
-			"nreaders":  nreaders,
 			"status":    r.Status,
-			"deleted":   r.Deleted,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})
