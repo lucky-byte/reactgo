@@ -122,6 +122,11 @@ export default function Add() {
     }
   }
 
+  const onCancel = () => {
+    delAutoSaved(editorId);
+    navigate('..');
+  }
+
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Paper elevation={3} sx={{ px: 4, py: 3, mt: 5 }}>
@@ -161,10 +166,7 @@ export default function Add() {
           </Stack>
         </Paper>
         <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 2 }}>
-          <Button color='secondary' disabled={submitting} onClick={() => {
-            delAutoSaved(editorId);
-            navigate('..');
-          }}>
+          <Button color='secondary' disabled={submitting} onClick={onCancel}>
             取消
           </Button>
           <Button color='success' disabled={submitting} onClick={onPreview}>
@@ -182,8 +184,7 @@ export default function Add() {
       </Paper>
       <Dialog onClose={onPreviewClose} open={previewOpen} maxWidth='md' fullWidth>
         <DialogTitle>
-          <Stack direction='row' alignItems='center' justifyContent='space-between'>
-            <span>发布预览</span>
+          <Stack direction='row' alignItems='center' justifyContent='flex-end'>
             <IconButton aria-label="关闭" onClick={onPreviewClose}>
               <CloseIcon />
             </IconButton>

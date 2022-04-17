@@ -109,16 +109,16 @@ export default function Event() {
           sx={{ minWidth: 300 }}
         />
         <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ flex: 1 }}>
+          <ToggleButtonGroup exclusive size='small' color='primary' aria-label="状态"
+            value={status} onChange={onStatusChange}>
+            <ToggleButton value='0' aria-label="全部">全部</ToggleButton>
+            <ToggleButton value='1' aria-label="未读">未读 ({unread})</ToggleButton>
+          </ToggleButtonGroup>
           <ToggleButtonGroup exclusive size='small' color='primary' aria-label="类型"
             value={type} onChange={onTypeChange}>
             <ToggleButton value='0' aria-label="全部">全部</ToggleButton>
             <ToggleButton value='1' aria-label="警告">通知</ToggleButton>
             <ToggleButton value='2' aria-label="信息">公告</ToggleButton>
-          </ToggleButtonGroup>
-          <ToggleButtonGroup exclusive size='small' color='primary' aria-label="状态"
-            value={status} onChange={onStatusChange}>
-            <ToggleButton value='0' aria-label="全部">全部</ToggleButton>
-            <ToggleButton value='1' aria-label="未读">未读 ({unread})</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
       </Toolbar>

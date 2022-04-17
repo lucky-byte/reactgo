@@ -190,21 +190,28 @@ export default function Notification() {
                   disableTypography
                   primary={
                     <Stack direction='row' alignItems='center' spacing={1}>
-                      {item.status === 1 && <Badge variant="dot" color="secondary" />}
-                      <Ellipsis variant="subtitle1" sx={{ flex: 1, fontWeight: 'bold' }}>
+                      {item.type === 1 &&
+                        <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
+                          <NotificationsIcon color="info" />
+                        </Badge>
+                      }
+                      {item.type === 2 &&
+                        <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
+                          <CampaignIcon color="info" />
+                        </Badge>
+                      }
+                      <Ellipsis variant="subtitle1" sx={{
+                        flex: 1, fontWeight: 'bold', textAlign: 'left'
+                      }}>
                         {item.title}
                       </Ellipsis>
-                      {item.type === 1 && <NotificationsIcon color="info" />}
-                      {item.type === 2 && <CampaignIcon color="info" />}
+                      <Typography variant="caption" color='gray'>
+                        {dayjs(item.create_at).fromNow()}
+                      </Typography>
                     </Stack>
                   }
                   secondary={
-                    <Stack>
-                      <Typography variant="caption">
-                        {dayjs(item.create_at).fromNow()}
-                      </Typography>
-                      <Ellipsis variant='body2' lines={3}>{item.content}</Ellipsis>
-                    </Stack>
+                    <Ellipsis variant='body2' lines={3}>{item.content}</Ellipsis>
                   }
                 />
               </ListItemButton>

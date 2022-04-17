@@ -1,5 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
@@ -25,21 +26,30 @@ if (process.env.NODE_ENV === 'production') {
   window.console.debug = function(){}
 }
 
-ReactDOM.render(
-  <React.StrictMode>
-    <RecoilRoot>
-      <SnackbarProvider
-        maxSnack={3}
-        variant='error'
-        preventDuplicate
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        TransitionComponent={Zoom}>
-        <App />
-      </SnackbarProvider>
-    </RecoilRoot>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+function Root() {
+  return (
+    <React.StrictMode>
+      <RecoilRoot>
+        <SnackbarProvider
+          maxSnack={3}
+          variant='error'
+          preventDuplicate
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          TransitionComponent={Zoom}>
+          <App />
+        </SnackbarProvider>
+      </RecoilRoot>
+    </React.StrictMode>
+  )
+}
+const container = document.getElementById('root');
+
+// React 17
+// ReactDOM.render(<Index/>, container);
+
+// React 18
+const root = createRoot(container);
+root.render(<Root />)
 
 // const reportWebVitals = onPerfEntry => {
 //   if (onPerfEntry && onPerfEntry instanceof Function) {
