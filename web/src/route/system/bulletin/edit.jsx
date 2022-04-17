@@ -1,5 +1,5 @@
 import { lazy, useEffect, useState } from 'react';
-import { useNavigate, Link as RouteLink } from 'react-router-dom';
+import { useNavigate, Link as RouteLink, useLocation } from 'react-router-dom';
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -23,8 +23,9 @@ import { post } from '~/rest';
 
 const Markdown = lazy(() => import('~/comp/markdown'));
 
-export default function Add() {
+export default function Edit() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
   const [title, setTitle] = useState('');
   const [titleHelpText, setTitleHelpText] = useState('');
@@ -47,6 +48,19 @@ export default function Add() {
       setContent(saved);
     }
   }, []);
+
+  // 获取数据
+  useEffect(() => {
+    if (location.state?.bulletin) {
+      setTitle(location.state.bulletin.title);
+      setContent(location.state.bulletin.content);
+
+      const sendtime = dayjs(location.state.bulletin.send_time);
+      if (sendtime.isAfter(dayjs())) {
+        setSendTime(sendtime);
+      }
+    }
+  }, [location.state?.bulletin]);
 
   // 修改标题
   const onTitleChange = e => {
@@ -99,14 +113,17 @@ export default function Add() {
         return enqueueSnackbar('请输入公告内容', { variant: 'warning' });
       }
       if (sendTime) {
-        if (sendTime.isBefore(dayjs().add(3, 'minute'))) {
-          return enqueueSnackbar('发布时间至少要在3分钟后', { variant: 'warning' });
+        if (sendTime.isBefore(dayjs())) {
+          return enqueueSnackbar('发布时间不能早于当前时间', { variant: 'warning' });
         }
       }
       setSubmitting(true);
 
-      await post('/system/bulletin/add', new URLSearchParams({
-        status, title, content, send_time: sendTime ? sendTime.utc().format('') : '',
+      const uuid = location.state?.bulletin ? location.state.bulletin.uuid : '';
+      const send_time = sendTime ? sendTime.utc().format('') : '';
+
+      await post('/system/bulletin/edit', new URLSearchParams({
+        uuid, status, title, content, send_time,
       }));
 
       // 清除自动保存数据

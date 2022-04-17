@@ -52,8 +52,8 @@ func list(c echo.Context) error {
 
 	type record struct {
 		db.Bulletin
-		UserName string `db:"user_name"`
-		Userid   string `db:"userid"`
+		UserName string `db:"user_name" json:"user_name"`
+		Userid   string `db:"userid"    json:"userid"`
 	}
 	var count uint
 	var records []record
@@ -62,19 +62,5 @@ func list(c echo.Context) error {
 		cc.ErrLog(err).Error("查询公告列表错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var list []echo.Map
-
-	for _, r := range records {
-		list = append(list, echo.Map{
-			"uuid":      r.UUID,
-			"create_at": r.CreateAt,
-			"title":     r.Title,
-			"content":   r.Content,
-			"send_time": r.SendTime,
-			"user_name": r.UserName,
-			"userid":    r.Userid,
-			"status":    r.Status,
-		})
-	}
-	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})
+	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": records})
 }

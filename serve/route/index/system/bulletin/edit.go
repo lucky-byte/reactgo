@@ -11,12 +11,12 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-// 添加
-func add(c echo.Context) error {
+// 编辑
+func edit(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 
-	var title, content string
+	var id, title, content string
 	var status int
 	var send_time time.Time
 
@@ -24,6 +24,7 @@ func add(c echo.Context) error {
 		MustString("title", &title).
 		MustString("content", &content).
 		MustInt("status", &status).
+		String("uuid", &id).
 		Time("send_time", &send_time, time.RFC3339).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
@@ -37,26 +38,39 @@ func add(c echo.Context) error {
 	if send_time.IsZero() {
 		send_time = time.Now().UTC()
 	}
-	ql := `
-		insert into bulletins (
-			uuid, user_uuid, title, content, send_time, status
-		) values (
-			?, ?, ?, ?, ?, ?
-		)
-	`
-	newid := uuid.NewString()
+	if len(id) > 0 {
+		ql := `
+			update bulletins set user_uuid = ?, title = ?, content = ?,
+				send_time = ?, status = ?
+			where uuid = ?
+		`
+		err = db.ExecOne(ql, user.UUID, title, content, send_time, status, id)
+		if err != nil {
+			cc.ErrLog(err).Error("更新公告记录错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+	} else {
+		ql := `
+			insert into bulletins (
+				uuid, user_uuid, title, content, send_time, status
+			) values (
+				?, ?, ?, ?, ?, ?
+			)
+		`
+		id := uuid.NewString()
 
-	err = db.ExecOne(ql, newid, user.UUID, title, content, send_time, status)
-	if err != nil {
-		cc.ErrLog(err).Error("添加公告记录错")
-		return c.NoContent(http.StatusInternalServerError)
+		err = db.ExecOne(ql, id, user.UUID, title, content, send_time, status)
+		if err != nil {
+			cc.ErrLog(err).Error("添加公告记录错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
 	}
 	// 如果是草稿则无需发布
 	if status == 1 {
 		return c.NoContent(http.StatusOK)
 	}
 	// 发布
-	sendAt(newid, title, content, send_time)
+	sendAt(id, title, content, send_time)
 
 	return c.NoContent(http.StatusOK)
 }

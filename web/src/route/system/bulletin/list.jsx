@@ -20,6 +20,8 @@ import AddIcon from '@mui/icons-material/Add';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import PrintIcon from '@mui/icons-material/Print';
@@ -31,9 +33,10 @@ import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
+import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
-import { post, put } from '~/rest';
+import { post, del } from '~/rest';
 import { IconButton, Tooltip } from '@mui/material';
 
 // 代码拆分
@@ -147,7 +150,7 @@ export default function List() {
         </TextField>
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Button variant='outlined' size='small' startIcon={<AddIcon />}
-          onClick={() => { navigate('add') }}>
+          onClick={() => { navigate('edit') }}>
           发布公告
         </Button>
       </Toolbar>
@@ -181,7 +184,6 @@ export default function List() {
                 }
                 <Typography variant='caption' sx={{ color: 'gray' }}
                   onClick={() => onAccordionTitleClick(b)}>
-                  {/* 已读：{b.nreaders}/{b.ntargets}， */}
                   {b.timeAgo || dayjs(b.create_at).fromNow()}
                 </Typography>
                 <MenuIcon bulletin={b} requestRefresh={() => setRefresh(true)} />
@@ -209,22 +211,52 @@ export default function List() {
 }
 
 function MenuIcon(props) {
+  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const confirm = useConfirm();
+  const secretCode = useSecretCode();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
   const { bulletin, requestRefresh } = props;
 
   const onOpenClick = e => {
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
-    e.preventDefault();
     setAnchorEl(e.currentTarget);
   }
 
   const onClose = () => {
     setAnchorEl(null);
+  };
+
+  // 编辑
+  const onEditClick = async () => {
+    navigate('edit', { state: { bulletin: bulletin }})
+  };
+
+  // 删除
+  const onDeleteClick = async () => {
+    try {
+      onClose();
+
+      await confirm({
+        description: `确定要删除该记录吗？删除后无法恢复!`,
+        confirmationText: '删除',
+        confirmationButtonProps: { color: 'error' },
+      });
+
+      const token = await secretCode();
+
+      const params = new URLSearchParams({
+        uuid: bulletin.uuid, secretcode_token: token
+      });
+      await del('/system/bulletin/del?' + params.toString());
+      enqueueSnackbar('删除成功', { variant: 'success' });
+      requestRefresh();
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
   };
 
   // 立即发布
@@ -238,7 +270,7 @@ function MenuIcon(props) {
         confirmationButtonProps: { color: 'success' },
       });
 
-      await put('/system/bulletin/sendnow', new URLSearchParams({
+      await post('/system/bulletin/send', new URLSearchParams({
         uuid: bulletin.uuid,
       }));
       enqueueSnackbar('已发布', { variant: 'success' });
@@ -263,22 +295,22 @@ function MenuIcon(props) {
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
         <FullScreenMenuItem bulletin={bulletin} closeMenu={onClose} />
-        <MenuItem onClick={onSendNowClick}>
+        <MenuItem onClick={onEditClick} disabled={bulletin.status === 3}>
           <ListItemIcon>
-            <SendIcon fontSize="small" />
+            <EditIcon fontSize="small" color='primary' />
           </ListItemIcon>
           <ListItemText>编辑</ListItemText>
         </MenuItem>
-        <MenuItem onClick={onSendNowClick}>
+        <MenuItem onClick={onDeleteClick} disabled={bulletin.status === 3}>
           <ListItemIcon>
-            <SendIcon fontSize="small" />
+            <DeleteIcon fontSize="small" color='error' />
           </ListItemIcon>
           <ListItemText>删除</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={onSendNowClick}>
+        <MenuItem onClick={onSendNowClick} disabled={bulletin.status === 3}>
           <ListItemIcon>
-            <SendIcon fontSize="small" />
+            <SendIcon fontSize="small" color='success' />
           </ListItemIcon>
           <ListItemText>立即发布</ListItemText>
         </MenuItem>
@@ -316,21 +348,10 @@ function FullScreenMenuItem(props) {
         TransitionComponent={Zoom}>
         <Container maxWidth='md' sx={{ my: 4 }} ref={contentRef}>
           <Typography variant='h4' textAlign='center'>{bulletin.title}</Typography>
-          <Typography variant='caption' paragraph textAlign='right'>
+          <Typography variant='caption' paragraph textAlign='center'>
             {dayjs(bulletin.create_at).format('LLLL')} by{' '}
             {bulletin.user_name || bulletin.userid}
           </Typography>
-          <Stack direction='row' sx={{ mb: 1 }} spacing={1} alignItems='center'>
-            {bulletin.deleted && <Chip label="已删除" size='small' color='error' />}
-            {bulletin.draft ?
-              <Chip label="草稿" size='small' />
-              :
-              <Typography variant='body2' sx={{ color: 'gray' }}>
-                发布于:
-                已读：{bulletin.nreaders} / {bulletin.ntargets}
-              </Typography>
-            }
-          </Stack>
           <Markdown>{bulletin.content}</Markdown>
         </Container>
         <Stack direction='row' spacing={2} sx={{ position: 'fixed', top: 10, right: 10 }}>

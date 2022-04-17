@@ -1,63 +1,47 @@
 package bulletin
 
 import (
+	"net/http"
 	"time"
 
+	"github.com/labstack/echo/v4"
+
+	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
-	"github.com/lucky-byte/reactgo/serve/notification"
-	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
-// 发布公告
-func send(uuid, title, content string) {
-	ql := `select uuid from users where deleted = false`
-	var users []db.User
+// 立即发布
+func send(c echo.Context) error {
+	cc := c.(*ctx.Context)
 
-	// 查询用户列表
-	if err := db.Select(ql, &users); err != nil {
-		xlog.X.WithError(err).Error("发送公告错，查询用户信息错")
+	var uuid string
 
-		// 更新状态为发送失败
-		ql = `update bulletins set status = 4 where uuid = ?`
-
-		if err = db.ExecOne(ql, uuid); err != nil {
-			xlog.X.WithError(err).Error("更新公告状态错")
-		}
-		return
+	err := echo.FormFieldBinder(c).MustString("uuid", &uuid).BindError()
+	if err != nil {
+		return cc.BadRequest(err)
 	}
-	// 发送用户通知
-	for _, u := range users {
-		notification.Send(u.UUID, title, content, 2, uuid)
-	}
-	// 更新状态为发送成功
-	ql = `update bulletins set status = 3 where uuid = ?`
+	ql := `select * from bulletins where uuid = ?`
+	var bulletin db.Bulletin
 
-	if err := db.ExecOne(ql, uuid); err != nil {
-		xlog.X.WithError(err).Error("更新公告状态错")
+	// 检查状态是否允许发布
+	if err = db.SelectOne(ql, &bulletin, uuid); err != nil {
+		cc.ErrLog(err).Error("查询公告状态错")
+		return c.NoContent(http.StatusInternalServerError)
 	}
-}
+	if bulletin.Status == 3 {
+		return c.String(http.StatusForbidden, "当前状态不能发布")
+	}
+	send_time := time.Now().UTC()
 
-// 在指定时间发布公告
-func sendAt(uuid, title, content string, send_time time.Time) {
-	// 如果发布时间在未来 1 分钟内则直接发送
-	if time.Now().Add(1 * time.Minute).After(send_time) {
-		send(uuid, title, content)
-		return
-	}
-	time.AfterFunc(send_time.Sub(time.Now()), func() {
-		send(uuid, title, content)
-	})
-}
+	ql = `update bulletins set send_time = ? where uuid = ?`
 
-// 重新发送所有公告
-func resendAll() {
-	ql := `select * from bulletins where status = 2 or status = 4`
-	var bulletins []db.Bulletin
+	// 更新发布时间为当前时间
+	if err = db.ExecOne(ql, send_time, uuid); err != nil {
+		cc.ErrLog(err).Error("更新公告记录错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	// 发布
+	sendAt(uuid, bulletin.Title, bulletin.Content, send_time)
 
-	if err := db.Select(ql, &bulletins); err != nil {
-		xlog.X.WithError(err).Error("查询公告错")
-	}
-	for _, b := range bulletins {
-		sendAt(b.UUID, b.Title, b.Content, b.SendTime)
-	}
+	return c.NoContent(http.StatusOK)
 }
