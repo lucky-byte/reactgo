@@ -41,23 +41,23 @@ export default function Edit() {
   // 编辑器自动保存唯一标识
   const editorId = 'system.bulletin';
 
-  // 恢复编辑器自动保存数据
   useEffect(() => {
-    const saved = getAutoSaved(editorId);
-    if (saved) {
-      setContent(saved);
-    }
-  }, []);
+    const bulletin = location.state?.bulletin;
 
-  // 获取数据
-  useEffect(() => {
-    if (location.state?.bulletin) {
-      setTitle(location.state.bulletin.title);
-      setContent(location.state.bulletin.content);
+    // 如果是通过编辑进入，则使用编辑的数据
+    if (bulletin) {
+      setTitle(bulletin.title);
+      setContent(bulletin.content);
 
-      const sendtime = dayjs(location.state.bulletin.send_time);
+      const sendtime = dayjs(bulletin.send_time);
       if (sendtime.isAfter(dayjs())) {
         setSendTime(sendtime);
+      }
+    } else {
+      // 恢复编辑器自动保存数据
+      const saved = getAutoSaved(editorId);
+      if (saved) {
+        setContent(saved);
       }
     }
   }, [location.state?.bulletin]);

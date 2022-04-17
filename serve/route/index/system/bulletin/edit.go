@@ -57,7 +57,7 @@ func edit(c echo.Context) error {
 				?, ?, ?, ?, ?, ?
 			)
 		`
-		id := uuid.NewString()
+		id = uuid.NewString()
 
 		err = db.ExecOne(ql, id, user.UUID, title, content, send_time, status)
 		if err != nil {
