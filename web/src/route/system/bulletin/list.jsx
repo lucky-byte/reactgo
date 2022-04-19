@@ -19,7 +19,7 @@ import Zoom from '@mui/material/Zoom';
 import AddIcon from '@mui/icons-material/Add';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
@@ -60,30 +60,27 @@ export default function List() {
   // 获取列表数据
   useEffect(() => {
     (async () => {
-      if (refresh) {
-        try {
-          setLoading(true);
+      try {
+        setLoading(true);
 
-          const resp = await post('/system/bulletin/', new URLSearchParams({
-            page, rows, keyword, days,
-          }));
-          if (resp.count > 0) {
-            let pages = resp.count / rows;
-            if (resp.count % rows > 0) {
-              pages += 1;
-            }
-            setPageCount(parseInt(pages));
-          } else {
-            setPageCount(0);
+        const resp = await post('/system/bulletin/', new URLSearchParams({
+          page, rows, keyword, days,
+        }));
+        if (resp.count > 0) {
+          let pages = resp.count / rows;
+          if (resp.count % rows > 0) {
+            pages += 1;
           }
-          setCount(resp.count);
-          setList(resp.list || []);
-        } catch (err) {
-          enqueueSnackbar(err.message);
-        } finally {
-          setLoading(false);
-          setRefresh(false);
+          setPageCount(parseInt(pages));
+        } else {
+          setPageCount(0);
         }
+        setCount(resp.count);
+        setList(resp.list || []);
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      } finally {
+        setLoading(false);
       }
     })();
   }, [enqueueSnackbar, page, rows, keyword, days, refresh]);
@@ -101,13 +98,13 @@ export default function List() {
         return item;
       });
       if (outdated) {
-        setRefresh(true);
+        setRefresh(!refresh);
       } else {
         setList(newlist);
       }
     }, 1000);
     return () => clearInterval(timer)
-  }, [list]);
+  }, [list, refresh]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -186,7 +183,7 @@ export default function List() {
                   onClick={() => onAccordionTitleClick(b)}>
                   {b.timeAgo || dayjs(b.create_at).fromNow()}
                 </Typography>
-                <MenuIcon bulletin={b} requestRefresh={() => setRefresh(true)} />
+                <MenuIcon bulletin={b} requestRefresh={() => setRefresh(!refresh)} />
               </Stack>
             </AccordionSummary>
             <AccordionDetails sx={{
@@ -340,7 +337,7 @@ function FullScreenMenuItem(props) {
     <>
       <MenuItem onClick={onOpenFullScreen}>
         <ListItemIcon>
-          <OpenInFullIcon fontSize='small' />
+          <OpenInNewIcon fontSize='small' />
         </ListItemIcon>
         <ListItemText>查看</ListItemText>
       </MenuItem>

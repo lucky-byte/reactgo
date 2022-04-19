@@ -31,14 +31,19 @@ func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 			cc := &Context{c, l, conf, nil, nil, nil}
 
 			c.Response().Before(func() {
-				urlpath := c.Request().URL.Path
+				urlpath := req.URL.Path
+				method := req.Method
 
 				elapsed := time.Since(now).Seconds()
-				if elapsed > 3 { // 如果处理请求超出 3 秒，记录一条警告
-					cc.Log().Warnf("处理 %s 耗时 %f 秒", urlpath, elapsed)
-				} else if elapsed > 1 { // 如果处理请求超出 1 秒，记录一条信息
-					s := fmt.Sprintf("处理 %s 耗时 %f 秒", urlpath, elapsed)
-					event.Add(event.LevelTodo, s, s)
+
+				// 如果处理请求超出 3 秒，记录一条警告
+				if elapsed > 3 {
+					cc.Log().Warnf("%s %s 耗时 %f 秒", method, urlpath, elapsed)
+				} else if elapsed > 1 {
+					// 如果处理请求超出 1 秒，记录一条信息
+					s := fmt.Sprintf("%s %s 耗时 %f 秒", method, urlpath, elapsed)
+					m := fmt.Sprintf("IP: %s, ReqID: %s", c.RealIP(), reqid)
+					event.Add(event.LevelTodo, s, m)
 				}
 				// 对于下列资源启用客户端缓存
 				if c.Request().Method == http.MethodGet {

@@ -226,4 +226,13 @@ create table if not exists notifications (
   refer       varchar(36)
 );
 
+create table if not exists ops (
+  uuid        varchar(36)     primary key not null,
+  create_at   timestamp       not null default current_timestamp,
+  user_uuid   varchar(36)     not null,
+  method      varchar(16)     not null,
+  url         varchar(256)    not null,
+  body        text            not null
+);
+
 commit;

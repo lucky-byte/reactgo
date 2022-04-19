@@ -359,11 +359,12 @@ func startup(conf *config.ViperConfig) {
 // HTTP 错误处理
 func httpErrorHandler(err error, c echo.Context) {
 	url := c.Request().URL.String()
+	method := c.Request().Method
 
 	// 前端是使用客户端路由的 React 应用，为了支持用户从任意路径访问，例如 /some/place
 	// (/some/place 是客户端路由)，需要响应 index.html 而不是 404
 	if e, ok := err.(*echo.HTTPError); ok {
-		if e.Code == 404 && c.Request().Method == http.MethodGet {
+		if e.Code == 404 && method == http.MethodGet {
 			accept := c.Request().Header["Accept"]
 			if len(accept) > 0 && strings.Contains(accept[0], "text/html") {
 				xlog.F("url", url).Infof("%s 未找到, 返回 index.html", url)
@@ -383,7 +384,7 @@ func httpErrorHandler(err error, c echo.Context) {
 			}
 		}
 	}
-	xlog.F("url", url, "error", err).Errorf("HTTP服务错误: %v", err)
+	xlog.F("url", url, "method", method, "error", err).Errorf("HTTP服务错误: %v", err)
 
 	// 默认错误处理
 	c.Echo().DefaultHTTPErrorHandler(err, c)

@@ -16,5 +16,6 @@ drop table if exists tree_bind;
 drop table if exists tickets;
 drop table if exists bulletins;
 drop table if exists notifications;
+drop table if exists ops;
 
 commit;

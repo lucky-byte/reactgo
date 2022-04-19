@@ -83,7 +83,7 @@ func (d *dumpWriter) WriteHeader(code int) {
 	d.origin.WriteHeader(code)
 }
 
-// Dump request and response
+// Dump request
 // The color schema work well on black background
 func dumpRequest(req *http.Request) {
 	url := req.URL.String()
@@ -119,7 +119,7 @@ func dumpRequest(req *http.Request) {
 	}
 }
 
-// Dump request and response
+// Dump response
 // The color schema work well on black background
 func (d *dumpWriter) dumpResponse(req *http.Request, res *echo.Response) {
 	url := req.URL.String()

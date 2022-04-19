@@ -10,6 +10,7 @@ import Task from "./task";
 import Event from "./event";
 import Node from "./node";
 import Bulletin from "./bulletin";
+import Ops from './ops';
 
 export default function System() {
   return (
@@ -23,6 +24,7 @@ export default function System() {
         <Route path='event/*' element={<Event />} />
         <Route path='node/*' element={<Node />} />
         <Route path='bulletin/*' element={<Bulletin />} />
+        <Route path='ops/*' element={<Ops />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
     </Suspense>

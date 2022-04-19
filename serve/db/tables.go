@@ -191,3 +191,13 @@ type Notification struct {
 	Status   int       `db:"status"    json:"status"`    // 状态
 	Refer    string    `db:"refer"    json:"refer"`      // 引用
 }
+
+// 操作记录
+type Ops struct {
+	UUID     string    `db:"uuid"      json:"uuid"`      // uuid
+	CreateAt time.Time `db:"create_at" json:"create_at"` // 创建时间
+	UserUUID string    `db:"user_uuid" json:"user_uuid"` // 用户
+	Method   string    `db:"method"    json:"method"`    // 方法
+	URL      string    `db:"url"       json:"url"`       // URL
+	Body     string    `db:"body"      json:"body"`      // 请求内容
+}
