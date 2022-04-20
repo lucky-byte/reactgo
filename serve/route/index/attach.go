@@ -64,34 +64,37 @@ func opsMiddleware() echo.MiddlewareFunc {
 			if strings.ToUpper(c.Request().Method) != http.MethodGet {
 				req := c.Request()
 
-				b, err := io.ReadAll(req.Body)
-				if err != nil {
-					cc.ErrLog(err).Error("读请求 Body 错")
-					return next(c)
-				}
-				req.Body.Close()
-				req.Body = io.NopCloser(bytes.NewBuffer(b))
-
-				body := string(b)
-
 				content_type := req.Header.Get("content-type")
+				body := ""
 
-				if strings.Index(content_type, "x-www-form-urlencoded") > 0 {
-					params, err := url.ParseQuery(body)
+				if strings.Index(content_type, "multipart/form-data") < 0 {
+					b, err := io.ReadAll(req.Body)
 					if err != nil {
-						cc.ErrLog(err).Errorf("解析请求数据错 %s", body)
-					} else {
-						var m = make(map[string]any)
+						cc.ErrLog(err).Error("读请求 Body 错")
+						return next(c)
+					}
+					req.Body.Close()
+					req.Body = io.NopCloser(bytes.NewBuffer(b))
 
-						for k, i := range params {
-							m[k] = strings.Join(i, ",")
-						}
-						s, err := json.MarshalIndent(m, "", "  ")
+					if strings.Index(content_type, "x-www-form-urlencoded") >= 0 {
+						params, err := url.ParseQuery(body)
 						if err != nil {
-							cc.ErrLog(err).Error("JSON marshal 错")
+							cc.ErrLog(err).Errorf("解析请求数据错 %s", body)
 						} else {
-							body = fmt.Sprintf("```json\n%s\n```", s)
+							var m = make(map[string]any)
+
+							for k, i := range params {
+								m[k] = strings.Join(i, ",")
+							}
+							s, err := json.MarshalIndent(m, "", "  ")
+							if err != nil {
+								cc.ErrLog(err).Error("JSON marshal 错")
+							} else {
+								body = fmt.Sprintf("```json\n%s\n```", s)
+							}
 						}
+					} else {
+						body = string(b)
 					}
 				}
 				ql := `
@@ -101,7 +104,7 @@ func opsMiddleware() echo.MiddlewareFunc {
 				id := uuid.NewString()
 				user := cc.User()
 
-				err = db.ExecOne(ql, id, user.UUID, req.Method, req.URL.Path, body)
+				err := db.ExecOne(ql, id, user.UUID, req.Method, req.URL.Path, body)
 				if err != nil {
 					cc.ErrLog(err).Error("添加操作记录错")
 				}

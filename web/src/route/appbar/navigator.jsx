@@ -73,7 +73,7 @@ export default function Navigator(props) {
       PaperProps={{ sx: { alignSelf: 'flex-start' } }}
       TransitionComponent={SlideTransition}>
       <DialogContent>
-        <TextField autoFocus label="导航代码" variant="outlined"
+        <TextField autoFocus label="导航码" variant="outlined"
           placeholder="3到4位数字，回车确定"
           InputProps={{
             endAdornment:
@@ -88,7 +88,7 @@ export default function Navigator(props) {
           <FormHelperText>
             <Link component='button' variant='caption' underline='none'
               onClick={onViewCodes}>
-              查看代码清单-911
+              输入 '911' 查看所有导航码
             </Link>
           </FormHelperText>
         }

@@ -5,6 +5,7 @@ import { useNavigate, Link as RouteLink } from "react-router-dom";
 import Cookies from 'universal-cookie';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
+import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import Link from "@mui/material/Link";
 import Typography from '@mui/material/Typography';
@@ -18,8 +19,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyIcon from '@mui/icons-material/Key';
@@ -38,6 +39,7 @@ import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import Navigator from './navigator';
 import Notification from './notification';
+import Chat from "./chat";
 
 export default function Appbar(params) {
   const theme = useTheme();
@@ -173,29 +175,32 @@ export default function Appbar(params) {
         <Typography component='h1' variant="h6" sx={{ flexGrow: 1 }}>
           {title}
         </Typography>
-        <Chip label='CTRL+K' variant='outlined' color='info' icon={<DirectionsIcon />}
-          onClick={onQuickNavigate} sx={{ mx: 2 }}
-        />
-        <Notification />
-        <IconButton aria-label="切换色彩模式" sx={{ mx: 1 }}
-          onClick={colorMode.toggleColorMode} color="primary">
-          {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-        </IconButton>
-        {user?.avatar ?
-          <IconButton onClick={onUserMenuOpen}>
-            <Avatar src={user.avatar} alt={user.name || user.userid} />
+        <Stack direction='row' spacing={1} alignItems='center'>
+          <Chip label='CTRL+K' variant='outlined' color='info' icon={<DirectionsIcon />}
+            onClick={onQuickNavigate} sx={{ mx: 1 }}
+          />
+          <Chat />
+          <Notification />
+          <IconButton aria-label="切换色彩模式"
+            onClick={colorMode.toggleColorMode} color="primary">
+            {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
-          :
-          <Button
-            aria-label="用户菜单"
-            title="用户菜单"
-            aria-controls={sidebarOpen ? '用户菜单' : undefined}
-            aria-haspopup="true"
-            aria-expanded={sidebarOpen ? 'true' : undefined}
-            onClick={onUserMenuOpen}>
-            {user?.name || user?.userid || 'WhoAmI'}
-          </Button>
-        }
+          {user?.avatar ?
+            <IconButton onClick={onUserMenuOpen}>
+              <Avatar src={user.avatar} alt={user.name || user.userid} />
+            </IconButton>
+            :
+            <Button
+              aria-label="用户菜单"
+              title="用户菜单"
+              aria-controls={sidebarOpen ? '用户菜单' : undefined}
+              aria-haspopup="true"
+              aria-expanded={sidebarOpen ? 'true' : undefined}
+              onClick={onUserMenuOpen}>
+              {user?.name || user?.userid || 'WhoAmI'}
+            </Button>
+          }
+        </Stack>
         <Menu anchorEl={anchorEl} open={sidebarOpen} onClose={onUserMenuClose}>
           <MenuItem onClick={onProfile}>
             <ListItemIcon>
