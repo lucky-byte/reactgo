@@ -12,6 +12,9 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableFooter from '@mui/material/TableFooter';
 import TableHead from '@mui/material/TableHead';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Highlight, { defaultProps } from 'prism-react-renderer';
 import vsDark from 'prism-react-renderer/themes/vsDark';
 import github from 'prism-react-renderer/themes/github';
@@ -125,6 +128,8 @@ export default function Markdown(props) {
 // 语法高亮代码块
 function Pre({ children }) {
   const theme = useTheme();
+  const [copyVisible, setCopyVisible] = useState(false);
+  const [copyTip, setCopyTip] = useState('复制');
 
   if (children?.type !== 'code') {
     return (
@@ -139,10 +144,19 @@ function Pre({ children }) {
   const code = children.props.children;
   const lang = className ? className.replace('lang-', '') : 'tsx';
 
+  const onCopyClick = () => {
+    navigator.clipboard.writeText(code);
+    setCopyTip('已复制');
+    setTimeout(() => { setCopyTip('复制') }, 500);
+  }
+
   return (
     <Highlight {...defaultProps} theme={codeTheme} code={code} language={lang}>
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
-        <Paper variant='outlined' sx={{ px: 1, my: 1, fontSize: '0.9rem' }}>
+        <Paper variant='outlined'
+          sx={{ px: 1, my: 1, fontSize: '0.9rem', position: 'relative' }}
+          onMouseOver={() => setCopyVisible(true)}
+          onMouseOut={() => setCopyVisible(false)}>
           <pre style={{ overflowX: 'auto' }}>
             {tokens.map((line, i) => (
               <div key={i} {...getLineProps({ line, key: i })}>
@@ -152,6 +166,14 @@ function Pre({ children }) {
               </div>
             ))}
           </pre>
+          {copyVisible &&
+            <Tooltip title={copyTip}>
+              <IconButton sx={{ position: 'absolute', right: 10, top: 10 }}
+                onClick={onCopyClick}>
+                <ContentCopyIcon fontSize='small' />
+              </IconButton>
+            </Tooltip>
+          }
         </Paper>
       )}
     </Highlight>
