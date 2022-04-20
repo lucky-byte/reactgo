@@ -37,7 +37,7 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
-import { post, del } from '~/rest';
+import { post, del, get } from '~/rest';
 
 export default function List() {
   const navigate = useNavigate();
@@ -60,9 +60,8 @@ export default function List() {
       try {
         setProgress(true);
 
-        const resp = await post('/system/task/list', new URLSearchParams({
-          page, rows, keyword,
-        }));
+        const query = new URLSearchParams({ page, rows, keyword });
+        const resp = await get('/system/task/list?' + query.toString());
         setCount(resp.count || 0);
         setList(resp.list || []);
       } catch (err) {

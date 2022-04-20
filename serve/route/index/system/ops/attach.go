@@ -8,5 +8,5 @@ import (
 func Attach(up *echo.Group, code int) {
 	group := up.Group("/ops", acl.AllowRead(code))
 
-	group.POST("/", list)
+	group.GET("/", list)
 }

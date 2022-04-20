@@ -23,7 +23,7 @@ import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
-import { post } from '~/rest';
+import { get } from '~/rest';
 import { geo } from '~/lib/geo';
 
 export default function History() {
@@ -44,9 +44,8 @@ export default function History() {
       try {
         setLoading(true);
 
-        const resp = await post('/system/history/', new URLSearchParams({
-          page, rows, keyword, days,
-        }));
+        const query = new URLSearchParams({ page, rows, keyword, days });
+        const resp = await get('/system/history/?' + query.toString());
         setList(resp.list || []);
         setCount(resp.count || 0);
       } catch (err) {

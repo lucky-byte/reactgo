@@ -13,7 +13,7 @@ import (
 func Attach(up *echo.Group, code int) {
 	group := up.Group("/user", acl.AllowRead(code))
 
-	group.POST("/list", list)
+	group.GET("/list", list)
 	group.GET("/profile", profile)
 	group.GET("/info", infoGet)
 

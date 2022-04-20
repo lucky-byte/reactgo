@@ -12,7 +12,7 @@ import (
 func info(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	uuid := c.FormValue("uuid")
+	uuid := c.QueryParam("uuid")
 	if len(uuid) == 0 {
 		return c.NoContent(http.StatusBadRequest)
 	}

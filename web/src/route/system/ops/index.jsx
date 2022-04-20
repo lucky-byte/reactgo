@@ -18,7 +18,7 @@ import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import useTitle from "~/hook/title";
-import { post, put } from '~/rest';
+import { get } from '~/rest';
 
 // 代码拆分
 const Markdown = lazy(() => import('~/comp/markdown'));
@@ -30,7 +30,6 @@ export default function Ops() {
   const [method, setMethod] = useState('ALL');
   const [list, setList] = useState([]);
   const [count, setCount] = useState(0);
-  const [freshCount, setFreshCount] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [rows] = useState(10);
   const [page, setPage] = useState(0);
@@ -43,9 +42,8 @@ export default function Ops() {
       try {
         setLoading(true);
 
-        const resp = await post('/system/ops/', new URLSearchParams({
-          page, rows, keyword, days, method,
-        }));
+        const query = new URLSearchParams({ page, rows, keyword, days, method });
+        const resp = await get('/system/ops/?' + query.toString());
         if (resp.count > 0) {
           let pages = resp.count / rows;
           if (resp.count % rows > 0) {
@@ -57,7 +55,6 @@ export default function Ops() {
         }
         setCount(resp.count);
         setList(resp.list || []);
-        setFreshCount(resp.fresh_count || 0);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
@@ -96,26 +93,6 @@ export default function Ops() {
     }
   }
 
-  // 展开时更新通知为已读
-  const onAccordionChange = async (e, expanded, event) => {
-    if (expanded && event.fresh) {
-      try {
-        await put('/system/event/unfresh', new URLSearchParams({
-          uuid: event.uuid,
-        }));
-        setList(list.map(e => {
-          if (e.uuid === event.uuid) {
-            e.fresh = false;
-          }
-          return e;
-        }));
-        setFreshCount(freshCount - 1);
-      } catch (err) {
-        enqueueSnackbar(err.message);
-      }
-    }
-  }
-
   return (
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
@@ -147,7 +124,6 @@ export default function Ops() {
       <Paper variant='outlined' sx={{ mt: 0 }}>
         {list.map(item => (
           <Accordion key={item.uuid} elevation={0} disableGutters
-            onChange={(evt, expanded) => onAccordionChange(evt, expanded, item)}
             sx={{
               borderBottom: '1px solid #8884',
               '&:before': { display: 'none', },
@@ -155,12 +131,13 @@ export default function Ops() {
             }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 2 }}>
-                <Typography variant='subtitle1' sx={{
-                  flex: 1, fontWeight: item.fresh ? 'bold' : 'normal',
-                }}>
-                  {item.user_name || item.userid} {item.method} {item.url}
+                <Typography variant='subtitle1' sx={{ flex: 1 }}>
+                  {item.url}
                 </Typography>
-                {item.fresh && <Chip label='新' size='small' color='info' />}
+                <Chip label={item.method} size='small' variant='outlined' />
+                <Chip label={item.user_name || item.userid}
+                  size='small' variant='outlined'
+                />
                 <Typography variant='caption' sx={{ color: 'gray' }}>
                   {dayjs(item.create_at).format('LLLL') + ' '}
                   ({item.timeAgo || dayjs(item.create_at).fromNow()})

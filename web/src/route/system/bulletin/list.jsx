@@ -36,7 +36,7 @@ import SearchInput from '~/comp/search-input';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
-import { post, del } from '~/rest';
+import { post, del, get } from '~/rest';
 import { IconButton, Tooltip } from '@mui/material';
 
 // 代码拆分
@@ -63,9 +63,8 @@ export default function List() {
       try {
         setLoading(true);
 
-        const resp = await post('/system/bulletin/', new URLSearchParams({
-          page, rows, keyword, days,
-        }));
+        const query = new URLSearchParams({ page, rows, keyword, days });
+        const resp = await get('/system/bulletin/?' + query.toString());
         if (resp.count > 0) {
           let pages = resp.count / rows;
           if (resp.count % rows > 0) {

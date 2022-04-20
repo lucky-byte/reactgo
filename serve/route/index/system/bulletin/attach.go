@@ -11,7 +11,7 @@ import (
 func Attach(up *echo.Group, code int) {
 	group := up.Group("/bulletin", acl.AllowRead(code))
 
-	group.POST("/", list)
+	group.GET("/", list)
 
 	group.Use(acl.AllowWrite(code))
 

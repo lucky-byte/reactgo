@@ -9,7 +9,7 @@ func Attach(up *echo.Group, code int) {
 	group := up.Group("/acl", acl.AllowRead(code))
 
 	group.GET("/", list)
-	group.POST("/info", info)
+	group.GET("/info", info)
 
 	group.Use(acl.AllowWrite(code))
 

@@ -22,7 +22,7 @@ func list(c echo.Context) error {
 	var days int
 	var keyword string
 
-	err := echo.FormFieldBinder(c).
+	err := echo.QueryParamsBinder(c).
 		MustUint("page", &page).
 		MustUint("rows", &rows).
 		MustInt("days", &days).

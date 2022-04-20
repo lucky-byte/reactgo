@@ -28,7 +28,7 @@ import { useConfirm } from 'material-ui-confirm';
 import InplaceInput from '~/comp/inplace-input';
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
-import { get, post, del, put } from '~/rest';
+import { get, del, put } from '~/rest';
 
 export default function List() {
   const navigate = useNavigate();
@@ -44,7 +44,8 @@ export default function List() {
     try {
       setProgress(true);
 
-      const resp = await post('/system/acl/info', new URLSearchParams({ uuid }));
+      const query = new URLSearchParams({ uuid });
+      const resp = await get('/system/acl/info?' + query.toString());
       setInfo(resp || {});
     } catch (err) {
       enqueueSnackbar(err.message);

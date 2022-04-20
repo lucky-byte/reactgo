@@ -23,7 +23,7 @@ import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import useTitle from "~/hook/title";
-import { post, put } from '~/rest';
+import { get, put } from '~/rest';
 
 // 代码拆分
 const Markdown = lazy(() => import('~/comp/markdown'));
@@ -49,9 +49,8 @@ export default function Event() {
       try {
         setLoading(true);
 
-        const resp = await post('/system/event/', new URLSearchParams({
-          page, rows, keyword, days, level, fresh,
-        }));
+        const query = new URLSearchParams({ page, rows, keyword, days, level, fresh });
+        const resp = await get('/system/event/?' + query.toString());
         if (resp.count > 0) {
           let pages = resp.count / rows;
           if (resp.count % rows > 0) {

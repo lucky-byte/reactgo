@@ -79,9 +79,8 @@ export default function List() {
       try {
         setProgress(true);
 
-        const resp = await post('/system/user/list', new URLSearchParams({
-          page, rows, keyword, acl,
-        }));
+        const query = new URLSearchParams({ page, rows, keyword, acl });
+        const resp = await get('/system/user/list?' + query.toString());
         setCount(resp.count || 0);
         setList(resp.list || []);
       } catch (err) {

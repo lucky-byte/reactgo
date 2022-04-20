@@ -10,7 +10,7 @@ import (
 func Attach(up *echo.Group, code int) {
 	group := up.Group("/task", acl.AllowRead(code))
 
-	group.POST("/list", list)
+	group.GET("/list", list)
 	group.GET("/testcron", testcron)
 	group.GET("/funcs", funcs)
 	group.GET("/entries", entries)
