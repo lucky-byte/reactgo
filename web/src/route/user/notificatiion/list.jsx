@@ -19,7 +19,7 @@ import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
-import { post } from '~/rest';
+import { get } from '~/rest';
 
 export default function Event() {
   const navigate = useNavigate();
@@ -42,9 +42,8 @@ export default function Event() {
       try {
         setLoading(true);
 
-        const resp = await post('/user/notification/', new URLSearchParams({
-          page, rows, keyword, type, status,
-        }));
+        const query = new URLSearchParams({ page, rows, keyword, type, status });
+        const resp = await get('/user/notification/?' + query.toString());
         if (resp.count > 0) {
           let pages = resp.count / rows;
           if (resp.count % rows > 0) {
