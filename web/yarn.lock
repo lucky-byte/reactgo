@@ -3558,15 +3558,15 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
 
-"@storybook/testing-library@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@storybook/testing-library/-/testing-library-0.0.10.tgz#687b5d2fb9ee45742b14aeb32539411155aebc2a"
-  integrity sha512-6Z47620sJjWFiachuX7J0xeoP/r7dfnpciylfng+IOopHsCR3FWfU9vDudCdqgAtZR5TNB/eu0/hy9G/uhRinQ==
+"@storybook/testing-library@^0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@storybook/testing-library/-/testing-library-0.0.11.tgz#c07a3b5a76049ea9f9e66c557b506c2b061a93d6"
+  integrity sha512-8KbKx3s1e+uF3oWlPdyXRpZa6xtCsCHtXh1nCTisMA6P5YcSDaCg59NXIOVIQCAwKvjRomlqMJH8JL1WyOzeVg==
   dependencies:
     "@storybook/client-logger" "^6.4.0 || >=6.5.0-0"
     "@storybook/instrumenter" "^6.4.0 || >=6.5.0-0"
-    "@testing-library/dom" "^8.13.0"
-    "@testing-library/user-event" "^14.1.1"
+    "@testing-library/dom" "^8.3.0"
+    "@testing-library/user-event" "^13.2.1"
     ts-dedent "^2.2.0"
 
 "@storybook/theming@6.4.19":
@@ -3752,7 +3752,7 @@
     "@svgr/plugin-svgo" "^5.5.0"
     loader-utils "^2.0.0"
 
-"@testing-library/dom@^8.13.0", "@testing-library/dom@^8.5.0":
+"@testing-library/dom@^8.13.0", "@testing-library/dom@^8.3.0", "@testing-library/dom@^8.5.0":
   version "8.13.0"
   resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-8.13.0.tgz#bc00bdd64c7d8b40841e27a70211399ad3af46f5"
   integrity sha512-9VHgfIatKNXQNaZTtLnalIy0jNZzY35a4S3oi08YAt9Hv1VsfZ/DfA45lM8D/UhtHBGJ4/lGwp0PZkVndRkoOQ==
@@ -3789,6 +3789,13 @@
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^8.5.0"
     "@types/react-dom" "^18.0.0"
+
+"@testing-library/user-event@^13.2.1":
+  version "13.5.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-13.5.0.tgz#69d77007f1e124d55314a2b73fd204b333b13295"
+  integrity sha512-5Kwtbo3Y/NowpkbRuSepbyMFkZmHgD+vPzYB/RJ4oxt5Gj/avFFBYjhw27cqSVPVw/3a67NK1PbiIr9k4Gwmdg==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
 
 "@testing-library/user-event@^14.1.1":
   version "14.1.1"

@@ -74,7 +74,7 @@
     "@storybook/node-logger": "^6.4.22",
     "@storybook/preset-create-react-app": "^4.1.0",
     "@storybook/react": "^6.4.22",
-    "@storybook/testing-library": "^0.0.10",
+    "@storybook/testing-library": "^0.0.11",
     "babel-plugin-root-import": "^6.6.0",
     "customize-cra": "^1.0.0",
     "gen-flow-files": "^0.5.0",

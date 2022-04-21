@@ -1,8 +1,6 @@
 import { lazy, useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -31,7 +29,6 @@ const Markdown = lazy(() => import('~/comp/markdown'));
 export default function Event() {
   const { enqueueSnackbar } = useSnackbar();
   const [keyword, setKeyword] = useState('');
-  const [days, setDays] = useState(7);
   const [level, setLevel] = useState('0');
   const [fresh, setFresh] = useState('all');
   const [list, setList] = useState([]);
@@ -49,8 +46,8 @@ export default function Event() {
       try {
         setLoading(true);
 
-        const query = new URLSearchParams({ page, rows, keyword, days, level, fresh });
-        const resp = await get('/system/event/?' + query.toString());
+        const q = new URLSearchParams({ page, rows, keyword, level, fresh });
+        const resp = await get('/system/event/?' + q.toString());
         if (resp.count > 0) {
           let pages = resp.count / rows;
           if (resp.count % rows > 0) {
@@ -69,7 +66,7 @@ export default function Event() {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rows, keyword, days, level, fresh]);
+  }, [enqueueSnackbar, page, rows, keyword, level, fresh]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -85,12 +82,6 @@ export default function Event() {
   const onKeywordChange = value => {
     setPage(0);
     setKeyword(value);
-  }
-
-  // 时间段
-  const onDaysChange = e => {
-    setPage(0);
-    setDays(e.target.value);
   }
 
   // 级别
@@ -136,16 +127,6 @@ export default function Event() {
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
           sx={{ minWidth: 300 }}
         />
-        <TextField
-          select variant='standard' sx={{ ml: 2, minWidth: 100 }}
-          value={days} onChange={onDaysChange}>
-          <MenuItem value={7}>近一周</MenuItem>
-          <MenuItem value={30}>近一月</MenuItem>
-          <MenuItem value={90}>近三月</MenuItem>
-          <MenuItem value={365}>近一年</MenuItem>
-          <MenuItem value={365000}>不限时间</MenuItem>
-        </TextField>
-
         <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ flex: 1 }}>
           <ToggleButtonGroup exclusive size='small' color='primary' aria-label="级别"
             value={level} onChange={onLevelChange}>
