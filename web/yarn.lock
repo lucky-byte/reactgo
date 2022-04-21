@@ -2340,7 +2340,7 @@
     prop-types "^15.7.2"
     react-is "^17.0.2"
 
-"@mui/utils@^5.6.1":
+"@mui/utils@^5.6.0", "@mui/utils@^5.6.1":
   version "5.6.1"
   resolved "https://registry.yarnpkg.com/@mui/utils/-/utils-5.6.1.tgz#4ab79a21bd481555d9a588f4b18061b3c28ea5db"
   integrity sha512-CPrzrkiBusCZBLWu0Sg5MJvR3fKJyK3gKecLVX012LULyqg2U64Oz04BKhfkbtBrPBbSQxM+DWW9B1c9hmV9nQ==
@@ -2361,6 +2361,21 @@
     "@date-io/luxon" "^2.11.1"
     "@date-io/moment" "^2.11.0"
     "@mui/utils" "^5.2.3"
+    clsx "^1.1.1"
+    prop-types "^15.7.2"
+    react-transition-group "^4.4.2"
+    rifm "^0.12.1"
+
+"@mui/x-date-pickers@^5.0.0-alpha.1":
+  version "5.0.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-5.0.0-alpha.1.tgz#7450b5544b9ed655db41891c74e2c5f652fbedb7"
+  integrity sha512-dLPkRiIn2Gr0momblxiOnIwrxn4SijVix+8e08mwAGWhiWcmWep1O9XTRDpZsjB0kjHYCf+kZjlRX4dxnj2acg==
+  dependencies:
+    "@date-io/date-fns" "^2.11.0"
+    "@date-io/dayjs" "^2.11.0"
+    "@date-io/luxon" "^2.11.1"
+    "@date-io/moment" "^2.11.0"
+    "@mui/utils" "^5.6.0"
     clsx "^1.1.1"
     prop-types "^15.7.2"
     react-transition-group "^4.4.2"

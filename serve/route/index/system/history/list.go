@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/labstack/echo/v4"
@@ -19,19 +18,17 @@ func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	var page, rows uint
-	var days int
-	var keyword string
+	var keyword, date string
 
 	err := echo.QueryParamsBinder(c).
 		MustUint("page", &page).
 		MustUint("rows", &rows).
-		MustInt("days", &days).
+		String("date", &date).
 		String("keyword", &keyword).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
 	}
 	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
-	startAt := time.Now().AddDate(0, 0, -days)
 	offset := page * rows
 
 	pg := db.NewPagination("signin_history", offset, rows)
@@ -39,7 +36,9 @@ func list(c echo.Context) error {
 	pg.Where(goqu.Or(
 		pg.Col("userid").ILike(keyword), pg.Col("name").ILike(keyword),
 	))
-	pg.Where(pg.Col("create_at").Gt(startAt))
+	if len(date) > 0 {
+		pg.Where(goqu.L("date(create_at)").Eq(date))
+	}
 	pg.OrderBy(pg.Col("create_at").Desc())
 
 	var count uint

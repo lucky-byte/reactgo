@@ -4,8 +4,8 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { zhCN } from '@mui/material/locale';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DateAdapter from '@mui/lab/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CssBaseline from "@mui/material/CssBaseline";
 import IconButton from "@mui/material/IconButton";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -209,7 +209,7 @@ export default function App() {
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <LocalizationProvider dateAdapter={DateAdapter}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
           <ConfirmProvider defaultOptions={{
             title: '请确认',
             cancellationText: '取消',

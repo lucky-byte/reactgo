@@ -2,10 +2,8 @@ import { useEffect, useState } from 'react';
 import Container from "@mui/material/Container";
 import Toolbar from '@mui/material/Toolbar';
 import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Tooltip from '@mui/material/Tooltip';
-import HistoryIcon from '@mui/icons-material/History';
-import MenuItem from '@mui/material/MenuItem';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableFooter from '@mui/material/TableFooter';
@@ -30,7 +28,7 @@ export default function History() {
   const { enqueueSnackbar } = useSnackbar();
   const [pageData, setPageData] = usePageData();
   const [keyword, setKeyword] = useState([]);
-  const [days, setDays] = useState(7);
+  const [date, setDate] = useState(null);
   const [count, setCount] = useState(0);
   const [list, setList] = useState([]);
   const [page, setPage] = useState(0);
@@ -44,8 +42,9 @@ export default function History() {
       try {
         setLoading(true);
 
-        const query = new URLSearchParams({ page, rows, keyword, days });
-        const resp = await get('/system/history/?' + query.toString());
+        const d = date ? date.format('L') : '';
+        const q = new URLSearchParams({ page, rows, keyword, date: d });
+        const resp = await get('/system/history/?' + q.toString());
         setList(resp.list || []);
         setCount(resp.count || 0);
       } catch (err) {
@@ -54,7 +53,7 @@ export default function History() {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rows, keyword, days]);
+  }, [enqueueSnackbar, page, rows, keyword, date]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -62,10 +61,10 @@ export default function History() {
     setPage(0);
   }
 
-  // 时间段
-  const onDaysChange = e => {
+  // 日期
+  const onDateChange = v => {
     setPage(0);
-    setDays(e.target.value);
+    setDate(v);
   }
 
   // 页面改变
@@ -89,40 +88,30 @@ export default function History() {
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
           sx={{ minWidth: 300 }}
         />
-        <TextField
-          select variant='standard' sx={{ ml: 2, minWidth: 140 }}
-          value={days} onChange={onDaysChange}
-          InputProps={{
-            startAdornment:
-              <InputAdornment position="start">
-                <Tooltip title='时间'>
-                  <HistoryIcon fontSize='small' sx={{ cursor: 'help' }} />
-                </Tooltip>
-              </InputAdornment>,
-          }}>
-          <MenuItem value={7}>近一周</MenuItem>
-          <MenuItem value={30}>近一月</MenuItem>
-          <MenuItem value={90}>近三月</MenuItem>
-          <MenuItem value={365}>近一年</MenuItem>
-          <MenuItem value={365000}>不限时间</MenuItem>
-        </TextField>
+        <DatePicker
+          value={date} onChange={onDateChange}
+          inputFormat='MM/DD/YYYY'
+          maxDate={dayjs()}
+          renderInput={props => (
+            <TextField {...props} variant='standard' sx={{ ml: 2, width: 180 }} />
+          )}
+        />
       </Toolbar>
       <TableContainer component={OutlinedPaper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell align="center">登录时间</TableCell>
               <TableCell align="center">登录名</TableCell>
               <TableCell align="center">姓名</TableCell>
               <TableCell align="center">设备</TableCell>
               <TableCell align="center">信任</TableCell>
               <TableCell align="center">位置</TableCell>
+              <TableCell align="center">登录时间</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {list.map((row, index) => (
               <TableRow key={index} hover>
-                <TableCell align="center">{dayjs(row.create_at).fromNow()}</TableCell>
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">{row.browser} on {row.os}</TableCell>
@@ -139,6 +128,7 @@ export default function History() {
                     </Typography>
                   </Tooltip>
                 </TableCell>
+                <TableCell align="center">{dayjs(row.create_at).fromNow()}</TableCell>
               </TableRow>
             ))}
           </TableBody>

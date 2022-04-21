@@ -2,7 +2,7 @@ import { lazy, useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -26,7 +26,7 @@ const Markdown = lazy(() => import('~/comp/markdown'));
 export default function Ops() {
   const { enqueueSnackbar } = useSnackbar();
   const [keyword, setKeyword] = useState('');
-  const [days, setDays] = useState(7);
+  const [date, setDate] = useState(null);
   const [method, setMethod] = useState('ALL');
   const [list, setList] = useState([]);
   const [count, setCount] = useState(0);
@@ -35,15 +35,16 @@ export default function Ops() {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  useTitle('操作记录');
+  useTitle('操作审计');
 
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
 
-        const query = new URLSearchParams({ page, rows, keyword, days, method });
-        const resp = await get('/system/ops/?' + query.toString());
+        const d = date ? date.format('L') : '';
+        const q = new URLSearchParams({ page, rows, keyword, date: d, method });
+        const resp = await get('/system/ops/?' + q.toString());
         if (resp.count > 0) {
           let pages = resp.count / rows;
           if (resp.count % rows > 0) {
@@ -61,7 +62,7 @@ export default function Ops() {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rows, keyword, days, method]);
+  }, [enqueueSnackbar, page, rows, keyword, date, method]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -79,10 +80,10 @@ export default function Ops() {
     setKeyword(value);
   }
 
-  // 时间段
-  const onDaysChange = e => {
+  // 日期
+  const onDateChange = v => {
     setPage(0);
-    setDays(e.target.value);
+    setDate(v);
   }
 
   // 方法
@@ -100,16 +101,14 @@ export default function Ops() {
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
           sx={{ minWidth: 300 }}
         />
-        <TextField
-          select variant='standard' sx={{ ml: 2, minWidth: 100 }}
-          value={days} onChange={onDaysChange}>
-          <MenuItem value={7}>近一周</MenuItem>
-          <MenuItem value={30}>近一月</MenuItem>
-          <MenuItem value={90}>近三月</MenuItem>
-          <MenuItem value={365}>近一年</MenuItem>
-          <MenuItem value={365000}>不限时间</MenuItem>
-        </TextField>
-
+        <DatePicker
+          value={date} onChange={onDateChange}
+          inputFormat='MM/DD/YYYY'
+          maxDate={dayjs()}
+          renderInput={props => (
+            <TextField {...props} variant='standard' sx={{ ml: 2, width: 180 }} />
+          )}
+        />
         <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ flex: 1 }}>
           <ToggleButtonGroup exclusive size='small' color='primary' aria-label="级别"
             value={method} onChange={onMethodChange}>
@@ -139,7 +138,7 @@ export default function Ops() {
                   size='small' variant='outlined'
                 />
                 <Typography variant='caption' sx={{ color: 'gray' }}>
-                  {dayjs(item.create_at).format('LLLL') + ' '}
+                  {dayjs(item.create_at).format('L LT') + ' '}
                   ({item.timeAgo || dayjs(item.create_at).fromNow()})
                 </Typography>
               </Stack>

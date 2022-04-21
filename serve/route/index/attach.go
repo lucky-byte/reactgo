@@ -61,53 +61,58 @@ func opsMiddleware() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			cc := c.(*ctx.Context)
 
-			if strings.ToUpper(c.Request().Method) != http.MethodGet {
-				req := c.Request()
+			req := c.Request()
 
-				content_type := req.Header.Get("content-type")
-				body := ""
+			// 忽略 GET 请求
+			if strings.ToUpper(req.Method) == http.MethodGet {
+				return next(c)
+			}
+			content_type := req.Header.Get("content-type")
+			body := ""
 
-				if strings.Index(content_type, "multipart/form-data") < 0 {
-					b, err := io.ReadAll(req.Body)
+			// 带有附件
+			if strings.Index(content_type, "multipart/form-data") >= 0 {
+				body = "`multipart/form-data`"
+			} else {
+				b, err := io.ReadAll(req.Body)
+				if err != nil {
+					cc.ErrLog(err).Error("读请求 Body 错")
+					return next(c)
+				}
+				req.Body.Close()
+				req.Body = io.NopCloser(bytes.NewBuffer(b))
+
+				body = string(b)
+
+				if strings.Index(content_type, "x-www-form-urlencoded") >= 0 {
+					params, err := url.ParseQuery(body)
 					if err != nil {
-						cc.ErrLog(err).Error("读请求 Body 错")
-						return next(c)
-					}
-					req.Body.Close()
-					req.Body = io.NopCloser(bytes.NewBuffer(b))
-
-					if strings.Index(content_type, "x-www-form-urlencoded") >= 0 {
-						params, err := url.ParseQuery(body)
-						if err != nil {
-							cc.ErrLog(err).Errorf("解析请求数据错 %s", body)
-						} else {
-							var m = make(map[string]any)
-
-							for k, i := range params {
-								m[k] = strings.Join(i, ",")
-							}
-							s, err := json.MarshalIndent(m, "", "  ")
-							if err != nil {
-								cc.ErrLog(err).Error("JSON marshal 错")
-							} else {
-								body = fmt.Sprintf("```json\n%s\n```", s)
-							}
-						}
+						cc.ErrLog(err).Errorf("解析请求数据错 %s", body)
 					} else {
-						body = string(b)
+						var m = make(map[string]any)
+
+						for k, i := range params {
+							m[k] = strings.Join(i, ",")
+						}
+						s, err := json.MarshalIndent(m, "", "  ")
+						if err != nil {
+							cc.ErrLog(err).Error("JSON marshal 错")
+						} else {
+							body = fmt.Sprintf("```json\n%s\n```", s)
+						}
 					}
 				}
-				ql := `
+			}
+			ql := `
 					insert into ops (uuid, user_uuid, method, url, body)
 					values (?, ?, ?, ?, ?)
 				`
-				id := uuid.NewString()
-				user := cc.User()
+			id := uuid.NewString()
+			user := cc.User()
 
-				err := db.ExecOne(ql, id, user.UUID, req.Method, req.URL.Path, body)
-				if err != nil {
-					cc.ErrLog(err).Error("添加操作记录错")
-				}
+			err := db.ExecOne(ql, id, user.UUID, req.Method, req.URL.Path, body)
+			if err != nil {
+				cc.ErrLog(err).Error("添加操作记录错")
 			}
 			return next(c)
 		}

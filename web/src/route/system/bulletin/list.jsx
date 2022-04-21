@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import TextField from '@mui/material/TextField';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -46,7 +47,7 @@ export default function List() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [keyword, setKeyword] = useState([]);
-  const [days, setDays] = useState(7);
+  const [date, setDate] = useState(null);
   const [list, setList] = useState([]);
   const [count, setCount] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -63,8 +64,9 @@ export default function List() {
       try {
         setLoading(true);
 
-        const query = new URLSearchParams({ page, rows, keyword, days });
-        const resp = await get('/system/bulletin/?' + query.toString());
+        const d = date ? date.format('L') : '';
+        const q = new URLSearchParams({ page, rows, keyword, date: d });
+        const resp = await get('/system/bulletin/?' + q.toString());
         if (resp.count > 0) {
           let pages = resp.count / rows;
           if (resp.count % rows > 0) {
@@ -82,7 +84,7 @@ export default function List() {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar, page, rows, keyword, days, refresh]);
+  }, [enqueueSnackbar, page, rows, keyword, date, refresh]);
 
   // 更新时间
   useEffect(() => {
@@ -111,10 +113,10 @@ export default function List() {
     setKeyword(value);
   }
 
-  // 时间段
-  const onDaysChange = e => {
+  // 日期
+  const onDateChange = v => {
     setPage(0);
-    setDays(e.target.value);
+    setDate(v);
   }
 
   // 点击标题展开
@@ -135,15 +137,14 @@ export default function List() {
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
           sx={{ minWidth: 300 }}
         />
-        <TextField
-          select variant='standard' sx={{ ml: 2, minWidth: 100 }}
-          value={days} onChange={onDaysChange}>
-          <MenuItem value={7}>近一周</MenuItem>
-          <MenuItem value={30}>近一月</MenuItem>
-          <MenuItem value={90}>近三月</MenuItem>
-          <MenuItem value={365}>近一年</MenuItem>
-          <MenuItem value={365000}>不限时间</MenuItem>
-        </TextField>
+        <DatePicker
+          value={date} onChange={onDateChange}
+          inputFormat='MM/DD/YYYY'
+          maxDate={dayjs()}
+          renderInput={props => (
+            <TextField {...props} variant='standard' sx={{ ml: 2, width: 180 }} />
+          )}
+        />
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Button variant='outlined' size='small' startIcon={<AddIcon />}
           onClick={() => { navigate('edit') }}>
