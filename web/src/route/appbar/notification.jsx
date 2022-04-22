@@ -56,8 +56,13 @@ export default function Notification() {
     if (!notification.title) {
       return;
     }
+    const seeMore = () => {
+      closeSnackbar();
+      window.location.href = '/user/notification';
+    }
+
     enqueueSnackbar(notification.title, {
-      variant: 'info',
+      variant: 'default',
       preventDuplicate: true,
       autoHideDuration: 10000,
       anchorOrigin: {
@@ -65,10 +70,7 @@ export default function Notification() {
       },
       action: (
         <>
-          <IconButton onClick={() => {
-            closeSnackbar();
-            window.location.href = '/system/event';
-          }}>
+          <IconButton onClick={seeMore}>
             <MoreHorizIcon sx={{ color: 'white' }} />
           </IconButton>
           <IconButton onClick={() => { closeSnackbar() }}>

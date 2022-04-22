@@ -309,7 +309,7 @@ function MenuIcon(props) {
           <ListItemIcon>
             <SendIcon fontSize="small" color='success' />
           </ListItemIcon>
-          <ListItemText>立即发布</ListItemText>
+          <ListItemText>发布</ListItemText>
         </MenuItem>
       </Menu>
     </>

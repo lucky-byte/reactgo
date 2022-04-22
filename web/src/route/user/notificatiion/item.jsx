@@ -41,7 +41,6 @@ export default function Item() {
         setProgress(true);
 
         const resp = await get('/user/notification/' + params.uuid)
-
         setNotification(resp);
 
         // 如果是未读状态，则请求更新本地通知状态
@@ -82,7 +81,7 @@ export default function Item() {
       </Typography>
       {notification.create_at &&
         <Typography variant='caption' paragraph textAlign='center'>
-          {dayjs(notification.create_at).format('LLLL')}
+          发布时间：{dayjs(notification.create_at).format('LLLL')}
         </Typography>
       }
       <Markdown>{notification.content}</Markdown>

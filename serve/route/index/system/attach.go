@@ -9,6 +9,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/index/system/history"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/node"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/ops"
+	"github.com/lucky-byte/reactgo/serve/route/index/system/setting"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/settings"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/task"
 	"github.com/lucky-byte/reactgo/serve/route/index/system/user"
@@ -19,7 +20,7 @@ const (
 	menuCodeACL      = 9010
 	menuCodeHistory  = 9020
 	menuCodeOps      = 9025
-	menuCodeSettings = 9030
+	menuCodeSetting  = 9030
 	menuCodeEvent    = 9040
 	menuCodeTask     = 9050
 	menuCodeNode     = 9060
@@ -33,7 +34,8 @@ func Attach(up *echo.Group) {
 	acl.Attach(group, menuCodeACL)
 	history.Attach(group, menuCodeHistory)
 	ops.Attach(group, menuCodeOps)
-	settings.Attach(group, menuCodeSettings)
+	settings.Attach(group, menuCodeSetting)
+	setting.Attach(group, menuCodeSetting)
 	event.Attach(group, menuCodeEvent)
 	task.Attach(group, menuCodeTask)
 	node.Attach(group, menuCodeNode)

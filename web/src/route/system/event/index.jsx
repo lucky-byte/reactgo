@@ -105,7 +105,7 @@ export default function Event() {
     if (expanded && event.fresh) {
       try {
         await put('/system/event/unfresh', new URLSearchParams({
-          uuid: event.uuid,
+          uuid: event.uuid, _noop: true,
         }));
         setList(list.map(e => {
           if (e.uuid === event.uuid) {

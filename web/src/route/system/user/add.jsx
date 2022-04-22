@@ -13,13 +13,9 @@ import Checkbox from '@mui/material/Checkbox';
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
 import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import Tooltip from '@mui/material/Tooltip';
-import { grey } from '@mui/material/colors';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import progressState from '~/state/progress';
@@ -184,7 +180,7 @@ export default function Add() {
                 />
               </Stack>
               <Stack>
-                <TextField id='acl' label='访问控制角色' variant='standard' fullWidth
+                <TextField id='acl' label='访问控制' variant='standard' fullWidth
                   required select defaultValue=''
                   helperText={errors?.acl?.message}
                   {...register('acl', { required: "不能为空" })}>
@@ -198,23 +194,15 @@ export default function Add() {
                           :
                           <Typography sx={{ flex: 1 }}>{acl.name}</Typography>
                         }
-                        <Tooltip title={acl.summary} placement="top-start">
-                          <HelpOutlineIcon
-                            fontSize='small' sx={{ ml: 2, color: grey[600] }}
-                          />
-                        </Tooltip>
+                        <Typography variant='caption' noWrap sx={{maxWidth: 500}}>{acl.summary}</Typography>
                       </Stack>
                     </MenuItem>
                   ))}
                 </TextField>
-                <FormHelperText>
-                  未找到符合条件的访问控制角色？
-                  <Link component={RouteLink} to='/system/acl/add'>点击这里</Link>
-                  添加一个
-                </FormHelperText>
+                <FormHelperText>请正确选择用户的访问控制角色，以免越权访问</FormHelperText>
               </Stack>
               <TextField label='联系地址' variant='standard' fullWidth
-                placeholder='联系地址，如果没有可以不填'
+                placeholder='用户联系地址，如果没有可以不填'
                 {...register('address', {
                   maxLength: {
                     value: 256, message: '超出最大长度'
@@ -240,7 +228,7 @@ export default function Add() {
                     <Stack spacing={0}>
                       <Typography>将登录信息（网址、登录名及密码）发送到用户邮箱</Typography>
                       <FormHelperText sx={{ mt: 0 }}>
-                        邮件中将包含所有登录需要的信息，请务必确认录入的邮箱地址正确，并属于该用户
+                        邮件中包含用户登录需要的所有信息(包括密码)，请确认录入的邮箱地址正确无误
                       </FormHelperText>
                     </Stack>
                   }

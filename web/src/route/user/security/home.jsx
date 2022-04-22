@@ -12,7 +12,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import userState from "~/state/user";
 import useTitle from "~/hook/title";
 
-export default function SecurityHome() {
+export default function Home() {
   const navigate = useNavigate();
   const user = useRecoilValue(userState);
 
