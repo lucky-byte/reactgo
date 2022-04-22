@@ -3,14 +3,16 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import HistoryIcon from '@mui/icons-material/History';
 import SecurityIcon from '@mui/icons-material/Security';
 import SettingsIcon from '@mui/icons-material/Settings';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
-import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
-import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
+import ArchitectureIcon from '@mui/icons-material/Architecture';
+import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
+import SlideshowIcon from '@mui/icons-material/Slideshow';
 
 const menus = [{
   title: '欢迎',
@@ -19,16 +21,25 @@ const menus = [{
     icon: AccessibilityNewIcon,
   }, {
     code: 101,
-    icon: DashboardIcon,
+    icon: DashboardOutlinedIcon,
   }],
 }, {
   title: '资源管理',
   items: [{
     code: 8100,
-    icon: PhotoCameraBackIcon,
+    icon: PhotoOutlinedIcon,
   }, {
     code: 8200,
-    icon: OndemandVideoIcon,
+    icon: SlideshowIcon,
+  }],
+}, {
+  title: '设计工具',
+  items: [{
+    code: 8500,
+    icon: ArchitectureIcon,
+  }, {
+    code: 8600,
+    icon: AirlineStopsIcon,
   }],
 }, {
   title: '系统管理',

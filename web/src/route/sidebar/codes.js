@@ -29,6 +29,10 @@ const urlCodes = {
   8100: { title: '图片管理', to: '/media/images' },
   8200: { title: '视频管理', to: '/media/videos' },
 
+  // 设计工具
+  8500: { title: '页面设计', to: '/designer/page' },
+  8600: { title: '流程设计', to: '/designer/flow' },
+
   // 下面自定义业务
   100: { title: '欢迎', to: '/' },
   101: { title: '看板', to: '/kanban' },

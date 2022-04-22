@@ -10,9 +10,10 @@ export default function NotFound() {
   useTitle('页面不存在');
 
   return (
-    <Stack alignItems='center' spacing={1}>
-      <Typography variant='body1' mt={8}>你访问的页面不存在</Typography>
-      <Stack direction='row' sx={{ mt: 0 }} spacing={1}>
+    <Stack alignItems='center' spacing={2} mt={6}>
+      <Typography variant='h6'>页面不存在</Typography>
+      <Typography variant='body1'>{window.location.href}</Typography>
+      <Stack direction='row' spacing={1}>
         <Button onClick={() => { navigate('/') }} color="secondary">
           首页
         </Button>

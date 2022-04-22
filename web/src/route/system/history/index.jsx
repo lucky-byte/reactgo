@@ -122,13 +122,20 @@ export default function History() {
                   }
                 </TableCell>
                 <TableCell align="center">
-                  <Tooltip title={row.ip} arrow placement='right'>
+                  <Tooltip title={row.ip} arrow placement='left'>
                     <Typography variant='body2' sx={{ cursor: 'default' }}>
                       {geo(row) || row.ip}
                     </Typography>
                   </Tooltip>
                 </TableCell>
-                <TableCell align="center">{dayjs(row.create_at).fromNow()}</TableCell>
+                <TableCell align="center">
+                  <Tooltip title={dayjs(row.create_at).format('L LT')} arrow
+                    placement='right'>
+                    <Typography variant='body2' sx={{ cursor: 'default' }}>
+                      {dayjs(row.create_at).fromNow()}
+                    </Typography>
+                  </Tooltip>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

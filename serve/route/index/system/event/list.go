@@ -45,29 +45,17 @@ func list(c echo.Context) error {
 	pg.OrderBy(pg.Col("create_at").Desc())
 
 	var count uint
-	var records []db.Event
+	var list []db.Event
 
-	err = pg.Select(pg.Col("*")).Exec(&count, &records)
+	err = pg.Select(pg.Col("*")).Exec(&count, &list)
 	if err != nil {
 		cc.ErrLog(err).Error("查询事件错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var list []echo.Map
-
-	for _, h := range records {
-		list = append(list, echo.Map{
-			"uuid":      h.UUID,
-			"create_at": h.CreateAt,
-			"level":     h.Level,
-			"title":     h.Title,
-			"message":   h.Message,
-			"fresh":     h.Fresh,
-		})
-	}
-	freshCount := 0
 
 	// 查询未读事件数
 	ql := `select count(*) from events where fresh = true`
+	freshCount := 0
 
 	if err = db.SelectOne(ql, &freshCount); err != nil {
 		cc.ErrLog(err).Error("查询事件表错")

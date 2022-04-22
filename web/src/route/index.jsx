@@ -23,6 +23,7 @@ import NotFound from "./notfound";
 import About from "./about";
 import Codes from "./codes";
 import Dashboard from "./dashboard";
+import Media from "./media";
 import System from "./system";
 import User from "./user";
 
@@ -86,6 +87,7 @@ export default function Index() {
               <Routes>
                 <Route path='/*' element={<Dashboard />} />
                 <Route path='user/*' element={<User />} />
+                <Route path='media/*' element={<Media />} />
                 <Route path='system/*' element={<System />} />
                 <Route path='codes' element={<Codes />} />
                 <Route path='about' element={<About />} />
