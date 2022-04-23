@@ -8,6 +8,7 @@ import Box from '@mui/material/Box';
 import NotFound from "~/route/notfound";
 import tabState from "./state";
 import Mail from './mail';
+import SMS from "./sms";
 
 const tabsArray = [
   { title: '邮件服务', value: 1, to: 'mail', },
@@ -35,6 +36,7 @@ export default function Setting() {
           <Routes>
             <Route path='/' element={<Index />} />
             <Route path='mail/*' element={<Mail />} />
+            <Route path='sms/*' element={<SMS />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Box>

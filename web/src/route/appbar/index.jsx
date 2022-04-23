@@ -25,6 +25,7 @@ import DirectionsIcon from '@mui/icons-material/Directions';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyIcon from '@mui/icons-material/Key';
 import SecurityIcon from '@mui/icons-material/Security';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SupportIcon from '@mui/icons-material/Support';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -118,36 +119,6 @@ export default function Appbar(params) {
     setAnchorEl(null);
   };
 
-  // 个人资料
-  const onProfile = () => {
-    onUserMenuClose();
-    navigate('user/profile');
-  }
-
-  // 修改密码
-  const onChangePassword = () => {
-    setAnchorEl(null);
-    navigate('user/password');
-  }
-
-  // 安全设置
-  const onSecurity = () => {
-    onUserMenuClose();
-    navigate('user/security');
-  }
-
-  // 通知
-  const onNotification = () => {
-    onUserMenuClose();
-    navigate('user/notification');
-  }
-
-  // 关于
-  const onAbout = () => {
-    onUserMenuClose();
-    navigate('/about');
-  }
-
   // 退出登录
   const onLogout = () => {
     const cookies = new Cookies();
@@ -201,34 +172,41 @@ export default function Appbar(params) {
             </Button>
           }
         </Stack>
-        <Menu anchorEl={anchorEl} open={sidebarOpen} onClose={onUserMenuClose}>
-          <MenuItem onClick={onProfile}>
+        <Menu anchorEl={anchorEl} open={sidebarOpen} onClose={onUserMenuClose}
+          onClick={onUserMenuClose}>
+          <MenuItem component={RouteLink} to='/user/profile'>
             <ListItemIcon>
               <AccountCircleIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>个人资料</ListItemText>
           </MenuItem>
-          <MenuItem onClick={onChangePassword}>
+          <MenuItem component={RouteLink} to='/user/password'>
             <ListItemIcon>
               <KeyIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>修改密码</ListItemText>
           </MenuItem>
-          <MenuItem onClick={onSecurity}>
+          <MenuItem component={RouteLink} to='/user/security'>
             <ListItemIcon>
               <SecurityIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>安全设置</ListItemText>
           </MenuItem>
+          <MenuItem component={RouteLink} to='/user/oidc'>
+            <ListItemIcon>
+              <GroupAddIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>绑定账号</ListItemText>
+          </MenuItem>
           <Divider />
-          <MenuItem onClick={onNotification}>
+          <MenuItem component={RouteLink} to='/user/notification'>
             <ListItemIcon>
               <NotificationsIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>通知</ListItemText>
           </MenuItem>
           <Divider />
-          <MenuItem onClick={onAbout}>
+          <MenuItem component={RouteLink} to='/about'>
             <ListItemIcon>
               <SupportIcon fontSize="small" />
             </ListItemIcon>

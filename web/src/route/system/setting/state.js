@@ -19,4 +19,8 @@ const useMailTab = () => {
   useTab(1);
 }
 
-export { useMailTab }
+const useSMSTab = () => {
+  useTab(2);
+}
+
+export { useMailTab, useSMSTab }

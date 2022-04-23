@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import { useNavigate, Link } from "react-router-dom";
+import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import FormHelperText from "@mui/material/FormHelperText";
@@ -90,48 +91,50 @@ export default function Home() {
         你可以配置多个支持 SMTP 协议的邮件传输代理，系统将在第一个服务器发送失败的情况下使用第二个，
         依此类推
       </Typography>
-      <Stack direction='row' justifyContent='flex-end' sx={{ my: 1 }}>
-        <Button component={Link} to='add'>添加</Button>
-        <Import requestRefresh={() => setRefresh(true)} />
-        <Button color="warning" onClick={onExport}>导出</Button>
-      </Stack>
-      <TableContainer component={OutlinedPaper}>
-        <Table sx={{ minWidth: 650 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">名称</TableCell>
-              <TableCell align="center">服务器</TableCell>
-              <TableCell align="center">发件人</TableCell>
-              <TableCell align="center">发送量</TableCell>
-              <TableCell as='td' align="center" padding="checkbox" />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {list.map(m => (
-              <TableRow key={m.uuid}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align="center">{m.name}</TableCell>
-                <TableCell align="center">{m.host}:{m.port}</TableCell>
-                <TableCell align="center">{m.sender}</TableCell>
-                <TableCell align="center">{m.nsent}</TableCell>
-                <TableCell align="center" padding="checkbox">
-                  <MenuButton uuid={m.uuid} name={m.name} sortno={m.sortno}
-                    requestRefresh={() => setRefresh(true)}
-                  />
-                </TableCell>
+      <Paper sx={{ px: 3, py: 3, mt: 3 }}>
+        <Stack direction='row' justifyContent='flex-end' sx={{ mb: 1 }}>
+          <Button component={Link} to='add'>添加</Button>
+          <Import requestRefresh={() => setRefresh(true)} />
+          <Button color="warning" onClick={onExport}>导出</Button>
+        </Stack>
+        <TableContainer component={OutlinedPaper}>
+          <Table sx={{ minWidth: 650 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell align="center">名称</TableCell>
+                <TableCell align="center">服务器</TableCell>
+                <TableCell align="center">发件人</TableCell>
+                <TableCell align="center">发信量</TableCell>
+                <TableCell as='td' align="center" padding="checkbox" />
               </TableRow>
-            ))}
-            {list?.length === 0 &&
-              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell colSpan={9} align="center">空</TableCell>
-              </TableRow>
-            }
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {list.map(m => (
+                <TableRow key={m.uuid}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableCell align="center">{m.name}</TableCell>
+                  <TableCell align="center">{m.host}:{m.port}</TableCell>
+                  <TableCell align="center">{m.sender}</TableCell>
+                  <TableCell align="center">{m.nsent}</TableCell>
+                  <TableCell align="center" padding="checkbox">
+                    <MenuButton uuid={m.uuid} name={m.name} sortno={m.sortno}
+                      requestRefresh={() => setRefresh(true)}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              {list?.length === 0 &&
+                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableCell colSpan={9} align="center">空</TableCell>
+                </TableRow>
+              }
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
       <FormHelperText sx={{ mb: 0 }}>
         请注意: 公共的邮件服务器(例如QQ邮箱)有发送频率限制，
-        如果系统需要发送大量邮件，需使用专用的邮件服务，或配置自己的邮件传输代理。
+        如果系统需要发送大量邮件，需使用专用的邮件服务，或配置自己的邮件传输代理
       </FormHelperText>
     </Stack>
   )
@@ -140,7 +143,7 @@ export default function Home() {
 function MenuButton(props) {
   const navigate = useNavigate();
   const confirm = useConfirm();
-  const secretCode= useSecretCode();
+  const secretCode = useSecretCode();
   const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState(null);
   const [testOpen, setTestOpen] = useState(false);
@@ -170,11 +173,11 @@ function MenuButton(props) {
   }
 
   const onInfo = () => {
-    navigate('info', { state: { uuid }});
+    navigate('info', { state: { uuid } });
   }
 
   const onModify = () => {
-    navigate('modify', { state: { uuid }});
+    navigate('modify', { state: { uuid } });
   }
 
   const onTest = () => {

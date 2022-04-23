@@ -38,7 +38,7 @@ export default function Test(props) {
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='xs' disableEscapeKeyDown>
+    <Dialog open={open} onClose={onClose} maxWidth='xs'>
       <DialogTitle>发送测试邮件</DialogTitle>
       <DialogContent>
         <DialogContentText>通过 <em>{name}</em> 发送测试邮件</DialogContentText>
