@@ -54,8 +54,8 @@ export default function Password() {
 
   return (
     <Container as='main' maxWidth='sm' sx={{ mb: 2 }}>
-      <Paper elevation={3} sx={{ px: 5, py: 3, mt: 5 }}>
-        <Typography variant='h6'>登录密码</Typography>
+      <Paper sx={{ px: 5, py: 3, mt: 5 }}>
+        <Typography variant='h6'>修改登录密码</Typography>
         <Typography variant='subtitle1' sx={{ mb: 3 }} color='secondary'>
           {location?.state?.name}
         </Typography>
@@ -101,7 +101,7 @@ export default function Password() {
               } />
             </Stack>
           </Paper>
-          <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 2 }}>
+          <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 4 }}>
             <Button color='secondary' disabled={isSubmitting}
               onClick={() => { navigate('..') }}>
               取消

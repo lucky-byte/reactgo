@@ -41,9 +41,11 @@ func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 					cc.Log().Warnf("%s %s 耗时 %f 秒", method, urlpath, elapsed)
 				} else if elapsed > 1 {
 					// 如果处理请求超出 1 秒，记录一条信息
-					s := fmt.Sprintf("%s %s 耗时 %f 秒", method, urlpath, elapsed)
-					m := fmt.Sprintf("IP: %s, ReqID: %s", c.RealIP(), reqid)
-					event.Add(event.LevelTodo, s, m)
+					if conf.Debug() {
+						s := fmt.Sprintf("%s %s 耗时 %f 秒", method, urlpath, elapsed)
+						m := fmt.Sprintf("IP: %s, ReqID: %s", c.RealIP(), reqid)
+						event.Add(event.LevelTodo, s, m)
+					}
 				}
 				// 对于下列资源启用客户端缓存
 				if c.Request().Method == http.MethodGet {

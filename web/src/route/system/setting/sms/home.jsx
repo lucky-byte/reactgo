@@ -33,7 +33,8 @@ import useTitle from "~/hook/title";
 import progressState from '~/state/progress';
 import { useSMSTab } from '../state';
 import { get, put, del } from "~/rest";
-import { Paper } from "@mui/material";
+import Import from "./import";
+import Test from "./test";
 
 export default function Home() {
   const { enqueueSnackbar } = useSnackbar();
@@ -83,26 +84,171 @@ export default function Home() {
   }
 
   return (
-      <Paper elevation={1} sx={{ px: 4, py: 3 }}>
     <Stack>
       <Typography variant='h4'>短信服务</Typography>
       <Typography variant='body2'>
-        系统通过短信发送验证码等信息，请从下面选择一个短信服务商进行配置
+        系统通过短信发送验证码等信息，你可以从下面短信服务商中选择一个或多个进行配置
       </Typography>
-      <Paper variant='outlined' sx={{ p: 2, mt: 3 }}>
-          <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <Stack direction='row' spacing={1} alignItems='center'>
-              <Stack>
-                <Typography variant='h6'>GitHub</Typography>
-                <Typography variant='caption'>未授权</Typography>
-              </Stack>
-            </Stack>
-            <Button variant='contained'>
-              授权
-            </Button>
-          </Stack>
-      </Paper>
+      <Stack direction='row' justifyContent='flex-end' sx={{ my: 1 }}>
+        <Button component={Link} to='add'>添加</Button>
+        <Import requestRefresh={() => setRefresh(true)} />
+        <Button color="warning" onClick={onExport}>导出</Button>
+      </Stack>
+      <TableContainer component={OutlinedPaper}>
+        <Table sx={{ minWidth: 650 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">名称</TableCell>
+              <TableCell align="center">服务器</TableCell>
+              <TableCell align="center">发件人</TableCell>
+              <TableCell align="center">发信量</TableCell>
+              <TableCell as='td' align="center" padding="checkbox" />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {list.map(m => (
+              <TableRow key={m.uuid}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell align="center">{m.name}</TableCell>
+                <TableCell align="center">{m.host}:{m.port}</TableCell>
+                <TableCell align="center">{m.sender}</TableCell>
+                <TableCell align="center">{m.nsent}</TableCell>
+                <TableCell align="center" padding="checkbox">
+                  <MenuButton uuid={m.uuid} name={m.name} sortno={m.sortno}
+                    requestRefresh={() => setRefresh(true)}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+            {list?.length === 0 &&
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell colSpan={9} align="center">空</TableCell>
+              </TableRow>
+            }
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <FormHelperText sx={{ mb: 0 }}>
+        短信运营商会根据短信发送量收取费用，具体请参考各运营商的报价
+      </FormHelperText>
     </Stack>
-      </Paper>
+  )
+}
+
+function MenuButton(props) {
+  const navigate = useNavigate();
+  const confirm = useConfirm();
+  const secretCode = useSecretCode();
+  const { enqueueSnackbar } = useSnackbar();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [testOpen, setTestOpen] = useState(false);
+
+  const open = Boolean(anchorEl);
+
+  const { uuid, name, sortno, requestRefresh } = props;
+
+  const onOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const onClose = () => {
+    setAnchorEl(null);
+  }
+
+  const onSort = async dir => {
+    try {
+      await put('/system/setting/mail/sort', new URLSearchParams({
+        uuid, dir, sortno,
+      }));
+      enqueueSnackbar('更新成功', { variant: 'success' });
+      requestRefresh();
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  const onInfo = () => {
+    navigate('info', { state: { uuid } });
+  }
+
+  const onModify = () => {
+    navigate('modify', { state: { uuid } });
+  }
+
+  const onTest = () => {
+    setTestOpen(true);
+  }
+
+  const onDelete = async () => {
+    try {
+      await confirm({
+        description: `确定要删除 ${name} 吗？删除后无法恢复。`,
+        confirmationText: '删除',
+        confirmationButtonProps: { color: 'error' },
+      });
+      const token = await secretCode();
+
+      const params = new URLSearchParams({ uuid, secretcode_token: token });
+      await del('/system/setting/mail/delete?' + params.toString());
+      enqueueSnackbar('删除成功', { variant: 'success' });
+      requestRefresh();
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
+  return (
+    <>
+      <IconButton aria-label="菜单" onClick={onOpen}>
+        <MoreVertIcon color="primary" />
+      </IconButton>
+      <Menu anchorEl={anchorEl} open={open} onClose={onClose} onClick={onClose}>
+        <MenuItem onClick={onInfo}>
+          <ListItemIcon>
+            <ListAltIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>详细信息</ListItemText>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={() => onSort('top')}>
+          <ListItemIcon>
+            <VerticalAlignTopIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>移到最前</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => onSort('bottom')}>
+          <ListItemIcon>
+            <VerticalAlignBottomIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>移到最后</ListItemText>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={onModify}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>修改</ListItemText>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={onTest}>
+          <ListItemIcon>
+            <ForwardToInboxIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>发送测试邮件</ListItemText>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={onDelete}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" color='error' />
+          </ListItemIcon>
+          <ListItemText>删除</ListItemText>
+        </MenuItem>
+      </Menu>
+      <Test open={testOpen} onClose={() => setTestOpen(false)}
+        uuid={uuid} name={name}
+      />
+    </>
   )
 }

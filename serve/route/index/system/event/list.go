@@ -36,12 +36,13 @@ func list(c echo.Context) error {
 	pg.Where(goqu.Or(
 		pg.Col("title").ILike(keyword), pg.Col("message").ILike(keyword),
 	))
-
 	if fresh == "true" {
 		pg.Where(pg.Col("fresh").Eq(true))
 	} else if fresh == "false" {
 		pg.Where(pg.Col("fresh").Eq(false))
 	}
+	pg.Where(pg.Col("level").Gte(level))
+
 	pg.OrderBy(pg.Col("create_at").Desc())
 
 	var count uint

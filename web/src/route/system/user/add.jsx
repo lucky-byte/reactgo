@@ -73,12 +73,12 @@ export default function Add() {
 
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
-      <Paper elevation={3} sx={{ px: 4, py: 3, mt: 5 }}>
+      <Paper sx={{ px: 4, py: 3, mt: 5 }}>
         <Stack direction='row' alignItems='center' spacing={1} sx={{ mb: 3 }}>
           <IconButton aria-label='返回' component={RouteLink} to='..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
-          <Typography variant='h6'>用户资料</Typography>
+          <Typography variant='h6'>新用户资料</Typography>
         </Stack>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
@@ -239,7 +239,7 @@ export default function Add() {
               </Stack>
             </Stack>
           </Paper>
-          <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 2 }}>
+          <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 4 }}>
             <Button color='secondary' disabled={isSubmitting}
               onClick={() => { navigate('..') }}>
               取消

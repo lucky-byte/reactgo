@@ -18,6 +18,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import useTitle from "~/hook/title";
 import { post } from '~/rest';
+import { useMailTab } from '../state';
 
 export default function Add() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function Add() {
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
   useTitle('添加邮件服务');
+  useMailTab();
 
   const {
     register, handleSubmit, formState: { errors, isSubmitting }

@@ -9,14 +9,14 @@ import NotFound from "~/route/notfound";
 import tabState from "./state";
 import Mail from './mail';
 import SMS from "./sms";
+import Geoip from "./geoip";
+import Account from "./account";
 
 const tabsArray = [
   { title: '邮件服务', value: 1, to: 'mail', },
   { title: '短信服务', value: 2, to: 'sms', },
   { title: '定位服务', value: 3, to: 'geoip', },
   { title: '账号设置', value: 4, to: 'account', },
-  { title: 'OIDC认证', value: 5, to: 'oidc', },
-  { title: '单点登录', value: 6, to: 'saml', },
 ]
 
 export default function Setting() {
@@ -37,6 +37,8 @@ export default function Setting() {
             <Route path='/' element={<Index />} />
             <Route path='mail/*' element={<Mail />} />
             <Route path='sms/*' element={<SMS />} />
+            <Route path='geoip/*' element={<Geoip />} />
+            <Route path='account/*' element={<Account />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Box>

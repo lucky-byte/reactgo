@@ -69,7 +69,7 @@ export default function Profile() {
           <PrintIcon />
         </Fab>
       </Tooltip>
-      <Paper ref={contentRef} elevation={3} sx={{
+      <Paper ref={contentRef} sx={{
         px: 5, py: 3, mt: 5, '@media print': {
           boxShadow: 0, borderWidth: 0,
         }
@@ -133,7 +133,9 @@ function BaseInfoTable(props) {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>最后登录时间</TableCell>
+            <TableCell>
+              <Typography noWrap variant='body2'>最后登录时间</Typography>
+              </TableCell>
             <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
               {dayjs(profile.signin_at).format('YYYY/MM/DD HH:mm:ss')}
             </TableCell>

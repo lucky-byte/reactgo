@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import { useNavigate, Link } from "react-router-dom";
-import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import FormHelperText from "@mui/material/FormHelperText";
@@ -32,8 +31,8 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import progressState from '~/state/progress';
-import { useMailTab } from '../state';
 import { get, put, del } from "~/rest";
+import { useMailTab } from '../state';
 import Import from "./import";
 import Test from "./test";
 
@@ -45,7 +44,7 @@ export default function Home() {
   const [refresh, setRefresh] = useState(true);
 
   useTitle('邮件服务');
-  useMailTab(1);
+  useMailTab();
 
   useEffect(() => {
     (async () => {
@@ -91,50 +90,48 @@ export default function Home() {
         你可以配置多个支持 SMTP 协议的邮件传输代理，系统将在第一个服务器发送失败的情况下使用第二个，
         依此类推
       </Typography>
-      <Paper sx={{ px: 3, py: 3, mt: 3 }}>
-        <Stack direction='row' justifyContent='flex-end' sx={{ mb: 1 }}>
-          <Button component={Link} to='add'>添加</Button>
-          <Import requestRefresh={() => setRefresh(true)} />
-          <Button color="warning" onClick={onExport}>导出</Button>
-        </Stack>
-        <TableContainer component={OutlinedPaper}>
-          <Table sx={{ minWidth: 650 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell align="center">名称</TableCell>
-                <TableCell align="center">服务器</TableCell>
-                <TableCell align="center">发件人</TableCell>
-                <TableCell align="center">发信量</TableCell>
-                <TableCell as='td' align="center" padding="checkbox" />
+      <Stack direction='row' justifyContent='flex-end' sx={{ my: 1 }}>
+        <Button component={Link} to='add'>添加</Button>
+        <Import requestRefresh={() => setRefresh(true)} />
+        <Button color="warning" onClick={onExport}>导出</Button>
+      </Stack>
+      <TableContainer component={OutlinedPaper}>
+        <Table sx={{ minWidth: 650 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">名称</TableCell>
+              <TableCell align="center">服务器</TableCell>
+              <TableCell align="center">发件人</TableCell>
+              <TableCell align="center">发信量</TableCell>
+              <TableCell as='td' align="center" padding="checkbox" />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {list.map(m => (
+              <TableRow key={m.uuid}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell align="center">{m.name}</TableCell>
+                <TableCell align="center">{m.host}:{m.port}</TableCell>
+                <TableCell align="center">{m.sender}</TableCell>
+                <TableCell align="center">{m.nsent}</TableCell>
+                <TableCell align="center" padding="checkbox">
+                  <MenuButton uuid={m.uuid} name={m.name} sortno={m.sortno}
+                    requestRefresh={() => setRefresh(true)}
+                  />
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {list.map(m => (
-                <TableRow key={m.uuid}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell align="center">{m.name}</TableCell>
-                  <TableCell align="center">{m.host}:{m.port}</TableCell>
-                  <TableCell align="center">{m.sender}</TableCell>
-                  <TableCell align="center">{m.nsent}</TableCell>
-                  <TableCell align="center" padding="checkbox">
-                    <MenuButton uuid={m.uuid} name={m.name} sortno={m.sortno}
-                      requestRefresh={() => setRefresh(true)}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-              {list?.length === 0 &&
-                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell colSpan={9} align="center">空</TableCell>
-                </TableRow>
-              }
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+            ))}
+            {list?.length === 0 &&
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell colSpan={9} align="center">空</TableCell>
+              </TableRow>
+            }
+          </TableBody>
+        </Table>
+      </TableContainer>
       <FormHelperText sx={{ mb: 0 }}>
-        请注意: 公共的邮件服务器(例如QQ邮箱)有发送频率限制，
-        如果系统需要发送大量邮件，需使用专用的邮件服务，或配置自己的邮件传输代理
+        公共邮件服务(例如QQ邮箱)通常有严格的发送频率限制，如果系统需要发送大量邮件，
+        请使用专用邮件服务商，或架设自己专属的邮件服务
       </FormHelperText>
     </Stack>
   )
@@ -191,7 +188,6 @@ function MenuButton(props) {
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
-
       const token = await secretCode();
 
       const params = new URLSearchParams({ uuid, secretcode_token: token });

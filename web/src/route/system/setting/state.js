@@ -23,4 +23,12 @@ const useSMSTab = () => {
   useTab(2);
 }
 
-export { useMailTab, useSMSTab }
+const useGeoipTab = () => {
+  useTab(3);
+}
+
+const useAccountTab = () => {
+  useTab(4);
+}
+
+export { useMailTab, useSMSTab, useGeoipTab, useAccountTab }

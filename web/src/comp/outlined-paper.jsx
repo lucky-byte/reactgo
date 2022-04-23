@@ -1,7 +1,9 @@
+import { forwardRef } from 'react';
 import Paper from '@mui/material/Paper';
 
-export default function OutlinedPaper(props) {
-  return (
-    <Paper variant="outlined" {...props} />
-  )
-}
+// 需要这个组件的主要原因是作为 TableContainer 的 component
+const OutlinedPaper = forwardRef((props, ref) => (
+  <Paper ref={ref} variant="outlined" {...props} />
+));
+
+export default OutlinedPaper;

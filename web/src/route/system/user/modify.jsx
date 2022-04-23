@@ -88,7 +88,7 @@ export default function Modify() {
 
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 2 }}>
-      <Paper elevation={3} sx={{ px: 4, py: 3, mt: 5 }}>
+      <Paper sx={{ px: 4, py: 3, mt: 5 }}>
         <Stack direction='row' alignItems='center' spacing={1} sx={{ mb: 3 }}>
           <IconButton aria-label="返回" component={RouteLink} to='..'>
             <ArrowBackIcon color='primary' />
@@ -186,7 +186,7 @@ export default function Modify() {
               />
             </Stack>
           </Paper>
-          <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 2 }}>
+          <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 4 }}>
             <Button color='secondary' disabled={isSubmitting}
               onClick={() => { navigate('..') }}>
               取消
