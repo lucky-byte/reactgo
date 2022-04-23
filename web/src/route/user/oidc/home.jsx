@@ -7,10 +7,13 @@ import Typography from '@mui/material/Typography';
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import { useHotkeys } from 'react-hotkeys-hook';
 import userState from "~/state/user";
 import useTitle from "~/hook/title";
-import { Divider } from '@mui/material';
+import Google from '~/img/google.svg';
+import Microsoft from '~/img/microsoft.svg';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -35,21 +38,39 @@ export default function Home() {
         </Stack>
         <Paper variant='outlined' sx={{ p: 2, mt: 3 }}>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <Typography>GitHub</Typography>
+            <Stack direction='row' spacing={1} alignItems='center'>
+              <GitHubIcon sx={{ width: 28, height: 28 }} />
+              <Stack>
+                <Typography variant='h6'>GitHub</Typography>
+                <Typography variant='caption'>未授权</Typography>
+              </Stack>
+            </Stack>
             <Button variant='contained' LinkComponent={Link} to='secretcode'>
               授权
             </Button>
           </Stack>
           <Divider sx={{ my: 2 }} />
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <Typography>Google</Typography>
+            <Stack direction='row' spacing={1} alignItems='center'>
+              <img src={Google} alt='Google' width={28} height={28} />
+              <Stack>
+                <Typography variant='h6'>Google</Typography>
+                <Typography variant='caption'>未授权</Typography>
+              </Stack>
+            </Stack>
             <Button variant='contained' LinkComponent={Link} to='secretcode'>
               授权
             </Button>
           </Stack>
           <Divider sx={{ my: 2 }} />
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <Typography>Microsoft</Typography>
+            <Stack direction='row' spacing={1} alignItems='center'>
+              <img src={Microsoft} alt='MS' width={28} height={28} />
+              <Stack>
+                <Typography variant='h6'>Microsoft</Typography>
+                <Typography variant='caption'>未授权</Typography>
+              </Stack>
+            </Stack>
             <Button variant='contained' LinkComponent={Link} to='secretcode'>
               授权
             </Button>

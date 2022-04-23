@@ -13,6 +13,9 @@ const tabsArray = [
   { title: '邮件服务', value: 1, to: 'mail', },
   { title: '短信服务', value: 2, to: 'sms', },
   { title: '定位服务', value: 3, to: 'geoip', },
+  { title: '账号设置', value: 4, to: 'account', },
+  { title: 'OIDC认证', value: 5, to: 'oidc', },
+  { title: '单点登录', value: 6, to: 'saml', },
 ]
 
 export default function Setting() {
