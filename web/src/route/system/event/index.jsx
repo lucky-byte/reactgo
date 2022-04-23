@@ -21,6 +21,7 @@ import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import useTitle from "~/hook/title";
+import { useSetCode } from "~/state/code";
 import { get, put } from '~/rest';
 
 // 代码拆分
@@ -40,6 +41,7 @@ export default function Event() {
   const [loading, setLoading] = useState(false);
 
   useTitle('系统事件');
+  useSetCode(9040);
 
   useEffect(() => {
     (async () => {

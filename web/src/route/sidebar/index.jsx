@@ -81,7 +81,7 @@ function Menu({ menu }) {
 
   useEffect(() => {
     for (let i = 0; i < menu.items.length; i++) {
-      if (menu.items[i].code === code) {
+      if (parseInt(menu.items[i].code) === parseInt(code)) {
         setExpanded(true);
       }
     }

@@ -12,6 +12,7 @@ import Notification from './notificatiion';
 const Profile = lazy(() => import('./profile'));
 
 export default function User() {
+
   return (
     <Suspense fallback={<LinearProgress />}>
       <Routes>

@@ -43,6 +43,7 @@ import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import usePageData from '~/hook/pagedata';
+import { useSetCode } from "~/state/code";
 import { post, del, get } from '~/rest';
 
 export default function List() {
@@ -60,6 +61,7 @@ export default function List() {
   const [refresh, setRefresh] = useState(true);
 
   useTitle('用户管理');
+  useSetCode(9000);
 
   const requestRefresh = () => { setRefresh(!refresh); }
 

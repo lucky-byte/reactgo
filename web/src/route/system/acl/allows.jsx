@@ -56,8 +56,8 @@ export default function Allows() {
 
           // 更新剩余可用的列表
           const list = Object.keys(urlCodes).map(code => {
-            // free 标志指示不需要进行访问控制
-            if (urlCodes[code].omit) {
+            // 如果 allow = true, 则该菜单不需要权限控制
+            if (urlCodes[code].allow) {
               return null;
             }
             for (let i = 0; i < allows.length; i++) {

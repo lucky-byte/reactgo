@@ -16,8 +16,6 @@ import WindowIcon from '@mui/icons-material/Window';
 import { useHotkeys } from 'react-hotkeys-hook';
 import userState from "~/state/user";
 import useTitle from "~/hook/title";
-import Google from '~/img/google.svg';
-import Microsoft from '~/img/microsoft.svg';
 
 export default function Home() {
   const navigate = useNavigate();

@@ -14,6 +14,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import userState from "~/state/user";
 import useTitle from "~/hook/title";
 import SearchBar from '~/comp/search-bar';
+import { useSetCode } from "~/state/code";
 import codes from './sidebar/codes';
 
 export default function Codes() {
@@ -22,6 +23,7 @@ export default function Codes() {
   const [codeList, setCodeList] = useState(codes);
 
   useTitle('导航代码');
+  useSetCode(0);
 
   useEffect(() => {
     const trimed = keyword.trim();
@@ -72,7 +74,7 @@ export default function Codes() {
                 <TableCell>{codes[code].to}</TableCell>
                 <TableCell padding='checkbox'>
                   {
-                    codes[code].omit ? '' :
+                    codes[code].allow ? <CheckIcon color='success' /> :
                       allow_codes?.includes(parseInt(code)) ?
                         <CheckIcon color='success' />
                         :

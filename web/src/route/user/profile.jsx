@@ -30,6 +30,7 @@ import isMobile from 'validator/lib/isMobilePhone';
 import InplaceInput from '~/comp/inplace-input';
 import { useSecretCode } from '~/comp/secretcode';
 import userState from "~/state/user";
+import { useSetCode } from "~/state/code";
 import useTitle from "~/hook/title";
 import { get, put } from "~/rest";
 import AvatarPicker from './avatar';
@@ -49,6 +50,7 @@ export default function Profile() {
   const [user, setUser] = useRecoilState(userState);
 
   useTitle('个人资料');
+  useSetCode(0);
 
   // 修改姓名
   const onChangeName = async value => {

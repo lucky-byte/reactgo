@@ -35,6 +35,7 @@ import { useConfirm } from 'material-ui-confirm';
 import InplaceInput from '~/comp/inplace-input';
 import Splitter from '../../../comp/splitter';
 import progressState from "~/state/progress";
+import { useSetCode } from "~/state/code";
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
 import { get, post, put } from '~/rest';
@@ -59,6 +60,7 @@ export default function Home() {
   const [nodeLoading, setNodeLoading] = useState(true);
 
   useTitle('层级管理');
+  useSetCode(9060);
 
   // 保存 splitter 的 sizes
   const onSplitterResize = (_, newSizes) => {

@@ -35,6 +35,7 @@ import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import { useSecretCode } from '~/comp/secretcode';
+import { useSetCode } from "~/state/code";
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
 import { post, del, get } from '~/rest';
@@ -57,6 +58,7 @@ export default function List() {
   const [refresh, setRefresh] = useState(true);
 
   useTitle('系统公告');
+  useSetCode(9070);
 
   // 获取列表数据
   useEffect(() => {

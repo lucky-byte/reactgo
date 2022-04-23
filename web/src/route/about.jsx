@@ -5,9 +5,11 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Link from '@mui/material/Link';
 import useTitle from "~/hook/title";
+import { useSetCode } from "~/state/code";
 
 export default function About() {
   useTitle('关于');
+  useSetCode(0);
 
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>

@@ -18,6 +18,7 @@ import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import useTitle from "~/hook/title";
+import { useSetCode } from "~/state/code";
 import { get } from '~/rest';
 
 // 代码拆分
@@ -36,6 +37,7 @@ export default function Ops() {
   const [loading, setLoading] = useState(false);
 
   useTitle('操作审计');
+  useSetCode(9025);
 
   useEffect(() => {
     (async () => {

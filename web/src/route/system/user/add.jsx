@@ -20,6 +20,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
+import { useSetCode } from "~/state/code";
 import { get, post } from '~/rest';
 
 export default function Add() {
@@ -30,6 +31,7 @@ export default function Add() {
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
   useTitle('添加用户');
+  useSetCode(9000);
 
   const {
     register, handleSubmit, setValue, formState: {

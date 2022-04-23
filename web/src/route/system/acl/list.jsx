@@ -28,6 +28,7 @@ import { useConfirm } from 'material-ui-confirm';
 import InplaceInput from '~/comp/inplace-input';
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
+import { useSetCode } from "~/state/code";
 import { get, del, put } from '~/rest';
 
 export default function List() {
@@ -39,6 +40,7 @@ export default function List() {
   const [info, setInfo] = useState({});
 
   useTitle('访问控制');
+  useSetCode(9010);
 
   const loadInfo = useCallback(async uuid => {
     try {

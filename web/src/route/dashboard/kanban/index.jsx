@@ -3,11 +3,13 @@ import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import { Typography } from '@mui/material';
 import useTitle from "~/hook/title";
+import { useSetCode } from "~/state/code";
 
 const Layout = lazy(() => import("./layout"));
 
 export default function Kanban() {
   useTitle('看板');
+  useSetCode(101);
 
   return (
     <Container as='main' role='main' maxWidth='lg' sx={{ mb: 4 }}>

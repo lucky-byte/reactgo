@@ -6,21 +6,26 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import NotFound from "~/route/notfound";
+import { useSetCode } from "~/state/code";
 import tabState from "./state";
 import Mail from './mail';
 import SMS from "./sms";
 import Geoip from "./geoip";
+import Pay from "./pay";
 import Account from "./account";
 
 const tabsArray = [
   { title: '邮件服务', value: 1, to: 'mail', },
   { title: '短信服务', value: 2, to: 'sms', },
   { title: '定位服务', value: 3, to: 'geoip', },
-  { title: '账号设置', value: 4, to: 'account', },
+  { title: '支付服务', value: 4, to: 'pay', },
+  { title: '账号设置', value: 5, to: 'account', },
 ]
 
 export default function Setting() {
   const [tab, setTab] = useRecoilState(tabState);
+
+  useSetCode(9030);
 
   return (
     <Container as='main' maxWidth='lg' sx={{ py: 4 }}>
@@ -38,6 +43,7 @@ export default function Setting() {
             <Route path='mail/*' element={<Mail />} />
             <Route path='sms/*' element={<SMS />} />
             <Route path='geoip/*' element={<Geoip />} />
+            <Route path='pay/*' element={<Pay />} />
             <Route path='account/*' element={<Account />} />
             <Route path='*' element={<NotFound />} />
           </Routes>

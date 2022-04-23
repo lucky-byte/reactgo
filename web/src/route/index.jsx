@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { Routes, Route, useLocation } from "react-router-dom";
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { Routes, Route } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Collapse from '@mui/material/Collapse';
 import Stack from "@mui/material/Stack";
@@ -12,12 +12,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import CircularProgress from '@mui/material/CircularProgress';
 import sidebarState from "~/state/sidebar";
 import progressState from "~/state/progress";
-import codeState from "~/state/code";
 import printModalState from "~/state/printmodal";
 import { SecretCodeProvider } from "../comp/secretcode";
 import Appbar from "./appbar";
 import Sidebar from "./sidebar";
-import urlCodes from "./sidebar/codes";
 import ErrorBoundary from "~/error";
 import NotFound from "./notfound";
 import About from "./about";
@@ -28,10 +26,8 @@ import System from "./system";
 import User from "./user";
 
 export default function Index() {
-  const location = useLocation();
   const sidebar = useRecoilValue(sidebarState);
   const progress = useRecoilValue(progressState);
-  const setCode = useSetRecoilState(codeState);
   const [progressVisible, setProgressVisible] = useState(false);
 
   // 延迟显示全局进度条
@@ -43,29 +39,6 @@ export default function Index() {
       setProgressVisible(false);
     }
   }, [progress]);
-
-  // 通过 pathname 高亮侧边栏菜单项
-  useEffect(() => {
-    try {
-      const entries = Object.entries(urlCodes);
-      let found = false;
-
-      for (let i = 0; i < entries.length; i++) {
-        const entry = entries[i];
-        const { to } = entry[1];
-        if (to === location.pathname) {
-          setCode(parseInt(entry[0]));
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        setCode(0);
-      }
-    } catch (err) {
-      console.error('change code error:' + err.message)
-    }
-  }, [location.pathname, setCode]);
 
   return (
     <SecretCodeProvider>

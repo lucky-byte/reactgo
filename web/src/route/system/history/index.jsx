@@ -21,6 +21,7 @@ import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
+import { useSetCode } from "~/state/code";
 import { get } from '~/rest';
 import { geo } from '~/lib/geo';
 
@@ -36,6 +37,7 @@ export default function History() {
   const [loading, setLoading] = useState(false);
 
   useTitle('登录历史');
+  useSetCode(9020);
 
   useEffect(() => {
     (async () => {

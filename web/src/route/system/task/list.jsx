@@ -37,6 +37,7 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
+import { useSetCode } from "~/state/code";
 import { post, del, get } from '~/rest';
 
 export default function List() {
@@ -52,6 +53,7 @@ export default function List() {
   const [refresh, setRefresh] = useState(true);
 
   useTitle('定时任务');
+  useSetCode(9050);
 
   const requestRefresh = () => { setRefresh(!refresh); }
 

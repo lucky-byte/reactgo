@@ -1,4 +1,4 @@
-import { useState, forwardRef } from "react";
+import { useState, useRef, forwardRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Slide from '@mui/material/Slide';
 import Dialog from '@mui/material/Dialog';
@@ -23,10 +23,26 @@ export default function Navigator(props) {
   const [codeInput, setCodeInput] = useState('');
   const [message, setMessage] = useState('');
 
+  const { open, setOpen } = props;
+
+  const inputRef = useRef();
+
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
+
+      return () => { clearTimeout(timer); }
+    }
+  }, [open]);
+
   const onClose = () => {
     setCodeInput('');
     setMessage('');
-    props.setOpen(false);
+    setOpen(false);
   }
 
   const onCodeChange = e => {
@@ -69,11 +85,11 @@ export default function Navigator(props) {
   }
 
   return (
-    <Dialog open={props.open} onClose={onClose}
-      PaperProps={{ sx: { alignSelf: 'flex-start' } }}
-      TransitionComponent={SlideTransition}>
+    <Dialog open={open} onClose={onClose} TransitionComponent={SlideTransition}
+      PaperProps={{ sx: { alignSelf: 'flex-start' } }}>
       <DialogContent>
-        <TextField autoFocus label="导航码" variant="outlined"
+        <TextField focused autoFocus label="导航码" variant="outlined"
+          inputRef={inputRef}
           placeholder="3到4位数字，回车确定"
           InputProps={{
             endAdornment:
