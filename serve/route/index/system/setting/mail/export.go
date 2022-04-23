@@ -38,6 +38,7 @@ func export(c echo.Context) error {
 			"prefix":   v.Prefix,
 			"sortno":   v.SortNo,
 			"nsent":    v.NSent,
+			"disabled": v.Disabled,
 		})
 	}
 	b, err := json.Marshal(mtas)

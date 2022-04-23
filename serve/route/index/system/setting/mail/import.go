@@ -78,14 +78,15 @@ func importt(c echo.Context) error {
 		ql = `
 			insert into mtas (
 				uuid, name, host, port, sslmode, sender, replyto, username, passwd,
-				cc, bcc, prefix, nsent, sortno
+				cc, bcc, prefix, nsent, disabled, sortno
 			) values (
-				?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+				?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 			)
 		`
 		_, err = tx.Exec(tx.Rebind(ql), uuid.NewString(),
 			v.Name, v.Host, v.Port, v.SSLMode, v.Sender, v.ReplyTo,
-			v.Username, v.Passwd, v.CC, v.BCC, v.Prefix, v.NSent, sortno+1,
+			v.Username, v.Passwd, v.CC, v.BCC, v.Prefix, v.NSent, v.Disabled,
+			sortno+1,
 		)
 		if err != nil {
 			cc.ErrLog(err).Error("添加邮件配置错")

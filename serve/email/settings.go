@@ -4,7 +4,7 @@ import "github.com/lucky-byte/reactgo/serve/db"
 
 // 查询所有邮件传输代理
 func mtas() ([]db.MTA, error) {
-	ql := `select * from mtas order by sortno`
+	ql := `select * from mtas where disabled = false order by sortno`
 	var result []db.MTA
 
 	if err := db.Select(ql, &result); err != nil {

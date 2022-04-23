@@ -57,7 +57,7 @@ export default function Add() {
             <Stack spacing={4}>
               <TextField label='名称' variant='standard' fullWidth
                 required autoFocus autoComplete='off'
-                placeholder='自定义，一般是邮件服务器的称呼，例如 QQ 邮箱'
+                placeholder='自定义，一般用邮件服务器名，例如 GMAIL'
                 helperText={errors?.name?.message}
                 error={errors?.name}
                 {...register('name', {
@@ -70,7 +70,7 @@ export default function Add() {
               <Stack direction='row' spacing={3}>
                 <TextField label='服务器地址' variant='standard' required
                   autoComplete='url'
-                  placeholder='邮件服务器域名，例如 smtp.qq.com'
+                  placeholder='邮件服务器地址，例如 smtp.qq.com'
                   helperText={errors?.host?.message}
                   error={errors?.host}
                   sx={{ flex: 2 }}
@@ -127,7 +127,7 @@ export default function Add() {
               <Stack direction='row' spacing={3}>
                 <TextField label='登录用户' variant='standard' fullWidth
                   autoComplete='off'
-                  placeholder='通常使用发件人地址作为登录用户，此字段不填'
+                  placeholder='通常此字段不填，使用发件人地址作为登录用户'
                   helperText={errors?.username?.message}
                   error={errors?.username}
                   {...register('username', {

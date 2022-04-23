@@ -237,33 +237,27 @@ function UserMenuIconButton(props) {
 
   // 用户资料
   const onProfileClick = () => {
-    setAnchorEl(null);
     navigate('profile', { state: { uuid: user.uuid } });
   };
 
   // 修改资料
   const onModifyClick = () => {
-    setAnchorEl(null);
     navigate('modify', { state: { uuid: user.uuid } });
   };
 
   // 修改密码
   const onPasswdClick = () => {
-    setAnchorEl(null);
     navigate('passwd', { state: { uuid: user.uuid, name: user.name } });
   };
 
   // 访问控制
   const onACLClick = () => {
-    setAnchorEl(null);
     navigate('acl', { state: { uuid: user.uuid, name: user.name, acl: user.acl } });
   };
 
   // 清除安全操作码
   const onClearSecretCode = async () => {
     try {
-      setAnchorEl(null);
-
       await confirm({
         description: `确定要清除 ${user.name} 的安全操作码吗？`,
         confirmationText: '清除',
@@ -288,8 +282,6 @@ function UserMenuIconButton(props) {
   // 清除两因素认证
   const onClearTOTP = async () => {
     try {
-      setAnchorEl(null);
-
       await confirm({
         description: `确定要清除 ${user.name} 的两因素认证吗？`,
         confirmationText: '清除',
@@ -314,8 +306,6 @@ function UserMenuIconButton(props) {
   // 禁用/启用
   const onDisableClick = async () => {
     try {
-      setAnchorEl(null);
-
       await confirm({
         description: user.disabled ?
           `确定要恢复 ${user.name} 的账号吗？恢复后该账号可正常使用。`
@@ -340,8 +330,6 @@ function UserMenuIconButton(props) {
   // 删除
   const onDeleteClick = async () => {
     try {
-      setAnchorEl(null);
-
       await confirm({
         description: `确定要删除用户 ${user.name} 吗？删除后用户数据将保留，但账号将永久停用，无法恢复!`,
         confirmationText: '删除',
@@ -373,7 +361,7 @@ function UserMenuIconButton(props) {
         onClick={e => { setAnchorEl(e.currentTarget); }}>
         <MoreVertIcon />
       </IconButton>
-      <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
+      <Menu anchorEl={anchorEl} open={open} onClose={onClose} onClick={onClose}>
         <MenuItem onClick={onProfileClick}>
           <ListItemIcon>
             <AccountCircleIcon fontSize="small" />

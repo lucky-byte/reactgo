@@ -1,4 +1,4 @@
-package user
+package mail
 
 import (
 	"net/http"
@@ -11,7 +11,6 @@ import (
 
 func disable(c echo.Context) error {
 	cc := c.(*ctx.Context)
-	user := cc.User()
 
 	var uuid string
 
@@ -19,17 +18,11 @@ func disable(c echo.Context) error {
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-	// 不能禁用自己的账号
-	if uuid == user.UUID {
-		return c.String(http.StatusForbidden, "不可以禁用自己的账号")
-	}
-	// 更新用户状态
-	ql := `
-		update users set disabled = not disabled, update_at = current_timestamp
-		where uuid = ?
-	`
+	// 更新状态
+	ql := `update mtas set disabled = not disabled where uuid = ?`
+
 	if err := db.ExecOne(ql, uuid); err != nil {
-		cc.ErrLog(err).Error("更新用户信息错")
+		cc.ErrLog(err).Error("更新状态错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

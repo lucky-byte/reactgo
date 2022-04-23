@@ -14,25 +14,11 @@ func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	ql := `select * from mtas order by sortno`
-	var result []db.MTA
+	var list []db.MTA
 
-	if err := db.Select(ql, &result); err != nil {
+	if err := db.Select(ql, &list); err != nil {
 		cc.ErrLog(err).Error("查询邮件配置错")
 		return c.NoContent(http.StatusInternalServerError)
-	}
-	var list []echo.Map
-
-	for _, v := range result {
-		list = append(list, echo.Map{
-			"uuid":    v.UUID,
-			"name":    v.Name,
-			"host":    v.Host,
-			"port":    v.Port,
-			"sslmode": v.SSLMode,
-			"sender":  v.Sender,
-			"sortno":  v.SortNo,
-			"nsent":   v.NSent,
-		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"list": list})
 }

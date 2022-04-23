@@ -12,17 +12,18 @@ func Attach(up *echo.Group, code int) {
 
 	group.GET("/list", list)
 	group.GET("/info", info)
+	group.POST("/test", test)
 
 	group.Use(acl.AllowWrite(code)) // Write 权限
 
+	group.POST("/add", add)
 	group.PUT("/modify", modify)
 	group.PUT("/sort", sort)
-	group.POST("/test", test)
 
 	group.Use(acl.AllowAdmin(code)) // Admin 权限
 
-	group.POST("/add", add)
-	group.DELETE("/delete", del, secretcode.Verify())
 	group.GET("/export", export)
 	group.POST("/import", importt)
+	group.PUT("/disable", disable)
+	group.DELETE("/delete", del, secretcode.Verify())
 }

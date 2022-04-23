@@ -112,6 +112,7 @@ type MTA struct {
 	BCC      string `db:"bcc"      json:"bcc"`      // 密送
 	SortNo   int    `db:"sortno"   json:"sortno"`   // 排序序号
 	NSent    int    `db:"nsent"    json:"nsent"`    // 发送量
+	Disabled bool   `db:"disabled" json:"disabled"` // 是否停用
 }
 
 // 定时任务

@@ -113,7 +113,8 @@ create table if not exists mtas (
   bcc         text,
   prefix      varchar(128)    default '',
   sortno      int             unique,
-  nsent       int             default 0
+  nsent       int             default 0,
+  disabled    boolean         default false
 );
 
 create table if not exists events (

@@ -22,6 +22,8 @@ import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import BlockIcon from '@mui/icons-material/Block';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from "@mui/material/Divider";
 import { useSnackbar } from 'notistack';
@@ -103,29 +105,31 @@ export default function Home() {
               <TableCell align="center">服务器</TableCell>
               <TableCell align="center">发件人</TableCell>
               <TableCell align="center">发信量</TableCell>
+              <TableCell align="center" padding="none"></TableCell>
               <TableCell as='td' align="center" padding="checkbox" />
             </TableRow>
           </TableHead>
           <TableBody>
             {list.map(m => (
-              <TableRow key={m.uuid}
+              <TableRow key={m.uuid} disabled={m.disabled}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell align="center">{m.name}</TableCell>
                 <TableCell align="center">{m.host}:{m.port}</TableCell>
                 <TableCell align="center">{m.sender}</TableCell>
                 <TableCell align="center">{m.nsent}</TableCell>
-                <TableCell align="center" padding="checkbox">
+                <TableCell align="center" padding="none">
+                  {m.disabled &&
+                    <BlockIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />
+                  }
+                </TableCell>
+                <TableCell align="center" padding="checkbox" className="action">
                   <MenuButton uuid={m.uuid} name={m.name} sortno={m.sortno}
+                    disabled={m.disabled}
                     requestRefresh={() => setRefresh(true)}
                   />
                 </TableCell>
               </TableRow>
             ))}
-            {list?.length === 0 &&
-              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell colSpan={9} align="center">空</TableCell>
-              </TableRow>
-            }
           </TableBody>
         </Table>
       </TableContainer>
@@ -147,7 +151,7 @@ function MenuButton(props) {
 
   const open = Boolean(anchorEl);
 
-  const { uuid, name, sortno, requestRefresh } = props;
+  const { uuid, name, sortno, disabled, requestRefresh } = props;
 
   const onOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -179,6 +183,28 @@ function MenuButton(props) {
 
   const onTest = () => {
     setTestOpen(true);
+  }
+
+  // 禁用/启用
+  const onDisableClick = async () => {
+    try {
+      await confirm({
+        description: disabled ?
+          `确定要恢复 ${name} 吗？恢复后可正常使用。`
+          :
+          `确定要禁用 ${name} 吗？禁用后该邮件服务不可以继续使用，直到恢复为止。`,
+        confirmationText: disabled ? '恢复' : '禁用',
+        confirmationButtonProps: { color: 'warning' },
+        contentProps: { p: 8 },
+      });
+      await put('/system/setting/mail/disable', new URLSearchParams({ uuid }));
+      enqueueSnackbar('状态更新成功', { variant: 'success' });
+      requestRefresh();
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
   }
 
   const onDelete = async () => {
@@ -227,20 +253,34 @@ function MenuButton(props) {
           <ListItemText>移到最后</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={onModify}>
+        <MenuItem disabled={disabled} onClick={onModify}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>修改</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={onTest}>
+        <MenuItem disabled={disabled} onClick={onTest}>
           <ListItemIcon>
             <ForwardToInboxIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>发送测试邮件</ListItemText>
         </MenuItem>
         <Divider />
+        <MenuItem onClick={onDisableClick}>
+          <ListItemIcon>
+            {disabled ?
+              <SettingsBackupRestoreIcon fontSize="small" color='warning' />
+              :
+              <BlockIcon fontSize="small" color='warning' />
+            }
+          </ListItemIcon>
+          {disabled ?
+            <ListItemText>恢复</ListItemText>
+            :
+            <ListItemText>禁用</ListItemText>
+          }
+        </MenuItem>
         <MenuItem onClick={onDelete}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" color='error' />
