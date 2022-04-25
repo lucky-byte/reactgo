@@ -162,8 +162,9 @@ type Event struct {
 
 // IP 定位
 type GeoIP struct {
-	WebKey string `db:"webkey" json:"webkey"` // 高德开放平台 web 服务 key
-	ApiVer string `db:"apiver" json:"apiver"` // 高德开放平台 IP 定位接口版本
+	AMapWebKey string `db:"amap_webkey" json:"amap_webkey"` // 高德开放平台 web 服务 key
+	AMapEnable bool   `db:"amap_enable" json:"amap_enable"` // 高德开放平台 web 服务 key
+	AMapApiVer string `db:"amap_apiver" json:"amap_apiver"` // 高德开放平台 IP 定位接口版本
 }
 
 // 层次结构

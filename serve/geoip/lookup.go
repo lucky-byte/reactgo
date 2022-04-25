@@ -36,12 +36,12 @@ func Lookup(ip string) (*Info, error) {
 	if err := db.SelectOne(ql, &r); err != nil {
 		return nil, err
 	}
-	if len(r.WebKey) == 0 {
+	if len(r.AMapWebKey) == 0 {
 		return nil, fmt.Errorf("未配置 IP 定位 WEB 服务 KEY")
 	}
-	if r.ApiVer == "v3" {
-		return AMapLookupV3(ip, r.WebKey)
+	if r.AMapApiVer == "v3" {
+		return AMapLookupV3(ip, r.AMapWebKey)
 	}
 	// 该接口 2022.4.30 下线
-	return AMapLookupV5(ip, addr.To4() != nil, r.WebKey)
+	return AMapLookupV5(ip, addr.To4() != nil, r.AMapWebKey)
 }

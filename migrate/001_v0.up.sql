@@ -170,11 +170,12 @@ create table if not exists images (
 );
 
 create table if not exists geoip (
-  webkey      varchar(128),
-  apiver      varchar(8) default 'v3'
+  amap_webkey varchar(128),
+  amap_enable boolean default false,
+  amap_apiver varchar(8) default 'v3'
 );
 
-insert into geoip (webkey) values ('');
+insert into geoip (amap_webkey) values ('');
 
 create table if not exists tree (
   uuid        varchar(36)     primary key not null,

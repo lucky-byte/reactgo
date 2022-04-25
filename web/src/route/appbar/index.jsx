@@ -29,6 +29,7 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SupportIcon from '@mui/icons-material/Support';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import AddTaskIcon from '@mui/icons-material/AddTask';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import useColorModeContent from "~/hook/colormode";
@@ -151,6 +152,10 @@ export default function Appbar(params) {
             onClick={onQuickNavigate} sx={{ mx: 1 }}
           />
           <Chat />
+          <IconButton aria-label="流程"
+            onClick={colorMode.toggleColorMode} color="primary">
+            <AddTaskIcon />
+          </IconButton>
           <Notification />
           <IconButton aria-label="切换色彩模式"
             onClick={colorMode.toggleColorMode} color="primary">

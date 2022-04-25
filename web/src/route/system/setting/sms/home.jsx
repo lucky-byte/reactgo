@@ -102,24 +102,18 @@ export default function Home() {
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
-              <TableCell align="center"></TableCell>
               <TableCell align="center">运营商</TableCell>
               <TableCell align="center">Appid</TableCell>
               <TableCell align="center">短信签名</TableCell>
               <TableCell align="center">创建时间</TableCell>
               <TableCell align="center">发信量</TableCell>
-              <TableCell align="center"></TableCell>
+              <TableCell align="center" colSpan={2}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {list.map(item => (
               <TableRow key={item.uuid} disabled={item.disabled}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align="center" padding="none">
-                  {item.disabled &&
-                    <BlockIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />
-                  }
-                </TableCell>
                 <TableCell align="center">{item.isp_name}</TableCell>
                 <TableCell align="center">{item.appid}</TableCell>
                 <TableCell align="center">{item.prefix}</TableCell>
@@ -127,6 +121,11 @@ export default function Home() {
                   {dayjs(item.create_at).format('LL')}
                 </TableCell>
                 <TableCell align="center">{item.nsent}</TableCell>
+                <TableCell align="center" padding="none">
+                  {item.disabled &&
+                    <BlockIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />
+                  }
+                </TableCell>
                 <TableCell align="center" padding="none" className="action">
                   <MenuButton sms={item} requestRefresh={() => setRefresh(true)} />
                 </TableCell>

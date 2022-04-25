@@ -14,7 +14,7 @@ export default function Home() {
     <Stack>
       <Typography variant='h4'>支付服务</Typography>
       <Typography variant='body2'>
-        开通支付服务后可以使用微信支付、支付宝进行收款，个体工商户、企事业单位均可开通
+        开通支付服务后可以使用聚合码收款功能，也可以将支付服务集成到业务流程中
       </Typography>
       <Paper sx={{ p: 3, mt: 3 }}>
         <Stack spacing={2}>
