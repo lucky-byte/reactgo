@@ -117,6 +117,19 @@ create table if not exists mtas (
   disabled    boolean         default false
 );
 
+create table if not exists smss (
+  uuid        varchar(36)     primary key not null,
+  isp         varchar(64)     not null,
+  appid       varchar(32)     not null default '',
+  secret_id   varchar(64)     not null default '',
+  secret_key  varchar(64)     not null default '',
+  prefix      varchar(32)     not null default '',
+  textno1     varchar(32)     not null default '',
+  sortno      int             unique,
+  nsent       int             default 0,
+  disabled    boolean         default false
+);
+
 create table if not exists events (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,

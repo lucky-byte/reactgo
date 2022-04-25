@@ -78,6 +78,13 @@ export default function SignIn() {
     setUsername(e.target.value);
   }
 
+  // 登录名框回车
+  const onUsernameKeyDown = e => {
+    if (e.key === 'Enter') {
+      onSubmit();
+    }
+  }
+
   // 密码改变
   const onPasswordChange = e => {
     setPassword(e.target.value);
@@ -172,6 +179,7 @@ export default function SignIn() {
           <TextField required label='登录名' placeholder="请输入登录名"
             fullWidth autoComplete="username" autoFocus
             variant='standard' value={username} onChange={onUsernameChange}
+            onKeyDown={onUsernameKeyDown}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

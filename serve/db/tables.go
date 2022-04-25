@@ -96,7 +96,7 @@ type SmsSetting struct {
 	MsgID1    string `db:"msgid1"     json:"msgid1"`     // 验证码模板ID
 }
 
-// 邮件 MTA
+// 邮件服务
 type MTA struct {
 	UUID     string `db:"uuid"     json:"uuid"`     // uuid
 	Name     string `db:"name"     json:"name"`     // 名称
@@ -113,6 +113,20 @@ type MTA struct {
 	SortNo   int    `db:"sortno"   json:"sortno"`   // 排序序号
 	NSent    int    `db:"nsent"    json:"nsent"`    // 发送量
 	Disabled bool   `db:"disabled" json:"disabled"` // 是否停用
+}
+
+// 短信服务
+type SMS struct {
+	UUID      string `db:"uuid"       json:"uuid"`       // uuid
+	ISP       string `db:"isp"        json:"isp"`        // 运营商
+	AppId     string `db:"appid"      json:"appid"`      // appid
+	SecretId  string `db:"secret_id"  json:"secret_id"`  // secret id
+	SecretKey string `db:"secret_key" json:"secret_key"` // secret key
+	Prefix    string `db:"prefix"     json:"prefix"`     // 签名
+	TextNo1   string `db:"textno1"    json:"textno1"`    // 验证码模板
+	SortNo    int    `db:"sortno"     json:"sortno"`     // 排序序号
+	NSent     int    `db:"nsent"      json:"nsent"`      // 发送量
+	Disabled  bool   `db:"disabled"   json:"disabled"`   // 是否停用
 }
 
 // 定时任务

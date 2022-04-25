@@ -33,7 +33,7 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import progressState from '~/state/progress';
-import { get, put, del } from "~/rest";
+import { get, post, put, del } from "~/rest";
 import { useMailTab } from '../state';
 import Import from "./import";
 import Test from "./test";
@@ -69,14 +69,14 @@ export default function Home() {
   const onExport = async () => {
     try {
       await confirm({
-        description: `导出的文件中将包含账号、密码、等敏感信息，请妥善保管。`,
+        description: `导出的文件中将包含账号、密码等敏感信息，请妥善保管。`,
         confirmationText: '导出',
       });
-      const resp = await get('/system/setting/mail/export');
+      const resp = await post('/system/setting/mail/export');
       const blob = new Blob([JSON.stringify(resp, null, 2)], {
         type: "text/plain;charset=utf-8"
       });
-      saveAs(blob, "mail-config.json");
+      saveAs(blob, "mailconfig.json");
       enqueueSnackbar('导出成功', { variant: 'success' });
     } catch (err) {
       if (err) {
@@ -110,23 +110,20 @@ export default function Home() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {list.map(m => (
-              <TableRow key={m.uuid} disabled={m.disabled}
+            {list.map(item => (
+              <TableRow key={item.uuid} disabled={item.disabled}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align="center">{m.name}</TableCell>
-                <TableCell align="center">{m.host}:{m.port}</TableCell>
-                <TableCell align="center">{m.sender}</TableCell>
-                <TableCell align="center">{m.nsent}</TableCell>
+                <TableCell align="center">{item.name}</TableCell>
+                <TableCell align="center">{item.host}:{item.port}</TableCell>
+                <TableCell align="center">{item.sender}</TableCell>
+                <TableCell align="center">{item.nsent}</TableCell>
                 <TableCell align="center" padding="none">
-                  {m.disabled &&
+                  {item.disabled &&
                     <BlockIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />
                   }
                 </TableCell>
                 <TableCell align="center" padding="checkbox" className="action">
-                  <MenuButton uuid={m.uuid} name={m.name} sortno={m.sortno}
-                    disabled={m.disabled}
-                    requestRefresh={() => setRefresh(true)}
-                  />
+                  <MenuButton mta={item} requestRefresh={() => setRefresh(true)} />
                 </TableCell>
               </TableRow>
             ))}
@@ -151,7 +148,7 @@ function MenuButton(props) {
 
   const open = Boolean(anchorEl);
 
-  const { uuid, name, sortno, disabled, requestRefresh } = props;
+  const { mta, requestRefresh } = props;
 
   const onOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -164,7 +161,7 @@ function MenuButton(props) {
   const onSort = async dir => {
     try {
       await put('/system/setting/mail/sort', new URLSearchParams({
-        uuid, dir, sortno,
+        uuid: mta.uuid, sortno: mta.sortno, dir,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       requestRefresh();
@@ -174,11 +171,11 @@ function MenuButton(props) {
   }
 
   const onInfo = () => {
-    navigate('info', { state: { uuid } });
+    navigate('info', { state: { uuid: mta.uuid } });
   }
 
   const onModify = () => {
-    navigate('modify', { state: { uuid } });
+    navigate('modify', { state: { uuid: mta.uuid } });
   }
 
   const onTest = () => {
@@ -189,15 +186,17 @@ function MenuButton(props) {
   const onDisableClick = async () => {
     try {
       await confirm({
-        description: disabled ?
-          `确定要恢复 ${name} 吗？恢复后可正常使用。`
+        description: mta.disabled ?
+          `确定要恢复 ${mta.name} 吗？恢复后可正常使用。`
           :
-          `确定要禁用 ${name} 吗？禁用后该邮件服务不可以继续使用，直到恢复为止。`,
-        confirmationText: disabled ? '恢复' : '禁用',
+          `确定要禁用 ${mta.name} 吗？禁用后该邮件服务不可以继续使用，直到恢复为止。`,
+        confirmationText: mta.disabled ? '恢复' : '禁用',
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      await put('/system/setting/mail/disable', new URLSearchParams({ uuid }));
+      await put('/system/setting/mail/disable', new URLSearchParams({
+        name: mta.name, uuid: mta.uuid
+      }));
       enqueueSnackbar('状态更新成功', { variant: 'success' });
       requestRefresh();
     } catch (err) {
@@ -210,13 +209,15 @@ function MenuButton(props) {
   const onDelete = async () => {
     try {
       await confirm({
-        description: `确定要删除 ${name} 吗？删除后无法恢复。`,
+        description: `确定要删除 ${mta.name} 吗？删除后无法恢复。`,
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
       const token = await secretCode();
 
-      const params = new URLSearchParams({ uuid, secretcode_token: token });
+      const params = new URLSearchParams({
+        name: mta.name, uuid: mta.uuid, secretcode_token: token,
+      });
       await del('/system/setting/mail/delete?' + params.toString());
       enqueueSnackbar('删除成功', { variant: 'success' });
       requestRefresh();
@@ -253,14 +254,14 @@ function MenuButton(props) {
           <ListItemText>移到最后</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem disabled={disabled} onClick={onModify}>
+        <MenuItem disabled={mta.disabled} onClick={onModify}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>修改</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem disabled={disabled} onClick={onTest}>
+        <MenuItem disabled={mta.disabled} onClick={onTest}>
           <ListItemIcon>
             <ForwardToInboxIcon fontSize="small" />
           </ListItemIcon>
@@ -269,13 +270,13 @@ function MenuButton(props) {
         <Divider />
         <MenuItem onClick={onDisableClick}>
           <ListItemIcon>
-            {disabled ?
+            {mta.disabled ?
               <SettingsBackupRestoreIcon fontSize="small" color='warning' />
               :
               <BlockIcon fontSize="small" color='warning' />
             }
           </ListItemIcon>
-          {disabled ?
+          {mta.disabled ?
             <ListItemText>恢复</ListItemText>
             :
             <ListItemText>禁用</ListItemText>
@@ -289,7 +290,7 @@ function MenuButton(props) {
         </MenuItem>
       </Menu>
       <Test open={testOpen} onClose={() => setTestOpen(false)}
-        uuid={uuid} name={name}
+        uuid={mta.uuid} name={mta.name}
       />
     </>
   )

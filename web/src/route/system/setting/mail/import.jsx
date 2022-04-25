@@ -95,7 +95,7 @@ export default function Import(props) {
             }}
           />
           <FormHelperText>
-            导入文件中<strong>名称</strong>相同的记录会被忽略。
+            导入文件中<strong>名称</strong>相同的记录会被忽略
           </FormHelperText>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>

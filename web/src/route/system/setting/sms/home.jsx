@@ -51,7 +51,7 @@ export default function Home() {
       try {
         if (refresh) {
           setProgress(true);
-          const resp = await get('/system/setting/mail/list');
+          const resp = await get('/system/setting/sms/list');
           setList(resp.list || []);
         }
       } catch (err) {
@@ -70,11 +70,11 @@ export default function Home() {
         description: `导出的文件中将包含账号、密码、等敏感信息，请妥善保管。`,
         confirmationText: '导出',
       });
-      const resp = await get('/system/setting/mail/export');
+      const resp = await get('/system/setting/sms/export');
       const blob = new Blob([JSON.stringify(resp, null, 2)], {
         type: "text/plain;charset=utf-8"
       });
-      saveAs(blob, "mail-config.json");
+      saveAs(blob, "smsconfig.json");
       enqueueSnackbar('导出成功', { variant: 'success' });
     } catch (err) {
       if (err) {
@@ -90,7 +90,7 @@ export default function Home() {
         系统通过短信发送验证码等信息，你可以从下面短信服务商中选择一个或多个进行配置
       </Typography>
       <Stack direction='row' justifyContent='flex-end' sx={{ my: 1 }}>
-        <Button component={Link} to='add'>添加</Button>
+        <AddButton />
         <Import requestRefresh={() => setRefresh(true)} />
         <Button color="warning" onClick={onExport}>导出</Button>
       </Stack>
@@ -98,25 +98,23 @@ export default function Home() {
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
-              <TableCell align="center">名称</TableCell>
-              <TableCell align="center">服务器</TableCell>
-              <TableCell align="center">发件人</TableCell>
+              <TableCell align="center">运营商</TableCell>
+              <TableCell align="center">Appid</TableCell>
+              <TableCell align="center">签名</TableCell>
               <TableCell align="center">发信量</TableCell>
               <TableCell as='td' align="center" padding="checkbox" />
             </TableRow>
           </TableHead>
           <TableBody>
-            {list.map(m => (
-              <TableRow key={m.uuid}
+            {list.map(item => (
+              <TableRow key={item.uuid}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align="center">{m.name}</TableCell>
-                <TableCell align="center">{m.host}:{m.port}</TableCell>
-                <TableCell align="center">{m.sender}</TableCell>
-                <TableCell align="center">{m.nsent}</TableCell>
+                <TableCell align="center">{item.isp}</TableCell>
+                <TableCell align="center">{item.appid}</TableCell>
+                <TableCell align="center">{item.prefix}</TableCell>
+                <TableCell align="center">{item.nsent}</TableCell>
                 <TableCell align="center" padding="checkbox">
-                  <MenuButton uuid={m.uuid} name={m.name} sortno={m.sortno}
-                    requestRefresh={() => setRefresh(true)}
-                  />
+                  <MenuButton sms={item} requestRefresh={() => setRefresh(true)} />
                 </TableCell>
               </TableRow>
             ))}
@@ -132,6 +130,34 @@ export default function Home() {
         短信运营商会根据短信发送量收取费用，具体请参考各运营商的报价
       </FormHelperText>
     </Stack>
+  )
+}
+
+function AddButton(props) {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const open = Boolean(anchorEl);
+
+  const onOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const onClose = () => {
+    setAnchorEl(null);
+  }
+
+  return (
+    <>
+      <Button onClick={onOpen}>添加</Button>
+      <Menu anchorEl={anchorEl} open={open} onClose={onClose} onClick={onClose}>
+        <MenuItem component={Link} to='txsms'>
+          <ListItemText>腾讯云短信服务</ListItemText>
+        </MenuItem>
+        <MenuItem component={Link} to='alisms'>
+          <ListItemText>阿里云短信服务</ListItemText>
+        </MenuItem>
+      </Menu>
+    </>
   )
 }
 
@@ -157,7 +183,7 @@ function MenuButton(props) {
 
   const onSort = async dir => {
     try {
-      await put('/system/setting/mail/sort', new URLSearchParams({
+      await put('/system/setting/sms/sort', new URLSearchParams({
         uuid, dir, sortno,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
@@ -189,7 +215,7 @@ function MenuButton(props) {
       const token = await secretCode();
 
       const params = new URLSearchParams({ uuid, secretcode_token: token });
-      await del('/system/setting/mail/delete?' + params.toString());
+      await del('/system/setting/sms/delete?' + params.toString());
       enqueueSnackbar('删除成功', { variant: 'success' });
       requestRefresh();
     } catch (err) {
