@@ -43,7 +43,6 @@ func Del(k string) error {
 // 获取记录
 func Get(k string) (*TicketEntry, error) {
 	defer tickets.Clean() // 删除过期的数据
-
 	return tickets.Get(k)
 }
 

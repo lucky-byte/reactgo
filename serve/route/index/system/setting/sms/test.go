@@ -30,12 +30,9 @@ func test(c echo.Context) error {
 		cc.ErrLog(err).Error("查询短信配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	id, err := sms.MsgID(0)
+	// 发送验证码短信
+	err = sms.SendTextNo1([]string{mobile}, []string{code})
 	if err != nil {
-		cc.ErrLog(err).Error("发送短信错")
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	if err = sms.Send([]string{mobile}, id, []string{code}); err != nil {
 		cc.ErrLog(err).Error("发送短信错")
 		return c.String(http.StatusInternalServerError, err.Error())
 	}

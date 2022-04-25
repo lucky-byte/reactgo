@@ -28,6 +28,7 @@ func export(c echo.Context) error {
 			"create_at":  v.CreateAt,
 			"update_at":  v.UpdateAt,
 			"isp":        v.ISP,
+			"isp_name":   v.ISPName,
 			"appid":      v.AppId,
 			"secret_id":  v.SecretId,
 			"secret_key": v.SecretKey,

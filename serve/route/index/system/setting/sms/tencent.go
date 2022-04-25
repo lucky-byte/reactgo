@@ -48,16 +48,16 @@ func tencentAdd(c echo.Context) error {
 	}
 	ql = `
 		insert into smss (
-			uuid, isp, appid, secret_id, secret_key, prefix, textno1, sortno
+			uuid, isp, isp_name, appid, secret_id, secret_key, prefix, textno1, sortno
 		) values (
-			?, ?, ?, ?, ?, ?, ?, ?
+			?, ?, ?, ?, ?, ?, ?, ?, ?
 		)
 	`
 	err = db.ExecOne(ql, uuid.NewString(),
-		"腾讯云", appid, secret_id, secret_key, prefix, textno1, sortno+1,
+		"tencent", "腾讯云", appid, secret_id, secret_key, prefix, textno1, sortno+1,
 	)
 	if err != nil {
-		cc.ErrLog(err).Error("更新短信配置错")
+		cc.ErrLog(err).Error("添加短信配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

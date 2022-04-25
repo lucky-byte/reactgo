@@ -67,8 +67,7 @@ const SecretCodeDialog = ({ open, onSuccess, onClose, inputFocus }) => {
   }
 
   return (
-    <Dialog open={open} onClose={onDialogClose}
-    PaperProps={{
+    <Dialog open={open} onClose={onDialogClose} PaperProps={{
       style: {
         border: '1px solid orangered',
         boxShadow: `
@@ -76,7 +75,8 @@ const SecretCodeDialog = ({ open, onSuccess, onClose, inputFocus }) => {
           0px 24px 38px 3px rgb(227 66 52/14%),
           0px 9px 46px 8px rgb(227 66 52/12%)
         `,
-      }}}>
+      }
+    }}>
       {loading && <LinearProgress color='secondary' sx={{ width: '100%' }} />}
       <DialogTitle>
         <Stack>

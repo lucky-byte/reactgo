@@ -123,6 +123,7 @@ type SMS struct {
 	CreateAt  time.Time `db:"create_at"  json:"create_at"`  // 创建时间
 	UpdateAt  time.Time `db:"update_at"  json:"update_at"`  // 更新时间
 	ISP       string    `db:"isp"        json:"isp"`        // 运营商
+	ISPName   string    `db:"isp_name"   json:"isp_name"`   // 运营商名称
 	AppId     string    `db:"appid"      json:"appid"`      // appid
 	SecretId  string    `db:"secret_id"  json:"secret_id"`  // secret id
 	SecretKey string    `db:"secret_key" json:"secret_key"` // secret key

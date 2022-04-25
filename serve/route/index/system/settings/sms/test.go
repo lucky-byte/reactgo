@@ -14,22 +14,17 @@ func test(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	var n int
-	var mobile string
-	var params []string
+	var mobile, code string
 
 	err := echo.FormFieldBinder(c).
 		MustInt("n", &n).
 		MustString("mobile", &mobile).
-		MustStrings("params", &params).BindError()
+		MustString("code", &code).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-	id, err := sms.MsgID(n)
+	err = sms.SendTextNo1([]string{mobile}, []string{code})
 	if err != nil {
-		cc.ErrLog(err).Error("发送短信错")
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	if err = sms.Send([]string{mobile}, id, params); err != nil {
 		cc.ErrLog(err).Error("发送短信错")
 		return c.String(http.StatusInternalServerError, err.Error())
 	}

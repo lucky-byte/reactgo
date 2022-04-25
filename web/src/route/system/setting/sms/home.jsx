@@ -120,7 +120,7 @@ export default function Home() {
                     <BlockIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />
                   }
                 </TableCell>
-                <TableCell align="center">{item.isp}</TableCell>
+                <TableCell align="center">{item.isp_name}</TableCell>
                 <TableCell align="center">{item.appid}</TableCell>
                 <TableCell align="center">{item.prefix}</TableCell>
                 <TableCell align="center">
@@ -207,7 +207,7 @@ function MenuButton(props) {
   }
 
   const onModify = () => {
-    if (sms.isp === '腾讯云') {
+    if (sms.isp === 'tencent') {
       navigate('tencent/modify', { state: { uuid: sms.uuid } });
     }
   }

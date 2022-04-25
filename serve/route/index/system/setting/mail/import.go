@@ -58,6 +58,9 @@ func importt(c echo.Context) error {
 	for i, v := range result {
 		if len(v.Name) == 0 {
 			tx.Rollback()
+
+			err = fmt.Errorf("第 %d 条记录不完整: %#v", i+1, v)
+			cc.ErrLog(err).Warnf("导入邮件服务配置错")
 			return c.String(http.StatusBadRequest, fmt.Sprintf("第 %d 条记录不完整", i+1))
 		}
 		if v.CreateAt.IsZero() {
@@ -95,8 +98,8 @@ func importt(c echo.Context) error {
 			v.Username, v.Passwd, v.CC, v.BCC, v.Prefix, v.NSent, v.Disabled, sortno+1,
 		)
 		if err != nil {
-			cc.ErrLog(err).Error("添加邮件服务错")
 			tx.Rollback()
+			cc.ErrLog(err).Error("添加邮件服务错")
 			return c.NoContent(http.StatusInternalServerError)
 		}
 		sortno += 1

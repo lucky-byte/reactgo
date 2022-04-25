@@ -83,7 +83,13 @@ export default function Info() {
           }}>
             <TableRow>
               <TableCell>运营商</TableCell>
+              <TableCell>{sms.isp_name}</TableCell>
+              <TableCell>简称</TableCell>
               <TableCell>{sms.isp}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Appid</TableCell>
+              <TableCell>{sms.appid}</TableCell>
               <TableCell>短信签名</TableCell>
               <TableCell>{sms.prefix}</TableCell>
             </TableRow>

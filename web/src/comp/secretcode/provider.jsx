@@ -3,6 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import Button from '@mui/material/Button';
+import dayjs from 'dayjs';
 import userState from '~/state/user';
 import SecretCodeContext from './context';
 import SecretCodeDialog from './dialog';
@@ -12,6 +13,7 @@ const SecretCodeProvider = ({ children }) => {
   const user = useRecoilValue(userState);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [resolveReject, setResolveReject] = useState([]);
+  const [tokenCache, setTokenCache] = useState({});
 
   const [resolve, reject] = resolveReject;
 
@@ -56,9 +58,15 @@ const SecretCodeProvider = ({ children }) => {
         }
         return resolve("");
       }
+      // 检查 cache, 5 分钟内有效
+      if (tokenCache.token && tokenCache.time) {
+        if (dayjs().isBefore(tokenCache.time.add(5, 'minute'))) {
+          return resolve(tokenCache.token);
+        }
+      }
       setResolveReject([resolve, reject]);
     });
-  }, [user?.secretcode_isset, popupTip]);
+  }, [user?.secretcode_isset, popupTip, tokenCache]);
 
   // 取消验证
   const onClose = useCallback(() => {
@@ -73,6 +81,7 @@ const SecretCodeProvider = ({ children }) => {
     if (resolve) {
       resolve(token);
       setResolveReject([]);
+      setTokenCache({ token, time: dayjs() });
     }
   }, [resolve]);
 

@@ -123,7 +123,8 @@ create table if not exists smss (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
   update_at   timestamp       not null default current_timestamp,
-  isp         varchar(64)     not null,
+  isp         varchar(16)     not null,
+  isp_name    varchar(64)     not null,
   appid       varchar(32)     not null default '',
   secret_id   varchar(64)     not null default '',
   secret_key  varchar(64)     not null default '',
@@ -138,7 +139,7 @@ create table if not exists events (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
   level       int             not null,
-  title       varchar(64)     not null,
+  title       varchar(256)    not null,
   message     text            not null,
   fresh       boolean         not null default true
 );
