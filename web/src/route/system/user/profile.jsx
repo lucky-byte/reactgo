@@ -7,7 +7,6 @@ import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Fab from '@mui/material/Fab';
 import PrintIcon from '@mui/icons-material/Print';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -62,15 +61,9 @@ export default function Profile() {
   }
 
   return (
-    <Container as='main' maxWidth='md' sx={{ mb: 2 }}>
-      <Tooltip title='打印'>
-        <Fab size='medium' color="primary" onClick={print} aria-label="打印"
-          sx={{ position: 'absolute', right: 60, top: 120 }}>
-          <PrintIcon />
-        </Fab>
-      </Tooltip>
+    <Container as='main' maxWidth='md'>
       <Paper ref={contentRef} sx={{
-        px: 5, py: 3, mt: 5, '@media print': {
+        px: 4, py: 3, my: 5, '@media print': {
           boxShadow: 0, borderWidth: 0,
         }
       }}>
@@ -79,10 +72,17 @@ export default function Profile() {
             sx={{ mr: 1 }}>
             <ArrowBackIcon color='primary' />
           </IconButton>
-          <Typography variant='h6' gutterBottom={false}>详细资料</Typography>
+          <Typography variant='h6' gutterBottom={false} sx={{ flex: 1 }}>
+            用户详细资料
+          </Typography>
+          <Tooltip title='打印'>
+            <IconButton aria-label='打印' onClick={print}>
+              <PrintIcon />
+            </IconButton>
+          </Tooltip>
         </Stack>
         <BaseInfoTable profile={profile} />
-        <Typography variant='subtitle1' sx={{ mt: 2 }}>登录历史</Typography>
+        <Typography variant='subtitle1' sx={{ mt: 2, mb: 1 }}>登录历史</Typography>
         <SigninHistory history={profile.history || []} />
       </Paper>
     </Container>
@@ -95,84 +95,74 @@ function BaseInfoTable(props) {
   return (
     <TableContainer component={OutlinedPaper}>
       <Table>
-        <TableBody sx={{ 'td': { borderColor: '#8884' } }}>
+        <TableBody sx={{
+          'td:not(:last-child)': {
+            borderRight: '1px solid #8884',
+          },
+          'td:nth-of-type(2n+1)': {
+            width: '1%', whiteSpace: 'nowrap',
+          },
+          'tr:last-child td': {
+            borderBottom: 0,
+          }
+        }}>
           <TableRow>
             <TableCell>登录名</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
-              {profile.userid}
-            </TableCell>
+            <TableCell>{profile.userid}</TableCell>
             <TableCell>姓名</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid' }}>
-              {profile.name}
-            </TableCell>
+            <TableCell>{profile.name}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>手机号</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
-              {profile.mobile}
-            </TableCell>
+            <TableCell>{profile.mobile}</TableCell>
             <TableCell>邮箱地址</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid' }}>
-              {profile.email}
-            </TableCell>
+            <TableCell>{profile.email}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>联系地址</TableCell>
-            <TableCell colSpan={3} sx={{ borderLeft: '1px solid' }}>
-              {profile.address}
-            </TableCell>
+            <TableCell colSpan={3}>{profile.address}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>创建时间</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
+            <TableCell>
               {dayjs(profile.create_at).format('YYYY/MM/DD HH:mm:ss')}
             </TableCell>
             <TableCell>最后更新时间</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid' }}>
+            <TableCell>
               {dayjs(profile.update_at).format('YYYY/MM/DD HH:mm:ss')}
             </TableCell>
           </TableRow>
           <TableRow>
+            <TableCell>最后登录时间</TableCell>
             <TableCell>
-              <Typography noWrap variant='body2'>最后登录时间</Typography>
-              </TableCell>
-            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
               {dayjs(profile.signin_at).format('YYYY/MM/DD HH:mm:ss')}
             </TableCell>
             <TableCell>登录次数</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid' }}>
-              {profile.n_signin}
-            </TableCell>
+            <TableCell>{profile.n_signin}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>状态</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
+            <TableCell>
               {profile.deleted ? '已删除' : profile.disabled ? '已禁用' : '正常'}
             </TableCell>
             <TableCell>需验证码登录</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid' }}>
-              {profile.tfa ? '是' : '否'}
-            </TableCell>
+            <TableCell>{profile.tfa ? '是' : '否'}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>访问控制</TableCell>
-            <TableCell colSpan={3} sx={{ borderLeft: '1px solid' }}>
+            <TableCell colSpan={3}>
               {profile.acl?.name}（{profile.acl?.summary}）
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>安全操作码</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
-              {profile.secretcode_isset ? '已设置' : '未设置'}
-            </TableCell>
+            <TableCell>{profile.secretcode_isset ? '已设置' : '未设置'}</TableCell>
             <TableCell>两因素认证</TableCell>
-            <TableCell sx={{ borderLeft: '1px solid' }}>
-              {profile.totp_isset ? '已设置' : '未设置'}
-            </TableCell>
+            <TableCell>{profile.totp_isset ? '已设置' : '未设置'}</TableCell>
           </TableRow>
-          <TableRow sx={{ td: { borderBottom: 0 } }}>
+          <TableRow>
             <TableCell>绑定层级</TableCell>
-            <TableCell colSpan={3} sx={{ borderLeft: '1px solid' }}>
+            <TableCell colSpan={3}>
               {profile.node ? `${profile.node.name}，${profile.node.nlevel} 级` : '无'}
             </TableCell>
           </TableRow>

@@ -22,7 +22,7 @@ func del(c echo.Context) error {
 	ql := `delete from mtas where uuid = ?`
 
 	if err := db.ExecOne(ql, mta_uuid); err != nil {
-		cc.ErrLog(err).Error("删除邮件传输代理错")
+		cc.ErrLog(err).Error("删除邮件服务错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

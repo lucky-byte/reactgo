@@ -19,10 +19,10 @@ func disable(c echo.Context) error {
 		return cc.BadRequest(err)
 	}
 	// 更新状态
-	ql := `update mtas set disabled = not disabled where uuid = ?`
+	ql := `update smss set disabled = not disabled where uuid = ?`
 
 	if err := db.ExecOne(ql, uuid); err != nil {
-		cc.ErrLog(err).Error("更新状态错")
+		cc.ErrLog(err).Error("更新短信服务状态错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

@@ -14,37 +14,34 @@ import (
 func export(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	ql := `select * from mtas order by sortno`
-	var result []db.MTA
+	ql := `select * from smss order by sortno`
+	var result []db.SMS
 
 	if err := db.Select(ql, &result); err != nil {
-		cc.ErrLog(err).Error("查询邮件配置错")
+		cc.ErrLog(err).Error("查询短信服务错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var mtas []map[string]interface{}
+	var smss []map[string]any
 
 	for _, v := range result {
-		mtas = append(mtas, map[string]interface{}{
-			"name":     v.Name,
-			"host":     v.Host,
-			"port":     v.Port,
-			"sslmode":  v.SSLMode,
-			"sender":   v.Sender,
-			"replyto":  v.ReplyTo,
-			"username": v.Username,
-			"passwd":   v.Passwd,
-			"cc":       v.CC,
-			"bcc":      v.BCC,
-			"prefix":   v.Prefix,
-			"sortno":   v.SortNo,
-			"nsent":    v.NSent,
-			"disabled": v.Disabled,
+		smss = append(smss, map[string]any{
+			"create_at":  v.CreateAt,
+			"update_at":  v.UpdateAt,
+			"isp":        v.ISP,
+			"appid":      v.AppId,
+			"secret_id":  v.SecretId,
+			"secret_key": v.SecretKey,
+			"prefix":     v.Prefix,
+			"textno1":    v.TextNo1,
+			"sortno":     v.SortNo,
+			"nsent":      v.NSent,
+			"disabled":   v.Disabled,
 		})
 	}
-	b, err := json.Marshal(mtas)
+	b, err := json.Marshal(smss)
 	if err != nil {
 		cc.ErrLog(err).Error("json marshal 错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	return cc.Download(b, "mail-config.json")
+	return cc.Download(b, "smsconfig.json")
 }

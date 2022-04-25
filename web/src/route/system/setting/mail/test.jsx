@@ -19,14 +19,14 @@ export default function Test(props) {
   const user = useRecoilValue(userState);
   const [disabled, setDisabled] = useState(false);
 
-  const { open, onClose, name, uuid } = props;
+  const { open, onClose, mta } = props;
 
   const onConfirm = async () => {
     try {
       setDisabled(true);
 
       await post('/system/setting/mail/test', new URLSearchParams({
-        name, uuid, email: user?.email,
+        name: mta.name, uuid: mta.uuid, email: user?.email,
       }));
       enqueueSnackbar('邮件已发送', { variant: 'success' });
       onClose();
@@ -41,12 +41,12 @@ export default function Test(props) {
     <Dialog open={open} onClose={onClose} maxWidth='xs'>
       <DialogTitle>发送测试邮件</DialogTitle>
       <DialogContent>
-        <DialogContentText>通过 <em>{name}</em> 发送测试邮件</DialogContentText>
+        <DialogContentText>通过 <em>{mta.name}</em> 发送测试邮件</DialogContentText>
         <FormHelperText sx={{ mt: 1 }}>
-          点击「发送」将发送一封测试邮件到下面的邮箱地址，成功收到邮件表明配置正确
+          点击「发送」按钮将发送一封测试邮件到下面的邮箱地址，成功收到邮件表明邮件服务配置正确
         </FormHelperText>
         <Paper variant="outlined" sx={{ p: 1, mt: 1 }}>
-          <Typography variant="body2">{user?.email}</Typography>
+          <Typography variant="subtitle2">{user?.email}</Typography>
         </Paper>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>

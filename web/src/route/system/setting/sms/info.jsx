@@ -25,10 +25,10 @@ export default function Info() {
   const navigate = useNavigate();
   const setProgress = useSetRecoilState(progressState);
   const { enqueueSnackbar } = useSnackbar();
-  const [mta, setMta] = useState({});
+  const [sms, setSMS] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useTitle('邮件服务配置信息');
+  useTitle('短信服务配置信息');
 
   const contentRef = useRef();
   const print = usePrint(contentRef.current);
@@ -40,8 +40,8 @@ export default function Info() {
           setProgress(true);
 
           const params = new URLSearchParams({ uuid: location.state.uuid });
-          const resp = await get('/system/setting/mail/info?' + params.toString());
-          setMta(resp);
+          const resp = await get('/system/setting/sms/info?' + params.toString());
+          setSMS(resp);
         }
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -62,7 +62,7 @@ export default function Info() {
           <ArrowBackIcon color='primary' />
         </IconButton>
         <Typography variant='h4' gutterBottom={false} sx={{ flex: 1 }}>
-          邮件服务配置信息
+          短信服务配置信息
         </Typography>
         <IconButton onClick={print}>
           <PrintIcon />
@@ -82,50 +82,37 @@ export default function Info() {
             }
           }}>
             <TableRow>
-              <TableCell>名称</TableCell>
-              <TableCell>{mta.name}</TableCell>
-              <TableCell>标题前缀</TableCell>
-              <TableCell>{mta.prefix}</TableCell>
+              <TableCell>运营商</TableCell>
+              <TableCell>{sms.isp}</TableCell>
+              <TableCell>短信签名</TableCell>
+              <TableCell>{sms.prefix}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>主机</TableCell>
-              <TableCell colSpan={3}>
-                {mta.host}:{mta.port} / {mta.sslmode ? 'SSL' : 'StartTLS'}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>发件人地址</TableCell>
-              <TableCell colSpan={3}>{mta.sender}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>用户名</TableCell>
-              <TableCell>{mta.username}</TableCell>
-              <TableCell>密码</TableCell>
-              <TableCell>{mta.passwd ? '******' : ''}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>回复地址</TableCell>
-              <TableCell colSpan={3}>{mta.replyto}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>抄送地址</TableCell>
-              <TableCell colSpan={3}>{mta.cc}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>密送地址</TableCell>
-              <TableCell colSpan={3}>{mta.bcc}</TableCell>
+              <TableCell>Secret Id</TableCell>
+              <TableCell>{sms.secret_id}</TableCell>
+              <TableCell>Secret Key</TableCell>
+              <TableCell>{sms.secret_key}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>创建时间</TableCell>
-              <TableCell>{dayjs(mta.create_at).format('LLLL')}</TableCell>
+              <TableCell>{dayjs(sms.create_at).format('LLLL')}</TableCell>
               <TableCell>更新时间</TableCell>
-              <TableCell>{dayjs(mta.update_at).format('LLLL')}</TableCell>
+              <TableCell>{dayjs(sms.update_at).format('LLLL')}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>序号</TableCell>
-              <TableCell>{mta.sortno}</TableCell>
+              <TableCell>{sms.sortno}</TableCell>
               <TableCell>发信量</TableCell>
-              <TableCell>{mta.nsent}</TableCell>
+              <TableCell>{sms.nsent}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell colSpan={4}>
+                <Typography variant='h6'>正文模版</Typography>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>验证码</TableCell>
+              <TableCell colSpan={3}>{sms.textno1}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

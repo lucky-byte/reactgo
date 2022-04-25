@@ -9,7 +9,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-// 查询邮件传输代理信息
+// 查询信息
 func info(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -19,27 +19,24 @@ func info(c echo.Context) error {
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-	ql := `select * from mtas where uuid = ?`
-	var result db.MTA
+	ql := `select * from smss where uuid = ?`
+	var result db.SMS
 
 	if err := db.SelectOne(ql, &result, mta_uuid); err != nil {
-		cc.ErrLog(err).Error("查询邮件传输代理错")
+		cc.ErrLog(err).Error("查询短信配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"uuid":     result.UUID,
-		"name":     result.Name,
-		"host":     result.Host,
-		"port":     result.Port,
-		"sslmode":  result.SSLMode,
-		"sender":   result.Sender,
-		"prefix":   result.Prefix,
-		"replyto":  result.ReplyTo,
-		"username": result.Username,
-		"passwd":   result.Passwd,
-		"cc":       result.CC,
-		"bcc":      result.BCC,
-		"sortno":   result.SortNo,
-		"nsent":    result.NSent,
+		"uuid":       result.UUID,
+		"create_at":  result.CreateAt,
+		"update_at":  result.UpdateAt,
+		"isp":        result.ISP,
+		"appid":      result.AppId,
+		"secret_id":  result.SecretId,
+		"secret_key": result.SecretKey,
+		"prefix":     result.Prefix,
+		"textno1":    result.TextNo1,
+		"sortno":     result.SortNo,
+		"nsent":      result.NSent,
 	})
 }

@@ -101,6 +101,8 @@ insert into sms_settings (appid) values ('');
 
 create table if not exists mtas (
   uuid        varchar(36)     primary key not null,
+  create_at   timestamp       not null default current_timestamp,
+  update_at   timestamp       not null default current_timestamp,
   name        varchar(32)     not null unique,
   host        varchar(128)    not null,
   port        int             not null default 465,
@@ -119,6 +121,8 @@ create table if not exists mtas (
 
 create table if not exists smss (
   uuid        varchar(36)     primary key not null,
+  create_at   timestamp       not null default current_timestamp,
+  update_at   timestamp       not null default current_timestamp,
   isp         varchar(64)     not null,
   appid       varchar(32)     not null default '',
   secret_id   varchar(64)     not null default '',

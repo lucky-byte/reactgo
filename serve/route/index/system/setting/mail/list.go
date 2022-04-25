@@ -17,7 +17,7 @@ func list(c echo.Context) error {
 	var list []db.MTA
 
 	if err := db.Select(ql, &list); err != nil {
-		cc.ErrLog(err).Error("查询邮件配置错")
+		cc.ErrLog(err).Error("查询邮件服务错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{"list": list})

@@ -22,11 +22,14 @@ import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import BlockIcon from '@mui/icons-material/Block';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from "@mui/material/Divider";
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import { saveAs } from 'file-saver';
+import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
@@ -67,7 +70,7 @@ export default function Home() {
   const onExport = async () => {
     try {
       await confirm({
-        description: `导出的文件中将包含账号、密码、等敏感信息，请妥善保管。`,
+        description: `导出的文件中将包含账号、密钥等敏感信息，请妥善保管。`,
         confirmationText: '导出',
       });
       const resp = await get('/system/setting/sms/export');
@@ -87,7 +90,8 @@ export default function Home() {
     <Stack>
       <Typography variant='h4'>短信服务</Typography>
       <Typography variant='body2'>
-        系统通过短信发送验证码等信息，你可以从下面短信服务商中选择一个或多个进行配置
+        系统通过短信发送验证码等信息，你可以配置一个或多个短信服务，
+        系统将在第一个服务发送失败的情况下使用第二个，依此类推
       </Typography>
       <Stack direction='row' justifyContent='flex-end' sx={{ my: 1 }}>
         <AddButton />
@@ -98,31 +102,36 @@ export default function Home() {
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
+              <TableCell align="center"></TableCell>
               <TableCell align="center">运营商</TableCell>
               <TableCell align="center">Appid</TableCell>
-              <TableCell align="center">签名</TableCell>
+              <TableCell align="center">短信签名</TableCell>
+              <TableCell align="center">创建时间</TableCell>
               <TableCell align="center">发信量</TableCell>
-              <TableCell as='td' align="center" padding="checkbox" />
+              <TableCell align="center"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {list.map(item => (
-              <TableRow key={item.uuid}
+              <TableRow key={item.uuid} disabled={item.disabled}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell align="center" padding="none">
+                  {item.disabled &&
+                    <BlockIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />
+                  }
+                </TableCell>
                 <TableCell align="center">{item.isp}</TableCell>
                 <TableCell align="center">{item.appid}</TableCell>
                 <TableCell align="center">{item.prefix}</TableCell>
+                <TableCell align="center">
+                  {dayjs(item.create_at).format('LL')}
+                </TableCell>
                 <TableCell align="center">{item.nsent}</TableCell>
-                <TableCell align="center" padding="checkbox">
+                <TableCell align="center" padding="none" className="action">
                   <MenuButton sms={item} requestRefresh={() => setRefresh(true)} />
                 </TableCell>
               </TableRow>
             ))}
-            {list?.length === 0 &&
-              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell colSpan={9} align="center">空</TableCell>
-              </TableRow>
-            }
           </TableBody>
         </Table>
       </TableContainer>
@@ -150,10 +159,10 @@ function AddButton(props) {
     <>
       <Button onClick={onOpen}>添加</Button>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose} onClick={onClose}>
-        <MenuItem component={Link} to='txsms'>
+        <MenuItem component={Link} to='tencent/add'>
           <ListItemText>腾讯云短信服务</ListItemText>
         </MenuItem>
-        <MenuItem component={Link} to='alisms'>
+        <MenuItem component={Link} to='aliyun'>
           <ListItemText>阿里云短信服务</ListItemText>
         </MenuItem>
       </Menu>
@@ -171,7 +180,7 @@ function MenuButton(props) {
 
   const open = Boolean(anchorEl);
 
-  const { uuid, name, sortno, requestRefresh } = props;
+  const { sms, requestRefresh } = props;
 
   const onOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -184,7 +193,7 @@ function MenuButton(props) {
   const onSort = async dir => {
     try {
       await put('/system/setting/sms/sort', new URLSearchParams({
-        uuid, dir, sortno,
+        uuid: sms.uuid, sortno: sms.sortno, dir,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       requestRefresh();
@@ -194,27 +203,55 @@ function MenuButton(props) {
   }
 
   const onInfo = () => {
-    navigate('info', { state: { uuid } });
+    navigate('info', { state: { uuid: sms.uuid } });
   }
 
   const onModify = () => {
-    navigate('modify', { state: { uuid } });
+    if (sms.isp === '腾讯云') {
+      navigate('tencent/modify', { state: { uuid: sms.uuid } });
+    }
   }
 
   const onTest = () => {
     setTestOpen(true);
   }
 
+  // 禁用/启用
+  const onDisableClick = async () => {
+    try {
+      await confirm({
+        description: sms.disabled ?
+          `确定要恢复 ${sms.isp} 吗？恢复后可正常使用。`
+          :
+          `确定要禁用 ${sms.isp} 吗？禁用后该短信服务不可以继续使用，直到恢复为止。`,
+        confirmationText: sms.disabled ? '恢复' : '禁用',
+        confirmationButtonProps: { color: 'warning' },
+        contentProps: { p: 8 },
+      });
+      await put('/system/setting/sms/disable', new URLSearchParams({
+        isp: sms.isp, uuid: sms.uuid
+      }));
+      enqueueSnackbar('状态更新成功', { variant: 'success' });
+      requestRefresh();
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
   const onDelete = async () => {
     try {
       await confirm({
-        description: `确定要删除 ${name} 吗？删除后无法恢复。`,
+        description: `确定要删除 ${sms.isp} 吗？删除后无法恢复。`,
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
       const token = await secretCode();
 
-      const params = new URLSearchParams({ uuid, secretcode_token: token });
+      const params = new URLSearchParams({
+        isp: sms.isp, uuid: sms.uuid, secretcode_token: token
+      });
       await del('/system/setting/sms/delete?' + params.toString());
       enqueueSnackbar('删除成功', { variant: 'success' });
       requestRefresh();
@@ -251,20 +288,34 @@ function MenuButton(props) {
           <ListItemText>移到最后</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={onModify}>
+        <MenuItem disabled={sms.disabled} onClick={onModify}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>修改</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={onTest}>
+        <MenuItem disabled={sms.disabled} onClick={onTest}>
           <ListItemIcon>
             <ForwardToInboxIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>发送测试邮件</ListItemText>
+          <ListItemText>测试</ListItemText>
         </MenuItem>
         <Divider />
+        <MenuItem onClick={onDisableClick}>
+          <ListItemIcon>
+            {sms.disabled ?
+              <SettingsBackupRestoreIcon fontSize="small" color='warning' />
+              :
+              <BlockIcon fontSize="small" color='warning' />
+            }
+          </ListItemIcon>
+          {sms.disabled ?
+            <ListItemText>恢复</ListItemText>
+            :
+            <ListItemText>禁用</ListItemText>
+          }
+        </MenuItem>
         <MenuItem onClick={onDelete}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" color='error' />
@@ -272,9 +323,7 @@ function MenuButton(props) {
           <ListItemText>删除</ListItemText>
         </MenuItem>
       </Menu>
-      <Test open={testOpen} onClose={() => setTestOpen(false)}
-        uuid={uuid} name={name}
-      />
+      <Test open={testOpen} onClose={() => setTestOpen(false)} sms={sms} />
     </>
   )
 }

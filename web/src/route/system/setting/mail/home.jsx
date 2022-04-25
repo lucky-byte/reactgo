@@ -29,6 +29,7 @@ import Divider from "@mui/material/Divider";
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import { saveAs } from 'file-saver';
+import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
@@ -101,28 +102,32 @@ export default function Home() {
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
+              <TableCell align="center"></TableCell>
               <TableCell align="center">名称</TableCell>
               <TableCell align="center">服务器</TableCell>
               <TableCell align="center">发件人</TableCell>
+              <TableCell align="center">创建时间</TableCell>
               <TableCell align="center">发信量</TableCell>
-              <TableCell align="center" padding="none"></TableCell>
-              <TableCell as='td' align="center" padding="checkbox" />
+              <TableCell align="center"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {list.map(item => (
               <TableRow key={item.uuid} disabled={item.disabled}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align="center">{item.name}</TableCell>
-                <TableCell align="center">{item.host}:{item.port}</TableCell>
-                <TableCell align="center">{item.sender}</TableCell>
-                <TableCell align="center">{item.nsent}</TableCell>
                 <TableCell align="center" padding="none">
                   {item.disabled &&
                     <BlockIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />
                   }
                 </TableCell>
-                <TableCell align="center" padding="checkbox" className="action">
+                <TableCell align="center">{item.name}</TableCell>
+                <TableCell align="center">{item.host}:{item.port}</TableCell>
+                <TableCell align="center">{item.sender}</TableCell>
+                <TableCell align="center">
+                  {dayjs(item.create_at).format('LL')}
+                </TableCell>
+                <TableCell align="center">{item.nsent}</TableCell>
+                <TableCell align="center" padding="none" className="action">
                   <MenuButton mta={item} requestRefresh={() => setRefresh(true)} />
                 </TableCell>
               </TableRow>
@@ -260,12 +265,11 @@ function MenuButton(props) {
           </ListItemIcon>
           <ListItemText>修改</ListItemText>
         </MenuItem>
-        <Divider />
         <MenuItem disabled={mta.disabled} onClick={onTest}>
           <ListItemIcon>
             <ForwardToInboxIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>发送测试邮件</ListItemText>
+          <ListItemText>测试</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem onClick={onDisableClick}>
@@ -289,9 +293,7 @@ function MenuButton(props) {
           <ListItemText>删除</ListItemText>
         </MenuItem>
       </Menu>
-      <Test open={testOpen} onClose={() => setTestOpen(false)}
-        uuid={mta.uuid} name={mta.name}
-      />
+      <Test open={testOpen} onClose={() => setTestOpen(false)} mta={mta} />
     </>
   )
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -55,18 +56,22 @@ func importt(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	for i, v := range result {
-		if len(v.Name) == 0 || len(v.Host) == 0 || v.Port == 0 || len(v.Sender) == 0 {
+		if len(v.Name) == 0 {
 			tx.Rollback()
-			return c.String(http.StatusBadRequest, fmt.Sprintf(
-				"第 %d 条记录不完整，缺少 name, host, port 或者 sender", i,
-			))
+			return c.String(http.StatusBadRequest, fmt.Sprintf("第 %d 条记录不完整", i+1))
+		}
+		if v.CreateAt.IsZero() {
+			v.CreateAt = time.Now().UTC()
+		}
+		if v.UpdateAt.IsZero() {
+			v.UpdateAt = time.Now().UTC()
 		}
 		// 检查名称是否存在
 		ql := `select count(*) from mtas where name = ?`
 		var count int
 
 		if err := tx.Get(&count, tx.Rebind(ql), v.Name); err != nil {
-			cc.ErrLog(err).Error("查询邮件配置错")
+			cc.ErrLog(err).Error("查询邮件服务错")
 			tx.Rollback()
 			return c.NoContent(http.StatusInternalServerError)
 		}
@@ -77,19 +82,20 @@ func importt(c echo.Context) error {
 		// 添加记录
 		ql = `
 			insert into mtas (
-				uuid, name, host, port, sslmode, sender, replyto, username, passwd,
+				uuid, create_at, update_at, name, host, port, sslmode,
+				sender, replyto, username, passwd,
 				cc, bcc, prefix, nsent, disabled, sortno
 			) values (
-				?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+				?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 			)
 		`
 		_, err = tx.Exec(tx.Rebind(ql), uuid.NewString(),
+			v.CreateAt, v.UpdateAt,
 			v.Name, v.Host, v.Port, v.SSLMode, v.Sender, v.ReplyTo,
-			v.Username, v.Passwd, v.CC, v.BCC, v.Prefix, v.NSent, v.Disabled,
-			sortno+1,
+			v.Username, v.Passwd, v.CC, v.BCC, v.Prefix, v.NSent, v.Disabled, sortno+1,
 		)
 		if err != nil {
-			cc.ErrLog(err).Error("添加邮件配置错")
+			cc.ErrLog(err).Error("添加邮件服务错")
 			tx.Rollback()
 			return c.NoContent(http.StatusInternalServerError)
 		}

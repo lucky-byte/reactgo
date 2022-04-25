@@ -1,4 +1,6 @@
-import { useNavigate, Link as RouteLink } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useRecoilState } from "recoil";
+import { useNavigate, useLocation, Link as RouteLink } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -8,34 +10,74 @@ import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Link from "@mui/material/Link";
 import Button from "@mui/material/Button";
-import Tooltip from '@mui/material/Tooltip';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import useTitle from "~/hook/title";
-import { post } from '~/rest';
-import { useSMSTab } from '../state';
+import progressState from "~/state/progress";
+import { post, get } from '~/rest';
+import { useSMSTab } from '../../state';
+import NumberTip from './numtip';
 
-export default function TxSMS() {
+export default function Modify() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
+  const [progress, setProgress] = useRecoilState(progressState);
+  const [mta, setSMS] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
   useTitle('腾讯云短信服务');
   useSMSTab();
 
   const {
-    register, handleSubmit, formState: { errors, isSubmitting }
+    register, handleSubmit, setValue, formState: { errors, isSubmitting }
   } = useForm();
+
+  const reset = useCallback(info => {
+    setValue("appid", info.appid);
+    setValue("secret_id", info.secret_id);
+    setValue("secret_key", info.secret_key);
+    setValue("prefix", info.prefix);
+    setValue("textno1", info.textno1);
+  }, [setValue]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        if (location.state) {
+          setProgress(true);
+
+          const params = new URLSearchParams({ uuid: location.state.uuid });
+          const resp = await get('/system/setting/sms/info?' + params.toString());
+          setSMS(resp);
+          reset(resp);
+        }
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      } finally {
+        setProgress(false);
+      }
+    })();
+  }, [location.state, enqueueSnackbar, setProgress, reset]);
+
+  const onReset = () => {
+    reset(mta);
+  }
 
   const onSubmit = async data => {
     try {
-      await post('/system/setting/mail/add', new URLSearchParams(data));
-      enqueueSnackbar('添加成功', { variant: 'success' });
+      setProgress(true);
+
+      data.uuid = location.state?.uuid;
+      await post('/system/setting/sms/tencent-modify', new URLSearchParams(data));
+      enqueueSnackbar('提交成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message);
+    } finally {
+      setProgress(false);
     }
   }
 
@@ -45,15 +87,7 @@ export default function TxSMS() {
         <IconButton component={RouteLink} to='..'>
           <ArrowBackIcon color='primary' />
         </IconButton>
-        <Stack>
-          <Typography variant='h4'>腾讯云短信服务</Typography>
-          <Typography variant='body2'>
-            配置前需先注册腾讯云短信服务，注册地址:&nbsp;
-            <Link href='https://cloud.tencent.com/product/sms' target='_blank'>
-              https://cloud.tencent.com/product/sms
-            </Link>
-          </Typography>
-        </Stack>
+        <Typography variant='h4'>腾讯云短信服务</Typography>
       </Stack>
       <Paper sx={{ px: 4, py: 3, mt: 3 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -75,9 +109,10 @@ export default function TxSMS() {
               </FormHelperText>
             </Stack>
             <Stack direction='row' spacing={3}>
-            <TextField label='Appid' variant='standard' required
+            <TextField label='Appid' variant='standard' required focused
               autoComplete='off'
               placeholder='应用编号，一般是10位数字'
+              disabled={progress}
               inputProps={{ inputMode: 'numeric' }}
               helperText={errors?.appid?.message}
               error={errors?.appid}
@@ -92,9 +127,10 @@ export default function TxSMS() {
                 },
               })}
             />
-              <TextField label='Secret Id' variant='standard' required
+              <TextField label='Secret Id' variant='standard' required focused
                 autoComplete='off'
                 placeholder='Secret Id，一串数字和大小写组合的字符串'
+                disabled={progress}
                 helperText={errors?.secret_id?.message}
                 error={errors?.secret_id}
                 sx={{ flex: 2 }}
@@ -108,9 +144,10 @@ export default function TxSMS() {
                   },
                 })}
               />
-              <TextField label='Secret Key' variant='standard' required
+              <TextField label='Secret Key' variant='standard' required focused
                 autoComplete='off'
                 placeholder='Secret 密钥，一串数字和大小写组合的字符串'
+                disabled={progress}
                 helperText={errors?.secret_key?.message}
                 error={errors?.secret_key}
                 sx={{ flex: 2 }}
@@ -127,8 +164,9 @@ export default function TxSMS() {
             </Stack>
             <Stack>
               <TextField label='短信签名' variant='standard' fullWidth required
-                autoComplete='off'
+                focused autoComplete='off'
                 placeholder='短信签名'
+                disabled={progress}
                 helperText={errors?.prefix?.message}
                 error={errors.prefix}
                 {...register('prefix', {
@@ -159,10 +197,10 @@ export default function TxSMS() {
               </FormHelperText>
             </Stack>
             <Stack>
-              <TextField label='验证码模版编号' variant='standard' fullWidth
-                required
-                autoComplete='off'
-                placeholder='邮件标题前缀，可以不填'
+              <TextField label='验证码模版编号' variant='standard' required
+                focused autoComplete='off'
+                placeholder='短信验证码模版编号'
+                disabled={progress}
                 helperText={errors?.textno1?.message}
                 error={errors?.textno1}
                 {...register('textno1', {
@@ -176,7 +214,7 @@ export default function TxSMS() {
                 })}
               />
               <FormHelperText>
-                参考正文：您的验证码是 <NumberTip n={1} tip='短信验证码' />，10分钟内有效
+                参考正文：您的验证码是 <NumberTip n={1} tip='短信验证码' />，请勿告诉他人
               </FormHelperText>
             </Stack>
           </Stack>
@@ -185,25 +223,13 @@ export default function TxSMS() {
               onClick={() => { navigate('..') }}>
               取消
             </Button>
-            <Button type='reset' disabled={isSubmitting}>重置</Button>
-            <LoadingButton variant='contained' type='submit'
-              loading={isSubmitting}>
+            <Button disabled={isSubmitting} onClick={onReset}>重置</Button>
+            <LoadingButton variant='contained' type='submit' loading={isSubmitting}>
               提交
             </LoadingButton>
           </Stack>
         </form>
       </Paper>
     </Stack>
-  )
-}
-
-function NumberTip(props) {
-  return (
-    <Tooltip title={props.tip}>
-      <Typography component='span' color='primary'
-        sx={{ cursor: 'pointer', fontSize: 'inherit' }}>
-        {'{'}{props.n}{'}'}
-      </Typography>
-    </Tooltip>
   )
 }

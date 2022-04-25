@@ -51,8 +51,8 @@ func modify(c echo.Context) error {
 	ql := `
 		update mtas set
 			name = ?, host = ?, port = ?, sslmode = ?, sender = ?,
-			prefix = ?, replyto = ?, username = ?, passwd = ?,
-			cc = ?, bcc = ?
+			prefix = ?, replyto = ?, username = ?, passwd = ?, cc = ?, bcc = ?,
+			update_at = current_timestamp
 		where uuid = ?
 	`
 	err = db.ExecOne(ql,
@@ -60,7 +60,7 @@ func modify(c echo.Context) error {
 		ccc, bcc, mta_uuid,
 	)
 	if err != nil {
-		cc.ErrLog(err).Error("更新邮件配置错")
+		cc.ErrLog(err).Error("更新邮件服务错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

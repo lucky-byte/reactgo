@@ -52,7 +52,7 @@ func add(c echo.Context) error {
 	sortno := 0
 
 	if err = db.SelectOne(ql, &sortno); err != nil {
-		cc.ErrLog(err).Error("查询邮件传输代理配置错")
+		cc.ErrLog(err).Error("查询邮件服务配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
@@ -69,7 +69,7 @@ func add(c echo.Context) error {
 		username, password, ccc, bcc, sortno+1,
 	)
 	if err != nil {
-		cc.ErrLog(err).Error("添加邮件配置错")
+		cc.ErrLog(err).Error("添加邮件服务错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

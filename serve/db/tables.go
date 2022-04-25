@@ -98,35 +98,39 @@ type SmsSetting struct {
 
 // 邮件服务
 type MTA struct {
-	UUID     string `db:"uuid"     json:"uuid"`     // uuid
-	Name     string `db:"name"     json:"name"`     // 名称
-	Host     string `db:"host"     json:"host"`     // 主机
-	Port     int    `db:"port"     json:"port"`     // 端口
-	SSLMode  bool   `db:"sslmode"  json:"sslmode"`  // SSL 模式
-	Sender   string `db:"sender"   json:"sender"`   // 发送地址
-	Prefix   string `db:"prefix"   json:"prefix"`   // 标题前缀
-	ReplyTo  string `db:"replyto"  json:"replyto"`  // 回复地址
-	Username string `db:"username" json:"username"` // 认证用户名
-	Passwd   string `db:"passwd"   json:"passwd"`   // 密码
-	CC       string `db:"cc"       json:"cc"`       // 抄送
-	BCC      string `db:"bcc"      json:"bcc"`      // 密送
-	SortNo   int    `db:"sortno"   json:"sortno"`   // 排序序号
-	NSent    int    `db:"nsent"    json:"nsent"`    // 发送量
-	Disabled bool   `db:"disabled" json:"disabled"` // 是否停用
+	UUID     string    `db:"uuid"      json:"uuid"`      // uuid
+	CreateAt time.Time `db:"create_at" json:"create_at"` // 创建时间
+	UpdateAt time.Time `db:"update_at" json:"update_at"` // 更新时间
+	Name     string    `db:"name"      json:"name"`      // 名称
+	Host     string    `db:"host"      json:"host"`      // 主机
+	Port     int       `db:"port"      json:"port"`      // 端口
+	SSLMode  bool      `db:"sslmode"   json:"sslmode"`   // SSL 模式
+	Sender   string    `db:"sender"    json:"sender"`    // 发送地址
+	Prefix   string    `db:"prefix"    json:"prefix"`    // 标题前缀
+	ReplyTo  string    `db:"replyto"   json:"replyto"`   // 回复地址
+	Username string    `db:"username"  json:"username"`  // 认证用户名
+	Passwd   string    `db:"passwd"    json:"passwd"`    // 密码
+	CC       string    `db:"cc"        json:"cc"`        // 抄送
+	BCC      string    `db:"bcc"       json:"bcc"`       // 密送
+	SortNo   int       `db:"sortno"    json:"sortno"`    // 排序序号
+	NSent    int       `db:"nsent"     json:"nsent"`     // 发送量
+	Disabled bool      `db:"disabled"  json:"disabled"`  // 是否停用
 }
 
 // 短信服务
 type SMS struct {
-	UUID      string `db:"uuid"       json:"uuid"`       // uuid
-	ISP       string `db:"isp"        json:"isp"`        // 运营商
-	AppId     string `db:"appid"      json:"appid"`      // appid
-	SecretId  string `db:"secret_id"  json:"secret_id"`  // secret id
-	SecretKey string `db:"secret_key" json:"secret_key"` // secret key
-	Prefix    string `db:"prefix"     json:"prefix"`     // 签名
-	TextNo1   string `db:"textno1"    json:"textno1"`    // 验证码模板
-	SortNo    int    `db:"sortno"     json:"sortno"`     // 排序序号
-	NSent     int    `db:"nsent"      json:"nsent"`      // 发送量
-	Disabled  bool   `db:"disabled"   json:"disabled"`   // 是否停用
+	UUID      string    `db:"uuid"       json:"uuid"`       // uuid
+	CreateAt  time.Time `db:"create_at"  json:"create_at"`  // 创建时间
+	UpdateAt  time.Time `db:"update_at"  json:"update_at"`  // 更新时间
+	ISP       string    `db:"isp"        json:"isp"`        // 运营商
+	AppId     string    `db:"appid"      json:"appid"`      // appid
+	SecretId  string    `db:"secret_id"  json:"secret_id"`  // secret id
+	SecretKey string    `db:"secret_key" json:"secret_key"` // secret key
+	Prefix    string    `db:"prefix"     json:"prefix"`     // 签名
+	TextNo1   string    `db:"textno1"    json:"textno1"`    // 验证码模板
+	SortNo    int       `db:"sortno"     json:"sortno"`     // 排序序号
+	NSent     int       `db:"nsent"      json:"nsent"`      // 发送量
+	Disabled  bool      `db:"disabled"   json:"disabled"`   // 是否停用
 }
 
 // 定时任务

@@ -2,54 +2,41 @@ package sms
 
 import (
 	"net/http"
-	"net/mail"
 
 	"github.com/labstack/echo/v4"
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
-	"github.com/lucky-byte/reactgo/serve/mailfs"
+	"github.com/lucky-byte/reactgo/serve/sms"
 )
 
-// 发送测试邮件
+// 发送测试短信
 func test(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var mta_uuid, address string
+	var uuid, mobile, code string
 
 	err := echo.FormFieldBinder(c).
-		MustString("uuid", &mta_uuid).
-		MustString("email", &address).BindError()
+		MustString("uuid", &uuid).
+		MustString("code", &code).
+		MustString("mobile", &mobile).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-	// 解析收件地址
-	addr, err := mail.ParseAddress(address)
-	if err != nil {
-		cc.ErrLog(err).Error("解析邮件地址错")
-		return c.String(http.StatusBadRequest, "解析邮件地址错")
-	}
-	// 查询 MTA 信息
-	ql := `select * from mtas where uuid = ?`
-	var mta db.MTA
+	ql := `select * from smss where uuid = ?`
+	var record db.SMS
 
-	if err = db.SelectOne(ql, &mta, mta_uuid); err != nil {
-		cc.ErrLog(err).Error("查询邮件配置错")
+	if err = db.SelectOne(ql, &record, uuid); err != nil {
+		cc.ErrLog(err).Error("查询短信配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	// 生成邮件
-	m, err := mailfs.Message("测试邮件", "test", map[string]interface{}{
-		"MTAName": mta.Name,
-	})
+	id, err := sms.MsgID(0)
 	if err != nil {
-		cc.ErrLog(err).Error("从模板生成邮件错")
-		return c.NoContent(http.StatusInternalServerError)
+		cc.ErrLog(err).Error("发送短信错")
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	m.AddTO(addr)
-
-	// 发送邮件
-	if err = m.SendWithMta(&mta); err != nil {
-		cc.ErrLog(err).Error("发送邮件错")
+	if err = sms.Send([]string{mobile}, id, []string{code}); err != nil {
+		cc.ErrLog(err).Error("发送短信错")
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusOK)

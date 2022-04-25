@@ -16,10 +16,9 @@ func Attach(up *echo.Group, code int) {
 
 	group.Use(acl.AllowWrite(code)) // Write 权限
 
-	group.POST("/txsms", txsms)
-
-	group.PUT("/modify", modify)
 	group.PUT("/sort", sort)
+	group.POST("/tencent-add", tencentAdd)
+	group.POST("/tencent-modify", tencentModify)
 
 	group.Use(acl.AllowAdmin(code)) // Admin 权限
 

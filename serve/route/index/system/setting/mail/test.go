@@ -15,16 +15,16 @@ import (
 func test(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var mta_uuid, address string
+	var uuid, email string
 
 	err := echo.FormFieldBinder(c).
-		MustString("uuid", &mta_uuid).
-		MustString("email", &address).BindError()
+		MustString("uuid", &uuid).
+		MustString("email", &email).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
 	}
 	// 解析收件地址
-	addr, err := mail.ParseAddress(address)
+	addr, err := mail.ParseAddress(email)
 	if err != nil {
 		cc.ErrLog(err).Error("解析邮件地址错")
 		return c.String(http.StatusBadRequest, "解析邮件地址错")
@@ -33,7 +33,7 @@ func test(c echo.Context) error {
 	ql := `select * from mtas where uuid = ?`
 	var mta db.MTA
 
-	if err = db.SelectOne(ql, &mta, mta_uuid); err != nil {
+	if err = db.SelectOne(ql, &mta, uuid); err != nil {
 		cc.ErrLog(err).Error("查询邮件配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}

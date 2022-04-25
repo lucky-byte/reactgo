@@ -23,23 +23,25 @@ func info(c echo.Context) error {
 	var result db.MTA
 
 	if err := db.SelectOne(ql, &result, mta_uuid); err != nil {
-		cc.ErrLog(err).Error("查询邮件传输代理错")
+		cc.ErrLog(err).Error("查询邮件服务错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"uuid":     result.UUID,
-		"name":     result.Name,
-		"host":     result.Host,
-		"port":     result.Port,
-		"sslmode":  result.SSLMode,
-		"sender":   result.Sender,
-		"prefix":   result.Prefix,
-		"replyto":  result.ReplyTo,
-		"username": result.Username,
-		"passwd":   result.Passwd,
-		"cc":       result.CC,
-		"bcc":      result.BCC,
-		"sortno":   result.SortNo,
-		"nsent":    result.NSent,
+		"uuid":      result.UUID,
+		"create_at": result.CreateAt,
+		"update_at": result.UpdateAt,
+		"name":      result.Name,
+		"host":      result.Host,
+		"port":      result.Port,
+		"sslmode":   result.SSLMode,
+		"sender":    result.Sender,
+		"prefix":    result.Prefix,
+		"replyto":   result.ReplyTo,
+		"username":  result.Username,
+		"passwd":    result.Passwd,
+		"cc":        result.CC,
+		"bcc":       result.BCC,
+		"sortno":    result.SortNo,
+		"nsent":     result.NSent,
 	})
 }

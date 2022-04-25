@@ -81,7 +81,7 @@ export default function Modify() {
     try {
       setProgress(true);
 
-      data.uuid = location?.state?.uuid;
+      data.uuid = location.state?.uuid;
       await put('/system/setting/mail/modify', new URLSearchParams(data));
       enqueueSnackbar('更新成功', { variant: 'success' });
       navigate('..', { replace: true });
@@ -295,8 +295,7 @@ export default function Modify() {
                 取消
               </Button>
               <Button disabled={isSubmitting} onClick={onReset}>重置</Button>
-              <LoadingButton variant='contained' type='submit'
-                loading={isSubmitting}>
+              <LoadingButton variant='contained' type='submit' loading={isSubmitting}>
                 提交
               </LoadingButton>
             </Stack>
