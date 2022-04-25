@@ -27,7 +27,8 @@ export default function Test(props) {
       setDisabled(true);
 
       await post('/system/setting/sms/test', new URLSearchParams({
-        name: sms.name, uuid: sms.uuid, mobile: user?.mobile, code: code,
+        uuid: sms.uuid, mobile: user?.mobile, code: code,
+        isp: sms.isp_name, appid: sms.appid,
       }));
       enqueueSnackbar('短信已发送', { variant: 'success' });
       onClose();
@@ -42,7 +43,7 @@ export default function Test(props) {
     <Dialog open={open} onClose={onClose} maxWidth='xs'>
       <DialogTitle>发送测试短信</DialogTitle>
       <DialogContent>
-        <DialogContentText>通过 <em>{sms.isp}</em> 发送测试短信</DialogContentText>
+        <DialogContentText>通过 <em>{sms.isp_name}</em> 发送测试短信</DialogContentText>
         <FormHelperText sx={{ mt: 1 }}>
           点击「发送」按钮将发送一条验证码为 {code} 的短信到下面的手机号，成功收到短信表明配置正确
         </FormHelperText>

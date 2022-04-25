@@ -200,7 +200,7 @@ function MenuButton(props) {
         contentProps: { p: 8 },
       });
       await put('/system/setting/mail/disable', new URLSearchParams({
-        name: mta.name, uuid: mta.uuid
+        uuid: mta.uuid, name: mta.name, disabled: !mta.disabled,
       }));
       enqueueSnackbar('状态更新成功', { variant: 'success' });
       requestRefresh();
@@ -221,7 +221,7 @@ function MenuButton(props) {
       const token = await secretCode();
 
       const params = new URLSearchParams({
-        name: mta.name, uuid: mta.uuid, secretcode_token: token,
+        uuid: mta.uuid, secretcode_token: token, name: mta.name,
       });
       await del('/system/setting/mail/delete?' + params.toString());
       enqueueSnackbar('删除成功', { variant: 'success' });

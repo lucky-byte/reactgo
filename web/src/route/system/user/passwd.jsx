@@ -39,7 +39,8 @@ export default function Password() {
       return enqueueSnackbar('2次密码输入不一致');
     }
     try {
-      data.uuid = location?.state?.uuid;
+      data.uuid = location.state?.uuid;
+      data.user = location.state?.name;
       await put('/system/user/passwd', new URLSearchParams(data));
       enqueueSnackbar('登录密码已修改成功', { variant: 'success' });
       navigate('..', { replace: true });

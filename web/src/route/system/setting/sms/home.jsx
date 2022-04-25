@@ -221,15 +221,16 @@ function MenuButton(props) {
     try {
       await confirm({
         description: sms.disabled ?
-          `确定要恢复 ${sms.isp} 吗？恢复后可正常使用。`
+          `确定要恢复 ${sms.isp_name} 吗？恢复后可正常使用。`
           :
-          `确定要禁用 ${sms.isp} 吗？禁用后该短信服务不可以继续使用，直到恢复为止。`,
+          `确定要禁用 ${sms.isp_name} 吗？禁用后该短信服务不可以继续使用，直到恢复为止。`,
         confirmationText: sms.disabled ? '恢复' : '禁用',
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
       await put('/system/setting/sms/disable', new URLSearchParams({
-        isp: sms.isp, uuid: sms.uuid
+        uuid: sms.uuid,
+        isp: sms.isp_name, appid: sms.appid, disabled: !sms.disabled
       }));
       enqueueSnackbar('状态更新成功', { variant: 'success' });
       requestRefresh();
@@ -250,7 +251,7 @@ function MenuButton(props) {
       const token = await secretCode();
 
       const params = new URLSearchParams({
-        isp: sms.isp, uuid: sms.uuid, secretcode_token: token
+        uuid: sms.uuid, secretcode_token: token, isp: sms.isp_name, appid: sms.appid,
       });
       await del('/system/setting/sms/delete?' + params.toString());
       enqueueSnackbar('删除成功', { variant: 'success' });

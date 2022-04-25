@@ -31,8 +31,9 @@ func Send(mobile []string, textno int, params []string) error {
 	if err := db.Select(ql, &smss); err != nil {
 		return err
 	}
+	// 逐个尝试，遇到第一个成功发送的为止
 	for _, s := range smss {
-		err := send(s, mobile, textno, params)
+		err := SendWith(&s, mobile, textno, params)
 		if err != nil {
 			xlog.X.WithError(err).Errorf("通过 %s 发送短信错", s.ISP)
 			continue
@@ -42,17 +43,17 @@ func Send(mobile []string, textno int, params []string) error {
 	return fmt.Errorf("所有 %d 个短信服务商发送短信全部失败", len(smss))
 }
 
-func send(sms db.SMS, mobile []string, textno int, params []string) error {
+func SendWith(sms *db.SMS, mobile []string, textno int, params []string) error {
 	if sms.ISP == "tencent" {
-		return sendWithTencent(mobile, textNo(sms, textno), params, &sms)
+		return sendWithTencent(mobile, textNo(sms, textno), params, sms)
 	}
 	return fmt.Errorf("短信运营商[%s][%s]不支持", sms.ISP, sms.ISPName)
 }
 
-func textNo(s db.SMS, textno int) string {
+func textNo(sms *db.SMS, textno int) string {
 	switch textno {
 	case 1:
-		return s.TextNo1
+		return sms.TextNo1
 	default:
 		xlog.X.Panicf("短信 textno %d 无效", textno)
 		return ""

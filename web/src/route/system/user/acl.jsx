@@ -62,7 +62,7 @@ export default function ACL() {
       setSubmitting(true);
 
       await put('/system/user/acl', new URLSearchParams({
-        uuid: location?.state?.uuid, acl: acl,
+        uuid: location.state?.uuid, acl: acl, user: location.state?.name,
       }));
       enqueueSnackbar(`更新成功`, { variant: 'success' });
       navigate('..', { replace: true });

@@ -159,7 +159,7 @@ export default function List() {
               <TableCell align='center'>创建时间</TableCell>
               <TableCell align='center'>最后登录时间</TableCell>
               <TableCell align='center'>登录次数</TableCell>
-              <TableCell as='td' align='right' colSpan={2} padding='none' />
+              <TableCell colSpan={2} />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -180,19 +180,17 @@ export default function List() {
                 <TableCell align="center">{dayjs(u.create_at).fromNow()}</TableCell>
                 <TableCell align="center">{dayjs(u.signin_at).fromNow()}</TableCell>
                 <TableCell align="center">{u.n_signin}</TableCell>
-                <TableCell align="right" padding='none'>
+                <TableCell align='center' padding='none'>
                   {u.deleted &&
                     <RemoveCircleOutlineIcon color='error' fontSize='small'
                       sx={{ verticalAlign: 'middle' }}
                     />
                   }
                   {(u.disabled && !u.deleted) &&
-                    <BlockIcon color='warning' fontSize='small'
-                      sx={{ verticalAlign: 'middle' }}
-                    />
+                    <BlockIcon fontSize='small' sx={{ verticalAlign: 'middle' }} />
                   }
                 </TableCell>
-                <TableCell align="right" padding='none' className='action'>
+                <TableCell align="center" padding='none' className='action'>
                   <UserMenuIconButton user={u} requestRefresh={requestRefresh} />
                 </TableCell>
               </TableRow>
@@ -264,9 +262,9 @@ function UserMenuIconButton(props) {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      await post('/system/user/clearsecretcode',
-        new URLSearchParams({ uuid: user.uuid })
-      );
+      await post('/system/user/clearsecretcode', new URLSearchParams({
+        uuid: user.uuid, user: user.name,
+      }));
       enqueueSnackbar('已清除', { variant: 'success' });
 
       if (currentUser.userid === user.userid) {
@@ -288,9 +286,9 @@ function UserMenuIconButton(props) {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      await post('/system/user/cleartotp',
-        new URLSearchParams({ uuid: user.uuid })
-      );
+      await post('/system/user/cleartotp', new URLSearchParams({
+        uuid: user.uuid, user: user.name,
+      }));
       enqueueSnackbar('已清除', { variant: 'success' });
 
       if (currentUser.userid === user.userid) {
@@ -315,9 +313,9 @@ function UserMenuIconButton(props) {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      await post('/system/user/disable',
-        new URLSearchParams({ uuid: user.uuid })
-      );
+      await post('/system/user/disable', new URLSearchParams({
+        uuid: user.uuid, user: user.name, disabled: !user.disabled,
+      }));
       enqueueSnackbar('用户状态更新成功', { variant: 'success' });
       requestRefresh();
     } catch (err) {
@@ -339,7 +337,7 @@ function UserMenuIconButton(props) {
       const token = await secretCode();
 
       const params = new URLSearchParams({
-        uuid: user.uuid, secretcode_token: token
+        uuid: user.uuid, secretcode_token: token, user: user.name,
       });
       await del('/system/user/delete?' + params.toString());
       enqueueSnackbar('用户已被删除', { variant: 'success' });

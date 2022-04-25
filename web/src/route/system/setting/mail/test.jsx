@@ -26,7 +26,7 @@ export default function Test(props) {
       setDisabled(true);
 
       await post('/system/setting/mail/test', new URLSearchParams({
-        name: mta.name, uuid: mta.uuid, email: user?.email,
+        uuid: mta.uuid, email: user?.email, name: mta.name,
       }));
       enqueueSnackbar('邮件已发送', { variant: 'success' });
       onClose();

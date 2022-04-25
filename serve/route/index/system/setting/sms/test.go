@@ -31,7 +31,7 @@ func test(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	// 发送验证码短信
-	err = sms.SendTextNo1([]string{mobile}, []string{code})
+	err = sms.SendWith(&record, []string{mobile}, 1, []string{code})
 	if err != nil {
 		cc.ErrLog(err).Error("发送短信错")
 		return c.String(http.StatusInternalServerError, err.Error())
