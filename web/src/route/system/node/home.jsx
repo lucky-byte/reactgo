@@ -270,7 +270,10 @@ export default function Home() {
 
     try {
       const target = hoverNode || selected;
-      await put('/system/node/top', new URLSearchParams({ uuid: target }));
+
+      await put('/system/node/top', new URLSearchParams({
+        uuid: target, _noop: true,
+      }));
       setReload(true);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
@@ -284,7 +287,10 @@ export default function Home() {
 
     try {
       const target = hoverNode || selected;
-      await put('/system/node/bottom', new URLSearchParams({ uuid: target }));
+
+      await put('/system/node/bottom', new URLSearchParams({
+        uuid: target, _noop: true,
+      }));
       setReload(true);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
@@ -298,7 +304,10 @@ export default function Home() {
 
     try {
       const target = hoverNode || selected;
-      await put('/system/node/up', new URLSearchParams({ uuid: target }));
+
+      await put('/system/node/up', new URLSearchParams({
+        uuid: target, _noop: true,
+      }));
       setReload(true);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
@@ -312,7 +321,10 @@ export default function Home() {
 
     try {
       const target = hoverNode || selected;
-      await put('/system/node/down', new URLSearchParams({ uuid: target }));
+
+      await put('/system/node/down', new URLSearchParams({
+        uuid: target, _noop: true,
+      }));
       setReload(true);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
@@ -323,8 +335,10 @@ export default function Home() {
   // 修改名称
   const onChangeName = async val => {
     try {
+      const _audit = `修改节点的名称 ${node.name} => ${val}`;
+
       await put('/system/node/name', new URLSearchParams({
-        uuid: node.uuid, name: val
+        uuid: node.uuid, name: val, _audit,
       }));
       setNode({ ...node, name: val });
       setReload(true);
@@ -337,8 +351,10 @@ export default function Home() {
   // 修改描述
   const onChangeSummary = async val => {
     try {
+      const _audit = `修改节点 ${node.name} 的描述`;
+
       await put('/system/node/summary', new URLSearchParams({
-        uuid: node.uuid, summary: val
+        uuid: node.uuid, summary: val, _audit,
       }));
       setNode({ ...node, summary: val });
       enqueueSnackbar('更新成功', { variant: 'success' });
@@ -350,8 +366,10 @@ export default function Home() {
   // 添加子节点
   const onAddClick = async () => {
     try {
+      const _audit = `添加层级节点 ${node.name} 的子节点`;
+
       const resp = await post('/system/node/add', new URLSearchParams({
-        uuid: node.uuid,
+        uuid: node.uuid, _audit,
       }));
       enqueueSnackbar('添加成功', { variant: 'success' });
       setReload(true);
@@ -371,7 +389,11 @@ export default function Home() {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      await put('/system/node/disable', new URLSearchParams({ uuid: node.uuid }));
+      const _audit = `禁用层级节点 ${node.name}`;
+
+      await put('/system/node/disable', new URLSearchParams({
+        uuid: node.uuid, _audit,
+      }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       setReload(true);
       setNode({ ...node, disabled: true });
@@ -391,7 +413,11 @@ export default function Home() {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      await put('/system/node/enable', new URLSearchParams({ uuid: node.uuid }));
+      const _audit = `启用层级节点 ${node.name}`;
+
+      await put('/system/node/enable', new URLSearchParams({
+        uuid: node.uuid, _audit,
+      }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       setReload(true);
       setNode({ ...node, disabled: false });
@@ -411,7 +437,11 @@ export default function Home() {
         confirmationButtonProps: { color: 'error' },
         contentProps: { p: 8 },
       });
-      await put('/system/node/delete', new URLSearchParams({ uuid: node.uuid }));
+      const _audit = `删除层级节点 ${node.name}`;
+
+      await put('/system/node/delete', new URLSearchParams({
+        uuid: node.uuid, _audit,
+      }));
       enqueueSnackbar('删除成功', { variant: 'success' });
       setSelected('');
       setPageData('selected', '');

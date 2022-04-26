@@ -80,8 +80,10 @@ export default function Parent(props) {
       if (!selected) {
         return enqueueSnackbar('请选择父节点', { variant: 'warning' });
       }
+      const _audit = `修改节点 ${name} 的父节点`;
+
       await put('/system/node/parent', new URLSearchParams({
-        uuid, parent: selected,
+        uuid, parent: selected, _audit,
       }));
       enqueueSnackbar('修改成功', { variant: 'success' });
       reload(true);

@@ -72,6 +72,8 @@ export default function Add() {
   // 提交
   const onSubmit = async data => {
     try {
+      data._audit = `添加定时任务 ${data.name}`;
+
       await post('/system/task/add', new URLSearchParams(data));
       enqueueSnackbar('添加成功', { variant: 'success' });
       navigate('..', { replace: true });

@@ -6,9 +6,11 @@ import Badge from '@mui/material/Badge';
 import Popover from '@mui/material/Popover';
 import Stack from "@mui/material/Stack";
 import Typography from '@mui/material/Typography';
+import Divider from "@mui/material/Divider";
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CampaignIcon from '@mui/icons-material/Campaign';
@@ -180,48 +182,50 @@ export default function Notification() {
         PaperProps={{
           style: { width: '30%' },
         }}>
-        <Stack sx={{ p: 2 }} spacing={0}>
-          <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <Typography variant="subtitle2">通知</Typography>
-            <Button size='small' onClick={onAllClick} sx={{ alignSelf: 'flex-end' }}>
-              全部
-            </Button>
-          </Stack>
+        <Stack sx={{ mx: 2, my: 2 }} spacing={2}>
           <List>
-            {lastNotification.last?.map(item => (
-              <ListItemButton key={item.uuid} alignItems="flex-start"
-                onClick={() => onItemClick(item)}>
-                <ListItemText
-                  disableTypography
-                  primary={
-                    <Stack direction='row' alignItems='center' spacing={1}>
-                      {item.type === 1 &&
-                        <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
-                          <NotificationsIcon color="info" />
-                        </Badge>
-                      }
-                      {item.type === 2 &&
-                        <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
-                          <CampaignIcon color="info" />
-                        </Badge>
-                      }
-                      <Ellipsis variant="subtitle1" sx={{
-                        flex: 1, fontWeight: 'bold', textAlign: 'left'
-                      }}>
-                        {item.title}
-                      </Ellipsis>
-                      <Typography variant="caption" color='gray'>
-                        {dayjs(item.create_at).fromNow()}
-                      </Typography>
-                    </Stack>
-                  }
-                  secondary={
-                    <Ellipsis variant='body2' lines={3}>{item.content}</Ellipsis>
-                  }
-                />
-              </ListItemButton>
+            {lastNotification.last?.map((item, index) => (
+              <>
+                <ListItemButton key={item.uuid} alignItems='flex-start'
+                  onClick={() => onItemClick(item)}>
+                  <ListItemIcon>
+                    {item.type === 1 &&
+                      <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
+                        <NotificationsIcon color="info" />
+                      </Badge>
+                    }
+                    {item.type === 2 &&
+                      <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
+                        <CampaignIcon color="info" />
+                      </Badge>
+                    }
+                  </ListItemIcon>
+                  <ListItemText
+                    disableTypography
+                    primary={
+                      <Stack direction='row' alignItems='center' spacing={2} sx={{ mb: '2px' }}>
+                        <Ellipsis variant="subtitle1" sx={{
+                          flex: 1, fontWeight: 'bold', textAlign: 'left'
+                        }}>
+                          {item.title}
+                        </Ellipsis>
+                        <Typography variant="caption">
+                          {dayjs(item.create_at).fromNow()}
+                        </Typography>
+                      </Stack>
+                    }
+                    secondary={
+                      <Ellipsis variant='body2' lines={3}>{item.content}</Ellipsis>
+                    }
+                  />
+                </ListItemButton>
+                {index < lastNotification.last.length - 1 && <Divider variant="inset" />}
+              </>
             ))}
           </List>
+          <Button onClick={onAllClick}>
+            查看全部通知
+          </Button>
         </Stack>
       </Popover>
     </>

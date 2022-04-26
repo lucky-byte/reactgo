@@ -15,7 +15,7 @@ func candidate(c echo.Context) error {
 
 	var node string
 
-	err := echo.FormFieldBinder(c).MustString("node", &node).BindError()
+	err := echo.QueryParamsBinder(c).MustString("node", &node).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
 	}

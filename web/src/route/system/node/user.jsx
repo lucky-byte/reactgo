@@ -41,7 +41,7 @@ import OutlinedPaper from "~/comp/outlined-paper";
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
-import { post, put, del } from '~/rest';
+import { get, put, del } from '~/rest';
 
 export default function User() {
   const navigate = useNavigate();
@@ -69,9 +69,10 @@ export default function User() {
         if (reload) {
           setProgress(true);
 
-          const resp = await post('/system/node/user/', new URLSearchParams({
+          const q = new URLSearchParams({
             node: node?.uuid, page, rows, keyword,
-          }));
+          });
+          const resp = await get('/system/node/user/?' + q.toString());
           setCount(resp.count || 0);
           setList(resp.list || []);
         }
@@ -116,7 +117,9 @@ export default function User() {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      const params = new URLSearchParams({ uuid: row.uuid });
+      const _audit = `节点 ${node.name} 解除绑定用户 ${row.user_name}`;
+
+      const params = new URLSearchParams({ uuid: row.uuid, _audit });
       await del('/system/node/user/delete?' + params.toString());
       setReload(true);
     } catch (err) {
@@ -233,9 +236,8 @@ function Add(props) {
     }
     (async () => {
       try {
-        const resp = await post('/system/node/user/candidate', new URLSearchParams({
-          node: node?.uuid,
-        }));
+        const q = new URLSearchParams({ node: node?.uuid });
+        const resp = await get('/system/node/user/candidate?' + q.toString());
         if (active) {
           setOptions(resp.list || []);
         }
@@ -260,10 +262,13 @@ function Add(props) {
       if (value.length === 0) {
         return enqueueSnackbar('没有选择用户', { variant: 'warning' });
       }
-      const users = value.map(v => v.uuid)
+      const users = value.map(v => v.uuid);
+
+      const names = value.map(v => v.name);
+      const _audit = `层级节点 ${node.name} 绑定新用户 ${names.join('、')}`;
 
       const resp = await put('/system/node/user/add', new URLSearchParams({
-        node: node.uuid, users, force,
+        node: node.uuid, users, force, _audit,
       }));
       // 如果存在冲突，则提示用户确认
       if (resp.conflict) {

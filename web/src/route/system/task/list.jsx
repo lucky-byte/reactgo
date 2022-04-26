@@ -145,7 +145,7 @@ export default function List() {
                     />
                   }
                 </TableCell>
-                <TableCell align="right" padding='checkbox'>
+                <TableCell align="right" padding='checkbox' className='action'>
                   <UserMenuIconButton task={t} requestRefresh={requestRefresh} />
                 </TableCell>
               </TableRow>
@@ -207,8 +207,11 @@ function UserMenuIconButton(props) {
         confirmationText: '立即执行',
         confirmationButtonProps: { color: 'warning' },
       });
+      const _audit = `请求立即执行定时任务 ${task.name}`;
 
-      await post('/system/task/fire', new URLSearchParams({ uuid: task.uuid }));
+      await post('/system/task/fire', new URLSearchParams({
+        uuid: task.uuid, _audit,
+      }));
       enqueueSnackbar('已提交', { variant: 'success' });
       requestRefresh();
     } catch (err) {
@@ -232,9 +235,11 @@ function UserMenuIconButton(props) {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      await post('/system/task/disable',
-        new URLSearchParams({ uuid: task.uuid })
-      );
+      const _audit = `${task.disabled ? '启用' : '禁用'} 定时任务 ${task.name}`;
+
+      await post('/system/task/disable', new URLSearchParams({
+        uuid: task.uuid, _audit,
+      }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       requestRefresh();
     } catch (err) {
@@ -257,8 +262,10 @@ function UserMenuIconButton(props) {
 
       const token = await secretCode();
 
+      const _audit = `删除定时任务 ${task.name}`;
+
       const params = new URLSearchParams({
-        secretcode_token: token, uuid: task.uuid
+        secretcode_token: token, uuid: task.uuid, _audit,
       });
       await del('/system/task/delete?' + params.toString());
       enqueueSnackbar('已删除', { variant: 'success' });

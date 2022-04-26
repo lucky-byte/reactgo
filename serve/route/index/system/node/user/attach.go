@@ -9,8 +9,8 @@ import (
 func Attach(g *echo.Group, code int) {
 	group := g.Group("/user", acl.AllowRead(code))
 
-	group.POST("/", list)
-	group.POST("/candidate", candidate)
+	group.GET("/", list)
+	group.GET("/candidate", candidate)
 
 	group.Use(acl.AllowWrite(code))
 

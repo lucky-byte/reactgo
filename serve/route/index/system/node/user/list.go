@@ -19,7 +19,7 @@ func list(c echo.Context) error {
 	var page, rows uint
 	var keyword, node string
 
-	err := echo.FormFieldBinder(c).
+	err := echo.QueryParamsBinder(c).
 		MustUint("page", &page).
 		MustUint("rows", &rows).
 		MustString("node", &node).

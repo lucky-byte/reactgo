@@ -101,6 +101,8 @@ export default function Modify() {
       setProgress(true);
 
       data.uuid = location.state.uuid;
+      data._audit = `修改定时任务 ${data.name} 的配置信息`;
+
       await put('/system/task/info', new URLSearchParams(data));
       enqueueSnackbar('更新成功', { variant: 'success' });
       navigate('..', { replace: true });
