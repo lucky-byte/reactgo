@@ -78,15 +78,6 @@ type ACLAllow struct {
 	IAdmin bool   `db:"iadmin"  json:"iadmin"` // 管理权限
 }
 
-// 设置
-// type Setting struct {
-// 	UUID          string `db:"uuid"            json:"uuid"`           // uuid
-// 	BugReport     bool   `db:"bugreport"       json:"bugreport"`      // 允许报告错误
-// 	LookUserid    bool   `db:"lookuserid"      json:"lookuserid"`     // 允许找回登录名
-// 	ResetPass     bool   `db:"resetpass"       json:"resetpass"`      // 允许找回密码
-// 	TokenDuration int    `db:"token_duration"  json:"token_duration"` // 会话持续时间
-// }
-
 // 邮件服务
 type MTA struct {
 	UUID     string    `db:"uuid"      json:"uuid"`      // uuid
@@ -221,4 +212,5 @@ type Ops struct {
 	Method   string    `db:"method"    json:"method"`    // 方法
 	URL      string    `db:"url"       json:"url"`       // URL
 	Body     string    `db:"body"      json:"body"`      // 请求内容
+	Audit    string    `db:"audit"      json:"audit"`    // 审计消息
 }

@@ -57,6 +57,8 @@ export default function Import(props) {
       const form = new FormData();
       form.append("file", file);
 
+      form.append('_audit', '从文件导入短信服务配置');
+
       await post('/system/setting/sms/import', form);
 
       enqueueSnackbar('导入成功', { variant: 'success' });

@@ -36,6 +36,8 @@ export default function Add() {
     try {
       setProgress(true);
 
+      data._audit = `添加腾讯云短信服务 ${data.appid}`;
+
       await post('/system/setting/sms/tencent-add', new URLSearchParams(data));
       enqueueSnackbar('提交成功', { variant: 'success' });
       navigate('..', { replace: true });

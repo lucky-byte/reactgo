@@ -37,7 +37,9 @@ func list(c echo.Context) error {
 	pg.Join(userTable, goqu.On(userTable.Col("uuid").Eq(pg.Col("user_uuid"))))
 
 	pg.Where(goqu.Or(
-		pg.Col("url").ILike(keyword), pg.Col("body").ILike(keyword),
+		pg.Col("url").ILike(keyword),
+		pg.Col("body").ILike(keyword),
+		pg.Col("audit").ILike(keyword),
 	))
 	if strings.ToUpper(method) != "ALL" {
 		pg.Where(pg.Col("method").Eq(strings.ToUpper(method)))

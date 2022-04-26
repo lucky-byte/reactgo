@@ -242,7 +242,8 @@ create table if not exists ops (
   user_uuid   varchar(36)     not null,
   method      varchar(16)     not null,
   url         varchar(256)    not null,
-  body        text            not null
+  body        text            not null,
+  audit       varchar(256)    not null
 );
 
 commit;

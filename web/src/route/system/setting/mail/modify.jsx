@@ -82,6 +82,9 @@ export default function Modify() {
       setProgress(true);
 
       data.uuid = location.state?.uuid;
+
+      data._audit = `修改邮件服务 ${data.name} 的配置信息`;
+
       await put('/system/setting/mail/modify', new URLSearchParams(data));
       enqueueSnackbar('更新成功', { variant: 'success' });
       navigate('..', { replace: true });

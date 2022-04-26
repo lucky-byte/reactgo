@@ -22,7 +22,7 @@ func Attach(up *echo.Group, code int) {
 
 	group.Use(acl.AllowAdmin(code)) // Admin 权限
 
-	group.GET("/export", export)
+	group.POST("/export", export)
 	group.POST("/import", importt)
 	group.PUT("/disable", disable)
 	group.DELETE("/delete", del, secretcode.Verify())

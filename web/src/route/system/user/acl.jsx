@@ -61,8 +61,10 @@ export default function ACL() {
     try {
       setSubmitting(true);
 
+      const _audit = `修改用户 ${location.state?.name} 的访问控制角色`;
+
       await put('/system/user/acl', new URLSearchParams({
-        uuid: location.state?.uuid, acl: acl, user: location.state?.name,
+        uuid: location.state?.uuid, acl: acl, _audit,
       }));
       enqueueSnackbar(`更新成功`, { variant: 'success' });
       navigate('..', { replace: true });

@@ -8,7 +8,6 @@ const urlCodes = {
   9020: { title: '登录历史', to: '/system/history' },
   9025: { title: '操作审计', to: '/system/ops' },
   9030: { title: '系统设置', to: '/system/setting' },
-  9130: { title: '系统设置-old', to: '/system/settings' },
   9040: { title: '系统事件', to: '/system/event' },
   9050: { title: '定时任务', to: '/system/task' },
   9060: { title: '层级管理', to: '/system/node' },

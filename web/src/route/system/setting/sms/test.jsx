@@ -26,9 +26,10 @@ export default function Test(props) {
     try {
       setDisabled(true);
 
+      const _audit = `通过短信服务 ${sms.isp_name} 发送测试短信`;
+
       await post('/system/setting/sms/test', new URLSearchParams({
-        uuid: sms.uuid, mobile: user?.mobile, code: code,
-        isp: sms.isp_name, appid: sms.appid,
+        uuid: sms.uuid, mobile: user?.mobile, code: code, _audit,
       }));
       enqueueSnackbar('短信已发送', { variant: 'success' });
       onClose();
@@ -40,7 +41,7 @@ export default function Test(props) {
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='xs'>
+    <Dialog open={open} maxWidth='xs'>
       <DialogTitle>发送测试短信</DialogTitle>
       <DialogContent>
         <DialogContentText>通过 <em>{sms.isp_name}</em> 发送测试短信</DialogContentText>

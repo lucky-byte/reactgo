@@ -31,10 +31,16 @@ export default function Add() {
 
   const {
     register, handleSubmit, formState: { errors, isSubmitting }
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      port: 465,
+    }
+  });
 
   const onSubmit = async data => {
     try {
+      data._audit = `添加邮件服务 ${data.name}`;
+
       await post('/system/setting/mail/add', new URLSearchParams(data));
       enqueueSnackbar('添加成功', { variant: 'success' });
       navigate('..', { replace: true });

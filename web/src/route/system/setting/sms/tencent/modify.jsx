@@ -71,6 +71,8 @@ export default function Modify() {
       setProgress(true);
 
       data.uuid = location.state?.uuid;
+      data._audit = `修改腾讯云短信服务 ${data.appid} 的配置信息`;
+
       await post('/system/setting/sms/tencent-modify', new URLSearchParams(data));
       enqueueSnackbar('提交成功', { variant: 'success' });
       navigate('..', { replace: true });

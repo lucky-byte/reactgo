@@ -262,8 +262,10 @@ function UserMenuIconButton(props) {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
+      const _audit = `清除用户 ${user.name} 的安全操作码`;
+
       await post('/system/user/clearsecretcode', new URLSearchParams({
-        uuid: user.uuid, user: user.name,
+        uuid: user.uuid, _audit,
       }));
       enqueueSnackbar('已清除', { variant: 'success' });
 
@@ -286,8 +288,10 @@ function UserMenuIconButton(props) {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
+      const _audit = `清除用户 ${user.name} 的两因素认证`;
+
       await post('/system/user/cleartotp', new URLSearchParams({
-        uuid: user.uuid, user: user.name,
+        uuid: user.uuid, _audit,
       }));
       enqueueSnackbar('已清除', { variant: 'success' });
 
@@ -313,8 +317,10 @@ function UserMenuIconButton(props) {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
+      const _audit = `${user.disabled ? '恢复' : '禁用'}用户 ${user.name}`;
+
       await post('/system/user/disable', new URLSearchParams({
-        uuid: user.uuid, user: user.name, disabled: !user.disabled,
+        uuid: user.uuid, _audit,
       }));
       enqueueSnackbar('用户状态更新成功', { variant: 'success' });
       requestRefresh();
@@ -336,11 +342,13 @@ function UserMenuIconButton(props) {
 
       const token = await secretCode();
 
+      const _audit = `删除用户 ${user.name}`;
+
       const params = new URLSearchParams({
-        uuid: user.uuid, secretcode_token: token, user: user.name,
+        uuid: user.uuid, secretcode_token: token, _audit,
       });
       await del('/system/user/delete?' + params.toString());
-      enqueueSnackbar('用户已被删除', { variant: 'success' });
+      enqueueSnackbar('用户已删除', { variant: 'success' });
       requestRefresh();
     } catch (err) {
       if (err) {

@@ -73,7 +73,11 @@ export default function Home() {
         description: `导出的文件中将包含账号、密码等敏感信息，请妥善保管。`,
         confirmationText: '导出',
       });
-      const resp = await post('/system/setting/mail/export');
+      const _audit = '导出邮件服务配置';
+
+      const resp = await post('/system/setting/mail/export',
+        new URLSearchParams({ _audit })
+      );
       const blob = new Blob([JSON.stringify(resp, null, 2)], {
         type: "text/plain;charset=utf-8"
       });
@@ -164,8 +168,10 @@ function MenuButton(props) {
 
   const onSort = async dir => {
     try {
+      const _audit = `将邮件服务 ${mta.name} 移到 ${dir === 'top' ? '最前' : '最后'}`
+
       await put('/system/setting/mail/sort', new URLSearchParams({
-        uuid: mta.uuid, sortno: mta.sortno, dir,
+        uuid: mta.uuid, sortno: mta.sortno, dir, _audit,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       requestRefresh();
@@ -198,8 +204,10 @@ function MenuButton(props) {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
+      const _audit = `${mta.disabled ? '恢复' : '禁用'} 邮件服务 ${mta.name}`
+
       await put('/system/setting/mail/disable', new URLSearchParams({
-        uuid: mta.uuid, name: mta.name, disabled: !mta.disabled,
+        uuid: mta.uuid, _audit,
       }));
       enqueueSnackbar('状态更新成功', { variant: 'success' });
       requestRefresh();
@@ -219,8 +227,10 @@ function MenuButton(props) {
       });
       const token = await secretCode();
 
+      const _audit = `删除邮件服务 ${mta.name}`
+
       const params = new URLSearchParams({
-        uuid: mta.uuid, secretcode_token: token, name: mta.name,
+        uuid: mta.uuid, secretcode_token: token, _audit,
       });
       await del('/system/setting/mail/delete?' + params.toString());
       enqueueSnackbar('删除成功', { variant: 'success' });

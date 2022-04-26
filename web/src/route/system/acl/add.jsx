@@ -25,6 +25,8 @@ export default function Add() {
 
   const onSubmit = async data => {
     try {
+      data._audit = `添加访问控制角色 ${data.name}`;
+
       await post('/system/acl/add', new URLSearchParams(data));
       enqueueSnackbar(`${data.name} 已添加成功`, { variant: 'success' });
       localStorage.removeItem('last-acl-uuid');

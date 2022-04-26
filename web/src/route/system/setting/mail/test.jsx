@@ -25,8 +25,10 @@ export default function Test(props) {
     try {
       setDisabled(true);
 
+      const _audit = `通过邮件服务 ${mta.name} 发送测试邮件`;
+
       await post('/system/setting/mail/test', new URLSearchParams({
-        uuid: mta.uuid, email: user?.email, name: mta.name,
+        uuid: mta.uuid, email: user?.email, _audit,
       }));
       enqueueSnackbar('邮件已发送', { variant: 'success' });
       onClose();
@@ -38,7 +40,7 @@ export default function Test(props) {
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='xs'>
+    <Dialog open={open} maxWidth='xs'>
       <DialogTitle>发送测试邮件</DialogTitle>
       <DialogContent>
         <DialogContentText>通过 <em>{mta.name}</em> 发送测试邮件</DialogContentText>

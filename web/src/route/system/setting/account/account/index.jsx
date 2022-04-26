@@ -45,8 +45,10 @@ export default function Account() {
   // 允许用户找回登录名
   const onLookUseridCheck = async () => {
     try {
+      const _audit = `${lookUserid ? '禁止' : '允许'}用户找回登录名`;
+
       await put('/system/setting/account/lookuserid', new URLSearchParams({
-        lookuserid: !lookUserid,
+        lookuserid: !lookUserid, _audit,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       setLookUserid(!lookUserid);
@@ -58,8 +60,10 @@ export default function Account() {
   // 允许用户找回密码
   const onResetPassCheck = async () => {
     try {
+      const _audit = `${resetPass ? '禁止' : '允许'}用户找回登录密码`;
+
       await put('/system/setting/account/resetpass', new URLSearchParams({
-        resetpass: !resetPass
+        resetpass: !resetPass, _audit,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       setResetPass(!resetPass);
@@ -71,8 +75,10 @@ export default function Account() {
   // 修改会话持续时间
   const onChangeDuration = async v => {
     try {
+      const _audit = `修改用户登录会话持续时间为 ${v}`;
+
       await put('/system/setting/account/duration', new URLSearchParams({
-        duration: v
+        duration: v, _audit,
       }));
       setDuration(v);
       enqueueSnackbar('更新成功', { variant: 'success' });
@@ -81,7 +87,7 @@ export default function Account() {
     }
   }
 
-  // 显示或隐藏高德 jwt sign key
+  // 显示或隐藏 jwt sign key
   const onJWTSignKeyShow = async () => {
     try {
       if (jwtSignKeyHide) {

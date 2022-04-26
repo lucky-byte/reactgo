@@ -46,7 +46,7 @@ export default function Allows() {
   useEffect(() => {
     (async () => {
       try {
-        if (location?.state?.acl && refresh) {
+        if (location.state?.acl && refresh) {
           setProgress(true);
 
           const params = new URLSearchParams({ acl: location.state.acl });
@@ -80,7 +80,7 @@ export default function Allows() {
         setRefresh(false);
       }
     })();
-  }, [enqueueSnackbar, location?.state?.acl, setProgress, refresh]);
+  }, [enqueueSnackbar, location.state?.acl, setProgress, refresh]);
 
   // 更新可用的选择框
   useEffect(() => {
@@ -143,10 +143,11 @@ export default function Allows() {
     try {
       const entries = codeList.filter(i => {
         return i.checked;
-      })
+      });
+      const _audit = `访问控制角色 ${location.state?.name} 添加 ${entries.length} 项访问权限`;
+
       await post('/system/acl/allow/add', new URLSearchParams({
-        acl: location?.state?.acl,
-        entries: JSON.stringify(entries),
+        acl: location.state?.acl, entries: JSON.stringify(entries), _audit,
       }));
       enqueueSnackbar('添加成功', { variant: 'success' });
       setRefresh(true);
@@ -161,9 +162,10 @@ export default function Allows() {
       const entries = allowList.filter(i => {
         return i.checked;
       })
+      const _audit = `访问控制角色 ${location.state?.name} 删除 ${entries.length} 项访问权限`;
+
       await post('/system/acl/allow/remove', new URLSearchParams({
-        acl: location?.state?.acl,
-        entries: JSON.stringify(entries),
+        acl: location.state?.acl, entries: JSON.stringify(entries), _audit,
       }));
       enqueueSnackbar('移除成功', { variant: 'success' });
       setRefresh(true);
@@ -182,7 +184,7 @@ export default function Allows() {
     } else {
       [iread, iwrite, iadmin] = [true, false, false];
     }
-    await onAllowUpdateCheck(row.uuid, iread, iwrite, iadmin);
+    await onAllowUpdateCheck(row.uuid, row.title, iread, iwrite, iadmin);
   }
 
   // 修改写权限
@@ -195,7 +197,7 @@ export default function Allows() {
     } else {
       [iread, iwrite] = [true, true];
     }
-    await onAllowUpdateCheck(row.uuid, iread, iwrite, iadmin);
+    await onAllowUpdateCheck(row.uuid, row.title, iread, iwrite, iadmin);
   }
 
   // 修改管理权限
@@ -208,16 +210,18 @@ export default function Allows() {
     } else {
       [iread, iwrite, iadmin] = [true, true, true];
     }
-    await onAllowUpdateCheck(row.uuid, iread, iwrite, iadmin);
+    await onAllowUpdateCheck(row.uuid, row.title, iread, iwrite, iadmin);
   }
 
   // 修改权限
-  const onAllowUpdateCheck = async (uuid, iread, iwrite, iadmin) => {
+  const onAllowUpdateCheck = async (uuid, title, iread, iwrite, iadmin) => {
     try {
       setUpdated(true);
 
+      const _audit = `修改访问控制角色 ${location.state?.name} 菜单 ${title} 的访问权限`;
+
       await put('/system/acl/allow/update', new URLSearchParams({
-        uuid, iread, iwrite, iadmin,
+        uuid, iread, iwrite, iadmin, _audit,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       setRefresh(true);
@@ -228,7 +232,7 @@ export default function Allows() {
     }
   }
 
-  if (!location?.state?.acl) {
+  if (!location.state?.acl) {
     return <Navigate to='..' replace />
   }
 
@@ -242,8 +246,8 @@ export default function Allows() {
           <ArrowBackIcon color='primary' />
         </IconButton>
         <Stack sx={{ flex: 1, ml: 1 }}>
-          <Typography variant='h6'>{location?.state?.name}</Typography>
-          <Typography variant='body2'>{location?.state?.summary}</Typography>
+          <Typography variant='h6'>{location.state?.name}</Typography>
+          <Typography variant='body2'>{location.state?.summary}</Typography>
         </Stack>
       </Stack>
       <Stack direction='row' alignItems='center' spacing={2}>

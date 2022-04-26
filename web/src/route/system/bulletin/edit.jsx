@@ -122,8 +122,11 @@ export default function Edit() {
       const uuid = location.state?.bulletin ? location.state.bulletin.uuid : '';
       const send_time = sendTime ? sendTime.utc().format('') : '';
 
+      const _audit = status === 2 ? `发布公告 ${title}` : '';
+      const _noop = status === 1;
+
       await post('/system/bulletin/edit', new URLSearchParams({
-        uuid, status, title, content, send_time,
+        uuid, status, title, content, send_time, _audit, _noop,
       }));
 
       // 清除自动保存数据

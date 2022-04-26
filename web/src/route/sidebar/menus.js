@@ -59,9 +59,6 @@ const menus = [{
     code: 9030,
     icon: SettingsIcon,
   }, {
-    code: 9130,
-    icon: SettingsIcon,
-  }, {
     code: 9040,
     icon: ReportGmailerrorredIcon,
   }, {

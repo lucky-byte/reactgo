@@ -65,6 +65,8 @@ export default function Add() {
       return enqueueSnackbar('2次密码输入不一致');
     }
     try {
+      data._audit = `新增用户 ${data.name}`;
+
       await post('/system/user/add', new URLSearchParams(data));
       enqueueSnackbar(`用户 ${data.name} 添加成功`, { variant: 'success' });
       navigate('..', { replace: true });

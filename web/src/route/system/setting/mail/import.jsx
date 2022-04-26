@@ -57,6 +57,8 @@ export default function Import(props) {
       const form = new FormData();
       form.append("file", file);
 
+      form.append('_audit', '从文件导入邮件服务配置');
+
       await post('/system/setting/mail/import', form);
 
       enqueueSnackbar('导入成功', { variant: 'success' });

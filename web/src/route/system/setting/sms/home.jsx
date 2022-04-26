@@ -34,7 +34,7 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import progressState from '~/state/progress';
-import { get, put, del } from "~/rest";
+import { get, post, put, del } from "~/rest";
 import { useSMSTab } from '../tabstate';
 import Import from "./import";
 import Test from "./test";
@@ -73,7 +73,11 @@ export default function Home() {
         description: `导出的文件中将包含账号、密钥等敏感信息，请妥善保管。`,
         confirmationText: '导出',
       });
-      const resp = await get('/system/setting/sms/export');
+      const _audit = '导出短信服务配置';
+
+      const resp = await post('/system/setting/sms/export',
+        new URLSearchParams({ _audit })
+      );
       const blob = new Blob([JSON.stringify(resp, null, 2)], {
         type: "text/plain;charset=utf-8"
       });
@@ -191,8 +195,10 @@ function MenuButton(props) {
 
   const onSort = async dir => {
     try {
+      const _audit = `将短信服务 ${sms.isp_name} 移到 ${dir === 'top' ? '最前' : '最后'}`
+
       await put('/system/setting/sms/sort', new URLSearchParams({
-        uuid: sms.uuid, sortno: sms.sortno, dir,
+        uuid: sms.uuid, sortno: sms.sortno, dir, _audit,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       requestRefresh();
@@ -227,9 +233,10 @@ function MenuButton(props) {
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
+      const _audit = `${sms.disabled ? '恢复' : '禁用'} 短信服务 ${sms.isp_name}`
+
       await put('/system/setting/sms/disable', new URLSearchParams({
-        uuid: sms.uuid,
-        isp: sms.isp_name, appid: sms.appid, disabled: !sms.disabled
+        uuid: sms.uuid, _audit,
       }));
       enqueueSnackbar('状态更新成功', { variant: 'success' });
       requestRefresh();
@@ -249,8 +256,10 @@ function MenuButton(props) {
       });
       const token = await secretCode();
 
+      const _audit = `删除短信服务 ${sms.isp_name}`
+
       const params = new URLSearchParams({
-        uuid: sms.uuid, secretcode_token: token, isp: sms.isp_name, appid: sms.appid,
+        uuid: sms.uuid, secretcode_token: token, _audit,
       });
       await del('/system/setting/sms/delete?' + params.toString());
       enqueueSnackbar('删除成功', { variant: 'success' });

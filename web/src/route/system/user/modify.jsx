@@ -72,6 +72,8 @@ export default function Modify() {
       setProgress(true);
 
       data.uuid = location.state.uuid;
+      data._audit = `修改用户 ${data.name} 的资料`;
+
       await put('/system/user/info', new URLSearchParams(data));
       enqueueSnackbar('用户资料更新成功', { variant: 'success' });
       navigate('..', { replace: true });

@@ -40,7 +40,9 @@ export default function Password() {
     }
     try {
       data.uuid = location.state?.uuid;
-      data.user = location.state?.name;
+
+      data._audit = `修改用户 ${location.state?.name} 的密码`;
+
       await put('/system/user/passwd', new URLSearchParams(data));
       enqueueSnackbar('登录密码已修改成功', { variant: 'success' });
       navigate('..', { replace: true });

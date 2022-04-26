@@ -17,6 +17,7 @@ import Chip from '@mui/material/Chip';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
+import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
 import { get } from '~/rest';
@@ -132,9 +133,10 @@ export default function Ops() {
             }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 2 }}>
-                <Typography variant='subtitle1' sx={{ flex: 1 }}>
-                  {item.url}
-                </Typography>
+                <Stack sx={{ flex: 1 }}>
+                  <Ellipsis variant='subtitle1' lines={1}>{item.audit}</Ellipsis>
+                  <Typography variant='body2' color='gray'>{item.url}</Typography>
+                </Stack>
                 <Chip label={item.method} size='small' variant='outlined' />
                 <Chip label={item.user_name || item.userid}
                   size='small' variant='outlined'
@@ -148,7 +150,9 @@ export default function Ops() {
             <AccordionDetails sx={{ backgroundColor: theme =>
               theme.palette.mode === 'dark' ? 'black' : 'white',
             }}>
-              <Markdown>{item.body}</Markdown>
+              <Markdown>
+                {item.audit.length > 30 ? item.audit + '\n\n' + item.body : item.body}
+              </Markdown>
             </AccordionDetails>
           </Accordion>
         ))}

@@ -36,6 +36,7 @@ import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import { useSecretCode } from '~/comp/secretcode';
 import { useSetCode } from "~/state/code";
+import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
 import { post, del, get } from '~/rest';
@@ -164,10 +165,10 @@ export default function List() {
             }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 1 }}>
-                <Typography variant='subtitle1' sx={{ flex: 1 }}
+                <Ellipsis variant='subtitle1' sx={{ flex: 1 }}
                   onClick={() => onAccordionTitleClick(b)}>
                   {b.title}
-                </Typography>
+                </Ellipsis>
                 {b.status === 1 && <Chip label="草稿" size='small' />}
                 {b.status === 2 &&
                   <Tooltip title={`${dayjs(b.send_time).format('LLL')} 发布`}>
@@ -195,7 +196,7 @@ export default function List() {
                 backgroundColor: theme =>
                   theme.palette.mode === 'dark' ? 'black' : 'white',
               }}>
-              <Markdown sx={{ flex: 1 }}>{b.content}</Markdown>
+              <Markdown>{b.content}</Markdown>
             </AccordionDetails>
           </Accordion>
         ))}
@@ -245,8 +246,10 @@ function MenuIcon(props) {
 
       const token = await secretCode();
 
+      const _audit = `删除公告 ${bulletin.title}`;
+
       const params = new URLSearchParams({
-        uuid: bulletin.uuid, secretcode_token: token
+        uuid: bulletin.uuid, secretcode_token: token, _audit,
       });
       await del('/system/bulletin/del?' + params.toString());
       enqueueSnackbar('删除成功', { variant: 'success' });
@@ -268,9 +271,10 @@ function MenuIcon(props) {
         confirmationText: '发布',
         confirmationButtonProps: { color: 'success' },
       });
+      const _audit = `发布公告 ${bulletin.title}`;
 
       await post('/system/bulletin/send', new URLSearchParams({
-        uuid: bulletin.uuid,
+        uuid: bulletin.uuid, _audit,
       }));
       enqueueSnackbar('已发布', { variant: 'success' });
       requestRefresh();

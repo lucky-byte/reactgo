@@ -145,8 +145,10 @@ function AclInfo(props) {
 
   const onChangeName = async value => {
     try {
+      const _audit = `修改访问控制角色名 ${info.name} => ${value}`;
+
       await put('/system/acl/name', new URLSearchParams({
-        uuid: info.uuid, name: value,
+        uuid: info.uuid, name: value, _audit,
       }));
       setInfo({ ...info, name: value, update_at: dayjs(), });
 
@@ -164,8 +166,10 @@ function AclInfo(props) {
 
   const onChangeSummary = async value => {
     try {
+      const _audit = `修改访问控制角色 ${info.name} 的描述`;
+
       await put('/system/acl/summary', new URLSearchParams({
-        uuid: info.uuid, summary: value,
+        uuid: info.uuid, summary: value, _audit,
       }));
       setInfo({ ...info, summary: value, update_at: dayjs(), });
     } catch (err) {
@@ -180,7 +184,9 @@ function AclInfo(props) {
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
-      const params = new URLSearchParams({ uuid: info.uuid });
+      const _audit = `删除访问控制角色 ${info.name}`;
+
+      const params = new URLSearchParams({ uuid: info.uuid, _audit });
       await del('/system/acl/delete?' + params.toString());
       localStorage.removeItem('last-acl-uuid');
       enqueueSnackbar(`${info.name} 已被删除`, { variant: 'success' });

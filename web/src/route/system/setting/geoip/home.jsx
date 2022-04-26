@@ -48,7 +48,11 @@ export default function Home() {
   // 修改 web 服务 key
   const onAMapWebKeyChange = async key => {
     try {
-      await put('/system/setting/geoip/amap-webkey', new URLSearchParams({ key }));
+      const _audit = '修改高德定位的 Web Key';
+
+      await put('/system/setting/geoip/amap-webkey', new URLSearchParams({
+        key, _audit,
+      }));
       setAMapWebKey(key);
       setAMapWebKeyHide(false);
       enqueueSnackbar('更新成功', { variant: 'success' });
@@ -75,7 +79,11 @@ export default function Home() {
     try {
       const enable = e.target.checked;
 
-      await put('/system/setting/geoip/amap-enable', new URLSearchParams({ enable }));
+      const _audit = `${enable ? '启用' : '停用'} 高德定位`;
+
+      await put('/system/setting/geoip/amap-enable', new URLSearchParams({
+        enable, _audit,
+      }));
       setAMapEnable(enable);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
