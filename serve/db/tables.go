@@ -79,13 +79,13 @@ type ACLAllow struct {
 }
 
 // 设置
-type Setting struct {
-	UUID          string `db:"uuid"            json:"uuid"`           // uuid
-	BugReport     bool   `db:"bugreport"       json:"bugreport"`      // 允许报告错误
-	LookUserid    bool   `db:"lookuserid"      json:"lookuserid"`     // 允许找回登录名
-	ResetPass     bool   `db:"resetpass"       json:"resetpass"`      // 允许找回密码
-	TokenDuration int    `db:"token_duration"  json:"token_duration"` // 会话持续时间
-}
+// type Setting struct {
+// 	UUID          string `db:"uuid"            json:"uuid"`           // uuid
+// 	BugReport     bool   `db:"bugreport"       json:"bugreport"`      // 允许报告错误
+// 	LookUserid    bool   `db:"lookuserid"      json:"lookuserid"`     // 允许找回登录名
+// 	ResetPass     bool   `db:"resetpass"       json:"resetpass"`      // 允许找回密码
+// 	TokenDuration int    `db:"token_duration"  json:"token_duration"` // 会话持续时间
+// }
 
 // 邮件服务
 type MTA struct {
@@ -130,7 +130,8 @@ type Account struct {
 	LookUserid   bool   `db:"lookuserid"   json:"lookuserid"`   // 允许找回登录名
 	ResetPass    bool   `db:"resetpass"    json:"resetpass"`    // 允许找回密码
 	SessDuration int    `db:"sessduration" json:"sessduration"` // 会话持续时间
-	TokenSignKey string `db:"tokensignkey" json:"tokensignkey"` // 签名密钥
+	JWTSignKey   string `db:"jwtsignkey"   json:"jwtsignkey"`   // JWT 签名密钥
+	JWTSignKey2  string `db:"jwtsignkey2"   json:"jwtsignkey2"` // JWT 签名密钥(旧)
 }
 
 // 定时任务

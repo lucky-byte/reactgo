@@ -13,13 +13,11 @@ func config(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	ql := `select * from settings`
-	var result db.Setting
+	var result db.Account
 
 	if err := db.SelectOne(ql, &result); err != nil {
 		cc.ErrLog(err).Error("查询系统设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"bugreport": result.BugReport,
-	})
+	return c.JSON(http.StatusOK, echo.Map{})
 }

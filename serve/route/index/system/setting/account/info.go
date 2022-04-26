@@ -23,6 +23,6 @@ func info(c echo.Context) error {
 		"lookuserid":   result.LookUserid,
 		"resetpass":    result.ResetPass,
 		"sessduration": result.SessDuration,
-		"tokensignkey": result.TokenSignKey,
+		"jwtsignkey":   result.JWTSignKey,
 	})
 }

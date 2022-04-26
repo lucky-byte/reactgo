@@ -214,10 +214,11 @@ export default function App() {
             title: '请确认',
             cancellationText: '取消',
             confirmationButtonProps: {
-              variant: 'contained', sx: { mr: 2, mb: 1 }
+              autoFocus: true, variant: 'contained', sx: { mr: 2, mb: 1 }
             },
             cancellationButtonProps: { sx: { mb: 1 } },
             dialogProps: { maxWidth: 'xs' },
+            contentProps: { sx: { '& p': { fontSize: '0.9rem' } } },
             allowClose: false,
           }}>
             <ErrorBoundary>

@@ -57,12 +57,12 @@ func signin(c echo.Context) error {
 		cc.ErrLog(err).Errorf("%s 登录失败, 验证登录密码错", user.Name)
 		return c.String(http.StatusForbidden, "登录名或密码错误")
 	}
-	// 从设置中查询会话保持时间
-	ql = `select token_duration from settings`
+	// 从账号设置中查询会话持续时间
+	ql = `select sessduration from account`
 	var duration time.Duration
 
 	if err = db.SelectOne(ql, &duration); err != nil {
-		cc.ErrLog(err).Error("查询系统设置错")
+		cc.ErrLog(err).Error("查询账号设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	newJwt := auth.NewAuthJWT(user.UUID, true, duration*time.Minute)

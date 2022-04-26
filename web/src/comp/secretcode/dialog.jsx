@@ -15,7 +15,7 @@ import PinInput from '~/comp/pin-input';
 import { put } from '~/rest';
 import { FormHelperText } from '@mui/material';
 
-const SecretCodeDialog = ({ open, onSuccess, onClose, inputFocus }) => {
+const SecretCodeDialog = ({ open, onSuccess, onClose }) => {
   const [hide, setHide] = useState(true);
   const [focus, setFocus] = useState(true);
   const [clear, setClear] = useState(Math.random());

@@ -138,7 +138,7 @@ export default function Resetpass() {
         </Box>
         <Button variant='outlined' sx={{ mt: 1 }}
           LinkComponent={RouteLink} to='/signin'>
-          登录
+          去登录
         </Button>
       </Toolbar>
       <Container maxWidth='xs'
@@ -176,7 +176,7 @@ export default function Resetpass() {
             sx={{ mt: 3 }}
           />
           <TextField required
-            label='邮箱验证码' placeholder="6位数字验证码"
+            label='邮件验证码' placeholder="请输入邮件中的验证码"
             fullWidth variant='standard'
             value={code} onChange={onCodeChange}
             onKeyDown={onCodeKeyDown}
@@ -189,13 +189,13 @@ export default function Resetpass() {
               endAdornment: (
                 <InputAdornment position="end">
                   <Button disabled={sending || time > 0} onClick={onSendCode}>
-                    {time > 0 ? `${time} 秒` : '获取验证码'}
+                    {time > 0 ? `${time} 秒` : '获取邮件验证码'}
                   </Button>
                 </InputAdornment>
               ),
             }}
             inputProps={{ maxLength: 6 }}
-            helperText='点击获取验证码，系统将验证码发送到您的邮箱'
+            helperText='点击获取邮件验证码，系统将验证码发送到您的邮箱'
             sx={{ mt: 4 }}
           />
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}

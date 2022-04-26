@@ -1,15 +1,5 @@
 begin;
 
-create table if not exists settings (
-  uuid            boolean         primary key default true,
-  bugreport       boolean         default true,
-  lookuserid      boolean         default false,
-  resetpass       boolean         default false,
-  token_duration  int             default 1440
-);
-
-insert into settings (uuid) values (true);
-
 create table if not exists users (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
@@ -126,10 +116,11 @@ create table if not exists smss (
 );
 
 create table if not exists  account (
-  lookuserid   boolean         default true,
-  resetpass    boolean         default true,
-  sessduration int             default 1440,
-  tokensignkey varchar(32)     default ''
+  lookuserid    boolean         default true,
+  resetpass     boolean         default true,
+  sessduration  int             default 1440,
+  jwtsignkey    varchar(32)     default '',
+  jwtsignkey2   varchar(32)     default ''
 );
 
 insert into account (lookuserid) values (true);

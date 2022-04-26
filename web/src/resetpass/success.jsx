@@ -47,8 +47,13 @@ export default function Success() {
             <CheckIcon color='success' sx={{ fontSize: '96px' }} />
             <Typography as='h1' variant="h6">密码已重置</Typography>
             <Typography variant='body2' sx={{ textAlign: 'center' }}>
-              新密码已发送到您的邮箱 {email}，请注意查收
+              新密码已发送到您下面的邮箱地址，请注意查收
             </Typography>
+            <Paper variant="outlined" sx={{ p: 1 }}>
+              <Typography variant='subtitle2' sx={{ textAlign: 'center' }}>
+                {email}
+              </Typography>
+            </Paper>
           </Stack>
           <Button fullWidth sx={{ mt: 4 }} LinkComponent={RouteLink} to='/signin'>
             去登录

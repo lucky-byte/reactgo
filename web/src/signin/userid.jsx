@@ -54,6 +54,8 @@ export default function ForgetUserid() {
 
   // 验证码输入框回车
   const onCodeKeyDown = e => {
+    e.stopPropagation(); // 避免事件传递到登录输入框
+
     if (e.key === 'Enter') {
       onSubmit();
     }
@@ -124,7 +126,7 @@ export default function ForgetUserid() {
         <DialogTitle sx={{ pb: 0 }}>找回登录名</DialogTitle>
         <DialogContent>
           <DialogContentText variant="caption">
-            找回登录名需要验证您的手机号，如果手机号已变更，请联系管理员处理
+            找回登录名需要验证您的手机号，如果手机号已变更，请联系管理员
           </DialogContentText>
           <TextField fullWidth required autoFocus
             label='手机号' placeholder="账号绑定手机号"
@@ -182,10 +184,10 @@ export default function ForgetUserid() {
             </Paper>
           </Collapse>
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2 }}>
+        <DialogActions sx={{ mx: 3, my: 2 }}>
           <Button onClick={onClose} color='secondary'>关闭</Button>
           <Button onClick={onSubmit} variant='contained' disabled={submitting}>
-            查询登录名
+            找回登录名
           </Button>
         </DialogActions>
       </Dialog>

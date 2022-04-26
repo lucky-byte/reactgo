@@ -87,7 +87,7 @@ export default function SMS() {
   }
 
   // 重新发送验证码
-  const onReSendClick = async () => {
+  const onSendCode = async () => {
     try {
       const resp = await post('/resetpass/smsresend', new URLSearchParams({
         mobile, username,
@@ -115,8 +115,8 @@ export default function SMS() {
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 6, py: 3, px: 4, width: '100%' }}>
           <Typography as='h1' variant='h6' sx={{ mt: 1 }}>短信认证</Typography>
-          <Typography variant='caption'>
-            短信验证码已发送到手机号 ****{mobile?.substring(7)}，请输入短信中的验证码完成验证
+          <Typography variant='caption' paragraph>
+            短信验证码已发送到尾号为 {mobile?.substring(7)} 的手机，请输入短信中的验证码完成验证
           </Typography>
           <FormControl fullWidth sx={{ mt: 3 }}>
             <TextField required autoFocus autoComplete="off"
@@ -130,6 +130,13 @@ export default function SMS() {
                     <KeyIcon />
                   </InputAdornment>
                 ),
+                endAdornment: (
+                <InputAdornment position="end">
+                  <Button disabled={time > 0} onClick={onSendCode}>
+                    {time > 0 ? `${time} 秒` : '获取短信验证码'}
+                  </Button>
+                </InputAdornment>
+                )
               }}
             />
             {time > 0 ?
@@ -137,9 +144,9 @@ export default function SMS() {
                 没有收到验证码？请等待 {time} 秒后尝试重新获取，如尝试多次无效，请联系工作人员
               </FormHelperText>
               :
-              <Button sx={{ mt: 1 }} color='warning' onClick={onReSendClick}>
-                重新获取验证码
-              </Button>
+              <FormHelperText sx={{ mx: 0, my: 1 }}>
+                没有收到验证码？请尝试重新获取，如尝试多次无效，请联系工作人员
+              </FormHelperText>
             }
           </FormControl>
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}

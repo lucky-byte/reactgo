@@ -30,7 +30,7 @@ func emailcode(c echo.Context) error {
 	}
 
 	// 查询是否允许找回密码
-	ql := `select resetpass from settings`
+	ql := `select resetpass from account`
 	var resetpass bool
 
 	if err := db.SelectOne(ql, &resetpass); err != nil {

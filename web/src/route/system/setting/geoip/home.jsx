@@ -58,7 +58,7 @@ export default function Home() {
   }
 
   // 显示或隐藏高德 webkey
-  const onShowAMapWebKey = async () => {
+  const onAMapWebKeyShow = async () => {
     try {
       if (amapWebKeyHide) {
         await secretCode();
@@ -103,10 +103,10 @@ export default function Home() {
             WEB 服务 KEY:
           </Typography>
           <InplaceInput sx={{ flex: 1 }}
-            text={amapWebKeyHide ? '******' : amapWebKey}
+            text={amapWebKeyHide ? '已隐藏，点右边的眼睛查看 >>' : amapWebKey}
             placeholder='请填写' color="primary" onConfirm={onAMapWebKeyChange}
           />
-          <IconButton color="primary" onClick={onShowAMapWebKey}>
+          <IconButton color="primary" onClick={onAMapWebKeyShow}>
             {amapWebKeyHide ? <VisibilityIcon /> : <VisibilityOffIcon />}
           </IconButton>
         </Stack>

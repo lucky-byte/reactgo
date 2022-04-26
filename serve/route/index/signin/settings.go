@@ -9,15 +9,15 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-// 查询设置
+// 查询账号设置
 func settings(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	ql := `select * from settings`
-	var settings db.Setting
+	ql := `select * from account`
+	var settings db.Account
 
 	if err := db.SelectOne(ql, &settings); err != nil {
-		cc.ErrLog(err).Error("查询系统设置错")
+		cc.ErrLog(err).Error("查询账号设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
