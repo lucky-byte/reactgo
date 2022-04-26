@@ -15,8 +15,8 @@ import { useSecretCode } from '~/comp/secretcode';
 import InplaceInput from '~/comp/inplace-input';
 import useTitle from "~/hook/title";
 import progressState from '~/state/progress';
-import { useGeoipTab } from '../state';
 import { get, put } from "~/rest";
+import { useGeoipTab } from '../tabstate';
 
 export default function Home() {
   const { enqueueSnackbar } = useSnackbar();
@@ -50,6 +50,7 @@ export default function Home() {
     try {
       await put('/system/setting/geoip/amap-webkey', new URLSearchParams({ key }));
       setAMapWebKey(key);
+      setAMapWebKeyHide(false);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
       enqueueSnackbar(err.message);

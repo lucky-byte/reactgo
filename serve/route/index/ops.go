@@ -63,7 +63,7 @@ func opsReadBody(cc *ctx.Context) (string, bool) {
 		var m = make(map[string]string)
 
 		for k, i := range values {
-			if k != "secretcode_token" && k != "password" {
+			if k != "secretcode_token" && k != "password" && k != "password2" {
 				m[k] = strings.Join(i, ",")
 			}
 		}

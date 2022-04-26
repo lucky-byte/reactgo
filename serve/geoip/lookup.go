@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 type Info struct {
@@ -30,18 +31,29 @@ func Lookup(ip string) (*Info, error) {
 		return &Info{City: "局域网"}, nil
 	}
 	ql := `select * from geoip`
-	var r db.GeoIP
+	var config db.GeoIP
 
-	// 查询 web key，访问 api 需要 key
-	if err := db.SelectOne(ql, &r); err != nil {
+	if err := db.SelectOne(ql, &config); err != nil {
 		return nil, err
 	}
-	if len(r.AMapWebKey) == 0 {
-		return nil, fmt.Errorf("未配置 IP 定位 WEB 服务 KEY")
+	// 高德定位
+	if config.AMapEnable {
+		info, err := lookupAMap(&config, addr)
+		if err == nil {
+			return info, nil
+		}
+		xlog.X.WithError(err).Error("使用高德定位失败")
 	}
-	if r.AMapApiVer == "v3" {
-		return AMapLookupV3(ip, r.AMapWebKey)
+	return nil, fmt.Errorf("没有更多可用的定位服务")
+}
+
+func lookupAMap(config *db.GeoIP, addr net.IP) (*Info, error) {
+	if len(config.AMapWebKey) == 0 {
+		return nil, fmt.Errorf("未配置高德定位 WebKey")
+	}
+	if config.AMapApiVer == "v3" {
+		return AMapLookupV3(addr.String(), config.AMapWebKey)
 	}
 	// 该接口 2022.4.30 下线
-	return AMapLookupV5(ip, addr.To4() != nil, r.AMapWebKey)
+	return AMapLookupV5(addr.String(), addr.To4() != nil, config.AMapWebKey)
 }

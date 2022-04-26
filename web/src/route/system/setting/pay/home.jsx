@@ -2,9 +2,9 @@ import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import useTitle from "~/hook/title";
-import { usePayTab } from '../state';
 import WXPay from "./wxpay";
 import Alipay from "./alipay";
+import { usePayTab } from '../tabstate';
 
 export default function Home() {
   useTitle('支付服务');

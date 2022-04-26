@@ -87,15 +87,6 @@ type Setting struct {
 	TokenDuration int    `db:"token_duration"  json:"token_duration"` // 会话持续时间
 }
 
-// 短信配置
-type SmsSetting struct {
-	AppId     string `db:"appid"      json:"appid"`      // appid
-	SecretId  string `db:"secret_id"  json:"secret_id"`  // secret id
-	SecretKey string `db:"secret_key" json:"secret_key"` // secret key
-	Sign      string `db:"sign"       json:"sign"`       // 签名
-	MsgID1    string `db:"msgid1"     json:"msgid1"`     // 验证码模板ID
-}
-
 // 邮件服务
 type MTA struct {
 	UUID     string    `db:"uuid"      json:"uuid"`      // uuid
@@ -132,6 +123,14 @@ type SMS struct {
 	SortNo    int       `db:"sortno"     json:"sortno"`     // 排序序号
 	NSent     int       `db:"nsent"      json:"nsent"`      // 发送量
 	Disabled  bool      `db:"disabled"   json:"disabled"`   // 是否停用
+}
+
+// 账号设置
+type Account struct {
+	LookUserid   bool   `db:"lookuserid"   json:"lookuserid"`   // 允许找回登录名
+	ResetPass    bool   `db:"resetpass"    json:"resetpass"`    // 允许找回密码
+	SessDuration int    `db:"sessduration" json:"sessduration"` // 会话持续时间
+	TokenSignKey string `db:"tokensignkey" json:"tokensignkey"` // 签名密钥
 }
 
 // 定时任务

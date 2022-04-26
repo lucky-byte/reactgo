@@ -34,8 +34,8 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import progressState from '~/state/progress';
-import { useSMSTab } from '../state';
 import { get, put, del } from "~/rest";
+import { useSMSTab } from '../tabstate';
 import Import from "./import";
 import Test from "./test";
 

@@ -89,16 +89,6 @@ insert into acl_allows (
   9010, '访问控制', '/system/acl', true, true, true
 );
 
-create table if not exists sms_settings (
-  appid       varchar(32)     not null default '',
-  secret_id   varchar(64)     not null default '',
-  secret_key  varchar(64)     not null default '',
-  sign        varchar(32)     not null default '',
-  msgid1      varchar(32)     not null default ''
-);
-
-insert into sms_settings (appid) values ('');
-
 create table if not exists mtas (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
@@ -134,6 +124,15 @@ create table if not exists smss (
   nsent       int             default 0,
   disabled    boolean         default false
 );
+
+create table if not exists  account (
+  lookuserid   boolean         default true,
+  resetpass    boolean         default true,
+  sessduration int             default 1440,
+  tokensignkey varchar(32)     default ''
+);
+
+insert into account (lookuserid) values (true);
 
 create table if not exists events (
   uuid        varchar(36)     primary key not null,

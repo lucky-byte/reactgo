@@ -14,7 +14,7 @@ func config(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	ql := `select * from sms_settings`
-	var result db.SmsSetting
+	var result db.SMS
 
 	err := db.SelectOne(ql, &result)
 	if err != nil {
@@ -25,7 +25,5 @@ func config(c echo.Context) error {
 		"appid":      result.AppId,
 		"secret_id":  result.SecretId,
 		"secret_key": result.SecretKey,
-		"sign":       result.Sign,
-		"msgid1":     result.MsgID1,
 	})
 }

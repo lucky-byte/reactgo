@@ -18,7 +18,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import useTitle from "~/hook/title";
 import { post } from '~/rest';
-import { useMailTab } from '../state';
+import { useMailTab } from '../tabstate';
 
 export default function Add() {
   const navigate = useNavigate();

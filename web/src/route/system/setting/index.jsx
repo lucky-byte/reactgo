@@ -5,14 +5,14 @@ import Stack from '@mui/material/Stack';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import NotFound from "~/route/notfound";
 import { useSetCode } from "~/state/code";
-import tabState from "./state";
+import NotFound from "~/route/notfound";
 import Mail from './mail';
 import SMS from "./sms";
 import Geoip from "./geoip";
 import Pay from "./pay";
 import Account from "./account";
+import tabState from "./tabstate";
 
 const tabsArray = [
   { title: '邮件服务', value: 1, to: 'mail', },
