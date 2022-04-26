@@ -61,7 +61,7 @@ func smsVerify(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	// 重新生成登录TOKEN
-	ql = `select token_duration from settings`
+	ql = `select sessduration from account`
 	var duration time.Duration
 
 	if err = db.SelectOne(ql, &duration); err != nil {

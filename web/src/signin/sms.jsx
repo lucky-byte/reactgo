@@ -156,7 +156,7 @@ export default function SignInSMS() {
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 6, py: 3, px: 4, width: '100%' }}>
           <Typography as='h1' variant="h6">短信认证</Typography>
-          <Typography variant='caption' sx={{ mt: 1 }}>
+          <Typography as='p' variant='caption' sx={{ mt: 1 }}>
             短信验证码已发送到手机号 ****{user?.mobile?.substring(7)}，
             请输入短信中的验证码完成验证
           </Typography>
@@ -172,6 +172,13 @@ export default function SignInSMS() {
                     <KeyIcon />
                   </InputAdornment>
                 ),
+                endAdornment: (
+                <InputAdornment position="end">
+                  <Button disabled={time > 0} onClick={onReSendClick}>
+                    {time > 0 ? `${time} 秒` : '获取验证码'}
+                  </Button>
+                </InputAdornment>
+                )
               }}
             />
             {time > 0 ?
@@ -186,12 +193,18 @@ export default function SignInSMS() {
                 }
               </FormHelperText>
               :
-              <Button sx={{ mt: 1 }} color='warning' onClick={onReSendClick}>
-                重新获取验证码
-              </Button>
+              <FormHelperText sx={{ mx: 0, my: 1 }}>
+                没有收到验证码？请尝试重新获取，如尝试多次无效，请联系管理员协助处理。
+                {user?.totp_isset &&
+                  <Link underline="hover" onClick={onSwitchOTP}
+                    sx={{ cursor: 'pointer' }}>
+                    或切换到 TOTP 认证
+                  </Link>
+                }
+              </FormHelperText>
             }
           </FormControl>
-          <FormControlLabel
+          <FormControlLabel sx={{ mt: 2 }}
             control={
               <Checkbox
                 checked={clientId.length > 0}
@@ -199,7 +212,12 @@ export default function SignInSMS() {
                 inputProps={{ 'aria-label': '信任当前设备' }}
               />
             }
-            label='信任当前使用的设备'
+            label={
+              <Stack>
+                <Typography as='span'>信任当前设备</Typography>
+                <Typography variant='caption'>下次在该设备登录时无需验证</Typography>
+              </Stack>
+            }
           />
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={loading}>

@@ -20,9 +20,11 @@ func useridCode(c echo.Context) error {
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-
 	// 查询手机号是否存在
-	ql := `select count(*) from users where mobile = ?`
+	ql := `
+		select count(*) from users
+		where mobile = ? and disabled = false and deleted = false
+	`
 	var count int
 
 	if err = db.SelectOne(ql, &count, mobile); err != nil {
@@ -32,7 +34,6 @@ func useridCode(c echo.Context) error {
 	if count == 0 {
 		return c.String(http.StatusNotFound, "手机号不存在")
 	}
-
 	// 发送验证码
 	smsid, err := sms.SendCode(mobile)
 	if err != nil {
@@ -63,7 +64,10 @@ func useridSearch(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	// 查询所有绑定的登录名
-	ql := `select userid, avatar from users where mobile = ?`
+	ql := `
+		select userid, avatar from users
+		where mobile = ? and disabled = false and deleted = false
+	`
 	var result []db.User
 
 	if err = db.Select(ql, &result, mobile); err != nil {

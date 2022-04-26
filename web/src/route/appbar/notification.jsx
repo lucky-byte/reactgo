@@ -37,6 +37,9 @@ export default function Notification() {
 
   // 更新未读通知数量以及最近通知
   useEffect(() => {
+    if (!user?.uuid) {
+      return;
+    }
     if (outdated) {
       (async () => {
         try {
@@ -49,7 +52,7 @@ export default function Notification() {
         }
       })();
     }
-  }, [ enqueueSnackbar, setLastNotification, outdated, setOutdated ]);
+  }, [ enqueueSnackbar, setLastNotification, outdated, setOutdated, user?.uuid ]);
 
   // 弹出提示信息
   const popupNotification = useCallback(notification => {

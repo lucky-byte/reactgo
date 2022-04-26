@@ -126,9 +126,11 @@ export default function Appbar(params) {
     cookies.remove('csrf', { path: '/' });
     localStorage.removeItem('token');
     setUser(null);
-    setAnchorEl(null);
     enqueueSnackbar('已退出登录', { variant: 'success' });
-    setTimeout(() => { window.location.href = '/signin'; }, 500);
+
+    // 记录最后访问页面，下次登录时进行跳转
+    localStorage.setItem('last-access', window.location.pathname);
+    navigate('/signin', { replace: true });
   }
 
   return (

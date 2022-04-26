@@ -48,18 +48,18 @@ export default function SignIn() {
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
-
-        const resp = await get('/signin/settings')
-        setLookUserid(resp.lookuserid);
-        setResetPass(resp.resetpass);
+        if (loading) {
+          const resp = await get('/signin/settings')
+          setLookUserid(resp.lookuserid);
+          setResetPass(resp.resetpass);
+        }
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
         setLoading(false);
       }
     })();
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, loading]);
 
   // 查询客户端ID
   useEffect(() => {

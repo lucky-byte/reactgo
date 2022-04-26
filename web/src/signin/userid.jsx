@@ -29,6 +29,7 @@ export default function ForgetUserid() {
   const [list, setList] = useState([]);
   const [time, setTime] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [copyTip, setCopyTip] = useState('');
 
   const onOpen = () => {
     setOpen(true);
@@ -119,6 +120,12 @@ export default function ForgetUserid() {
     }
   }
 
+  const onCopyUserId = userid => {
+    navigator.clipboard.writeText(userid);
+    setCopyTip('已复制 ' + userid);
+    setTimeout(() => setCopyTip(''), 1000)
+  }
+
   return (
     <>
       <Button size="small" onClick={onOpen}>忘记登录名</Button>
@@ -170,7 +177,7 @@ export default function ForgetUserid() {
               <Typography variant="caption" paragraph>
                 该手机号已绑定下列登录名:
               </Typography>
-              <Stack direction='row' spacing={1}>
+              <Stack direction='row' spacing={1} sx={{ flexWrap: 'wrap' }}>
                 {list.map(item => (
                   <Chip key={item.userid} label={item.userid}
                     variant="outlined" color="success"
@@ -178,10 +185,13 @@ export default function ForgetUserid() {
                       <Avatar alt={item.userid} src={`/image/?u=${item.avatar}`} />
                       : null
                     }
+                    sx={{ mb: 1 }}
+                    onClick={() => {onCopyUserId(item.userid)}}
                   />
                 ))}
               </Stack>
             </Paper>
+            <Typography variant="caption">{copyTip}</Typography>
           </Collapse>
         </DialogContent>
         <DialogActions sx={{ mx: 3, my: 2 }}>

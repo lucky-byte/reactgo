@@ -58,7 +58,7 @@ func otpVerify(c echo.Context) error {
 	}
 
 	// 重新生成登录 TOKEN
-	ql = `select token_duration from settings`
+	ql = `select sessduration from account`
 	var duration time.Duration
 
 	if err = db.SelectOne(ql, &duration); err != nil {

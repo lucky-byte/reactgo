@@ -135,9 +135,7 @@ export default function SignInOTP() {
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 6, py: 3, px: 4, width: '100%' }}>
           <Typography as='h1' variant="h6">两因素认证</Typography>
-          <Typography variant='caption' sx={{ mt: 1 }}>
-            请输入 6 位 TOTP 数字口令完成认证
-          </Typography>
+          <Typography variant='caption'>请输入 6 位 TOTP 数字口令完成认证</Typography>
           <FormControl fullWidth sx={{ mt: 3 }}>
             <TextField required autoFocus autoComplete="off"
               label='TOTP 口令' placeholder="请输入 6 位口令"
@@ -157,12 +155,12 @@ export default function SignInOTP() {
               {tfa &&
                 <Link underline="hover" onClick={onSwitchSMS}
                   sx={{ cursor: 'pointer' }}>
-                  或切换到短信验证码认证
+                  或切换到短码认证
                 </Link>
               }
             </FormHelperText>
           </FormControl>
-          <FormControlLabel
+          <FormControlLabel sx={{ mt: 2 }}
             control={
               <Checkbox
                 checked={clientId.length > 0}
@@ -170,7 +168,12 @@ export default function SignInOTP() {
                 inputProps={{ 'aria-label': '信任当前设备' }}
               />
             }
-            label='信任当前使用的设备'
+            label={
+              <Stack>
+                <Typography as='span'>信任当前设备</Typography>
+                <Typography variant='caption'>下次在该设备登录时无需验证</Typography>
+              </Stack>
+            }
           />
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={loading}>

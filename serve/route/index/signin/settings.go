@@ -14,14 +14,14 @@ func settings(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	ql := `select * from account`
-	var settings db.Account
+	var account db.Account
 
-	if err := db.SelectOne(ql, &settings); err != nil {
+	if err := db.SelectOne(ql, &account); err != nil {
 		cc.ErrLog(err).Error("查询账号设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"lookuserid": settings.LookUserid,
-		"resetpass":  settings.ResetPass,
+		"lookuserid": account.LookUserid,
+		"resetpass":  account.ResetPass,
 	})
 }
