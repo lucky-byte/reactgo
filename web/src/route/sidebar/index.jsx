@@ -15,6 +15,7 @@ import codeState from "~/state/code";
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import menus from "./menus";
+import codes from "./codes";
 import Item from './item';
 
 export default function Sidebar() {
@@ -43,6 +44,13 @@ export default function Sidebar() {
 
         for (let j = 0; j < menu.items.length; j++) {
           const item = menu.items[j];
+
+          // 无需授权的菜单
+          if (codes[item.code]?.allow) {
+            items.push(item);
+            continue;
+          }
+          // 权限允许的菜单
           if (allows.includes(item.code)) {
             items.push(item);
           }

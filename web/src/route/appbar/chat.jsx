@@ -1,12 +1,15 @@
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import PermPhoneMsgIcon from '@mui/icons-material/PermPhoneMsg';
+import PhoneForwardedIcon from '@mui/icons-material/PhoneForwarded';
 
 export default function Chat() {
   return (
     <>
-      <IconButton aria-label="通知" color="primary">
-        <PermPhoneMsgIcon />
-      </IconButton>
+      <Tooltip title='常联络' arrow>
+        <IconButton aria-label="联络" color="primary">
+          <PhoneForwardedIcon />
+        </IconButton>
+      </Tooltip>
     </>
   )
 }

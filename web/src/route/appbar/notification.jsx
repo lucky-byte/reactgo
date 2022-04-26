@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useNavigate } from "react-router-dom";
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import Popover from '@mui/material/Popover';
@@ -167,11 +168,13 @@ export default function Notification() {
 
   return (
     <>
-      <IconButton aria-label="通知" onClick={onOpen} color="primary">
-        <Badge color="secondary" badgeContent={lastNotification.unread} max={99}>
-          <NotificationsIcon />
-        </Badge>
-      </IconButton>
+      <Tooltip title='通知' arrow>
+        <IconButton aria-label="通知" onClick={onOpen} color="primary">
+          <Badge color="secondary" badgeContent={lastNotification.unread} max={99}>
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+      </Tooltip>
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}

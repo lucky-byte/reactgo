@@ -13,6 +13,7 @@ import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
 import ArchitectureIcon from '@mui/icons-material/Architecture';
 import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
 import SlideshowIcon from '@mui/icons-material/Slideshow';
+import SupportIcon from '@mui/icons-material/Support';
 
 const menus = [{
   title: '欢迎',
@@ -70,6 +71,9 @@ const menus = [{
   }, {
     code: 9070,
     icon: CampaignIcon,
+  }, {
+    code: 9999,
+    icon: SupportIcon,
   }],
 }]
 

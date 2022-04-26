@@ -6,6 +6,7 @@ import Cookies from 'universal-cookie';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Link from "@mui/material/Link";
 import Typography from '@mui/material/Typography';
@@ -26,10 +27,11 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyIcon from '@mui/icons-material/Key';
 import SecurityIcon from '@mui/icons-material/Security';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import SupportIcon from '@mui/icons-material/Support';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import PhoneForwardedIcon from '@mui/icons-material/PhoneForwarded';
 import AddTaskIcon from '@mui/icons-material/AddTask';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import useColorModeContent from "~/hook/colormode";
@@ -42,6 +44,8 @@ import BannerDark from '~/img/banner-dark.png';
 import Navigator from './navigator';
 import Notification from './notification';
 import Chat from "./chat";
+import Flow from "./flow";
+import Pay from "./pay";
 
 export default function Appbar(params) {
   const theme = useTheme();
@@ -154,15 +158,15 @@ export default function Appbar(params) {
             onClick={onQuickNavigate} sx={{ mx: 1 }}
           />
           <Chat />
-          <IconButton aria-label="流程"
-            onClick={colorMode.toggleColorMode} color="primary">
-            <AddTaskIcon />
-          </IconButton>
+          <Flow />
+          <Pay />
           <Notification />
-          <IconButton aria-label="切换色彩模式"
-            onClick={colorMode.toggleColorMode} color="primary">
-            {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
+          <Tooltip title='切换色彩模式' arrow>
+            <IconButton aria-label="切换色彩模式"
+              onClick={colorMode.toggleColorMode} color="primary">
+              {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+            </IconButton>
+          </Tooltip>
           {user?.avatar ?
             <IconButton onClick={onUserMenuOpen}>
               <Avatar src={user.avatar} alt={user.name || user.userid} />
@@ -208,16 +212,27 @@ export default function Appbar(params) {
           <Divider />
           <MenuItem component={RouteLink} to='/user/notification'>
             <ListItemIcon>
+              <CurrencyExchangeIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>收款</ListItemText>
+          </MenuItem>
+          <MenuItem component={RouteLink} to='/user/notification'>
+            <ListItemIcon>
+              <AddTaskIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>工作流</ListItemText>
+          </MenuItem>
+          <MenuItem component={RouteLink} to='/user/notification'>
+            <ListItemIcon>
+              <PhoneForwardedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>联络</ListItemText>
+          </MenuItem>
+          <MenuItem component={RouteLink} to='/user/notification'>
+            <ListItemIcon>
               <NotificationsIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>通知</ListItemText>
-          </MenuItem>
-          <Divider />
-          <MenuItem component={RouteLink} to='/about'>
-            <ListItemIcon>
-              <SupportIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>关于</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem onClick={onLogout}>

@@ -12,6 +12,7 @@ const urlCodes = {
   9050: { title: '定时任务', to: '/system/task' },
   9060: { title: '层级管理', to: '/system/node' },
   9070: { title: '系统公告', to: '/system/bulletin' },
+  9999: { title: '关于系统', to: '/about', allow: true },
 
   // 用户设置
   8000: { title: '用户资料', to: '/user', allow: true },
@@ -29,7 +30,7 @@ const urlCodes = {
   8500: { title: '页面设计', to: '/designer/page' },
   8600: { title: '流程设计', to: '/designer/flow' },
 
-  // 下面自定义业务
+  // 业务
   100: { title: '欢迎', to: '/' },
   101: { title: '看板', to: '/kanban' },
 }

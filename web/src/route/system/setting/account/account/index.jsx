@@ -103,8 +103,8 @@ export default function Account() {
 
   return (
     <Stack sx={{ mt: 2, mb: 3 }}>
-      <Stack direction='row' alignItems='center'>
-        <Stack sx={{ flex: 1 }}>
+      <Stack direction='row' alignItems='center' justifyContent='space-between'>
+        <Stack>
           <Typography>允许用户找回登录名</Typography>
           <FormHelperText>
             登录名是用户登录系统的唯一凭证，如果用户忘记了登录名，可以打开此开关允许用户找回登录名
@@ -115,8 +115,8 @@ export default function Account() {
         />
       </Stack>
       <Divider sx={{ my: 2 }} />
-      <Stack direction='row' alignItems='center'>
-        <Stack sx={{ flex: 1 }}>
+      <Stack direction='row' alignItems='center' justifyContent='space-between'>
+        <Stack>
           <Typography>允许用户找回登录密码</Typography>
           <FormHelperText>
             找回密码需要用户的手机号和邮箱地址正确，如果不允许，
@@ -141,8 +141,8 @@ export default function Account() {
         </FormHelperText>
       </Stack>
       <Divider sx={{ my: 2 }} />
-      <Stack>
-        <Stack direction='row' alignItems='center' justifyContent='space-between'>
+      <Stack direction='row' alignItems='center' justifyContent='space-between'>
+        <Stack>
           <Stack direction='row' alignItems='center' spacing={2}>
             <Typography>会话签名密钥:</Typography>
             <Typography color='secondary'>
@@ -154,11 +154,11 @@ export default function Account() {
               {jwtSignKeyHide ? <VisibilityIcon /> : <VisibilityOffIcon />}
             </IconButton>
           </Stack>
-          <JWTSignKeyButton setJWTSignKey={setJWTSignKey} />
+          <FormHelperText>
+            用户登录后签发的 TOKEN 使用该密钥进行签名，如果泄漏该密钥，则恶意用户可以伪造登录会话
+          </FormHelperText>
         </Stack>
-        <FormHelperText>
-          用户登录后签发的 TOKEN 使用该密钥进行签名，如果泄漏该密钥，则恶意用户可以伪造登录会话
-        </FormHelperText>
+        <JWTSignKeyButton setJWTSignKey={setJWTSignKey} />
       </Stack>
     </Stack>
   )

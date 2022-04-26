@@ -25,16 +25,16 @@ export default function About() {
             process.env.REACT_APP_COMPANY_NAME_FULL}
           />
         </Stack>
-        <Typography variant='h6' sx={{ mt: 4 }}>系统开发商信息</Typography>
+        <Typography variant='h6' sx={{ mt: 4 }}>开发团队</Typography>
         <Divider />
         <Stack sx={{ mt: 2 }} spacing={2}>
-          <Row title='系统开发:' value={process.env.REACT_APP_DEV_NAME} />
+          <Row title='开发团队:' value={process.env.REACT_APP_DEV_NAME} />
           <Row title='联系邮箱:' value={process.env.REACT_APP_DEV_EMAIL} />
           <Row title='联系电话:' value={process.env.REACT_APP_DEV_TEL} />
           <Row title='联系地址:' value={process.env.REACT_APP_DEV_ADDRESS} />
           <Stack direction='row'>
             <Typography sx={{ minWidth: '100px' }} variant='body2'>
-              公司网站:
+              项目网站:
             </Typography>
             <Typography variant='body2'>
               <Link href={process.env.REACT_APP_DEV_URL} target='_blank'
