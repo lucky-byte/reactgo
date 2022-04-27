@@ -21,7 +21,7 @@ import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
 import { get } from '~/rest';
 
-export default function Event() {
+export default function Lists() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [keyword, setKeyword] = useState('');

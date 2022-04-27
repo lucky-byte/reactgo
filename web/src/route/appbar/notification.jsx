@@ -187,26 +187,26 @@ export default function Notification() {
         }}>
         <Stack sx={{ mx: 2, my: 2 }} spacing={2}>
           <List>
-            {lastNotification.last?.map((item, index) => (
-              <>
-                <ListItemButton key={item.uuid} alignItems='flex-start'
-                  onClick={() => onItemClick(item)}>
-                  <ListItemIcon>
-                    {item.type === 1 &&
-                      <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
-                        <NotificationsIcon color="info" />
-                      </Badge>
-                    }
-                    {item.type === 2 &&
-                      <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
-                        <CampaignIcon color="info" />
-                      </Badge>
-                    }
-                  </ListItemIcon>
-                  <ListItemText
-                    disableTypography
-                    primary={
-                      <Stack direction='row' alignItems='center' spacing={2} sx={{ mb: '2px' }}>
+            {lastNotification.last?.map(item => (
+              <ListItemButton key={item.uuid} alignItems='flex-start' dense
+                onClick={() => onItemClick(item)}>
+                <ListItemIcon>
+                  {item.type === 1 &&
+                    <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
+                      <NotificationsIcon color="info" />
+                    </Badge>
+                  }
+                  {item.type === 2 &&
+                    <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
+                      <CampaignIcon color="info" />
+                    </Badge>
+                  }
+                </ListItemIcon>
+                <ListItemText
+                  disableTypography
+                  primary={
+                    <Stack>
+                      <Stack direction='row' alignItems='center' spacing={2}>
                         <Ellipsis variant="subtitle1" sx={{
                           flex: 1, fontWeight: 'bold', textAlign: 'left'
                         }}>
@@ -216,19 +216,17 @@ export default function Notification() {
                           {dayjs(item.create_at).fromNow()}
                         </Typography>
                       </Stack>
-                    }
-                    secondary={
-                      <Ellipsis variant='body2' lines={3}>{item.content}</Ellipsis>
-                    }
-                  />
-                </ListItemButton>
-                {index < lastNotification.last.length - 1 && <Divider variant="inset" />}
-              </>
+                      <Divider sx={{ mt: '1px', mb: '4px' }} />
+                    </Stack>
+                  }
+                  secondary={
+                    <Ellipsis variant='body2' lines={3}>{item.content}</Ellipsis>
+                  }
+                />
+              </ListItemButton>
             ))}
           </List>
-          <Button onClick={onAllClick}>
-            查看全部通知
-          </Button>
+          <Button onClick={onAllClick}>查看全部通知</Button>
         </Stack>
       </Popover>
     </>

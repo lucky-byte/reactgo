@@ -71,9 +71,9 @@ function Content(props) {
           <Paper variant='outlined' sx={{ p: 2 }}>
             <Stack>
               <Typography variant='subtitle2'>Error Stack:</Typography>
-              {errorStack?.map(i => (
+              {errorStack?.map((i, idx) => (
                 i.trim() ?
-                  <Typography variant='body2' sx={{ fontFamily: 'monospace' }}>
+                  <Typography key={idx} variant='body2' sx={{ fontFamily: 'monospace' }}>
                     at {i}
                   </Typography> : null
               ))}
