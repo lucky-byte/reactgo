@@ -1,4 +1,4 @@
-import { lazy, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link as RouteLink, useLocation } from 'react-router-dom';
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
@@ -9,10 +9,6 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import CloseIcon from '@mui/icons-material/Close';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
@@ -20,8 +16,6 @@ import dayjs from 'dayjs';
 import MDEditor, { getAutoSaved, delAutoSaved } from '~/comp/mdeditor';
 import useTitle from "~/hook/title";
 import { post } from '~/rest';
-
-const Markdown = lazy(() => import('~/comp/markdown'));
 
 export default function Edit() {
   const navigate = useNavigate();
@@ -31,7 +25,6 @@ export default function Edit() {
   const [titleHelpText, setTitleHelpText] = useState('');
   const [content, setContent] = useState('');
   const [sendTime, setSendTime] = useState(null);
-  const [previewOpen, setPreviewOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(0);
 
@@ -71,23 +64,6 @@ export default function Edit() {
   // 修改发布时间
   const onSendTimeChange = time => {
     setSendTime(time);
-  }
-
-  // 预览
-  const onPreview = () => {
-    if (!title) {
-      setTitleHelpText('不能为空');
-      return enqueueSnackbar('请输入公告标题', { variant: 'warning' });
-    }
-    if (!content) {
-      return enqueueSnackbar('请输入公告内容', { variant: 'warning' });
-    }
-    setPreviewOpen(true);
-  }
-
-  // 关闭预览
-  const onPreviewClose = () => {
-    setPreviewOpen(false);
   }
 
   // 保存草稿
@@ -189,9 +165,6 @@ export default function Edit() {
           <Button color='secondary' disabled={submitting} onClick={onCancel}>
             取消
           </Button>
-          <Button color='success' disabled={submitting} onClick={onPreview}>
-            预览
-          </Button>
           <LoadingButton onClick={onSubmitDraft}
             disabled={submitting} loading={loading === 1}>
             保存草稿
@@ -202,21 +175,6 @@ export default function Edit() {
           </LoadingButton>
         </Stack>
       </Paper>
-      <Dialog onClose={onPreviewClose} open={previewOpen} maxWidth='md' fullWidth>
-        <DialogTitle>
-          <Stack direction='row' alignItems='center' justifyContent='flex-end'>
-            <IconButton aria-label="关闭" onClick={onPreviewClose}>
-              <CloseIcon />
-            </IconButton>
-          </Stack>
-        </DialogTitle>
-        <DialogContent>
-          <Paper variant='outlined' sx={{ p: 2 }}>
-            <Typography variant='h4' textAlign='center' paragraph>{title}</Typography>
-            <Markdown>{content}</Markdown>
-          </Paper>
-        </DialogContent>
-      </Dialog>
     </Container>
   )
 }

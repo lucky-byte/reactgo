@@ -22,7 +22,9 @@ export default function MDEditor(props) {
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
   const [options, setOptions] = useState({});
+  const [content, setContent] = useState('');
   const [helpOpen, setHelpOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const { placeholder, uniqueId, ...others } = props;
 
@@ -49,17 +51,24 @@ export default function MDEditor(props) {
         theme: theme.palette.mode === 'dark' ? 'abcdef' : 'easymde',
         maxHeight: '400px',
         toolbar: [
-          'bold', 'italic', 'strikethrough', 'heading', 'code', 'quote',
+          'heading', 'bold', 'italic', 'strikethrough', 'code', 'quote', '|',
           'unordered-list', 'ordered-list', '|',
           'image', 'link', 'table', 'horizontal-rule', '|',
-          'preview', 'side-by-side', 'fullscreen', '|',
+          {
+            name: "preview",
+            className: "fa fa-eye",
+            title: "预览",
+            action: editor => {
+              setPreviewOpen(true);
+            },
+          },
+          'side-by-side', 'fullscreen', '|',
           {
             name: "help",
             className: "fa fa-question",
             title: "帮助",
             action: editor => {
               setHelpOpen(true);
-              console.log('help')
             },
           }
         ],
@@ -104,15 +113,23 @@ export default function MDEditor(props) {
     })();
   }, [theme.palette.mode, enqueueSnackbar, placeholder, uniqueId]);
 
+  const onMDEChange = v => {
+    setContent(v);
+  }
+
   const onHelpClose = () => {
     setHelpOpen(false);
+  }
+
+  const onPreviewClose = () => {
+    setPreviewOpen(false);
   }
 
   const MDE = theme.palette.mode === 'light' ? SimpleMDE : SimpleMDEDark;
 
   return (
     <>
-      <MDE {...others} options={options} />
+      <MDE {...others} options={options} onChange={onMDEChange} />
       <Dialog open={helpOpen} maxWidth='md' fullWidth onClose={onHelpClose}>
         <DialogTitle>
           <Stack direction='row' alignItems='center' justifyContent='space-between'>
@@ -125,6 +142,13 @@ export default function MDEditor(props) {
         <DialogContent>
           <Paper variant='outlined' sx={{ p: 2 }}>
             <Markdown url={help} />
+          </Paper>
+        </DialogContent>
+      </Dialog>
+      <Dialog onClose={onPreviewClose} open={previewOpen} maxWidth='md' fullWidth>
+        <DialogContent sx={{ p: 1 }}>
+          <Paper variant='outlined' sx={{ p: 2, minHeight: 400 }}>
+            <Markdown>{content}</Markdown>
           </Paper>
         </DialogContent>
       </Dialog>
