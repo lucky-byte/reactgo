@@ -1,8 +1,6 @@
 import { lazy, useEffect, useState } from 'react';
 import { useTheme } from "@mui/material/styles";
-import Box from '@mui/material/Box';
 import { useSnackbar } from 'notistack';
-import "easymde/dist/easymde.min.css";
 import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -10,7 +8,10 @@ import DialogContent from '@mui/material/DialogContent';
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from '@mui/icons-material/Close';
+import SimpleMDEDark from './dark';
 import help from './help.md';
+import "easymde/dist/easymde.min.css";
+import "codemirror/theme/abcdef.css";
 
 // 代码拆分
 const SimpleMDE = lazy(() => import('react-simplemde-editor'));
@@ -45,6 +46,7 @@ export default function MDEditor(props) {
         spellChecker: false,
         indentWithTabs: false,
         lineNumbers: false,
+        theme: theme.palette.mode === 'dark' ? 'abcdef' : 'easymde',
         maxHeight: '400px',
         toolbar: [
           'bold', 'italic', 'strikethrough', 'heading', 'code', 'quote',
@@ -61,13 +63,9 @@ export default function MDEditor(props) {
             },
           }
         ],
-        promptURLs: true,
-        promptTexts: {
-          image: '图片 URL:',
-          link: '链接 URL:',
-        },
         insertTexts: {
           table: ['', '\n标题 | 标题\n------ | ------\n内容 | 内容\n\n'],
+          link: ['[标题', '](https://)'],
         },
         autosave: {
           enabled: uniqueId ? true : false,
@@ -75,30 +73,12 @@ export default function MDEditor(props) {
           delay: 10 * 1000,
           text: '自动保存:',
         },
-        uploadImage: true,
-        imageMaxSize: 8 * 1024 * 1024,
-        imageTexts: {
-          sbInit: '拖放图片到编辑器或者从剪切板粘贴上传图片',
-          sbOnDragEnter: '拖放图片上传',
-          sbOnDrop: '上传图片 #images_names#...',
-          sbProgress: '上传 #file_name#: #progress#%',
-          sbOnUploaded: '上传 #image_name#',
-          sizeUnits: ' B, KB, MB',
-        },
-        errorMessages: {
-          noFileGiven: '必须选择一个文件',
-          typeNotAllowed: '不允许此类型的图片',
-          fileTooLarge: '图片 #image_name# 太大 (#image_size#).\n' +
-            '最大允许 #image_max_size#',
-          importError: '上传图片 #image_name# 发生错误',
-        },
         errorCallback: message => {
           enqueueSnackbar(message);
         },
         previewRender: text => {
           marked.setOptions({
-            // 支持语法高亮
-            langPrefix: 'hljs language-',
+            langPrefix: 'hljs language-', // 支持语法高亮
             highlight: (code, lang) => {
               if (lang && hljs.getLanguage(lang)) {
                 return hljs.highlight(code, {
@@ -111,10 +91,8 @@ export default function MDEditor(props) {
           });
           let html = marked.parse(text);
 
-          // 链接在新窗口打开
+          // 链接在新窗口打开, 渲染 checkbox 时删除 list-style
           html = addAnchorTargetBlank(html);
-
-          // Remove list-style when rendering checkboxes
           html = removeListStyleWhenCheckbox(html);
 
           // 清洗 HTML 代码，避免恶意代码
@@ -151,38 +129,6 @@ export default function MDEditor(props) {
         </DialogContent>
       </Dialog>
     </>
-  )
-}
-
-// Dark 模式
-function SimpleMDEDark(props) {
-  const theme = useTheme();
-
-  return (
-    <Box component={SimpleMDE} {...props}
-      sx={{
-        "& .CodeMirror, .editor-preview, .editor-toolbar": {
-          color: theme.palette.common.white,
-          borderColor: theme.palette.grey[700],
-          backgroundColor: theme.palette.background.default,
-        },
-        "& .cm-s-easymde .CodeMirror-cursor": {
-          borderColor: theme.palette.grey[500],
-        },
-        "& .editor-toolbar > *": {
-          color: theme.palette.common.white,
-        },
-        "& .editor-toolbar > .active, .editor-toolbar > button:hover": {
-          backgroundColor: theme.palette.background.paper
-        },
-        "& .editor-preview pre, .cm-comment": {
-          backgroundColor: theme.palette.background.paper
-        },
-        "& .editor-preview a": {
-          color: theme.palette.info.light,
-        },
-      }}
-    />
   )
 }
 

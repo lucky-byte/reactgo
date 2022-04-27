@@ -16,19 +16,21 @@ import WindowIcon from '@mui/icons-material/Window';
 import { useHotkeys } from 'react-hotkeys-hook';
 import userState from "~/state/user";
 import useTitle from "~/hook/title";
+import { useSetCode } from "~/state/code";
 
 export default function Home() {
   const navigate = useNavigate();
   const user = useRecoilValue(userState);
 
-  useHotkeys('esc', () => { navigate('../..'); });
+  useHotkeys('esc', () => { navigate('/user'); });
   useTitle('绑定账号');
+  useSetCode(0);
 
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
       <Paper elevation={3} sx={{ px: 4, py: 3, mt: 4 }}>
         <Stack direction='row' alignItems='center' spacing={1}>
-          <IconButton aria-label='返回' component={RouteLink} to='../..'>
+          <IconButton aria-label='返回' component={RouteLink} to='/user'>
             <ArrowBackIcon color='primary' />
           </IconButton>
           <Stack>

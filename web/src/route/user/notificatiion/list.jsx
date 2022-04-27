@@ -19,6 +19,7 @@ import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
+import { useSetCode } from "~/state/code";
 import { get } from '~/rest';
 
 export default function Lists() {
@@ -36,6 +37,7 @@ export default function Lists() {
   const [loading, setLoading] = useState(false);
 
   useTitle('通知');
+  useSetCode(0);
 
   useEffect(() => {
     (async () => {
