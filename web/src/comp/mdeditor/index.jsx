@@ -7,7 +7,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
+import PrintIcon from '@mui/icons-material/Print';
 import CloseIcon from '@mui/icons-material/Close';
+import usePrint from "~/hook/print";
 import SimpleMDEDark from './dark';
 import help from './help.md';
 import "easymde/dist/easymde.min.css";
@@ -24,9 +26,12 @@ export default function MDEditor(props) {
   const [options, setOptions] = useState({});
   const [content, setContent] = useState('');
   const [helpOpen, setHelpOpen] = useState(false);
+  const [helpPrintNode, setHelpPrintNode] = useState(null);
   const [previewOpen, setPreviewOpen] = useState(false);
 
   const { placeholder, uniqueId, ...others } = props;
+
+  const printHelp = usePrint(helpPrintNode);
 
   // 异步加载模块，代码拆分
   useEffect(() => {
@@ -132,24 +137,27 @@ export default function MDEditor(props) {
       <MDE {...others} options={options} onChange={onMDEChange} />
       <Dialog open={helpOpen} maxWidth='md' fullWidth onClose={onHelpClose}>
         <DialogTitle>
-          <Stack direction='row' alignItems='center' justifyContent='space-between'>
-            <span>Markdown 语法参考手册 / 速查表</span>
+          <Stack direction='row' spacing={2} justifyContent='flex-end'>
+            <IconButton aria-label="打印" onClick={printHelp}>
+              <PrintIcon />
+            </IconButton>
             <IconButton aria-label="关闭" onClick={onHelpClose}>
               <CloseIcon />
             </IconButton>
           </Stack>
         </DialogTitle>
         <DialogContent>
-          <Paper variant='outlined' sx={{ p: 2 }}>
+          <Paper variant='outlined' sx={{ p: 2 }} ref={setHelpPrintNode}>
             <Markdown url={help} />
           </Paper>
         </DialogContent>
       </Dialog>
-      <Dialog onClose={onPreviewClose} open={previewOpen} maxWidth='md' fullWidth>
-        <DialogContent sx={{ p: 1 }}>
-          <Paper variant='outlined' sx={{ p: 2, minHeight: 400 }}>
-            <Markdown>{content}</Markdown>
-          </Paper>
+      <Dialog onClose={onPreviewClose} open={previewOpen} maxWidth='md' fullWidth
+        PaperProps={{
+          style: { border: '1px solid #0808' }
+        }}>
+        <DialogContent sx={{ minHeight: 400 }}>
+          <Markdown>{content}</Markdown>
         </DialogContent>
       </Dialog>
     </>

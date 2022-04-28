@@ -1,25 +1,49 @@
-import GridLayout, { Responsive, WidthProvider } from "react-grid-layout";
+import { useState } from "react";
+import { useEffect } from "react";
+import GridLayout from "react-grid-layout";
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
+const storageKey = 'kanban-layout';
 
 export default function Layout(props) {
-  const layout = [
-    { i: "a", x: 0, y: 0, w: 1, h: 2, static: true },
-    { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
-    { i: "c", x: 4, y: 0, w: 1, h: 2 }
-  ];
+  const [layout, setlayout] = useState([]);
+  const [restored, setRestored] = useState(false);
+
+  const { width, children } = props;
+
+  useEffect(() => {
+    const saved = localStorage.getItem(storageKey);
+    if (saved) {
+      try {
+        const l = JSON.parse(saved);
+        if (Array.isArray(l)) {
+          console.log('restore layout:', l)
+          setlayout(l);
+        }
+      } catch (err) {
+        console.error('读布局数据错：', err?.message);
+        localStorage.removeItem(storageKey);
+      }
+    }
+    setRestored(true);
+  }, []);
+
+  const onLayoutChange = l => {
+    console.log(l)
+    if (restored) {
+      localStorage.setItem(storageKey, JSON.stringify(l))
+    }
+  }
 
   return (
-    <ResponsiveGridLayout
-      className="layout"
+    <GridLayout className="layout"
       layout={layout}
-      breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-      cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-    >
-      {props.children}
-    </ResponsiveGridLayout>
-
+      cols={16}
+      rowHeight={30}
+      width={width}
+      onLayoutChange={onLayoutChange}
+      children={children}
+    />
   )
 }

@@ -1,6 +1,7 @@
 import { createElement } from 'react';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
@@ -13,6 +14,7 @@ import Image from './image';
 const customElements = {
   'Stack': Stack,
   'Grid': Grid,
+  'Box': Box,
   'Paper': Paper,
   'Typography': Typography,
   'Link': Link,

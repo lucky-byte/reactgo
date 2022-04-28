@@ -62,7 +62,9 @@ export default function Markdown(props) {
       li: {
         component: 'li',
         props: {
-          style: { fontSize: '0.95rem', marginBottom: '6px', textAlign: 'justify' },
+          style: {
+            fontSize: '0.95rem', marginBottom: '6px', textAlign: 'justify',
+          },
         }
       },
       a: {
@@ -74,7 +76,8 @@ export default function Markdown(props) {
       blockquote: {
         component: Paper,
         props: {
-          variant: 'outlined', sx: {
+          variant: 'outlined',
+          sx: {
             p: 1, borderLeft: `4px solid #088`, my: 1,
             '& p': {
               marginBottom: 0,

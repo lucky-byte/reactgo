@@ -4,7 +4,7 @@ import { useReactToPrint } from 'react-to-print';
 import useColorModeContent from "./colormode";
 import printModalState from "~/state/printmodal";
 
-export default function usePrint(comp) {
+export default function usePrint(printNode) {
   const theme = useTheme();
   const colorMode = useColorModeContent();
   const setPrintModalOpen = useSetRecoilState(printModalState);
@@ -16,7 +16,7 @@ export default function usePrint(comp) {
       }
       setPrintModalOpen(false);
     },
-    content: () => comp,
+    content: () => printNode,
     removeAfterPrint: true,
   });
 
