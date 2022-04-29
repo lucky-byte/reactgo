@@ -61,28 +61,19 @@ export default function Kanban() {
       <Layout width={width}>
         {activedNodes.map(node => {
           const data_grid = {
-            x: 0, y: 0, w: node.layout?.w, h: node.layout?.h,
+            x: node.layout?.x || 0,
+            y: node.layout?.y || 0,
+            w: node.layout?.w || 2,
+            h: node.layout?.h || 2,
+            minW: node.layout?.minW || 0,
+            maxW: node.layout?.maxW || Infinity,
+            minH: node.layout?.minH || 0,
+            maxH: node.layout?.maxH || Infinity,
+            static: node.layout?.static === true,
           }
-          if (parseInt(node.layout?.minW) > 0) {
-            data_grid.minW = node.layout.minW;
-          }
-          if (parseInt(node.layout?.maxW) > 0) {
-            data_grid.maxW = node.layout.maxW;
-          }
-          if (parseInt(node.layout?.minH) > 0) {
-            data_grid.minH = node.layout.minH;
-          }
-          if (parseInt(node.layout?.maxH) > 0) {
-            data_grid.maxH = node.layout.maxH;
-          }
-          if (typeof node.layout?.static === 'boolean') {
-            data_grid.static = node.layout.static;
-          }
-          if (typeof node.layout?.draggable === 'boolean') {
-            data_grid.isDraggable = node.layout.draggable;
-          }
-          if (typeof node.layout?.resizable === 'boolean') {
-            data_grid.isResizable = node.layout.resizable;
+          if (node.layout?.static !== true) {
+            data_grid.isDraggable = node.layout?.draggable !== false;
+            data_grid.isResizable = node.layout?.resizable !== false;
           }
           const Node = node.component;
 

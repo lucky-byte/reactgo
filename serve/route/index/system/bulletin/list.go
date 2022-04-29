@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/labstack/echo/v4"
@@ -40,9 +41,15 @@ func list(c echo.Context) error {
 		pg.Col("title").ILike(keyword), pg.Col("content").ILike(keyword),
 	))
 	if len(date) > 0 {
-		pg.Where(goqu.L("date(bulletins.create_at)").Eq(date))
-	}
+		t, err := time.ParseInLocation("2006/01/02", date, time.Local)
+		if err != nil {
+			cc.ErrLog(err).Error("解析上传日期错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		te := t.AddDate(0, 0, 1).Add(-time.Millisecond)
 
+		pg.Where(pg.Col("create_at").Between(goqu.Range(t, te)))
+	}
 	pg.Select(pg.Col("*"),
 		userTable.Col("name").As("user_name"),
 		userTable.Col("userid").As("userid"),

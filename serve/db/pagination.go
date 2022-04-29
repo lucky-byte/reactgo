@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
+	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 type paginationJoin struct {
@@ -100,6 +101,8 @@ func (p *Pagination) Exec(count *uint, records any) error {
 	if err != nil {
 		return err
 	}
+
+	xlog.X.Infof("sql: %s", q2)
 
 	// 查询总数
 	if err = SelectOne(q1, count); err != nil {
