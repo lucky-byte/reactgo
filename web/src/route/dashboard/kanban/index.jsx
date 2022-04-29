@@ -5,13 +5,14 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
-import kanbanState from './state';
+import activedNodesState from './state';
+import nodes from './nodes';
 import Config from './config';
 
 const Layout = lazy(() => import("./layout"));
 
 export default function Kanban() {
-  const [panels, setPanels] = useRecoilState(kanbanState);
+  const [activedNodes, setActivedNodes] = useRecoilState(activedNodesState);
   const [width, setWidth] = useState(1200);
 
   useTitle('看板');
@@ -25,25 +26,45 @@ export default function Kanban() {
     return () => clearTimeout(t);
   });
 
-  // 从缓存中读取上次激活的面板
+  // 从 localStorage 中读取上次激活的面板
   useEffect(() => {
-    const saved = localStorage.getItem('kanban-panels');
-    if (!saved) {
-      return;
+    const storage = localStorage.getItem('kanban-nodes');
+    if (storage) {
+      try {
+        const keys = JSON.parse(storage);
+
+        if (!Array.isArray(keys)) {
+          return localStorage.removeItem('kanban-nodes');
+        }
+        const actived = [];
+
+        for (const key of keys) {
+          for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].key === key) {
+              actived.push(nodes[i]);
+              break;
+            }
+          }
+        }
+        setActivedNodes(actived);
+      } catch (err) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('读布局数据错：', err?.message);
+        }
+        localStorage.removeItem('kanban-panels');
+      }
     }
-    try {
-      const ps = JSON.parse(saved);
-      setPanels(ps);
-    } catch (err) {
-      localStorage.removeItem('kanban-panels');
-    }
-  }, [setPanels]);
+  }, [setActivedNodes]);
 
   return (
     <Container as='main' role='main' maxWidth={false} sx={{ mb: 4 }} ref={ref}>
       <Layout width={width}>
-        {panels.map(item => (
-          <Paper key={item.key} variant='outlined'>
+        {activedNodes.map(item => (
+          <Paper key={item.key} variant='outlined' data-grid={{
+            x: 0, y: 0, w: item.w || 1, h: item.h || 1,
+            maxW: item.maxW || 16,
+            isResizable: item.resizable,
+          }}>
             <Typography>{item.title}</Typography>
           </Paper>
         ))}

@@ -12,29 +12,28 @@ import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CloseIcon from '@mui/icons-material/Close';
-import panelList from './panels';
-import kanbanState from './state';
+import nodes from './nodes';
+import activedNodesState from './state';
 
 export default function Config() {
-  const [panels, setPanels] = useRecoilState(kanbanState);
+  const [activedNodes, setActivedNodes] = useRecoilState(activedNodesState);
   const [list, setList] = useState([]);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const all = [];
+    const rows = nodes.map(node => {
+      let _active = false;
 
-    for (let i = 0; i < panelList.length; i++) {
-      all[i] = { ...panelList[i], _active: false };
-
-      for (let j = 0; j < panels.length; j++) {
-        if (panels[j].key === all[i].key) {
-          all[i]._active = true;
+      for (let i = 0; i < activedNodes.length; i++) {
+        if (activedNodes[i].key === node.key) {
+          _active = true;
           break;
         }
       }
-    }
-    setList(all);
-  }, [panels]);
+      return { ...node, _active };
+    })
+    setList(rows);
+  }, [activedNodes]);
 
   // 打开抽屉
   const onOpen = () => {
@@ -47,19 +46,27 @@ export default function Config() {
   }
 
   // 开关
-  const onSwitch = (item, checked) => {
-    if (checked) {
-      return setPanels([item, ...panels]);
-    }
-    const newpanels = [...panels]
+  const onSwitch = (node, checked) => {
+    let newNodes = [];
 
-    for (let i = 0; i < newpanels.length; i++) {
-      if (item.key === newpanels[i].key) {
-        newpanels.splice(i, 1);
-        break;
+    if (checked) {
+      newNodes = [...activedNodes, node];
+    } else {
+      for (let i = 0; i < activedNodes.length; i++) {
+        if (node.key !== activedNodes[i].key) {
+          newNodes.push(activedNodes[i]);
+        }
       }
     }
-    setPanels(newpanels);
+    setActivedNodes(newNodes);
+
+    // 存储到 localStorage 中
+    const keys = [];
+
+    for (let i = 0; i < newNodes.length; i++) {
+      keys.push(newNodes[i].key);
+    }
+    localStorage.setItem('kanban-nodes', JSON.stringify(keys));
   }
 
   return (
@@ -72,13 +79,13 @@ export default function Config() {
       </Tooltip>
       <Drawer anchor='left' open={open} onClose={onClose}>
         <Stack width={250}>
-          <Stack direction='row' alignItems='center' spacing={2} p={1}>
-            <SettingsIcon />
+          <Stack direction='row' alignItems='center' spacing={2} px={2} mt={1}>
             <Typography variant='h6' sx={{ flex: 1 }}>配置</Typography>
             <IconButton onClick={onClose}>
               <CloseIcon />
             </IconButton>
           </Stack>
+          <Typography variant='caption' sx={{ px: 2 }}>共 {list.length} 项</Typography>
           <List>
             {list.map(item => (
               <ListItem key={item.key} divider>

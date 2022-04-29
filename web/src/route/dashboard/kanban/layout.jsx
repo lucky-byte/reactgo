@@ -4,35 +4,40 @@ import GridLayout from "react-grid-layout";
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
-const layoutKey = 'kanban-layout';
-
 export default function Layout(props) {
   const [layout, setlayout] = useState([]);
   const [restored, setRestored] = useState(false);
 
   const { width, children } = props;
 
+  // 从 localStorage 中读取上次保存的布局
   useEffect(() => {
-    const saved = localStorage.getItem(layoutKey);
-    if (saved) {
+    const storage = localStorage.getItem('kanban-layout');
+    if (storage) {
       try {
-        const l = JSON.parse(saved);
-        if (Array.isArray(l)) {
-          console.log('restore layout:', l)
-          setlayout(l);
+        const arr = JSON.parse(storage);
+
+        if (Array.isArray(arr)) {
+          setlayout(arr);
+        } else {
+          localStorage.removeItem('kanban-layout');
         }
       } catch (err) {
-        console.error('读布局数据错：', err?.message);
-        localStorage.removeItem(layoutKey);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('读布局数据错：', err?.message);
+        }
+        localStorage.removeItem('kanban-layout');
       }
     }
     setRestored(true);
   }, []);
 
-  const onLayoutChange = l => {
-    console.log(l)
+  // 将布局保存到 localStorage 中，注意我们需要等待第一次恢复布局后再保存，
+  // 不然将无法正确的恢复布局，因为 onLayoutChange 在组件 mount 过程中会执行，
+  // 也就是说在上面的 useEffect 之前执行
+  const onLayoutChange = newLayout => {
     if (restored) {
-      localStorage.setItem(layoutKey, JSON.stringify(l))
+      localStorage.setItem('kanban-layout', JSON.stringify(newLayout))
     }
   }
 

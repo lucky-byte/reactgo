@@ -1,8 +1,8 @@
 import { atom } from 'recoil';
 
-const kanbanState = atom({
-  key: 'kanbanState',
+const activedNodesState = atom({
+  key: 'kanbanActivedNodesState',
   default: [],
 });
 
-export default kanbanState;
+export default activedNodesState;
