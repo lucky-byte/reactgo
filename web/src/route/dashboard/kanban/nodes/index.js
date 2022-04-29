@@ -1,10 +1,11 @@
+import { forwardRef } from 'react';
 import Typography from '@mui/material/Typography';
+import Clock from './clock';
 
-function My() {
-  return (
-    <Typography>MEME</Typography>
-  )
-}
+const My = forwardRef((props, ref) => (
+  <Typography ref={ref}>MEME</Typography>
+));
+
 // 组件列表
 //
 // 每个组件可以配置下面的属性：
@@ -23,27 +24,22 @@ function My() {
 //    draggable: 如果为 false，则不能拖动，默认为 true
 //    resizable: 如果为 false，则不能改变大小，默认为 true
 //
-const elements = [{
-  key: 'typography', title: '文字', desc: '文字牌白',
-  component: My, layout: {
-    w: 3, h: 3, maxW: 4, resizeable: false,
+const nodes = [{
+  key: 'clock',
+  title: '模拟时钟',
+  desc: '显示一个模拟时钟',
+  component: Clock,
+  layout: {
+    w: 2, h: 4, minW: 2, maxW: 4, minH: 2, maxH: 6,
   },
-// }, {
-//   key: 'icon', title: '天气', desc: '近5天的天气预报',
-// }, {
-//   key: 'trade', title: '交易图标', desc: '当天的交易走势图',
-// }, {
-//   key: 'trade2', title: '交易图标', desc: '当天的交易走势图',
-// }, {
-//   key: 'trade3', title: '交易图标', desc: '当天的交易走势图',
-// }, {
-//   key: 'trade4', title: '交易图标', desc: '当天的交易走势图',
-// }, {
-//   key: 'trade5', title: '交易图标', desc: '当天的交易走势图',
-// }, {
-//   key: 'trade6', title: '交易图标', desc: '当天的交易走势图',
-// }, {
-//   key: 'trade7', title: '交易图标', desc: '当天的交易走势图',
+}, {
+  key: 'typography',
+  title: '测试',
+  desc: '自定义的文字组件',
+  component: My,
+  layout: {
+    w: 2, h: 3, minW: 2, maxW: 4, minH: 2, maxH: 6, resizeable: false,
+  },
 }];
 
-export default elements;
+export default nodes;

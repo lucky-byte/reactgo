@@ -1,18 +1,18 @@
 import { lazy, useEffect, useRef, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
-import activedNodesState from './state';
+import { activedState, outlinedState } from './state';
 import nodes from './nodes';
 import Config from './config';
 
 const Layout = lazy(() => import("./layout"));
 
 export default function Kanban() {
-  const [activedNodes, setActivedNodes] = useRecoilState(activedNodesState);
+  const [activedNodes, setActivedNodes] = useRecoilState(activedState);
+  const outlined = useRecoilValue(outlinedState);
   const [width, setWidth] = useState(1200);
 
   useTitle('看板');
@@ -59,15 +59,40 @@ export default function Kanban() {
   return (
     <Container as='main' role='main' maxWidth={false} sx={{ mb: 4 }} ref={ref}>
       <Layout width={width}>
-        {activedNodes.map(item => (
-          <Paper key={item.key} variant='outlined' data-grid={{
-            x: 0, y: 0, w: item.w || 1, h: item.h || 1,
-            maxW: item.maxW || 16,
-            isResizable: item.resizable,
-          }}>
-            <Typography>{item.title}</Typography>
-          </Paper>
-        ))}
+        {activedNodes.map(node => {
+          const data_grid = {
+            x: 0, y: 0, w: node.layout?.w, h: node.layout?.h,
+          }
+          if (parseInt(node.layout?.minW) > 0) {
+            data_grid.minW = node.layout.minW;
+          }
+          if (parseInt(node.layout?.maxW) > 0) {
+            data_grid.maxW = node.layout.maxW;
+          }
+          if (parseInt(node.layout?.minH) > 0) {
+            data_grid.minH = node.layout.minH;
+          }
+          if (parseInt(node.layout?.maxH) > 0) {
+            data_grid.maxH = node.layout.maxH;
+          }
+          if (typeof node.layout?.static === 'boolean') {
+            data_grid.static = node.layout.static;
+          }
+          if (typeof node.layout?.draggable === 'boolean') {
+            data_grid.isDraggable = node.layout.draggable;
+          }
+          if (typeof node.layout?.resizable === 'boolean') {
+            data_grid.isResizable = node.layout.resizable;
+          }
+          const Node = node.component;
+
+          return (
+            <Paper key={node.key} elevation={0} data-grid={data_grid}
+              variant={outlined ? 'outlined' : 'elevation'}>
+              <Node />
+            </Paper>
+          )
+        })}
       </Layout>
       <Config />
     </Container>

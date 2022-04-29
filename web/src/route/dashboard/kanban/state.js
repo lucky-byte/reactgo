@@ -1,8 +1,13 @@
 import { atom } from 'recoil';
 
-const activedNodesState = atom({
-  key: 'kanbanActivedNodesState',
+const activedState = atom({
+  key: 'kanbanActivedState',
   default: [],
 });
 
-export default activedNodesState;
+const outlinedState = atom({
+  key: 'kanbanOutlinedState',
+  default: false,
+});
+
+export { activedState, outlinedState }
