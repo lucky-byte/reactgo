@@ -24,7 +24,7 @@ export default function MDEditor(props) {
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
   const [options, setOptions] = useState({});
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(props.value);
   const [helpOpen, setHelpOpen] = useState(false);
   const [helpPrintNode, setHelpPrintNode] = useState(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -32,6 +32,9 @@ export default function MDEditor(props) {
   const { placeholder, uniqueId, ...others } = props;
 
   const printHelp = usePrint(helpPrintNode);
+
+  // 获取编辑文字
+  useEffect(() => { setContent(props.value); }, [props.value]);
 
   // 异步加载模块，代码拆分
   useEffect(() => {

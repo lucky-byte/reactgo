@@ -1,14 +1,17 @@
 import { lazy, useEffect, useRef, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
+import kanbanState from './state';
 import Config from './config';
 
 const Layout = lazy(() => import("./layout"));
 
 export default function Kanban() {
+  const [panels, setPanels] = useRecoilState(kanbanState);
   const [width, setWidth] = useState(1200);
 
   useTitle('看板');
@@ -22,18 +25,28 @@ export default function Kanban() {
     return () => clearTimeout(t);
   });
 
+  // 从缓存中读取上次激活的面板
+  useEffect(() => {
+    const saved = localStorage.getItem('kanban-panels');
+    if (!saved) {
+      return;
+    }
+    try {
+      const ps = JSON.parse(saved);
+      setPanels(ps);
+    } catch (err) {
+      localStorage.removeItem('kanban-panels');
+    }
+  }, [setPanels]);
+
   return (
     <Container as='main' role='main' maxWidth={false} sx={{ mb: 4 }} ref={ref}>
       <Layout width={width}>
-        <Paper variant='outlined' key='a'>
-          <Typography>A</Typography>
-        </Paper>
-        <Paper variant='outlined' key='b'>
-          <Typography>B</Typography>
-        </Paper>
-        <Paper variant='outlined' key='c'>
-          <Typography>C</Typography>
-        </Paper>
+        {panels.map(item => (
+          <Paper key={item.key} variant='outlined'>
+            <Typography>{item.title}</Typography>
+          </Paper>
+        ))}
       </Layout>
       <Config />
     </Container>

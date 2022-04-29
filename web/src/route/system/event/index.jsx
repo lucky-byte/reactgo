@@ -16,7 +16,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
-import Chip from '@mui/material/Chip';
+import Badge from '@mui/material/Badge';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
@@ -157,15 +157,15 @@ export default function Event() {
               '&:last-child': { borderBottom: 0, }
             }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 2 }}>
+              <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 1 }}>
                 <LevelIcon level={e.level} />
                 <Typography variant='subtitle1' sx={{
                   flex: 1, fontWeight: e.fresh ? 'bold' : 'normal',
                 }}>
                   {e.title}
                 </Typography>
-                {e.fresh && <Chip label='新' size='small' color='info' />}
-                <Typography variant='caption' sx={{ color: 'gray' }}>
+                {e.fresh && <Badge color="secondary" variant="dot" />}
+                <Typography variant='caption' sx={{ color: 'gray', pl: 1 }}>
                   {e.timeAgo || dayjs(e.create_at).fromNow()}
                 </Typography>
               </Stack>

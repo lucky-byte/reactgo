@@ -12,11 +12,11 @@ const panels = [{
 }, {
   key: 'trade4', title: '交易图标', desc: '当天的交易走势图',
 }, {
-  key: 'trade', title: '交易图标', desc: '当天的交易走势图',
+  key: 'trade5', title: '交易图标', desc: '当天的交易走势图',
 }, {
-  key: 'trade', title: '交易图标', desc: '当天的交易走势图',
+  key: 'trade6', title: '交易图标', desc: '当天的交易走势图',
 }, {
-  key: 'trade', title: '交易图标', desc: '当天的交易走势图',
+  key: 'trade7', title: '交易图标', desc: '当天的交易走势图',
 }];
 
 export default panels;
