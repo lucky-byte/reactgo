@@ -21,17 +21,25 @@ import Chat from './chat';
 //
 const nodes = [{
   key: 'clock',
-  title: '模拟时钟',
-  desc: '显示一个模拟时钟',
+  title: '时钟',
+  desc: '显示当前时间',
   component: Clock,
   layout: {
     x: 14, y: 0, w: 2, h: 4, minW: 2, maxW: 4, minH: 2, maxH: 6,
   },
   default: true,
 }, {
+  key: 'calendar',
+  title: '日历',
+  desc: '日程活动工作编排',
+  component: Chat,
+  layout: {
+    w: 3, h: 6, minW: 2, maxW: 4, minH: 4, maxH: 10,
+  },
+}, {
   key: 'chat',
-  title: '即时通信',
-  desc: '电话、视频、以及文字通信',
+  title: '通信',
+  desc: '语音视频及文字通信',
   component: Chat,
   layout: {
     w: 3, h: 6, minW: 2, maxW: 4, minH: 4, maxH: 10,

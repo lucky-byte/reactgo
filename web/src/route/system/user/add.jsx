@@ -18,6 +18,9 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
+import isEmail from 'validator/lib/isEmail';
+import isMobilePhone from 'validator/lib/isMobilePhone';
+import isIdentityCard from 'validator/lib/isIdentityCard'
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
@@ -90,9 +93,10 @@ export default function Add() {
               <Stack direction='row' spacing={3}>
                 <TextField label='登录名' variant='standard' fullWidth required
                   autoFocus
-                  placeholder='系统登录名，建议使用字母和数字'
+                  placeholder='系统登录名'
                   helperText={errors?.userid?.message}
                   error={errors?.userid}
+                  inputProps={{ maxLength: 32 }}
                   {...register('userid', {
                     required: "不能为空",
                     maxLength: {
@@ -104,6 +108,7 @@ export default function Add() {
                   placeholder='用户真实姓名'
                   helperText={errors?.name?.message}
                   error={errors?.name}
+                  inputProps={{ maxLength: 64 }}
                   {...register('name', {
                     required: "不能为空",
                     maxLength: {
@@ -116,9 +121,9 @@ export default function Add() {
                 <TextField label='手机号' variant='standard' fullWidth
                   required type='tel'
                   placeholder='登录时用于接收短信验证码'
-                  inputProps={{ maxLength: 11 }}
                   helperText={errors?.mobile?.message}
                   error={errors?.mobile}
+                  inputProps={{ maxLength: 11 }}
                   {...register('mobile', {
                     required: "不能为空",
                     minLength: {
@@ -127,9 +132,7 @@ export default function Add() {
                     maxLength: {
                       value: 11, message: '长度不能超出11位'
                     },
-                    pattern: {
-                      value: /^1[0-9]{10}$/, message: '格式不符合规范'
-                    },
+                    validate: v => isMobilePhone(v, 'zh-CN') || '格式错误',
                   })}
                 />
                 <TextField label='邮箱地址' variant='standard' fullWidth
@@ -142,6 +145,7 @@ export default function Add() {
                     maxLength: {
                       value: 128, message: '超出最大长度'
                     },
+                    validate: v => isEmail(v) || '格式错误',
                   })}
                 />
               </Stack>
@@ -183,6 +187,26 @@ export default function Add() {
                   })}
                 />
               </Stack>
+              <TextField label='身份证号码' variant='standard' fullWidth
+                placeholder='18位居民身份证号码'
+                helperText={errors?.idno?.message}
+                error={errors?.idno}
+                inputProps={{ maxLength: 18 }}
+                {...register('idno', {
+                  minLength: {
+                    value: 18, message: '长度不足18位'
+                  },
+                  maxLength: {
+                    value: 18, message: '超出最大长度'
+                  },
+                  validate: v => {
+                    if (v) {
+                      return isIdentityCard(v, 'zh-CN') || '格式错误';
+                    }
+                    return true;
+                  }
+                })}
+              />
               <Stack>
                 <TextField id='acl' label='访问控制' variant='standard' fullWidth
                   required select defaultValue=''
@@ -227,7 +251,7 @@ export default function Add() {
                     <Checkbox defaultChecked {...register('tfa')} />
                   }
                 />
-                <FormControlLabel sx={{ mt: 1 }}
+                <FormControlLabel sx={{ mt: 2 }}
                   label={
                     <Stack spacing={0}>
                       <Typography>将登录信息（网址、登录名及密码）发送到用户邮箱</Typography>

@@ -59,7 +59,7 @@ export default function Password() {
     <Container as='main' maxWidth='sm' sx={{ mb: 2 }}>
       <Paper sx={{ px: 5, py: 3, mt: 5 }}>
         <Typography variant='h6'>修改登录密码</Typography>
-        <Typography variant='subtitle1' sx={{ mb: 3 }} color='secondary'>
+        <Typography variant='button' color='secondary' paragraph>
           {location?.state?.name}
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -100,7 +100,7 @@ export default function Password() {
                 })}
               />
               <FormControlLabel label="将新密码发送到用户邮箱" control={
-                <Checkbox defaultChecked {...register('sendmail')} />
+                <Checkbox edge='start' defaultChecked {...register('sendmail')} />
               } />
             </Stack>
           </Paper>

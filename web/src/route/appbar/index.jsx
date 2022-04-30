@@ -207,7 +207,7 @@ export default function Appbar(params) {
             <ListItemIcon>
               <GroupAddIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText>绑定账号</ListItemText>
+            <ListItemText>身份授权</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem component={RouteLink} to='/user/notification'>

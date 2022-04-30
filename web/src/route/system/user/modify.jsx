@@ -17,6 +17,9 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
+import isEmail from 'validator/lib/isEmail';
+import isMobilePhone from 'validator/lib/isMobilePhone';
+import isIdentityCard from 'validator/lib/isIdentityCard'
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
 import { get, put } from "~/rest";
@@ -44,6 +47,7 @@ export default function Modify() {
     setValue("name", info.name);
     setValue("mobile", info.mobile);
     setValue("email", info.email);
+    setValue("idno", info.idno);
     setValue("address", info.address);
     setValue("tfa", info.tfa);
   }, [setValue]);
@@ -104,9 +108,10 @@ export default function Modify() {
                 <TextField label='登录名' variant='standard' focused fullWidth
                   required
                   disabled={progress}
-                  placeholder='用于登录，使用字母或数字'
+                  placeholder='系统登录名'
                   helperText={errors?.userid?.message}
                   error={errors?.userid}
+                  inputProps={{ maxLength: 32 }}
                   {...register('userid', {
                     required: "不能为空",
                     maxLength: {
@@ -120,6 +125,7 @@ export default function Modify() {
                   placeholder='用户真实姓名'
                   helperText={errors?.name?.message}
                   error={errors?.name}
+                  inputProps={{ maxLength: 64 }}
                   {...register('name', {
                     required: "不能为空",
                     maxLength: {
@@ -133,9 +139,9 @@ export default function Modify() {
                   required type='tel'
                   disabled={progress}
                   placeholder='登录时用于接收短信验证码'
-                  inputProps={{ maxLength: 11 }}
                   helperText={errors?.mobile?.message}
                   error={errors?.mobile}
+                  inputProps={{ maxLength: 11 }}
                   {...register('mobile', {
                     required: "不能为空",
                     minLength: {
@@ -144,9 +150,7 @@ export default function Modify() {
                     maxLength: {
                       value: 11, message: '长度不能超出11位'
                     },
-                    pattern: {
-                      value: /^1[0-9]{10}$/, message: '格式不符合规范'
-                    },
+                    validate: v => isMobilePhone(v, 'zh-CN') || '格式错误',
                   })}
                 />
                 <TextField label='邮箱地址' variant='standard' focused fullWidth
@@ -160,9 +164,31 @@ export default function Modify() {
                     maxLength: {
                       value: 128, message: '超出最大长度'
                     },
+                    validate: v => isEmail(v) || '格式错误',
                   })}
                 />
               </Stack>
+              <TextField label='身份证号码' variant='standard' focused fullWidth
+                disabled={progress}
+                placeholder='18位居民身份证号码'
+                helperText={errors?.idno?.message}
+                error={errors?.idno}
+                inputProps={{ maxLength: 18 }}
+                {...register('idno', {
+                  minLength: {
+                    value: 18, message: '长度不足18位'
+                  },
+                  maxLength: {
+                    value: 18, message: '超出最大长度'
+                  },
+                  validate: v => {
+                    if (v) {
+                      return isIdentityCard(v, 'zh-CN') || '格式错误';
+                    }
+                    return true;
+                  }
+                })}
+              />
               <TextField label='联系地址' variant='standard' focused fullWidth
                 disabled={progress}
                 placeholder='联系地址，如果没有可以不填'
@@ -178,9 +204,8 @@ export default function Modify() {
                     control={control}
                     name="tfa"
                     render={({ field: { value, onChange, ref } }) => (
-                      <Checkbox checked={value} onChange={onChange}
-                        disabled={progress}
-                        inputRef={ref}
+                      <Checkbox edge='start' checked={value} onChange={onChange}
+                        disabled={progress} inputRef={ref}
                       />
                     )}
                   />

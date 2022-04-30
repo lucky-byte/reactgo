@@ -143,7 +143,7 @@ func signin(c echo.Context) error {
 		"name":             user.Name,
 		"email":            user.Email,
 		"mobile":           user.Mobile,
-		"address":          user.Address.String,
+		"address":          user.Address,
 		"tfa":              user.TFA,
 		"secretcode_isset": len(user.SecretCode) > 0,
 		"totp_isset":       len(user.TOTPSecret) > 0,

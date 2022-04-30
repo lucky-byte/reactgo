@@ -91,7 +91,10 @@ export default function Kanban() {
           return (
             <Paper key={node.key} elevation={0} data-grid={data_grid}
               variant={outlined ? 'outlined' : 'elevation'}
-              sx={{ border: outlined ? '1px dashed orange' : '' }}>
+              sx={{
+                bgcolor: 'transparent',
+                border: outlined ? '1px dashed orange' : '',
+              }}>
               <Node />
             </Paper>
           )

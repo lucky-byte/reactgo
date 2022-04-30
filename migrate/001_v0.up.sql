@@ -13,6 +13,7 @@ create table if not exists users (
   avatar      varchar(36)     default '',
   email       varchar(128)    not null,
   mobile      varchar(16)     not null,
+  idno        varchar(32)     not null default '',
   address     varchar(256)    default '',
   tfa         boolean         not null default true,
   acl         varchar(36)     not null,

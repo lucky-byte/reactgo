@@ -119,6 +119,10 @@ function BaseInfoTable(props) {
             <TableCell>{profile.email}</TableCell>
           </TableRow>
           <TableRow>
+            <TableCell>身份证号</TableCell>
+            <TableCell colSpan={3}>{profile.idno}</TableCell>
+          </TableRow>
+          <TableRow>
             <TableCell>联系地址</TableCell>
             <TableCell colSpan={3}>{profile.address}</TableCell>
           </TableRow>

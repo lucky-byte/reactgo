@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/mail"
+	"regexp"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -17,7 +18,7 @@ import (
 func add(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var userid, name, password, mobile, email, address, acl string
+	var userid, name, password, mobile, email, idno, address, acl string
 	var sendmail, tfa bool
 
 	err := echo.FormFieldBinder(c).
@@ -26,6 +27,7 @@ func add(c echo.Context) error {
 		MustString("password", &password).
 		MustString("mobile", &mobile).
 		MustString("email", &email).
+		String("idno", &idno).
 		Bool("sendmail", &sendmail).
 		Bool("tfa", &tfa).
 		MustString("acl", &acl).
@@ -34,8 +36,21 @@ func add(c echo.Context) error {
 		return cc.BadRequest(err)
 	}
 	// 删除前后空白字符
-	cc.Trim(&userid, &name, &password, &email, &mobile, &address)
+	cc.Trim(&userid, &name, &password, &email, &idno, &mobile, &address)
 
+	// 验证数据
+	if !regexp.MustCompile(`^1[0-9]{10}$`).MatchString(mobile) {
+		return c.String(http.StatusBadRequest, "手机号格式错误")
+	}
+	if _, err = mail.ParseAddress(email); err != nil {
+		cc.ErrLog(err).Error("解析邮箱地址错")
+		return c.String(http.StatusBadRequest, "邮箱地址格式错误")
+	}
+	if len(idno) > 0 {
+		if !regexp.MustCompile(`^[0-9]{17}[0-9xX]$`).MatchString(idno) {
+			return c.String(http.StatusBadRequest, "身份证号格式错误")
+		}
+	}
 	// 查询 userid 是否冲突
 	ql := `select count(*) from users where userid = ?`
 	var count int
@@ -56,21 +71,21 @@ func add(c echo.Context) error {
 	}
 	ql = `
 		insert into users (
-			uuid, userid, passwd, name, mobile, email, address, tfa, acl
+			uuid, userid, passwd, name, mobile, email, idno, address, tfa, acl
 		)
-		values (?, ?, ?, ?, ?, ?, ?, ?, ?)
+		values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 	err = db.ExecOne(
 		ql, uuid.NewString(), userid, passwdHash,
-		name, mobile, email, address, tfa, acl,
+		name, mobile, email, idno, address, tfa, acl,
 	)
 	if err != nil {
 		cc.ErrLog(err).Error("添加用户错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	// 将登录信息发送到用户邮箱
 	if sendmail {
-		// 生成邮件
 		m, err := mailfs.Message("登录信息", "signin", map[string]interface{}{
 			"name":     name,
 			"userid":   userid,

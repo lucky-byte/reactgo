@@ -162,7 +162,7 @@ export default function Profile() {
                   安全设置
                 </Button>
                 <Button LinkComponent={RouteLink} to='/user/oidc'>
-                  绑定账号
+                  身份授权
                 </Button>
               </Stack>
             </Stack>

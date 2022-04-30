@@ -83,7 +83,7 @@ export default function ACL() {
     <Container as='main' maxWidth='sm' sx={{ mb: 2 }}>
       <Paper sx={{ px: 5, py: 3, mt: 5 }}>
         <Typography variant='h6'>修改访问控制角色</Typography>
-        <Typography variant='subtitle1' sx={{ mb: 3 }} color='secondary'>
+        <Typography variant='button' color='info' paragraph>
           {location?.state?.name}
         </Typography>
         <Paper variant='outlined' sx={{ px: 3, py: 3 }}>

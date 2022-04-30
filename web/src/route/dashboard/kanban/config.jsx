@@ -92,9 +92,9 @@ export default function Config() {
       </Stack>
       <Drawer anchor='left' open={open} onClose={onClose}>
         <Stack width={250}>
-          <Stack direction='row' alignItems='center' spacing={2} px={2} mt={1}>
-            <Typography variant='h6' sx={{ flex: 1 }}>配置</Typography>
-            <IconButton onClick={onClose}>
+          <Stack direction='row' alignItems='center' spacing={2} pl={2} mt={1}>
+            <Typography variant='h6' sx={{ flex: 1 }}>组件配置</Typography>
+            <IconButton onClick={onClose} edge='end'>
               <CloseIcon />
             </IconButton>
           </Stack>

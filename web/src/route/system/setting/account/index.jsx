@@ -22,8 +22,8 @@ export default function Index() {
       <Typography variant='h4'>账号安全</Typography>
       <Tabs value={tab} onChange={(_, v) => setTab(v)} aria-label="账号安全设置">
         <Tab value={1} label="账号设置" LinkComponent={Link} to='.' />
-        <Tab value={2} label="OIDC 身份认证" LinkComponent={Link} to='oidc' />
-        <Tab value={3} label="SAML 单点登录" LinkComponent={Link} to='saml' />
+        <Tab value={3} label="单点登录" LinkComponent={Link} to='saml' />
+        <Tab value={2} label="身份授权" LinkComponent={Link} to='oauth' />
       </Tabs>
       <Box role='tabpanel' sx={{ flex: 1 }}>
         <Routes>
