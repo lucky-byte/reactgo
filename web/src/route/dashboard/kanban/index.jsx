@@ -13,7 +13,7 @@ const Layout = lazy(() => import("./layout"));
 export default function Kanban() {
   const [activedNodes, setActivedNodes] = useRecoilState(activedState);
   const outlined = useRecoilValue(outlinedState);
-  const [width, setWidth] = useState(1200);
+  const [width, setWidth] = useState(window.innerWidth - 260);
 
   useTitle('看板');
   useSetCode(101);
@@ -22,7 +22,7 @@ export default function Kanban() {
 
   // 每次渲染时获取容器的宽度，用于传递给 Layout 布局
   useEffect(() => {
-    const t = setTimeout(() => { setWidth(ref.current.offsetWidth - 48) }, 500);
+    const t = setTimeout(() => { setWidth(ref.current.offsetWidth - 48) }, 400);
     return () => clearTimeout(t);
   });
 
@@ -31,10 +31,11 @@ export default function Kanban() {
     const storage = localStorage.getItem('kanban-nodes');
     if (storage) {
       try {
-        const keys = JSON.parse(storage);
+        let keys = JSON.parse(storage);
 
         if (!Array.isArray(keys)) {
-          return localStorage.removeItem('kanban-nodes');
+          localStorage.removeItem('kanban-nodes');
+          keys = [];
         }
         const actived = [];
 
@@ -44,6 +45,16 @@ export default function Kanban() {
               actived.push(nodes[i]);
               break;
             }
+          }
+        }
+        if (actived.length > 0) {
+          return setActivedNodes(actived);
+        }
+        // 如果没有显示的节点，则显示默认配置的节点
+        for (let i = 0; i < nodes.length; i++) {
+          if (nodes[i].default) {
+            actived.push(nodes[i]);
+            break;
           }
         }
         setActivedNodes(actived);
@@ -79,7 +90,8 @@ export default function Kanban() {
 
           return (
             <Paper key={node.key} elevation={0} data-grid={data_grid}
-              variant={outlined ? 'outlined' : 'elevation'}>
+              variant={outlined ? 'outlined' : 'elevation'}
+              sx={{ border: outlined ? '1px dashed orange' : '' }}>
               <Node />
             </Paper>
           )

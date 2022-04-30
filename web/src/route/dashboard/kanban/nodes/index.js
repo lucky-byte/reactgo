@@ -1,10 +1,5 @@
-import { forwardRef } from 'react';
-import Typography from '@mui/material/Typography';
 import Clock from './clock';
-
-const My = forwardRef((props, ref) => (
-  <Typography ref={ref}>MEME</Typography>
-));
+import Chat from './chat';
 
 // 组件列表
 //
@@ -30,15 +25,16 @@ const nodes = [{
   desc: '显示一个模拟时钟',
   component: Clock,
   layout: {
-    w: 2, h: 4, minW: 2, maxW: 4, minH: 2, maxH: 6,
+    x: 14, y: 0, w: 2, h: 4, minW: 2, maxW: 4, minH: 2, maxH: 6,
   },
+  default: true,
 }, {
-  key: 'typography',
-  title: '测试',
-  desc: '自定义的文字组件',
-  component: My,
+  key: 'chat',
+  title: '即时通信',
+  desc: '电话、视频、以及文字通信',
+  component: Chat,
   layout: {
-    w: 2, h: 3, minW: 2, maxW: 4, minH: 2, maxH: 6, resizeable: false,
+    w: 3, h: 6, minW: 2, maxW: 4, minH: 4, maxH: 10,
   },
 }];
 

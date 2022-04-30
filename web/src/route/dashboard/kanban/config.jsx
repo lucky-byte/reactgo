@@ -10,7 +10,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
-import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
+import BorderClearIcon from '@mui/icons-material/BorderClear';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CloseIcon from '@mui/icons-material/Close';
 import { activedState, outlinedState } from './state';
@@ -79,13 +79,13 @@ export default function Config() {
     <>
       <Stack direction='row' spacing={2}
         sx={{ position: 'absolute', right: 20, bottom: 20 }}>
-        <Tooltip title='边框'>
+        <Tooltip title='边界线'>
           <IconButton onClick={onOutlinedClick}>
-            <HighlightAltIcon color={outlined ? 'warning' : 'inherit'} />
+            <BorderClearIcon color={outlined ? 'warning' : 'inherit'} />
           </IconButton>
         </Tooltip>
         <Tooltip title='配置'>
-          <Fab color="primary" aria-label="添加" size='small' onClick={onOpen}>
+          <Fab aria-label="配置" color='info' size='small' onClick={onOpen}>
             <SettingsIcon />
           </Fab>
         </Tooltip>
