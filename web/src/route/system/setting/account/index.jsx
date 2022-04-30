@@ -14,13 +14,13 @@ import tabState from "./state";
 export default function Index() {
   const [tab, setTab] = useRecoilState(tabState);
 
-  useTitle('账号设置');
+  useTitle('账号安全设置');
   useAccountTab();
 
   return (
     <Stack spacing={3}>
-      <Typography variant='h4'>账号设置</Typography>
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} aria-label="账号设置">
+      <Typography variant='h4'>账号安全</Typography>
+      <Tabs value={tab} onChange={(_, v) => setTab(v)} aria-label="账号安全设置">
         <Tab value={1} label="账号设置" LinkComponent={Link} to='.' />
         <Tab value={2} label="OIDC 身份认证" LinkComponent={Link} to='oidc' />
         <Tab value={3} label="SAML 单点登录" LinkComponent={Link} to='saml' />

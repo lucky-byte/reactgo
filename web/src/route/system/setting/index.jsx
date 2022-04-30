@@ -19,7 +19,7 @@ const tabsArray = [
   { title: '短信服务', value: 2, to: 'sms', },
   { title: '定位服务', value: 3, to: 'geoip', },
   { title: '支付服务', value: 4, to: 'pay', },
-  { title: '账号设置', value: 5, to: 'account', },
+  { title: '账号安全', value: 5, to: 'account', },
 ]
 
 export default function Setting() {

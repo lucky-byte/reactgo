@@ -25,7 +25,7 @@ export default function Account() {
   const [jwtSignKey, setJWTSignKey] = useState(0);
   const [jwtSignKeyHide, setJWTSignKeyHide] = useState(true);
 
-  useTitle('账号设置');
+  useTitle('账号安全设置');
   useIndexTab();
 
   useEffect(() => {
@@ -103,6 +103,20 @@ export default function Account() {
 
   return (
     <Stack sx={{ mt: 2, mb: 3 }}>
+      <Typography variant="h6" paragraph>登录及会话</Typography>
+      <Stack>
+        <Stack direction='row' alignItems='center' spacing={2}>
+          <Typography>登录会话持续时间(分钟):</Typography>
+          <InplaceInput text={duration || ''} onConfirm={onChangeDuration}
+            color='primary' sx={{ flex: 1 }}
+          />
+        </Stack>
+        <FormHelperText>
+          用户登录成功后会话保持时间，以分钟为单位，例如 1440 表示持续时间为 1 天。
+          已登录用户不受影响
+        </FormHelperText>
+      </Stack>
+      <Divider sx={{ my: 2 }} />
       <Stack direction='row' alignItems='center' justifyContent='space-between'>
         <Stack>
           <Typography>允许用户找回登录名</Typography>
@@ -127,20 +141,7 @@ export default function Account() {
           inputProps={{ 'aria-label': '开关' }}
         />
       </Stack>
-      <Divider sx={{ my: 2 }} />
-      <Stack>
-        <Stack direction='row' alignItems='center' spacing={2}>
-          <Typography>登录会话持续时间(分钟):</Typography>
-          <InplaceInput text={duration || ''} onConfirm={onChangeDuration}
-            color='primary' sx={{ flex: 1 }}
-          />
-        </Stack>
-        <FormHelperText>
-          用户登录成功后会话保持时间，以分钟为单位，例如 1440 表示持续时间为 1 天。
-          已登录用户不受影响
-        </FormHelperText>
-      </Stack>
-      <Divider sx={{ my: 2 }} />
+      <Typography variant="h6" paragraph sx={{ mt: 6 }}>签名密钥</Typography>
       <Stack direction='row' alignItems='center' justifyContent='space-between'>
         <Stack>
           <Stack direction='row' alignItems='center' spacing={2}>
@@ -155,7 +156,7 @@ export default function Account() {
             </IconButton>
           </Stack>
           <FormHelperText>
-            用户登录后签发的 TOKEN 使用该密钥进行签名，如果泄漏该密钥，则恶意用户可以伪造登录会话
+            用户登录后签发的 Json Web Token 使用该密钥进行签名，恶意用户可以使用该密钥伪造登录会话凭证
           </FormHelperText>
         </Stack>
         <JWTSignKeyButton setJWTSignKey={setJWTSignKey} />

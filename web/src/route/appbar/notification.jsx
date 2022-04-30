@@ -7,7 +7,6 @@ import Badge from '@mui/material/Badge';
 import Popover from '@mui/material/Popover';
 import Stack from "@mui/material/Stack";
 import Typography from '@mui/material/Typography';
-import Divider from "@mui/material/Divider";
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -205,18 +204,15 @@ export default function Notification() {
                 <ListItemText
                   disableTypography
                   primary={
-                    <Stack>
-                      <Stack direction='row' alignItems='center' spacing={2}>
-                        <Ellipsis variant="subtitle1" sx={{
-                          flex: 1, fontWeight: 'bold', textAlign: 'left'
-                        }}>
-                          {item.title}
-                        </Ellipsis>
-                        <Typography variant="caption">
-                          {dayjs(item.create_at).fromNow()}
-                        </Typography>
-                      </Stack>
-                      <Divider sx={{ mt: '1px', mb: '4px' }} />
+                    <Stack direction='row' alignItems='center' spacing={2}>
+                      <Ellipsis variant="subtitle1" sx={{
+                        flex: 1, fontWeight: 'bold', textAlign: 'left'
+                      }}>
+                        {item.title}
+                      </Ellipsis>
+                      <Typography variant="caption">
+                        {dayjs(item.create_at).fromNow()}
+                      </Typography>
                     </Stack>
                   }
                   secondary={

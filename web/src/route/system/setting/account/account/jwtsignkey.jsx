@@ -6,7 +6,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
@@ -57,22 +56,22 @@ export default function JWTSignKeyButton(props) {
 
   return (
     <>
-      <Button variant='contained' color='secondary' onClick={onOpen}>
+      <Button variant='contained' color='warning' onClick={onOpen} disableElevation>
         更换
       </Button>
       <Dialog onClose={onClose} open={open} maxWidth='xs' fullWidth>
         <DialogTitle>更换签名密钥</DialogTitle>
         <DialogContent>
-          <FormControl sx={{ width: '100%' }}>
-            <FormLabel sx={{ mb: 2, fontSize: '0.9rem' }}>请选择密钥处理方式：</FormLabel>
+          <Typography variant="body2">请选择密钥处理方式：</Typography>
+          <FormControl sx={{ width: '100%', mt: 1 }}>
             <Paper variant="outlined" sx={{ p: 2 }}>
               <RadioGroup aria-labelledby="请选择密钥处理方式"
                 value={method} onChange={onMethodChange}>
                 <FormControlLabel value={1} control={<Radio />}
                   label={
                     <>
-                      <Typography variant="body1">新旧密钥同时可用</Typography>
-                      <Typography variant="caption">
+                      <Typography variant="button">新旧密钥同时可用</Typography>
+                      <Typography component='p' variant="caption">
                         已登录用户凭证依旧有效，新登录凭证采用新密钥签名
                       </Typography>
                     </>
@@ -81,8 +80,8 @@ export default function JWTSignKeyButton(props) {
                 <FormControlLabel value={2} control={<Radio />} sx={{ mt: 3 }}
                   label={
                     <>
-                      <Typography variant="body1">旧密钥立即失效</Typography>
-                      <Typography variant="caption">
+                      <Typography variant="button">旧密钥立即失效</Typography>
+                      <Typography component='p' variant="caption">
                         所有已登录用户凭证立即失效，需重新登录签发新凭证
                       </Typography>
                     </>
@@ -95,8 +94,7 @@ export default function JWTSignKeyButton(props) {
         </DialogContent>
         <DialogActions sx={{ mx: 3, mb: 2 }}>
           <Button onClick={onClose}>取消</Button>
-          <Button variant='contained' color='secondary' autoFocus
-            onClick={onJWTSignKeyChange}>
+          <Button variant='contained' color='warning' onClick={onJWTSignKeyChange}>
             更换
           </Button>
         </DialogActions>

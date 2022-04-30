@@ -29,7 +29,7 @@ export default function Item() {
   const setNotificationOutdated = useSetRecoilState(notificationOutdatedState);
   const [notification, setNotification] = useState({});
 
-  useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
+  useHotkeys('esc', () => { navigate(-1); }, { enableOnTags: ["INPUT"] });
   useTitle('通知');
 
   const contentRef = useRef();
@@ -59,7 +59,7 @@ export default function Item() {
   ]);
 
   const onCloseClick = () => {
-    navigate('..');
+    navigate(-1);
   }
 
   return (

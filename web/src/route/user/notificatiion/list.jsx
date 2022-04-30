@@ -153,7 +153,7 @@ export default function Lists() {
       </List>
       <Stack alignItems='center' sx={{ mt: 2 }}>
         <Pagination count={pageCount} color="primary" page={page + 1}
-          onChange={(e, newPage) => { setPage(newPage - 1)}}
+          onChange={(_, newPage) => { setPage(newPage - 1) }}
         />
       </Stack>
     </Container>
