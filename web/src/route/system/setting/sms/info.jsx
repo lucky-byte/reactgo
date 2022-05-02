@@ -15,6 +15,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
+import SecretText from '~/comp/secret-text';
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
@@ -97,7 +98,9 @@ export default function Info() {
               <TableCell>Secret Id</TableCell>
               <TableCell>{sms.secret_id}</TableCell>
               <TableCell>Secret Key</TableCell>
-              <TableCell>{sms.secret_key}</TableCell>
+              <TableCell>
+                <SecretText text={sms.secret_key} variant='body2'></SecretText>
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>创建时间</TableCell>

@@ -368,13 +368,12 @@ export default function Home() {
     try {
       const _audit = `添加层级节点 ${node.name} 的子节点`;
 
-      const resp = await post('/system/node/add', new URLSearchParams({
+      await post('/system/node/add', new URLSearchParams({
         uuid: node.uuid, _audit,
       }));
       enqueueSnackbar('添加成功', { variant: 'success' });
       setReload(true);
       setExpanded([...expanded, node.uuid]);
-      onNodeSelect(null, resp.uuid);
     } catch (err) {
       enqueueSnackbar(err.message);
     }

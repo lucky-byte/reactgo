@@ -61,7 +61,7 @@ export default function Home() {
           <Stack>
             <Typography variant='h5'>身份授权</Typography>
             <Typography variant='caption'>
-              你可以授权使用你在下列公司或网站的账号登录本系统
+              你可以授权使用你在下列网站的账号登录本系统
             </Typography>
           </Stack>
         </Stack>

@@ -5,7 +5,7 @@ import NotFound from "../notfound";
 import Avatar from "./avatar";
 import Password from "./password";
 import Security from "./security";
-import OIDC from './oidc';
+import OAuth from './oauth';
 import SignInList from "./signinlist";
 import Notification from './notificatiion';
 
@@ -21,7 +21,7 @@ export default function User() {
         <Route path='avatar' element={<Avatar />} />
         <Route path='password' element={<Password />} />
         <Route path='security/*' element={<Security />} />
-        <Route path='oidc/*' element={<OIDC />} />
+        <Route path='oauth/*' element={<OAuth />} />
         <Route path='signinlist' element={<SignInList />} />
         <Route path='notification/*' element={<Notification />} />
         <Route path='*' element={<NotFound />} />

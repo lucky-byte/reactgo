@@ -45,7 +45,6 @@ import Navigator from './navigator';
 import Notification from './notification';
 import Chat from "./chat";
 import Flow from "./flow";
-import Pay from "./pay";
 
 export default function Appbar(params) {
   const theme = useTheme();
@@ -159,7 +158,6 @@ export default function Appbar(params) {
           />
           <Chat />
           <Flow />
-          <Pay />
           <Notification />
           <Tooltip title='切换色彩模式' arrow>
             <IconButton aria-label="切换色彩模式"
@@ -203,7 +201,7 @@ export default function Appbar(params) {
             </ListItemIcon>
             <ListItemText>安全设置</ListItemText>
           </MenuItem>
-          <MenuItem component={RouteLink} to='/user/oidc'>
+          <MenuItem component={RouteLink} to='/user/oauth'>
             <ListItemIcon>
               <GroupAddIcon fontSize="small" />
             </ListItemIcon>
@@ -212,21 +210,21 @@ export default function Appbar(params) {
           <Divider />
           <MenuItem component={RouteLink} to='/user/notification'>
             <ListItemIcon>
-              <CurrencyExchangeIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>收款</ListItemText>
-          </MenuItem>
-          <MenuItem component={RouteLink} to='/user/notification'>
-            <ListItemIcon>
               <AddTaskIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText>工作流</ListItemText>
+            <ListItemText>流程</ListItemText>
           </MenuItem>
           <MenuItem component={RouteLink} to='/user/notification'>
             <ListItemIcon>
               <PhoneForwardedIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>联络</ListItemText>
+          </MenuItem>
+          <MenuItem component={RouteLink} to='/user/notification'>
+            <ListItemIcon>
+              <CurrencyExchangeIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>收款</ListItemText>
           </MenuItem>
           <MenuItem component={RouteLink} to='/user/notification'>
             <ListItemIcon>

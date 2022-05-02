@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { debounce } from "lodash";
 import PropTypes from "prop-types";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -9,17 +10,25 @@ import Tooltip from "@mui/material/Tooltip";
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { debounce } from "lodash";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { useSecretCode } from './secretcode';
 
 export default function InplaceInput(props) {
+  const secretCode = useSecretCode();
   const [text, setText] = useState(props.text);
+  const [hide, setHide] = useState(props.sensitive);
   const [iconVisible, setIconVisible] = useState(false);
   const [editing, setEditing] = useState(false);
+
+  const {
+    required, variant, placeholder, disabled, color, fontSize, maxLength, sensitive,
+  } = props;
 
   useEffect(() => { setText(props.text); }, [props.text])
 
   const onEditClick = () => {
-    if (!props.disabled) {
+    if (!disabled) {
       setEditing(true);
     }
   }
@@ -40,12 +49,28 @@ export default function InplaceInput(props) {
   const debounceBlur = useMemo(() => debounce(() => { onCancelClick(); }, 200), []);
   useEffect(() => { return () => { debounceBlur.cancel(); } }, [debounceBlur]);
 
+  const onHideClick = async () => {
+    try {
+      if (hide) {
+        await secretCode();
+      }
+      setHide(!hide);
+    } catch (err) {
+      if (err) {
+        console.error(err.message);
+      }
+    }
+  }
+
   const onCancelClick = () => {
     setEditing(false);
     setIconVisible(false);
   }
 
   const onConfirmClick = () => {
+    if (required && !text) {
+      return;
+    }
     if (text !== props.text) {
       props.onConfirm(text);
       setText(props.text);
@@ -58,6 +83,9 @@ export default function InplaceInput(props) {
     return (
       <Stack direction='row' alignItems='flex-start' sx={props.sx}>
         <TextField variant='standard' size="small" fullWidth={props.fullWidth}
+          required={required}
+          type={hide ? 'password' : 'text'}
+          autoComplete='new-password'
           multiline={props.multiline} autoFocus
           value={text} onChange={onTextChange} onKeyDown={onKeyDown}
           onBlur={debounceBlur}
@@ -65,12 +93,12 @@ export default function InplaceInput(props) {
             endAdornment:
               <InputAdornment position="end">
                 <Stack direction='row'>
-                  <Tooltip title='取消修改'>
+                  <Tooltip title='取消修改' arrow>
                     <IconButton aria-label="取消" onClick={onCancelClick}>
                       <CancelIcon fontSize="small" color='warning' />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip aria-label="确定修改" title='确定修改'>
+                  <Tooltip title='确定修改' arrow>
                     <IconButton onClick={onConfirmClick}>
                       <CheckCircleIcon fontSize="small" color='success' />
                     </IconButton>
@@ -80,9 +108,9 @@ export default function InplaceInput(props) {
           }}
           inputProps={{
             style: {
-              fontSize: props.fontSize,
+              fontSize: fontSize,
             },
-            maxLength: props.maxLength,
+            maxLength: maxLength,
           }}
         />
       </Stack>
@@ -92,29 +120,36 @@ export default function InplaceInput(props) {
   return (
     <Stack direction='row' alignItems='center' sx={props.sx}>
       {props.text ?
-        <Typography variant={props.variant} onClick={onEditClick}
+        <Typography variant={variant} onClick={onEditClick}
           onMouseEnter={() => { setIconVisible(true); }}
           onMouseLeave={() => { setIconVisible(false); }}
-          color={props.disabled ? '#8888' : props.color}
-          sx={{ cursor: props.disabled ? 'not-allowed' : 'pointer' }}>
-          {props.text}
+          color={disabled ? '#8888' : color}
+          sx={{ cursor: disabled ? 'not-allowed' : 'pointer' }}>
+          {hide ? '········' : props.text}
         </Typography>
         :
-        <Typography variant={props.variant} onClick={onEditClick}
+        <Typography variant={variant} onClick={onEditClick}
           onMouseEnter={() => { setIconVisible(true); }}
           onMouseLeave={() => { setIconVisible(false); }}
           color='#8888'
-          sx={{ cursor: props.disabled ? 'not-allowed' : 'pointer' }}>
-          {props.placeholder}
+          sx={{ cursor: disabled ? 'not-allowed' : 'pointer' }}>
+          {placeholder}
         </Typography>
       }
-      {!props.disabled &&
-        <IconButton aria-label='修改' onClick={onEditClick} sx={{
-          display: iconVisible ? 'visible' : 'none', padding: 0, marginLeft: '4px',
-        }}>
-          <EditIcon sx={{ fontSize: '14px' }} color='primary' />
-        </IconButton>
+      {!disabled &&
+        <EditIcon color="primary" sx={{
+          display: iconVisible ? 'visible' : 'none', marginLeft: '2px',
+          fontSize: '14px',
+        }} />
       }
+      <IconButton aria-label="显示" color="warning" onClick={onHideClick} sx={{
+        display: sensitive ? 'visible' : 'none', padding: 0, marginLeft: 1,
+      }}>
+        {hide ?
+          <VisibilityIcon fontSize="small" /> :
+          <VisibilityOffIcon fontSize="small" />
+        }
+      </IconButton>
     </Stack>
   )
 }
@@ -124,6 +159,7 @@ InplaceInput.propTypes = {
   text: PropTypes.oneOfType([
     PropTypes.string, PropTypes.number,
   ]),
+  required: PropTypes.bool,
   variant: PropTypes.string,
   multiline: PropTypes.bool,
   sx: PropTypes.object,
@@ -133,9 +169,11 @@ InplaceInput.propTypes = {
   color: PropTypes.string,
   maxLength: PropTypes.number,
   disabled: PropTypes.bool,
+  sensitive: PropTypes.bool,
 }
 
 InplaceInput.defaultProps = {
+  required: true,
   variant: 'body1',
   multiline: false,
   sx: {},
@@ -145,4 +183,5 @@ InplaceInput.defaultProps = {
   color: '',
   maxLength: 1000,
   disabled: false,
+  sensitive: false,
 }

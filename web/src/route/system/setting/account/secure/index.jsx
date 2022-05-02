@@ -16,7 +16,7 @@ import { useIndexTab } from '../state';
 import { get, put } from "~/rest";
 import JWTSignKeyButton from "./jwtsignkey";
 
-export default function Account() {
+export default function Secure() {
   const { enqueueSnackbar } = useSnackbar();
   const secretCode = useSecretCode();
   const [lookUserid, setLookUserid] = useState(false);

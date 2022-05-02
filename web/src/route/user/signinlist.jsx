@@ -50,7 +50,7 @@ export default function SignInList() {
           <Stack sx={{ flex: 1 }}>
             <Typography variant='h6'>登录历史</Typography>
             <Typography variant='caption'>
-              系统仅显示近半年的登录历史记录，如存在可疑登录记录，请联系管理员排查
+              下面是您的账号近半年的登录记录，如存在可疑登录，请联系管理员排查
             </Typography>
           </Stack>
           <Typography variant='caption'>共 {list.length} 条记录</Typography>
@@ -69,7 +69,11 @@ export default function SignInList() {
               {list.map((row, index) => (
                 <TableRow key={index} hover>
                   <TableCell align="center">
-                    {dayjs(row.create_at).format('YY/MM/DD HH:mm:ss')}
+                    <Tooltip arrow title={dayjs(row.create_at).format('LLLL')}>
+                      <Typography variant='body2'>
+                        {dayjs(row.create_at).fromNow()}
+                      </Typography>
+                    </Tooltip>
                   </TableCell>
                   <TableCell align="center">{row.os}</TableCell>
                   <TableCell align="center">{row.browser}</TableCell>

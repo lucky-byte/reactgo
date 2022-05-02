@@ -7,6 +7,7 @@ export default function Notification() {
   return (
     <Routes>
       <Route path='/' element={<List />} />
+      <Route path='setting' element={<List />} />
       <Route path=':uuid' element={<Item />} />
       <Route path='*' element={<NotFound />} />
     </Routes>

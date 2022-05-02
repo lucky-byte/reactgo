@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouteLink } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Stack from '@mui/material/Stack';
@@ -10,7 +10,9 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Badge from '@mui/material/Badge';
+import IconButton from '@mui/material/IconButton';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import SettingIcon from '@mui/icons-material/Settings';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
@@ -122,6 +124,10 @@ export default function Lists() {
             <ToggleButton value='2' aria-label="信息">公告</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
+        <IconButton color='primary' edge='end' sx={{ ml: 1 }}
+          LinkComponent={RouteLink} to='setting'>
+          <SettingIcon />
+        </IconButton>
       </Toolbar>
 
       <List>

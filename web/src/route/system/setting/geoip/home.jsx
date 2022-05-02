@@ -6,12 +6,8 @@ import Link from '@mui/material/Link';
 import Typography from "@mui/material/Typography";
 import FormHelperText from "@mui/material/FormHelperText";
 import Switch from '@mui/material/Switch';
-import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useSnackbar } from 'notistack';
-import { useSecretCode } from '~/comp/secretcode';
 import InplaceInput from '~/comp/inplace-input';
 import useTitle from "~/hook/title";
 import progressState from '~/state/progress';
@@ -21,9 +17,7 @@ import { useGeoipTab } from '../tabstate';
 export default function Home() {
   const { enqueueSnackbar } = useSnackbar();
   const setProgress = useSetRecoilState(progressState);
-  const secretCode = useSecretCode();
   const [amapWebKey, setAMapWebKey] = useState('');
-  const [amapWebKeyHide, setAMapWebKeyHide] = useState(true);
   const [amapEnable, setAMapEnable] = useState(false);
 
   useTitle('定位服务');
@@ -54,24 +48,9 @@ export default function Home() {
         key, _audit,
       }));
       setAMapWebKey(key);
-      setAMapWebKeyHide(false);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
       enqueueSnackbar(err.message);
-    }
-  }
-
-  // 显示或隐藏高德 webkey
-  const onAMapWebKeyShow = async () => {
-    try {
-      if (amapWebKeyHide) {
-        await secretCode();
-      }
-      setAMapWebKeyHide(!amapWebKeyHide);
-    } catch (err) {
-      if (err) {
-        enqueueSnackbar(err.message);
-      }
     }
   }
 
@@ -110,21 +89,17 @@ export default function Home() {
           <Typography sx={{ minWidth: 120 }} variant='subtitle2'>
             WEB 服务 KEY:
           </Typography>
-          <InplaceInput sx={{ flex: 1 }}
-            text={amapWebKeyHide ? '已隐藏，点右边的眼睛查看 >>' : amapWebKey}
+          <InplaceInput sx={{ flex: 1 }} text={amapWebKey} sensitive
             placeholder='请填写' color="primary" onConfirm={onAMapWebKeyChange}
           />
-          <IconButton color="primary" onClick={onAMapWebKeyShow}>
-            {amapWebKeyHide ? <VisibilityIcon /> : <VisibilityOffIcon />}
-          </IconButton>
         </Stack>
         <FormHelperText sx={{ mt: 1 }}>
-          可以在高德开放平台
+          KEY 是访问高德服务的密钥，你可以在高德开放平台
           <Link component='a' target='_blank'
             href='https://console.amap.com/dev/key/app'>
             应用列表
           </Link>
-          中查询 KEY，如果没有则需要创建
+          中查询或创建 WEB 服务 KEY
         </FormHelperText>
         <Divider sx={{ my: 2 }} />
         <Stack direction='row' alignItems='center' justifyContent='space-between'>
@@ -134,7 +109,6 @@ export default function Home() {
           />
         </Stack>
       </Paper>
-      <Typography variant="h6" sx={{ mt: 4 }}>腾讯位置服务</Typography>
     </Stack>
   )
 }

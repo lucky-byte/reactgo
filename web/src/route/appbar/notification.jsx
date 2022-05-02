@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouteLink } from "react-router-dom";
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
@@ -12,10 +12,12 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Divider from "@mui/material/Divider";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CloseIcon from '@mui/icons-material/Close';
+import SettingIcon from '@mui/icons-material/Settings';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import uuid from "uuid";
@@ -155,13 +157,7 @@ export default function Notification() {
     setAnchorEl(null);
   };
 
-  const onAllClick = () => {
-    onClose();
-    navigate('/user/notification');
-  }
-
   const onItemClick = item => {
-    onClose();
     navigate(`/user/notification/${item.uuid}`, { state: { status: item.status } });
   }
 
@@ -178,6 +174,7 @@ export default function Notification() {
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={onClose}
+        onClick={onClose}
         anchorOrigin={{
           vertical: 'bottom', horizontal: 'left',
         }}
@@ -222,7 +219,16 @@ export default function Notification() {
               </ListItemButton>
             ))}
           </List>
-          <Button onClick={onAllClick}>查看全部通知</Button>
+          <Divider />
+          <Stack direction='row' justifyContent='space-between'>
+            <Button LinkComponent={RouteLink} to='/user/notification'>
+              查看更多...
+            </Button>
+            <IconButton size='small' color='primary' edge='end'
+              LinkComponent={RouteLink} to='/user/notification/setting'>
+              <SettingIcon />
+            </IconButton>
+          </Stack>
         </Stack>
       </Popover>
     </>

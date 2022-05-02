@@ -19,4 +19,8 @@ const useIndexTab = () => {
   useTab(1);
 }
 
-export { useIndexTab }
+const useOAuthTab = () => {
+  useTab(3);
+}
+
+export { useIndexTab, useOAuthTab }

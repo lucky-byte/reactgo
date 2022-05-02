@@ -15,6 +15,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
+import SecretText from '~/comp/secret-text';
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
@@ -101,7 +102,9 @@ export default function Info() {
               <TableCell>用户名</TableCell>
               <TableCell>{mta.username}</TableCell>
               <TableCell>密码</TableCell>
-              <TableCell>{mta.passwd ? '******' : ''}</TableCell>
+              <TableCell>
+                <SecretText text={mta.passwd} variant='body2'></SecretText>
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>回复地址</TableCell>

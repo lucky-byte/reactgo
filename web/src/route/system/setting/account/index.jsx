@@ -8,8 +8,9 @@ import Box from "@mui/material/Box";
 import useTitle from "~/hook/title";
 import NotFound from "~/route/notfound";
 import { useAccountTab } from '../tabstate';
-import Account from './account';
 import tabState from "./state";
+import Secure from './secure';
+import OAuth from "./oauth";
 
 export default function Index() {
   const [tab, setTab] = useRecoilState(tabState);
@@ -20,14 +21,17 @@ export default function Index() {
   return (
     <Stack spacing={3}>
       <Typography variant='h4'>账号安全</Typography>
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} aria-label="账号安全设置">
-        <Tab value={1} label="账号设置" LinkComponent={Link} to='.' />
-        <Tab value={3} label="单点登录" LinkComponent={Link} to='saml' />
-        <Tab value={2} label="身份授权" LinkComponent={Link} to='oauth' />
-      </Tabs>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tab} onChange={(_, v) => setTab(v)} aria-label="账号安全设置">
+          <Tab value={1} label="账号设置" LinkComponent={Link} to='.' />
+          <Tab value={2} label="单点登录" LinkComponent={Link} to='saml' />
+          <Tab value={3} label="身份授权" LinkComponent={Link} to='oauth' />
+        </Tabs>
+      </Box>
       <Box role='tabpanel' sx={{ flex: 1 }}>
         <Routes>
-          <Route path='/' element={<Account />} />
+          <Route path='/' element={<Secure />} />
+          <Route path='oauth' element={<OAuth />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
       </Box>
