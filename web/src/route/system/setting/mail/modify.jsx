@@ -7,16 +7,14 @@ import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import TextField from "@mui/material/TextField";
-import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
 import Button from "@mui/material/Button";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
+import SecretInput from "~/comp/secret-input";
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
 import { get, put } from '~/rest';
@@ -26,7 +24,6 @@ export default function Modify() {
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
   const [progress, setProgress] = useRecoilState(progressState);
-  const [ passwordVisible, setPasswordVisible ] = useState(false);
   const [mta, setMta] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
@@ -197,28 +194,15 @@ export default function Modify() {
                   },
                 })}
               />
-              <TextField label='登录密码' variant='standard' fullWidth
-                focused autoComplete='new-password'
+              <SecretInput label='登录密码' variant='standard' fullWidth focused
+                autoComplete='new-password'
                 disabled={progress}
-                type={passwordVisible ? 'text' : 'password'}
                 placeholder='服务器登录密码，如果没有则不填'
-                InputProps={{
-                  endAdornment:
-                    <InputAdornment position='end'>
-                      <IconButton onClick={() => setPasswordVisible(!passwordVisible)}>
-                        {passwordVisible ?
-                          <VisibilityOffIcon />
-                          :
-                          <VisibilityIcon />
-                        }
-                      </IconButton>
-                    </InputAdornment>
-                }}
                 helperText={errors?.password?.message}
                 error={errors?.password}
                 {...register('password', {
                   maxLength: {
-                    value: 64, message: '超出最大长度'
+                    value: 64, message: '超出最大长度',
                   },
                 })}
               />

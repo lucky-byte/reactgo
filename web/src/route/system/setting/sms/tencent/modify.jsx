@@ -16,6 +16,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import useTitle from "~/hook/title";
 import progressState from "~/state/progress";
+import SecretInput from "~/comp/secret-input";
 import { post, get } from '~/rest';
 import { useSMSTab } from '../../tabstate';
 import NumberTip from './numtip';
@@ -111,24 +112,24 @@ export default function Modify() {
               </FormHelperText>
             </Stack>
             <Stack direction='row' spacing={3}>
-            <TextField label='Appid' variant='standard' required focused
-              autoComplete='off'
-              placeholder='应用编号，一般是10位数字'
-              disabled={progress}
-              inputProps={{ inputMode: 'numeric' }}
-              helperText={errors?.appid?.message}
-              error={errors?.appid}
-              sx={{ flex: 1 }}
-              {...register('appid', {
-                required: "不能为空",
-                maxLength: {
-                  value: 32, message: '超出最大长度'
-                },
-                pattern: {
-                  value: /^[0-9]{1,32}$/, message: '格式不符合规范'
-                },
-              })}
-            />
+              <TextField label='Appid' variant='standard' required focused
+                autoComplete='off'
+                placeholder='应用编号，一般是10位数字'
+                disabled={progress}
+                inputProps={{ inputMode: 'numeric' }}
+                helperText={errors?.appid?.message}
+                error={errors?.appid}
+                sx={{ flex: 1 }}
+                {...register('appid', {
+                  required: "不能为空",
+                  maxLength: {
+                    value: 32, message: '超出最大长度'
+                  },
+                  pattern: {
+                    value: /^[0-9]{1,32}$/, message: '格式不符合规范'
+                  },
+                })}
+              />
               <TextField label='Secret Id' variant='standard' required focused
                 autoComplete='off'
                 placeholder='Secret Id，一串数字和大小写组合的字符串'
@@ -146,7 +147,7 @@ export default function Modify() {
                   },
                 })}
               />
-              <TextField label='Secret Key' variant='standard' required focused
+              <SecretInput label='Secret Key' variant='standard' required focused
                 autoComplete='off'
                 placeholder='Secret 密钥，一串数字和大小写组合的字符串'
                 disabled={progress}
