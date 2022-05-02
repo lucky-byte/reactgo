@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSetRecoilState } from "recoil";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Switch from '@mui/material/Switch';
@@ -8,40 +9,46 @@ import { useSnackbar } from 'notistack';
 import InplaceInput from '~/comp/inplace-input';
 import SecretText from '~/comp/secret-text';
 import useTitle from "~/hook/title";
-import { useIndexTab } from '../state';
 import { get, put } from "~/rest";
+import progressState from '~/state/progress';
+import { useSecureTab } from "../state";
 import JWTSignKeyButton from "./jwtsignkey";
 
 export default function Secure() {
   const { enqueueSnackbar } = useSnackbar();
+  const setProgress = useSetRecoilState(progressState);
   const [lookUserid, setLookUserid] = useState(false);
   const [resetPass, setResetPass] = useState(false);
   const [duration, setDuration] = useState(0);
   const [jwtSignKey, setJWTSignKey] = useState(0);
 
   useTitle('账号安全设置');
-  useIndexTab();
+  useSecureTab();
 
   useEffect(() => {
     (async () => {
       try {
-        const resp = await get('/system/setting/account/');
+        setProgress(true);
+
+        const resp = await get('/system/setting/account/secure/');
         setLookUserid(resp.lookuserid);
         setResetPass(resp.resetpass);
         setDuration(resp.sessduration);
         setJWTSignKey(resp.jwtsignkey);
       } catch (err) {
         enqueueSnackbar(err.message);
+      } finally {
+        setProgress(false);
       }
     })();
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, setProgress]);
 
   // 允许用户找回登录名
   const onLookUseridCheck = async () => {
     try {
       const _audit = `${lookUserid ? '禁止' : '允许'}用户找回登录名`;
 
-      await put('/system/setting/account/lookuserid', new URLSearchParams({
+      await put('/system/setting/account/secure/lookuserid', new URLSearchParams({
         lookuserid: !lookUserid, _audit,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
@@ -56,7 +63,7 @@ export default function Secure() {
     try {
       const _audit = `${resetPass ? '禁止' : '允许'}用户找回登录密码`;
 
-      await put('/system/setting/account/resetpass', new URLSearchParams({
+      await put('/system/setting/account/secure/resetpass', new URLSearchParams({
         resetpass: !resetPass, _audit,
       }));
       enqueueSnackbar('更新成功', { variant: 'success' });
@@ -71,7 +78,7 @@ export default function Secure() {
     try {
       const _audit = `修改用户登录会话持续时间为 ${v}`;
 
-      await put('/system/setting/account/duration', new URLSearchParams({
+      await put('/system/setting/account/secure/duration', new URLSearchParams({
         duration: v, _audit,
       }));
       setDuration(v);

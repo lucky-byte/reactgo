@@ -30,7 +30,7 @@ export default function Setting() {
   return (
     <Container as='main' maxWidth='lg' sx={{ py: 4 }}>
       <Stack direction='row' spacing={8}>
-        <Tabs orientation='vertical' value={tab} onChange={(e, v) => setTab(v)}>
+        <Tabs orientation='vertical' value={tab} onChange={(_, v) => setTab(v)}>
           {tabsArray.map(t => (
             <Tab key={t.value} value={t.value} label={t.title}
               LinkComponent={Link} to={t.to}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSetRecoilState } from "recoil";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Chip from '@mui/material/Chip';
@@ -15,35 +16,41 @@ import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { useSnackbar } from 'notistack';
-import { useSecretCode } from '~/comp/secretcode';
 import SecretInput from '~/comp/secret-input';
+import progressState from '~/state/progress';
 import { get, put } from "~/rest";
 
 export default function Github() {
   const { enqueueSnackbar } = useSnackbar();
-  const secretCode = useSecretCode();
+  const setProgress = useSetRecoilState(progressState);
   const [open, setOpen] = useState(false);
   const [clientId, setClientId] = useState('');
-  const [clientSecret, setClientSecret] = useState('');
-  const [enable, setEnable] = useState(false);
+  const [secret, setSecret] = useState('');
+  const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
     (async () => {
       try {
-        // const resp = await get('/system/setting/account/');
-        setClientId('abcdef');
-        setEnable(true);
+        setProgress(true);
+
+        const resp = await get('/system/setting/account/oauth/github');
+        setClientId(resp.clientid);
+        setSecret(resp.secret);
+        setEnabled(resp.enabled);
       } catch (err) {
         enqueueSnackbar(err.message);
+      } finally {
+        setProgress(false);
       }
     })();
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, setProgress]);
 
   // 打开设置
   const onSettingOpen = () => {
     setOpen(true);
   }
 
+  // 关闭设置
   const onSettingClose = () => {
     setOpen(false);
   }
@@ -53,14 +60,27 @@ export default function Github() {
   }
 
   const onClientSecretChange = e => {
-    setClientSecret(e.target.value);
+    setSecret(e.target.value);
   }
 
   const onEnableCheck = e => {
-    setEnable(e.target.checked);
+    setEnabled(e.target.checked);
   }
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
+    try {
+      if (!clientId || !secret) {
+        return enqueueSnackbar('录入数据不完整', { variant: 'info' });
+      }
+      const _audit = `修改 GitHub 身份授权配置`;
+
+      await put('/system/setting/account/oauth/github', new URLSearchParams({
+        clientid: clientId, secret, enabled, _audit,
+      }));
+      onSettingClose();
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
   }
 
   return (
@@ -71,7 +91,7 @@ export default function Github() {
           <Stack>
             <Stack direction='row' alignItems='center' spacing={3}>
               <Typography variant='h6'>GitHub</Typography>
-              {enable &&
+              {enabled &&
                 <Chip icon={<CheckIcon />}
                   label='已启用' size="small" variant="outlined" color="success"
                 />
@@ -103,11 +123,11 @@ export default function Github() {
             <SecretInput fullWidth variant="standard" margin='normal' required
               label="客户端密钥"
               placeholder="请输入 Client Secret"
-              value={clientSecret} onChange={onClientSecretChange}
+              value={secret} onChange={onClientSecretChange}
               autoComplete='new-password'
             />
             <FormControlLabel sx={{ mt: 1 }} label="启用" control={
-              <Checkbox checked={enable} onChange={onEnableCheck} />
+              <Checkbox checked={enabled} onChange={onEnableCheck} />
             } />
           </Paper>
         </DialogContent>

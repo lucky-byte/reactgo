@@ -15,7 +15,7 @@ const useTab = value => {
   useEffect(() => { setTab(value); }, [setTab, value]);
 }
 
-const useIndexTab = () => {
+const useSecureTab = () => {
   useTab(1);
 }
 
@@ -23,4 +23,4 @@ const useOAuthTab = () => {
   useTab(3);
 }
 
-export { useIndexTab, useOAuthTab }
+export { useSecureTab, useOAuthTab }

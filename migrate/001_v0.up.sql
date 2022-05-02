@@ -247,4 +247,12 @@ create table if not exists ops (
   audit       varchar(256)    not null
 );
 
+create table if not exists oauth_github (
+  clientid    varchar(64)     not null,
+  secret      varchar(128)    not null,
+  enabled     boolean         default false
+);
+
+insert into oauth_github(clientid, secret) values ('', '');
+
 commit;

@@ -41,7 +41,7 @@ export default function JWTSignKeyButton(props) {
 
       const _audit = `更换登录会话签名密钥`;
 
-      const resp = await put('/system/setting/account/jwtsignkey',
+      const resp = await put('/system/setting/account/secure/jwtsignkey',
         new URLSearchParams({ method, secretcode_token: token, _audit, })
       );
       setJWTSignKey(resp);

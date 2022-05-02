@@ -101,8 +101,7 @@ func (p *Pagination) Exec(count *uint, records any) error {
 	if err != nil {
 		return err
 	}
-
-	xlog.X.Infof("sql: %s", q2)
+	xlog.X.Debugf("SQL: %s", q2)
 
 	// 查询总数
 	if err = SelectOne(q1, count); err != nil {

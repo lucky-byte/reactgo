@@ -215,3 +215,10 @@ type Ops struct {
 	Body     string    `db:"body"      json:"body"`      // 请求内容
 	Audit    string    `db:"audit"      json:"audit"`    // 审计消息
 }
+
+// GitHub 身份授权
+type OAuthGitHub struct {
+	ClientId string `db:"clientid"  json:"clientid"` // 客户端id
+	Secret   string `db:"secret"    json:"secret"`   // 客户端密钥
+	Enabled  bool   `db:"enabled"   json:"enabled"`  // 启用
+}

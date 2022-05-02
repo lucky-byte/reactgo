@@ -1,4 +1,4 @@
-package account
+package secure
 
 import (
 	"net/http"

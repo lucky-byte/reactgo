@@ -45,7 +45,7 @@ function Root() {
 const container = document.getElementById('root');
 
 // React 17
-// ReactDOM.render(<Index/>, container);
+// ReactDOM.render(<Root/>, container);
 
 // React 18
 const root = createRoot(container);

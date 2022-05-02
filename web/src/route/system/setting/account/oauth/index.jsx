@@ -9,9 +9,9 @@ import Link from '@mui/material/Link';
 import Popover from '@mui/material/Popover';
 import AppleIcon from '@mui/icons-material/Apple';
 import useTitle from "~/hook/title";
-import { useOAuthTab } from '../state';
 import Google from '~/img/google.svg';
 import Microsoft from '~/img/microsoft.svg';
+import { useOAuthTab } from "../state";
 import Github from "./github";
 
 export default function OAuth() {
