@@ -33,12 +33,12 @@ export default function OAuth() {
   return (
     <Stack sx={{ mt: 2, mb: 3 }}>
       <Typography variant='body2'>
-        授权用户使用第三方身份服务商账号登录本系统，
+        通过身份授权，可以让用户连接到第三方身份服务商的账号，
         <Link href="#" underline="hover" onClick={onHelpOpen}>了解更多...</Link>
       </Typography>
-      <Paper variant='outlined' sx={{ p: 2, mt: 3 }}>
+      <Paper variant='outlined' sx={{ mt: 3 }}>
         <Github />
-        <Divider sx={{ my: 2 }} />
+        <Divider />
         <Stack direction='row' justifyContent='space-between' alignItems='center'>
           <Stack direction='row' spacing={1} alignItems='center'>
             <AppleIcon fontSize='large' />
@@ -87,11 +87,12 @@ export default function OAuth() {
           vertical: 'bottom', horizontal: 'center',
         }}
         transformOrigin={{
-          horizontal: 'center',
+          vertical: 'top', horizontal: 'center',
         }}>
         <Typography sx={{ p: 2, maxWidth: 500 }} variant='body2'>
-          系统支持用户连接到第三方身份服务提供商的账号，例如用户张三可以连接到其在 GitHub
-          网站的账户，连接后张三可以使用其在 GitHub 的账号登录本系统
+          系统可以使用 OAuth 协议让用户连接到第三方身份服务提供商的账号，
+          例如用户张三可以连接到其在 GitHub 网站的账户，连接后张三可以使用其在 GitHub
+          的账号登录本系统
         </Typography>
       </Popover>
     </Stack>

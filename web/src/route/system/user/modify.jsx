@@ -105,13 +105,13 @@ export default function Modify() {
           <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
             <Stack spacing={4}>
               <Stack direction='row' spacing={3}>
-                <TextField label='登录名' variant='standard' focused fullWidth
-                  required
+                <TextField label='登录名' variant='standard' fullWidth required
                   disabled={progress}
                   placeholder='系统登录名'
                   helperText={errors?.userid?.message}
                   error={errors?.userid}
                   inputProps={{ maxLength: 32 }}
+                  InputLabelProps={{ shrink: userInfo.userid ? true : false }}
                   {...register('userid', {
                     required: "不能为空",
                     maxLength: {
@@ -119,13 +119,13 @@ export default function Modify() {
                     },
                   })}
                 />
-                <TextField label='真实姓名' variant='standard' focused fullWidth
-                  required
+                <TextField label='真实姓名' variant='standard' fullWidth required
                   disabled={progress}
                   placeholder='用户真实姓名'
                   helperText={errors?.name?.message}
                   error={errors?.name}
                   inputProps={{ maxLength: 64 }}
+                  InputLabelProps={{ shrink: userInfo.name ? true : false }}
                   {...register('name', {
                     required: "不能为空",
                     maxLength: {
@@ -135,13 +135,14 @@ export default function Modify() {
                 />
               </Stack>
               <Stack direction='row' spacing={3}>
-                <TextField label='手机号' variant='standard' focused fullWidth
-                  required type='tel'
+                <TextField label='手机号' variant='standard' fullWidth required
                   disabled={progress}
                   placeholder='登录时用于接收短信验证码'
+                  type='tel'
                   helperText={errors?.mobile?.message}
                   error={errors?.mobile}
                   inputProps={{ maxLength: 11 }}
+                  InputLabelProps={{ shrink: userInfo.mobile ? true : false }}
                   {...register('mobile', {
                     required: "不能为空",
                     minLength: {
@@ -153,11 +154,12 @@ export default function Modify() {
                     validate: v => isMobilePhone(v, 'zh-CN') || '格式错误',
                   })}
                 />
-                <TextField label='邮箱地址' variant='standard' focused fullWidth
-                  required type='email'
+                <TextField label='邮箱地址' variant='standard' fullWidth required
                   disabled={progress}
                   placeholder='用于接收各种邮件'
+                  type='email'
                   helperText={errors?.email?.message}
+                  InputLabelProps={{ shrink: userInfo.email ? true : false }}
                   error={errors?.email}
                   {...register('email', {
                     required: "不能为空",
@@ -168,12 +170,13 @@ export default function Modify() {
                   })}
                 />
               </Stack>
-              <TextField label='身份证号码' variant='standard' focused fullWidth
+              <TextField label='身份证号码' variant='standard' fullWidth
                 disabled={progress}
                 placeholder='18位居民身份证号码'
                 helperText={errors?.idno?.message}
                 error={errors?.idno}
                 inputProps={{ maxLength: 18 }}
+                InputLabelProps={{ shrink: userInfo.idno ? true : false }}
                 {...register('idno', {
                   minLength: {
                     value: 18, message: '长度不足18位'
@@ -189,9 +192,10 @@ export default function Modify() {
                   }
                 })}
               />
-              <TextField label='联系地址' variant='standard' focused fullWidth
+              <TextField label='联系地址' variant='standard' fullWidth
                 disabled={progress}
                 placeholder='联系地址，如果没有可以不填'
+                InputLabelProps={{ shrink: userInfo.address ? true : false }}
                 {...register('address', {
                   maxLength: {
                     value: 256, message: '超出最大长度'

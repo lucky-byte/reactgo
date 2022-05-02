@@ -26,7 +26,7 @@ export default function Modify() {
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
   const [progress, setProgress] = useRecoilState(progressState);
-  const [mta, setSMS] = useState({});
+  const [sms, setSMS] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
   useTitle('腾讯云短信服务');
@@ -64,7 +64,7 @@ export default function Modify() {
   }, [location.state, enqueueSnackbar, setProgress, reset]);
 
   const onReset = () => {
-    reset(mta);
+    reset(sms);
   }
 
   const onSubmit = async data => {
@@ -112,13 +112,14 @@ export default function Modify() {
               </FormHelperText>
             </Stack>
             <Stack direction='row' spacing={3}>
-              <TextField label='Appid' variant='standard' required focused
+              <TextField label='Appid' variant='standard' required
                 autoComplete='off'
                 placeholder='应用编号，一般是10位数字'
                 disabled={progress}
                 inputProps={{ inputMode: 'numeric' }}
                 helperText={errors?.appid?.message}
                 error={errors?.appid}
+                InputLabelProps={{ shrink: sms.appid ? true : false }}
                 sx={{ flex: 1 }}
                 {...register('appid', {
                   required: "不能为空",
@@ -130,12 +131,13 @@ export default function Modify() {
                   },
                 })}
               />
-              <TextField label='Secret Id' variant='standard' required focused
+              <TextField label='Secret Id' variant='standard' required
                 autoComplete='off'
                 placeholder='Secret Id，一串数字和大小写组合的字符串'
                 disabled={progress}
                 helperText={errors?.secret_id?.message}
                 error={errors?.secret_id}
+                InputLabelProps={{ shrink: sms.secret_id ? true : false }}
                 sx={{ flex: 2 }}
                 {...register('secret_id', {
                   required: "不能为空",
@@ -147,12 +149,13 @@ export default function Modify() {
                   },
                 })}
               />
-              <SecretInput label='Secret Key' variant='standard' required focused
+              <SecretInput label='Secret Key' variant='standard' required
                 autoComplete='off'
                 placeholder='Secret 密钥，一串数字和大小写组合的字符串'
                 disabled={progress}
                 helperText={errors?.secret_key?.message}
                 error={errors?.secret_key}
+                InputLabelProps={{ shrink: sms.secret_key ? true : false }}
                 sx={{ flex: 2 }}
                 {...register('secret_key', {
                   required: "不能为空",
@@ -167,11 +170,12 @@ export default function Modify() {
             </Stack>
             <Stack>
               <TextField label='短信签名' variant='standard' fullWidth required
-                focused autoComplete='off'
+                autoComplete='off'
                 placeholder='短信签名'
                 disabled={progress}
                 helperText={errors?.prefix?.message}
                 error={errors.prefix}
+                InputLabelProps={{ shrink: sms.prefix ? true : false }}
                 {...register('prefix', {
                   required: "不能为空",
                   maxLength: {
@@ -201,11 +205,12 @@ export default function Modify() {
             </Stack>
             <Stack>
               <TextField label='验证码模版编号' variant='standard' required
-                focused autoComplete='off'
+                autoComplete='off'
                 placeholder='短信验证码模版编号'
                 disabled={progress}
                 helperText={errors?.textno1?.message}
                 error={errors?.textno1}
+                InputLabelProps={{ shrink: sms.textno1 ? true : false }}
                 {...register('textno1', {
                   required: "不能为空",
                   maxLength: {

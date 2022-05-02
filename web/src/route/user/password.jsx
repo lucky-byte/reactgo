@@ -12,7 +12,9 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSecretCode } from '~/comp/secretcode';
+import SecretInput from '~/comp/secret-input';
 import useTitle from "~/hook/title";
+import { useSetCode } from "~/state/code";
 import { put } from "~/rest";
 import { Typography } from '@mui/material';
 
@@ -23,13 +25,13 @@ export default function Password() {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPassword2, setNewPassword2] = useState('');
-  const [oldPasswordHide, setOldPasswordHide] = useState(true);
   const [newPasswordHide, setNewPasswordHide] = useState(true);
   const [newPassword2Hide, setNewPassword2Hide] = useState(true);
   const [disabled, setDisabled] = useState(false);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
   useTitle('修改密码');
+  useSetCode(0);
 
   const onChangeClick = async () => {
     if (!oldPassword || !newPassword) {
@@ -63,33 +65,22 @@ export default function Password() {
   return (
     <Container as='main' maxWidth='xs' sx={{ mb: 4 }}>
       <Paper elevation={4} sx={{ px: 4, py: 3, mt: 4 }}>
-        <Stack sx={{ mb: 3 }}>
-        <Typography variant='h6'>修改登录密码</Typography>
-        <Typography variant='caption'>
-          建议使用密码管理工具自动生成和保存密码，例如浏览器内置的密码管理器，不要设置太简单的密码
-        </Typography>
+        <Stack>
+          <Typography variant='h6'>修改登录密码</Typography>
+          <Typography variant='caption'>
+            建议使用密码管理工具自动生成和保存密码，例如浏览器内置的密码管理器
+          </Typography>
         </Stack>
-        <TextField fullWidth autoFocus
-          label="原登录密码" variant="standard"
-          type={oldPasswordHide ? 'password' : 'text'}
+        <SecretInput fullWidth margin='normal' autoComplete='current-password'
+          label="原登录密码" variant="standard" autoFocus
           value={oldPassword}
-          onChange={(e) => { setOldPassword(e.target.value); }}
-          InputProps={{
-            endAdornment:
-              <InputAdornment position="end">
-                <IconButton aria-label='显示密码' size='small' onClick={() => {
-                  setOldPasswordHide(!oldPasswordHide);
-                }}>
-                  {oldPasswordHide ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                </IconButton>
-              </InputAdornment>,
-          }}
+          onChange={e => { setOldPassword(e.target.value); }}
         />
-        <TextField sx={{ mt: 2 }} fullWidth
+        <TextField fullWidth margin='normal' autoComplete='new-password'
           label="新登录密码" variant="standard"
           type={newPasswordHide ? 'password' : 'text'}
           value={newPassword}
-          onChange={(e) => { setNewPassword(e.target.value); }}
+          onChange={e => { setNewPassword(e.target.value); }}
           InputProps={{
             endAdornment:
               <InputAdornment position="end">
@@ -101,11 +92,11 @@ export default function Password() {
               </InputAdornment>,
           }}
         />
-        <TextField sx={{ mt: 2 }} fullWidth
+        <TextField fullWidth margin='normal' autoComplete='new-password'
           label="确认新登录密码" variant="standard"
           type={newPassword2Hide ? 'password' : 'text'}
           value={newPassword2}
-          onChange={(e) => { setNewPassword2(e.target.value); }}
+          onChange={e => { setNewPassword2(e.target.value); }}
           InputProps={{
             endAdornment:
               <InputAdornment position="end">

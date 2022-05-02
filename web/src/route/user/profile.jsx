@@ -123,11 +123,17 @@ export default function Profile() {
   // 修改联系地址
   const onChangeAddress = async value => {
     try {
-      await put('/user/address', new URLSearchParams({ address: value }));
+      const token = await secretCode();
+
+      await put('/user/address', new URLSearchParams({
+        secretcode_token: token, address: value,
+      }));
       setUser({ ...user, address: value, });
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
-      enqueueSnackbar(err.message);
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
     }
   }
 

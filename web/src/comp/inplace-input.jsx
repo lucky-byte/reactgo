@@ -17,12 +17,12 @@ import { useSecretCode } from './secretcode';
 export default function InplaceInput(props) {
   const secretCode = useSecretCode();
   const [text, setText] = useState(props.text);
-  const [hide, setHide] = useState(props.sensitive);
+  const [hide, setHide] = useState(props.secret);
   const [iconVisible, setIconVisible] = useState(false);
   const [editing, setEditing] = useState(false);
 
   const {
-    required, variant, placeholder, disabled, color, fontSize, maxLength, sensitive,
+    required, variant, placeholder, disabled, color, fontSize, maxLength, secret,
   } = props;
 
   useEffect(() => { setText(props.text); }, [props.text])
@@ -143,7 +143,7 @@ export default function InplaceInput(props) {
         }} />
       }
       <IconButton aria-label="显示" color="warning" onClick={onHideClick} sx={{
-        display: sensitive ? 'visible' : 'none', padding: 0, marginLeft: 1,
+        display: secret ? 'visible' : 'none', padding: 0, marginLeft: 1,
       }}>
         {hide ?
           <VisibilityIcon fontSize="small" /> :
@@ -169,7 +169,7 @@ InplaceInput.propTypes = {
   color: PropTypes.string,
   maxLength: PropTypes.number,
   disabled: PropTypes.bool,
-  sensitive: PropTypes.bool,
+  secret: PropTypes.bool,
 }
 
 InplaceInput.defaultProps = {
@@ -183,5 +183,5 @@ InplaceInput.defaultProps = {
   color: '',
   maxLength: 1000,
   disabled: false,
-  sensitive: false,
+  secret: false,
 }

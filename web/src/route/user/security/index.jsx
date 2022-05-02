@@ -1,10 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
 import NotFound from "~/route/notfound";
+import { useSetCode } from "~/state/code";
 import Home from "./home";
 import SecretCode from './secretcode';
 import OTP from './otp';
 
 export default function UserSecurity() {
+  useSetCode(0);
+
   return (
     <Routes>
       <Route path='/' element={<Home />} />

@@ -65,7 +65,7 @@ export default function Password() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
             <Stack spacing={4}>
-              <TextField label='登录密码' variant='standard' focused fullWidth
+              <TextField label='登录密码' variant='standard' fullWidth
                 required type='password' autoComplete='new-password'
                 placeholder='登录密码不能少于6个字符'
                 InputProps={{
@@ -85,7 +85,7 @@ export default function Password() {
                   },
                 })}
               />
-              <TextField label='确认登录密码' variant='standard' focused fullWidth
+              <TextField label='确认登录密码' variant='standard' fullWidth
                 required type='password' autoComplete='new-password'
                 placeholder='再次输入登录密码'
                 helperText={errors?.password2?.message}

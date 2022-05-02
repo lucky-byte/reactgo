@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useRecoilValue } from "recoil";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import PrintIcon from '@mui/icons-material/Print';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,9 +13,10 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import CheckIcon from '@mui/icons-material/Check';
 import BlockIcon from '@mui/icons-material/Block';
-import userState from "~/state/user";
 import useTitle from "~/hook/title";
+import usePrint from "~/hook/print";
 import SearchBar from '~/comp/search-bar';
+import userState from "~/state/user";
 import { useSetCode } from "~/state/code";
 import codes from './sidebar/codes';
 
@@ -21,9 +24,12 @@ export default function Codes() {
   const user = useRecoilValue(userState);
   const [keyword, setKeyword] = useState('');
   const [codeList, setCodeList] = useState(codes);
+  const [printNode, setPrintNode] = useState(null);
 
   useTitle('导航代码');
   useSetCode(0);
+
+  const print = usePrint(printNode);
 
   useEffect(() => {
     const trimed = keyword.trim();
@@ -54,8 +60,11 @@ export default function Codes() {
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption'>
           共 {Object.keys(codeList).length} 条记录
         </Typography>
+        <IconButton edge='end' color='primary' sx={{ ml: 2 }} onClick={print}>
+          <PrintIcon />
+        </IconButton>
       </Toolbar>
-      <TableContainer>
+      <TableContainer ref={setPrintNode}>
         <Table>
           <TableHead>
             <TableRow>

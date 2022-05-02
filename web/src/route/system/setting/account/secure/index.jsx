@@ -4,13 +4,9 @@ import Typography from "@mui/material/Typography";
 import Switch from '@mui/material/Switch';
 import FormHelperText from "@mui/material/FormHelperText";
 import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Skeleton from '@mui/material/Skeleton';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useSnackbar } from 'notistack';
-import { useSecretCode } from '~/comp/secretcode';
 import InplaceInput from '~/comp/inplace-input';
+import SecretText from '~/comp/secret-text';
 import useTitle from "~/hook/title";
 import { useIndexTab } from '../state';
 import { get, put } from "~/rest";
@@ -18,12 +14,10 @@ import JWTSignKeyButton from "./jwtsignkey";
 
 export default function Secure() {
   const { enqueueSnackbar } = useSnackbar();
-  const secretCode = useSecretCode();
   const [lookUserid, setLookUserid] = useState(false);
   const [resetPass, setResetPass] = useState(false);
   const [duration, setDuration] = useState(0);
   const [jwtSignKey, setJWTSignKey] = useState(0);
-  const [jwtSignKeyHide, setJWTSignKeyHide] = useState(true);
 
   useTitle('账号安全设置');
   useIndexTab();
@@ -87,20 +81,6 @@ export default function Secure() {
     }
   }
 
-  // 显示或隐藏 jwt sign key
-  const onJWTSignKeyShow = async () => {
-    try {
-      if (jwtSignKeyHide) {
-        await secretCode();
-      }
-      setJWTSignKeyHide(!jwtSignKeyHide);
-    } catch (err) {
-      if (err) {
-        enqueueSnackbar(err.message);
-      }
-    }
-  }
-
   return (
     <Stack sx={{ mt: 2, mb: 3 }}>
       <Typography variant="h6" paragraph>登录及会话</Typography>
@@ -146,14 +126,7 @@ export default function Secure() {
         <Stack>
           <Stack direction='row' alignItems='center' spacing={2}>
             <Typography>会话签名密钥:</Typography>
-            <Typography color='secondary'>
-              {jwtSignKeyHide ?
-                <Skeleton animation="wave" sx={{ width: 300 }} /> : jwtSignKey
-              }
-            </Typography>
-            <IconButton color="primary" onClick={onJWTSignKeyShow}>
-              {jwtSignKeyHide ? <VisibilityIcon /> : <VisibilityOffIcon />}
-            </IconButton>
+            <SecretText text={jwtSignKey} />
           </Stack>
           <FormHelperText>
             用户登录后签发的 Json Web Token 使用该密钥进行签名，恶意用户可以使用该密钥伪造登录会话凭证

@@ -105,11 +105,12 @@ export default function Modify() {
           <Stack spacing={3}>
             <Typography variant='h6'>连接信息</Typography>
             <TextField label='名称' variant='standard' fullWidth
-              required focused autoComplete='off'
+              required autoComplete='off'
               placeholder='自定义，一般是邮件服务器的称呼，例如 QQ 邮箱'
               disabled={progress}
               helperText={errors?.name?.message}
               error={errors?.name}
+              InputLabelProps={{ shrink: mta.name ? true : false }}
               {...register('name', {
                 required: "不能为空",
                 maxLength: {
@@ -119,11 +120,12 @@ export default function Modify() {
             />
             <Stack direction='row' spacing={3}>
               <TextField label='服务器地址' variant='standard' required
-                focused autoComplete='url'
+                autoComplete='url'
                 disabled={progress}
                 placeholder='邮件服务器域名，例如 smtp.qq.com'
                 helperText={errors?.host?.message}
                 error={errors?.host}
+                InputLabelProps={{ shrink: mta.host ? true : false }}
                 sx={{ flex: 2 }}
                 {...register('host', {
                   required: "不能为空",
@@ -133,12 +135,13 @@ export default function Modify() {
                 })}
               />
               <TextField label='端口' variant='standard' required
-                focused autoComplete='off'
+                autoComplete='off'
                 disabled={progress}
                 placeholder='邮件服务器端口'
                 inputProps={{ maxLength: 5 }}
                 helperText={errors?.port?.message}
                 error={errors?.port}
+                InputLabelProps={{ shrink: mta.port ? true : false }}
                 sx={{ flex: 1 }}
                 {...register('port', {
                   required: "不能为空",
@@ -164,11 +167,12 @@ export default function Modify() {
             </Stack>
             <Stack>
               <TextField label='发件人地址' variant='standard' fullWidth required
-                focused autoComplete='email'
+                autoComplete='email'
                 disabled={progress}
                 placeholder='发件人邮箱地址，通常也是登录账号'
                 helperText={errors?.sender?.message}
                 error={errors.sender}
+                InputLabelProps={{ shrink: mta.sender ? true : false }}
                 {...register('sender', {
                   required: "不能为空",
                   maxLength: {
@@ -183,23 +187,25 @@ export default function Modify() {
             </Stack>
             <Stack direction='row' spacing={3}>
               <TextField label='登录用户' variant='standard' fullWidth
-                focused autoComplete='off'
+                autoComplete='off'
                 disabled={progress}
                 placeholder='通常使用发件人地址作为登录用户，此字段不填'
                 helperText={errors?.username?.message}
                 error={errors?.username}
+                InputLabelProps={{ shrink: mta.username ? true : false }}
                 {...register('username', {
                   maxLength: {
                     value: 64, message: '超出最大长度'
                   },
                 })}
               />
-              <SecretInput label='登录密码' variant='standard' fullWidth focused
+              <SecretInput label='登录密码' variant='standard' fullWidth
                 autoComplete='new-password'
                 disabled={progress}
                 placeholder='服务器登录密码，如果没有则不填'
                 helperText={errors?.password?.message}
                 error={errors?.password}
+                InputLabelProps={{ shrink: mta.passwd ? true : false }}
                 {...register('password', {
                   maxLength: {
                     value: 64, message: '超出最大长度',
@@ -210,11 +216,12 @@ export default function Modify() {
             <Typography variant='h6' sx={{ pt: 2 }}>附加参数</Typography>
             <Stack>
               <TextField label='标题前缀' variant='standard' fullWidth
-                focused autoComplete='off'
+                autoComplete='off'
                 disabled={progress}
                 placeholder='邮件标题前缀，可以不填'
                 helperText={errors?.prefix?.message}
                 error={errors?.prefix}
+                InputLabelProps={{ shrink: mta.prefix ? true : false }}
                 {...register('prefix', {
                   maxLength: {
                     value: 32, message: '超出最大长度'
@@ -228,11 +235,12 @@ export default function Modify() {
             </Stack>
             <Stack>
               <TextField label='回复地址' variant='standard' fullWidth
-                focused autoComplete='email'
+                autoComplete='email'
                 disabled={progress}
                 placeholder='邮件回复地址，可以不填'
                 helperText={errors?.replyto?.message}
                 error={errors?.replyto}
+                InputLabelProps={{ shrink: mta.replyto ? true : false }}
                 {...register('replyto', {
                   maxLength: {
                     value: 64, message: '超出最大长度'
@@ -245,11 +253,12 @@ export default function Modify() {
               </FormHelperText>
             </Stack>
             <Stack>
-              <TextField label='抄送地址' variant='standard' fullWidth focused
+              <TextField label='抄送地址' variant='standard' fullWidth
                 disabled={progress}
                 placeholder='邮件抄送地址，可以不填，多个地址以逗号分隔'
                 helperText={errors?.cc?.message}
                 error={errors?.cc}
+                InputLabelProps={{ shrink: mta.cc ? true : false }}
                 {...register('cc', {
                   maxLength: {
                     value: 256, message: '超出最大长度'
@@ -261,11 +270,12 @@ export default function Modify() {
               </FormHelperText>
             </Stack>
             <Stack>
-              <TextField label='密送地址' variant='standard' fullWidth focused
+              <TextField label='密送地址' variant='standard' fullWidth
                 disabled={progress}
                 placeholder='邮件密送地址，可以不填，多个地址以逗号分隔'
                 helperText={errors?.bcc?.message}
                 error={errors?.bcc}
+                InputLabelProps={{ shrink: mta.bcc ? true : false }}
                 {...register('bcc', {
                   maxLength: {
                     value: 256, message: '超出最大长度'

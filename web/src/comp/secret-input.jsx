@@ -30,7 +30,7 @@ export default forwardRef(function SecretInput(props, ref) {
       InputProps={{
         endAdornment:
           <InputAdornment position='end'>
-            <IconButton onClick={onHideClick} size='small'>
+            <IconButton color="warning" onClick={onHideClick} size='small'>
               {hide ? <VisibilityIcon /> : <VisibilityOffIcon />}
             </IconButton>
           </InputAdornment>
