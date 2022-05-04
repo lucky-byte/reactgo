@@ -9,20 +9,34 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-func githubInfo(c echo.Context) error {
+func githubGet(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	ql := `select * from oauth_github`
-	var result db.OAuthGitHub
+	ql := `select * from oauth where provider = 'github'`
+	var result []db.OAuth
 
-	if err := db.SelectOne(ql, &result); err != nil {
-		cc.ErrLog(err).Error("查询系统设置错")
+	err := db.Select(ql, &result)
+	if err != nil {
+		cc.ErrLog(err).Error("查询 GitHub 授权配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
+	var github db.OAuth
+
+	if len(result) == 0 {
+		ql = `insert into oauth (provider) values ('github')`
+
+		err = db.ExecOne(ql)
+		if err != nil {
+			cc.ErrLog(err).Error("新增 GitHub 授权配置错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+	} else {
+		github = result[0]
+	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"clientid": result.ClientId,
-		"secret":   result.Secret,
-		"enabled":  result.Enabled,
+		"clientid": github.ClientId,
+		"secret":   github.Secret,
+		"enabled":  github.Enabled,
 	})
 }
 
@@ -41,8 +55,10 @@ func githubSet(c echo.Context) error {
 	}
 	cc.Trim(&clientid, &secret)
 
-	ql := `update oauth_github set clientid = ?, secret = ?, enabled = ?`
-
+	ql := `
+		update oauth set clientid = ?, secret = ?, enabled = ?
+		where provider = 'github'
+	`
 	if err = db.ExecOne(ql, clientid, secret, enabled); err != nil {
 		cc.ErrLog(err).Error("更新 GitHub 授权配置错")
 		return c.NoContent(http.StatusInternalServerError)

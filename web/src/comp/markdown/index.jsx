@@ -51,6 +51,9 @@ export default function Markdown(props) {
         component: Typography,
         props: {
           variant: 'body1', paragraph: true, textAlign: 'justify', lineHeight: 1.8,
+          sx: {
+            lineBreak: 'anywhere',
+          }
         }
       },
       hr: {

@@ -44,8 +44,8 @@ export default function Layout(props) {
   return (
     <GridLayout className="layout"
       layout={layout}
-      cols={16}
-      rowHeight={30}
+      cols={20}
+      rowHeight={10}
       width={width}
       onLayoutChange={onLayoutChange}
       children={children}

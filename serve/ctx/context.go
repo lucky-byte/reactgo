@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
 	"github.com/lucky-byte/reactgo/serve/config"
@@ -37,7 +38,9 @@ func (c *Context) ErrLog(err error) *logrus.Entry {
 	return c.logger.WithError(err)
 }
 
+// 当请求参数不完整时，使用这个函数记录错误原因，然后返回 BadRequest 错误
 func (c *Context) BadRequest(err error) error {
+	err = errors.Wrapf(err, "%s", c.Request().URL.String())
 	c.ErrLog(err).Errorf("请求参数不完整(%s)", c.Request().URL.Path)
 	return c.NoContent(http.StatusBadRequest)
 }

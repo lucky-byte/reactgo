@@ -14,6 +14,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from "@mui/material/Divider";
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CloseIcon from '@mui/icons-material/Close';
@@ -166,7 +167,7 @@ export default function Notification() {
       <Tooltip title='通知' arrow>
         <IconButton aria-label="通知" onClick={onOpen} color="primary">
           <Badge color="secondary" badgeContent={lastNotification.unread} max={99}>
-            <NotificationsIcon />
+            <NotificationsNoneIcon />
           </Badge>
         </IconButton>
       </Tooltip>

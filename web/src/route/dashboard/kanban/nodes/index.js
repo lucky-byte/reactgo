@@ -25,7 +25,7 @@ const nodes = [{
   desc: '显示当前时间',
   component: Clock,
   layout: {
-    x: 14, y: 0, w: 2, h: 4, minW: 2, maxW: 4, minH: 2, maxH: 6,
+    x: 18, y: 0, w: 2, h: 6, minW: 1, maxW: 8, minH: 4, maxH: 20,
   },
   default: true,
 }, {

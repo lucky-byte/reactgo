@@ -9,7 +9,7 @@ import (
 func Attach(up *echo.Group, code int) {
 	group := up.Group("/oauth", acl.AllowRead(code))
 
-	group.GET("/github", githubInfo)
+	group.GET("/github", githubGet)
 
 	group.Use(acl.AllowWrite(code)) // Write 权限
 

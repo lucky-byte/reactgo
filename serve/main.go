@@ -36,6 +36,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/mailfs"
 	"github.com/lucky-byte/reactgo/serve/nats"
 	"github.com/lucky-byte/reactgo/serve/route/index"
+	"github.com/lucky-byte/reactgo/serve/route/oauth"
 	"github.com/lucky-byte/reactgo/serve/task"
 	"github.com/lucky-byte/reactgo/serve/ticket"
 	"github.com/lucky-byte/reactgo/serve/xlog"
@@ -218,8 +219,11 @@ func main() {
 		return c.HTML(http.StatusOK, terms_html)
 	})
 
-	// 图片
+	// 访问图片
 	image.Attach(engine)
+
+	// OAuth 回调
+	oauth.Attach(engine, conf)
 
 	// 后台管理
 	index.Attach(engine, conf)

@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/lucky-byte/reactgo/serve/route/index/secretcode"
 	"github.com/lucky-byte/reactgo/serve/route/index/user/notification"
+	"github.com/lucky-byte/reactgo/serve/route/index/user/oauth"
 )
 
 func Attach(up *echo.Group) {
@@ -24,5 +25,6 @@ func Attach(up *echo.Group) {
 	group.GET("/otp/url", otpURL)
 	group.POST("/otp/verify", otpVerify, secretcode.Verify())
 
+	oauth.Attach(group)
 	notification.Attach(group)
 }

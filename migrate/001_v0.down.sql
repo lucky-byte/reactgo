@@ -17,6 +17,7 @@ drop table if exists tickets;
 drop table if exists bulletins;
 drop table if exists notifications;
 drop table if exists ops;
-drop table if exists oauth_github;
+drop table if exists oauth;
+drop table if exists user_oauth;
 
 commit;

@@ -216,9 +216,24 @@ type Ops struct {
 	Audit    string    `db:"audit"      json:"audit"`    // 审计消息
 }
 
-// GitHub 身份授权
-type OAuthGitHub struct {
+// 身份授权设置
+type OAuth struct {
+	Provider string `db:"provider"  json:"provider"` // 身份提供方
 	ClientId string `db:"clientid"  json:"clientid"` // 客户端id
 	Secret   string `db:"secret"    json:"secret"`   // 客户端密钥
 	Enabled  bool   `db:"enabled"   json:"enabled"`  // 启用
+}
+
+// 用户授权账号
+type UserOAuth struct {
+	UUID     string    `db:"uuid"      json:"uuid"`      // uuid
+	CreateAt time.Time `db:"create_at" json:"create_at"` // 创建时间
+	UserUUID string    `db:"user_uuid" json:"user_uuid"` // 用户
+	Provider string    `db:"provider"  json:"provider"`  // 身份提供方
+	UserId   string    `db:"userid"    json:"userid"`    // 用户编号
+	Email    string    `db:"email"     json:"email"`     // 邮箱地址
+	Login    string    `db:"login"     json:"login"`     // 登录名
+	Name     string    `db:"name"      json:"name"`      // 用户名
+	Profile  string    `db:"profile"   json:"profile"`   // 用户信息
+	Status   int       `db:"status"    json:"status"`    // 状态
 }

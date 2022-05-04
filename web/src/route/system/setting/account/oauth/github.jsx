@@ -107,14 +107,8 @@ export default function Github() {
       <Dialog open={open} onClose={onSettingClose} maxWidth='sm' fullWidth>
         <DialogTitle>GitHub 设置</DialogTitle>
         <DialogContent>
-          <Typography variant="body2">
-            输入您的 GitHub 客户端 ID 和客户端密钥。如果您还没有 ID 和密钥，可以从
-            <Link href='https://github.com/settings/applications' target='_blank'>
-              GitHub 应用页面
-            </Link>
-            获取一个
-          </Typography>
-          <Paper variant='outlined' sx={{ px: 4, py: 3, mt: 2 }}>
+          <Typography variant="body2">请输入您的 GitHub 客户端 ID 和客户端密钥</Typography>
+          <Paper variant='outlined' sx={{ px: 4, pt: 3, pb: 2, my: 2 }}>
             <TextField fullWidth variant="standard" required
               label="客户端 ID"
               placeholder="请输入 Client ID"
@@ -126,10 +120,20 @@ export default function Github() {
               value={secret} onChange={onClientSecretChange}
               autoComplete='new-password'
             />
-            <FormControlLabel sx={{ mt: 1 }} label="启用" control={
+            <FormControlLabel sx={{ mt: 1 }} label="启用 GitHub 身份授权" control={
               <Checkbox checked={enabled} onChange={onEnableCheck} />
             } />
           </Paper>
+          <Typography variant="caption" component='p'>
+            如果您还没有 ID 和密钥，可以从
+            <Link href='https://github.com/settings/developers' target='_blank'
+              underline="hover">
+              GitHub OAuth Apps
+            </Link>
+            页面获取。在创建 GitHub OAuth App 时，授权回调(Authorization callback) URL
+            请填写为：&lt;域&gt;<strong>/oauth/github/callback</strong>
+            ，例如：http://host:3456/oauth/github/callback
+          </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
           <Button color='secondary' onClick={onSettingClose}>取消</Button>

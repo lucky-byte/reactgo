@@ -33,23 +33,20 @@ server:
   cluster: false
 
   # 是否允许 TLS(https)
-  # 如果不是通过反向代理，那么应该设置为 true，并提供相应的证书
+  # 如果设置为 true，则需要提供权威机构签名的服务器证书
   #
   # secure: true
+  # tlscrt: cert.pem
+  # tlskey: key.pem
 
   # 自动从 Let's Encrypt 或其它支持 ACME 的 CA 获取证书
-  # 如果允许 autotls，那么 tls_key 和 tls_cert 将被忽略
+  # 如果允许 autotls，则忽略 tls_key 和 tls_cert
   #
   autotls:
     enabled: false
     domains: [ your-domain, your-domain2 ]
     cachedir: /tmp
     email: your@email.com
-
-  # TLS 私钥和证书文件
-  #
-  tlscrt: cert.pem
-  tlskey: key.pem
 
   # 服务器对外的访问 URL(包括端口)，例如 http://localhost:3000
   #

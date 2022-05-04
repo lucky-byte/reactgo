@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>GitHub 授权失败</title>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+</head>
+
+<body>
+  <section class="hero is-warning is-fullheight">
+    <div class="block p-6">
+      <p class="title has-text-danger">授权失败</p>
+      <p class="subtitle has-text-grey-dark">{{ .reason }}</p>
+      <p id="href" class="has-text-grey" style="line-break: anywhere;"></p>
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      document.getElementById('href').textContent = window.location.href;
+    })();
+  </script>
+</body>
+
+</html>

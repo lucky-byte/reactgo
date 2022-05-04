@@ -10,7 +10,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
-import GitHubIcon from '@mui/icons-material/GitHub';
 import AppleIcon from '@mui/icons-material/Apple';
 import { useHotkeys } from 'react-hotkeys-hook';
 import userState from "~/state/user";
@@ -18,6 +17,7 @@ import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
 import Google from '~/img/google.svg';
 import Microsoft from '~/img/microsoft.svg';
+import GitHub from './github';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -26,30 +26,6 @@ export default function Home() {
   useHotkeys('esc', () => { navigate('/user'); });
   useTitle('身份授权');
   useSetCode(0);
-
-  function openWindow(url, title, w, h) {
-    const x = window.top.outerWidth / 2  + window.top.screenX - (w / 2);
-    const y = window.top.outerHeight / 2  + window.top.screenY - (h / 2);
-
-    return window.open(url, title, `
-      toolbar=no,
-      location=no,
-      directories=no,
-      status=no,
-      menubar=no,
-      width=${w},
-      height=${h},
-      top=${y},
-      left=${x}
-    `);
-  }
-
-  // GitHub 授权
-  const onGithubAuthor = () => {
-    const win = openWindow(
-      'https://github.com/login/oauth/authorize', 'GithubAuthor', 800, 650
-    )
-  }
 
   return (
     <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
@@ -66,19 +42,7 @@ export default function Home() {
           </Stack>
         </Stack>
         <Paper variant='outlined' sx={{ p: 2, mt: 3 }}>
-          <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <Stack direction='row' spacing={1} alignItems='center'>
-              <GitHubIcon fontSize='large' />
-              <Stack>
-                <Typography variant='h6'>GitHub</Typography>
-                <Typography variant='caption'>未授权</Typography>
-              </Stack>
-            </Stack>
-            <Button variant='contained' disableElevation color='success'
-              onClick={onGithubAuthor}>
-              授权
-            </Button>
-          </Stack>
+          <GitHub />
           <Divider sx={{ my: 2 }} />
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Stack direction='row' spacing={1} alignItems='center'>

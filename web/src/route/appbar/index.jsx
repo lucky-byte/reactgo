@@ -28,7 +28,7 @@ import KeyIcon from '@mui/icons-material/Key';
 import SecurityIcon from '@mui/icons-material/Security';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import PhoneForwardedIcon from '@mui/icons-material/PhoneForwarded';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
@@ -228,7 +228,7 @@ export default function Appbar(params) {
           </MenuItem>
           <MenuItem component={RouteLink} to='/user/notification'>
             <ListItemIcon>
-              <NotificationsIcon fontSize="small" />
+              <NotificationsNoneIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>通知</ListItemText>
           </MenuItem>

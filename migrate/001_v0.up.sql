@@ -247,12 +247,26 @@ create table if not exists ops (
   audit       varchar(256)    not null
 );
 
-create table if not exists oauth_github (
-  clientid    varchar(64)     not null,
-  secret      varchar(128)    not null,
+create table if not exists oauth (
+  provider    varchar(32)     not null unique,
+  clientid    varchar(64)     not null default '',
+  secret      varchar(128)    not null default '',
   enabled     boolean         default false
 );
 
-insert into oauth_github(clientid, secret) values ('', '');
+create table if not exists user_oauth (
+  uuid        varchar(36)     primary key not null,
+  create_at   timestamp       not null default current_timestamp,
+  user_uuid   varchar(36)     not null,
+  provider    varchar(32)     not null,
+  userid      varchar(128)    not null default '',
+  email       varchar(128)    not null default '',
+  login       varchar(128)    not null default '',
+  name        varchar(128)    not null default '',
+  profile     text            not null default '',
+  status      int             not null default 1
+                              -- 1. 未授权
+                              -- 2. 已授权
+);
 
 commit;

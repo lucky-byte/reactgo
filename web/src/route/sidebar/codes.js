@@ -20,15 +20,16 @@ const urlCodes = {
   8020: { title: '安全设置', to: '/user/security', allow: true },
   8021: { title: '设置安全操作码', to: '/user/security/secretcode', allow: true },
   8022: { title: '设置两因素认证', to: '/user/security/otp', allow: true },
-  8030: { title: '通知', to: '/user/notification', allow: true },
+  8030: { title: '身份授权', to: '/user/oauth', allow: true },
+  8100: { title: '通知', to: '/user/notification', allow: true },
 
   // 资源管理
-  8100: { title: '图片管理', to: '/media/images' },
-  8200: { title: '视频管理', to: '/media/videos' },
+  7100: { title: '图片管理', to: '/media/images' },
+  7200: { title: '视频管理', to: '/media/videos' },
 
   // 设计工具
-  8500: { title: '页面设计', to: '/designer/page' },
-  8600: { title: '流程设计', to: '/designer/flow' },
+  7500: { title: '页面设计', to: '/designer/page' },
+  7600: { title: '流程设计', to: '/designer/flow' },
 
   // 业务
   100: { title: '欢迎', to: '/' },

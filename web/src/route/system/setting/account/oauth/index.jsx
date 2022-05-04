@@ -33,7 +33,7 @@ export default function OAuth() {
   return (
     <Stack sx={{ mt: 2, mb: 3 }}>
       <Typography variant='body2'>
-        通过身份授权，可以让用户连接到第三方身份服务商的账号，
+        启用身份授权可以让用户连接到第三方身份服务商的账号，
         <Link href="#" underline="hover" onClick={onHelpOpen}>了解更多...</Link>
       </Typography>
       <Paper variant='outlined' sx={{ mt: 3 }}>
