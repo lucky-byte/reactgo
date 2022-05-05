@@ -123,7 +123,7 @@ type Account struct {
 	ResetPass    bool   `db:"resetpass"    json:"resetpass"`    // 允许找回密码
 	SessDuration int    `db:"sessduration" json:"sessduration"` // 会话持续时间
 	JWTSignKey   string `db:"jwtsignkey"   json:"jwtsignkey"`   // JWT 签名密钥
-	JWTSignKey2  string `db:"jwtsignkey2"   json:"jwtsignkey2"` // JWT 签名密钥(旧)
+	JWTSignKey2  string `db:"jwtsignkey2"  json:"jwtsignkey2"`  // JWT 签名密钥(旧)
 }
 
 // 定时任务
@@ -202,7 +202,7 @@ type Notification struct {
 	Title    string    `db:"title"     json:"title"`     // 标题
 	Content  string    `db:"content"   json:"content"`   // 内容
 	Status   int       `db:"status"    json:"status"`    // 状态
-	Refer    string    `db:"refer"    json:"refer"`      // 引用
+	Refer    string    `db:"refer"     json:"refer"`     // 引用
 }
 
 // 操作记录
@@ -213,7 +213,7 @@ type Ops struct {
 	Method   string    `db:"method"    json:"method"`    // 方法
 	URL      string    `db:"url"       json:"url"`       // URL
 	Body     string    `db:"body"      json:"body"`      // 请求内容
-	Audit    string    `db:"audit"      json:"audit"`    // 审计消息
+	Audit    string    `db:"audit"     json:"audit"`     // 审计消息
 }
 
 // 身份授权设置
@@ -236,4 +236,5 @@ type UserOAuth struct {
 	Name     string    `db:"name"      json:"name"`      // 用户名
 	Profile  string    `db:"profile"   json:"profile"`   // 用户信息
 	Status   int       `db:"status"    json:"status"`    // 状态
+	Usage    int       `db:"usage"     json:"usage"`     // 用途
 }

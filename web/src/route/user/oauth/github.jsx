@@ -8,7 +8,7 @@ import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import { useSecretCode } from '~/comp/secretcode';
 import { get, put } from "~/rest";
-import openWindow from './open';
+import popupWindow from './popup';
 
 export default function GitHub() {
   const { enqueueSnackbar } = useSnackbar();
@@ -19,10 +19,9 @@ export default function GitHub() {
   const [enabled, setEnabled] = useState(false);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState(1);
-  const [state, setState] = useState('');
   const [refresh, setRefresh] = useState(true);
 
-  const popupWin = useRef();
+  const popupRef = useRef();
 
   useEffect(() => {
     (async () => {
@@ -46,14 +45,27 @@ export default function GitHub() {
     })();
   }, [enqueueSnackbar, refresh]);
 
+  // 授权成功后将收到消息
   const onAuthorizedListener = useCallback(e => {
-    console.log(e)
-    window.removeEventListener('message', onAuthorizedListener);
-  }, []);
+    if (process.env.NODE_ENV === 'production') {
+      if (e.origin !== window.location.origin) {
+        return;
+      }
+    }
+    if (e.data.source === 'reactgo-github-authorize') {
+      window.removeEventListener('message', onAuthorizedListener);
 
+      if (popupRef.current) {
+        popupRef.current.close();
+      }
+      enqueueSnackbar('授权成功', { variant: 'success' });
+      setRefresh(true);
+    }
+  }, [enqueueSnackbar]);
+
+  // 卸载时删除事件监听
   useEffect(() => {
     return () => {
-      console.log('remove listener')
       window.removeEventListener('message', onAuthorizedListener);
     }
   }, [onAuthorizedListener]);
@@ -72,18 +84,17 @@ export default function GitHub() {
       const resp = await put('/user/oauth/github/authorize', new URLSearchParams({
         secretcode_token: token,
       }));
-      setState(resp.id);
 
       const q = new URLSearchParams({
-        client_id: clientId, redirect_uri: resp.url, state: resp.id,
+        client_id: clientId, redirect_uri: resp.url, state: resp.state,
         scope: 'user:email',
       });
       const url = 'https://github.com/login/oauth/authorize?' + q.toString();
-      const win = openWindow(url, 'GithubAuthorize', 650, 600);
-      popupWin.current = win;
+
+      popupRef.current = popupWindow(url, 'GithubAuthorize', 650, 600);
 
       window.removeEventListener('message', onAuthorizedListener);
-      window.addEventListener('message', onAuthorizedListener, { once: false });
+      window.addEventListener('message', onAuthorizedListener);
     } catch (err) {
       if (err) {
         enqueueSnackbar(err.message);
@@ -118,7 +129,7 @@ export default function GitHub() {
           {loading ? <Skeleton variant="text" width={300} /> : enabled ?
             <Typography variant='caption'>
               {status === 2 ?
-                `已授权帐号 ${email} 登录本系统` : '授权使用您的 GitHub 账号登录本系统'
+                `已授权帐号 ${email}` : '授权使用您的 GitHub 账号登录本系统'
               }
             </Typography>
             :

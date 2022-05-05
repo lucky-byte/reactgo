@@ -22,11 +22,14 @@
   <script>
     (function () {
       var message = {
-        userid: '{{ .userid }}',
-        email: '{{ .email }}',
-        state: '{{ .state }}',
+        source: 'reactgo-github-authorize',
+        payload: {
+          userid: '{{ .userid }}',
+          email: '{{ .email }}',
+          state: '{{ .state }}',
+        }
       }
-      var target = '*';
+      var target = '{{ .target }}';
 
       setTimeout(() => { window.opener.postMessage(message, target); }, 1000);
     })();

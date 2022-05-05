@@ -264,9 +264,12 @@ create table if not exists user_oauth (
   login       varchar(128)    not null default '',
   name        varchar(128)    not null default '',
   profile     text            not null default '',
-  status      int             not null default 1
+  status      int             not null default 1,
                               -- 1. 未授权
                               -- 2. 已授权
+  usage       int             not null default 1
+                              -- 1. 授权
+                              -- 2. 登录
 );
 
 commit;

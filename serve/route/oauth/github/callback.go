@@ -22,14 +22,15 @@ func callback(c echo.Context) error {
 		return c.HTML(status, buildErrorHtml(message))
 	}
 
-	// 错误
-	error := c.QueryParam("error")
-	if len(error) > 0 {
+	// Github 返回错误，例如用户拒绝授权等
+	e := c.QueryParam("error")
+	if len(e) > 0 {
 		desc := c.QueryParam("error_description")
-		return errorHtml(http.StatusBadRequest, fmt.Sprintf("%s: %s", error, desc))
+		return errorHtml(http.StatusBadRequest, fmt.Sprintf("%s: %s", e, desc))
 	}
 	var code, state string
 
+	// code 和 state 是必须的参数
 	err := echo.QueryParamsBinder(c).
 		MustString("code", &code).MustString("state", &state).BindError()
 	if err != nil {
@@ -37,7 +38,7 @@ func callback(c echo.Context) error {
 		cc.ErrLog(err).Error("GitHub 授权回调参数不完整")
 		return errorHtml(http.StatusBadRequest, "授权回调参数错误")
 	}
-	// 检查 state 是否有效，如果无效，立即中断处理
+	// 检查 state 是否有效，如果无效，立即中断处理，state 在发起授权时生成
 	ql := `
 		select * from user_oauth
 		where uuid = ? and status = 1 and provider = 'github'
@@ -152,7 +153,7 @@ func callback(c echo.Context) error {
 		cc.ErrLog(err).Error("解析 GitHub 用户信息错")
 		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
 	}
-	// 检查用户数据
+	// 检查响应用户数据
 	var id, email, login, name string
 
 	if v, ok := profile["id"]; !ok {
@@ -183,30 +184,39 @@ func callback(c echo.Context) error {
 	} else {
 		name = v.(string)
 	}
-	// 检查账号是否已授权给其他用户
-	ql = `
-		select count(*) from user_oauth
-		where status = 2 and userid = ? and provider = 'github'
-	`
-	err = db.SelectOne(ql, &count, id)
-	if err != nil {
-		cc.ErrLog(err).Error("查询用户授权账号错")
-		return errorHtml(http.StatusInternalServerError, "服务器内部错")
+	if oauth.Usage == 1 { // usage == 1 表示授权
+		// 检查账号是否已授权给其他用户
+		ql = `
+			select count(*) from user_oauth
+			where status = 2 and userid = ? and provider = 'github'
+		`
+		err = db.SelectOne(ql, &count, id)
+		if err != nil {
+			cc.ErrLog(err).Error("查询用户授权账号错")
+			return errorHtml(http.StatusInternalServerError, "服务器内部错")
+		}
+		if count > 0 {
+			cc.Log().Errorf("GitHub 账号 %s 已授权给其他用户", email)
+			return errorHtml(http.StatusConflict, "该 GitHub 账号已授权给其他用户")
+		}
+		// 更新记录
+		ql = `
+			update user_oauth set userid = ?, email = ?, login = ?, name = ?,
+				profile = ?, status = 2
+			where uuid = ?
+		`
+		err = db.ExecOne(ql, id, email, login, name, body, state)
+		if err != nil {
+			cc.ErrLog(err).Error("更新用户授权账号信息错")
+			return errorHtml(http.StatusInternalServerError, "服务器内部错")
+		}
 	}
-	if count > 0 {
-		cc.Log().Errorf("GitHub 账号 %s 已授权给其他用户", email)
-		return errorHtml(http.StatusConflict, "该 GitHub 账号已授权给其他用户")
+	// 返回授权成功网页
+	target := cc.Config().ServerHttpURL()
+
+	// Dev 模式下 target 设置为 *，这样可以避免开发时端口不同源的问题，但存在安全隐患
+	if cc.Config().Dev() {
+		target = "*"
 	}
-	// 更新记录
-	ql = `
-		update user_oauth set userid = ?, email = ?, login = ?, name = ?,
-			profile = ?, status = 2
-		where uuid = ?
-	`
-	err = db.ExecOne(ql, id, email, login, name, body, state)
-	if err != nil {
-		cc.ErrLog(err).Error("更新用户授权账号信息错")
-		return errorHtml(http.StatusInternalServerError, "服务器内部错")
-	}
-	return c.HTML(http.StatusOK, buildSuccessHtml(id, email, state))
+	return c.HTML(http.StatusOK, buildSuccessHtml(id, email, state, target))
 }

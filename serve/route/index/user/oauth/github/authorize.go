@@ -58,11 +58,11 @@ func authorize(c echo.Context) error {
 
 	// 查询未授权的记录
 	ql = `insert into user_oauth (uuid, user_uuid, provider) values (?, ?, ?)`
-	id := uuid.NewString()
+	state := uuid.NewString()
 
-	if err := db.ExecOne(ql, id, user.UUID, "github"); err != nil {
+	if err := db.ExecOne(ql, state, user.UUID, "github"); err != nil {
 		cc.ErrLog(err).Error("记录 user oauth 错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	return c.JSON(http.StatusOK, echo.Map{"id": id, "url": url})
+	return c.JSON(http.StatusOK, echo.Map{"state": state, "url": url})
 }

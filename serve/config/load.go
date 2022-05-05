@@ -18,6 +18,9 @@ type ViperConfig struct {
 // 来自命令行选项
 var Master bool = false
 
+// 是否开发模式
+var dev = false
+
 func Load(filepath string, master bool) (*ViperConfig, error) {
 	vp := viper.NewWithOptions()
 
@@ -34,7 +37,7 @@ func Load(filepath string, master bool) (*ViperConfig, error) {
 	replacer := strings.NewReplacer(".", "_", "-", "_")
 	vp.SetEnvKeyReplacer(replacer)
 
-	// auto read environment
+	// 读环境变量
 	vp.AutomaticEnv()
 
 	if err := vp.ReadInConfig(); err != nil {
@@ -45,7 +48,7 @@ func Load(filepath string, master bool) (*ViperConfig, error) {
 	}
 	config := &ViperConfig{filepath, vp}
 
-	// check required configuration entries
+	// 检查必须的配置项
 	if len(config.LogPath()) == 0 {
 		return nil, fmt.Errorf("log.path not found")
 	}
@@ -53,17 +56,20 @@ func Load(filepath string, master bool) (*ViperConfig, error) {
 		return nil, fmt.Errorf("database.dsn not found")
 	}
 	if len(config.ServerHttpURL()) == 0 {
-		if err := setHttpurl(config); err != nil {
+		if err := setHttpURL(config); err != nil {
 			return nil, err
 		}
 	}
+	// 设置开发模式
+	vp.Set("dev", dev)
+
 	Master = master
 
 	return config, nil
 }
 
-// contract server.httpurl if it is empty
-func setHttpurl(c *ViperConfig) error {
+// 如果 server.httpurl 未设置，自动构造一个
+func setHttpURL(c *ViperConfig) error {
 	domains := c.ServerAutoTLSDomains()
 	if len(domains) == 0 {
 		return fmt.Errorf("server.httpurl 和 server.autotls.domains 都是空")
