@@ -29,14 +29,16 @@ func buildErrorHtml(reason string) string {
 }
 
 // 授权成功网页
-func buildSuccessHtml(identity string) string {
+func buildSuccessHtml(userid, email, state string) string {
 	var o bytes.Buffer
 
 	t, err := template.New("error").Parse(_successHtml)
 	if err != nil {
 		return fmt.Sprintf("解析模版错误: %v", err)
 	}
-	err = t.Execute(&o, map[string]string{"identity": identity})
+	err = t.Execute(&o, map[string]string{
+		"userid": userid, "email": email, "state": state,
+	})
 	if err != nil {
 		return fmt.Sprintf("执行模版错误: %v", err)
 	}

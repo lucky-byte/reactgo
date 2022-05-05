@@ -21,6 +21,13 @@ func callback(c echo.Context) error {
 	errorHtml := func(status int, message string) error {
 		return c.HTML(status, buildErrorHtml(message))
 	}
+
+	// 错误
+	error := c.QueryParam("error")
+	if len(error) > 0 {
+		desc := c.QueryParam("error_description")
+		return errorHtml(http.StatusBadRequest, fmt.Sprintf("%s: %s", error, desc))
+	}
 	var code, state string
 
 	err := echo.QueryParamsBinder(c).
@@ -28,7 +35,7 @@ func callback(c echo.Context) error {
 	if err != nil {
 		err = errors.Wrapf(err, "%s", c.Request().URL.String())
 		cc.ErrLog(err).Error("GitHub 授权回调参数不完整")
-		return errorHtml(http.StatusBadRequest, "授权回调参数不完整")
+		return errorHtml(http.StatusBadRequest, "授权回调参数错误")
 	}
 	// 检查 state 是否有效，如果无效，立即中断处理
 	ql := `
@@ -201,5 +208,5 @@ func callback(c echo.Context) error {
 		cc.ErrLog(err).Error("更新用户授权账号信息错")
 		return errorHtml(http.StatusInternalServerError, "服务器内部错")
 	}
-	return c.HTML(http.StatusOK, buildSuccessHtml(email))
+	return c.HTML(http.StatusOK, buildSuccessHtml(id, email, state))
 }

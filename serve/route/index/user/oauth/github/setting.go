@@ -8,7 +8,6 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
-	"github.com/lucky-byte/reactgo/serve/xlog"
 )
 
 func setting(c echo.Context) error {
@@ -16,13 +15,20 @@ func setting(c echo.Context) error {
 	user := cc.User()
 
 	// 删除过期未授权的记录
-	defer _clean()
+	ql := `
+		delete from user_oauth
+		where provider = 'github' and status = 1 and create_at < ?
+	`
+	err := db.Exec(ql, time.Now().Add(-5*time.Minute))
+	if err != nil {
+		cc.ErrLog(err).Error("清理用户 GitHub 无效授权记录错")
+	}
 
 	// 查询 GitHub 授权系统配置
-	ql := `select * from oauth where provider = 'github'`
+	ql = `select * from oauth where provider = 'github'`
 	var records []db.OAuth
 
-	err := db.Select(ql, &records)
+	err = db.Select(ql, &records)
 	if err != nil {
 		cc.ErrLog(err).Error("查询 GitHub 授权配置错")
 		return c.NoContent(http.StatusInternalServerError)
@@ -67,16 +73,4 @@ func setting(c echo.Context) error {
 		"name":     account.Name,
 		"status":   account.Status,
 	})
-}
-
-// 清理过期未授权的记录
-func _clean() {
-	ql := `
-		delete from user_oauth
-		where provider = 'github' and status = 1 and create_at < ?
-	`
-	err := db.Exec(ql, time.Now().Add(-5*time.Minute))
-	if err != nil {
-		xlog.X.WithError(err).Error("清理用户 GitHub 无效授权记录错")
-	}
 }

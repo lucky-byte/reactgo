@@ -10,7 +10,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-func open(c echo.Context) error {
+func authorize(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 

@@ -11,13 +11,26 @@
     <div class="box is-flex-grow-1 p-6">
       <p class="is-size-3 has-text-centered has-text-success mt-6">授权成功</p>
       <p class="is-size-6 has-text-centered has-text-grey mt-3">
-        您已成功授权 GitHub 账号 <em>{{ .identity }}</em>
+        您已成功授权 GitHub 账号 <em>{{ .email }}</em>
       </p>
       <p class="is-size-7 has-text-centered has-text-grey-light mt-6">
-        本页面将在几秒后自动关闭
+        本页面将在数秒后自动关闭
       </p>
     </div>
   </div>
+
+  <script>
+    (function () {
+      var message = {
+        userid: '{{ .userid }}',
+        email: '{{ .email }}',
+        state: '{{ .state }}',
+      }
+      var target = '*';
+
+      setTimeout(() => { window.opener.postMessage(message, target); }, 1000);
+    })();
+  </script>
 </body>
 
 </html>
