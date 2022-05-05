@@ -193,6 +193,7 @@ func main() {
 
 		engine.GET("/static/*", handler)
 		engine.GET("/asset-manifest.json", handler)
+		engine.GET("/favicon.ico", handler)
 		engine.GET("/favicon.png", handler)
 		engine.GET("/logo192.png", handler)
 		engine.GET("/logo512.png", handler)

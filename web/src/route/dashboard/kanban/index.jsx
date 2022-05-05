@@ -28,17 +28,17 @@ export default function Kanban() {
 
   // 从 localStorage 中读取上次激活的面板
   useEffect(() => {
-    const storage = localStorage.getItem('kanban-nodes');
-    if (storage) {
-      try {
+    try {
+      const actived = [];
+
+      const storage = localStorage.getItem('kanban-nodes');
+      if (storage) {
         let keys = JSON.parse(storage);
 
         if (!Array.isArray(keys)) {
           localStorage.removeItem('kanban-nodes');
           keys = [];
         }
-        const actived = [];
-
         for (const key of keys) {
           for (let i = 0; i < nodes.length; i++) {
             if (nodes[i].key === key) {
@@ -50,20 +50,19 @@ export default function Kanban() {
         if (actived.length > 0) {
           return setActivedNodes(actived);
         }
-        // 如果没有显示的节点，则显示默认配置的节点
-        for (let i = 0; i < nodes.length; i++) {
-          if (nodes[i].default) {
-            actived.push(nodes[i]);
-            break;
-          }
-        }
-        setActivedNodes(actived);
-      } catch (err) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('读布局数据错：', err?.message);
-        }
-        localStorage.removeItem('kanban-panels');
       }
+      // 如果没有显示的节点，则显示默认配置的节点
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].default) {
+          actived.push(nodes[i]);
+        }
+      }
+      setActivedNodes(actived);
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('读布局数据错：', err?.message);
+      }
+      localStorage.removeItem('kanban-panels');
     }
   }, [setActivedNodes]);
 
@@ -92,8 +91,7 @@ export default function Kanban() {
             <Paper key={node.key} elevation={0} data-grid={data_grid}
               variant={outlined ? 'outlined' : 'elevation'}
               sx={{
-                bgcolor: 'transparent',
-                border: outlined ? '1px dashed orange' : '',
+                bgcolor: 'transparent', outline: outlined ? '1px dashed orange' : '',
               }}>
               <Node />
             </Paper>
