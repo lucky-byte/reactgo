@@ -8,7 +8,7 @@ import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import { useSecretCode } from '~/comp/secretcode';
 import { get, put } from "~/rest";
-import popupWindow from './popup';
+import popupWindow from '~/lib/popup';
 
 export default function GitHub() {
   const { enqueueSnackbar } = useSnackbar();
@@ -33,8 +33,8 @@ export default function GitHub() {
 
           setClientId(resp.clientid);
           setEnabled(resp.enabled);
-          setStatus(resp.status);
           setEmail(resp.email);
+          setStatus(resp.status);
         }
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -47,18 +47,22 @@ export default function GitHub() {
 
   // 授权成功后将收到消息
   const onAuthorizedListener = useCallback(e => {
+    // 必须是来自同源的消息
     if (process.env.NODE_ENV === 'production') {
       if (e.origin !== window.location.origin) {
         return;
       }
     }
     if (e.data.source === 'reactgo-github-authorize') {
+      if (e.source !== popupRef.current) {
+        return enqueueSnackbar('接收到来自非期望的窗口的消息，忽略...');
+      }
       window.removeEventListener('message', onAuthorizedListener);
 
       if (popupRef.current) {
         popupRef.current.close();
       }
-      enqueueSnackbar('授权成功', { variant: 'success' });
+      enqueueSnackbar('账号授权成功', { variant: 'success' });
       setRefresh(true);
     }
   }, [enqueueSnackbar]);
@@ -91,10 +95,8 @@ export default function GitHub() {
       });
       const url = 'https://github.com/login/oauth/authorize?' + q.toString();
 
-      popupRef.current = popupWindow(url, 'GithubAuthorize', 650, 600);
-
-      window.removeEventListener('message', onAuthorizedListener);
       window.addEventListener('message', onAuthorizedListener);
+      popupRef.current = popupWindow(url, 'GithubAuthorize', 650, 600);
     } catch (err) {
       if (err) {
         enqueueSnackbar(err.message);
@@ -111,7 +113,7 @@ export default function GitHub() {
         confirmationButtonProps: { color: 'warning' },
       });
       await put('/user/oauth/github/revoke');
-      enqueueSnackbar('撤销成功', { variant: 'success' });
+      enqueueSnackbar('成功撤销授权', { variant: 'success' });
       setRefresh(true);
     } catch (err) {
       if (err) {

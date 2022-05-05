@@ -29,7 +29,7 @@ func buildErrorHtml(reason string) string {
 }
 
 // 授权成功网页
-func buildSuccessHtml(userid, email, state, target string) string {
+func buildSuccessHtml(p *profile, state, target string) string {
 	var o bytes.Buffer
 
 	t, err := template.New("error").Parse(_successHtml)
@@ -37,7 +37,13 @@ func buildSuccessHtml(userid, email, state, target string) string {
 		return fmt.Sprintf("解析模版错误: %v", err)
 	}
 	err = t.Execute(&o, map[string]string{
-		"userid": userid, "email": email, "state": state, "target": target,
+		"userid": p.ID.String(),
+		"email":  p.Email,
+		"login":  p.Login,
+		"name":   p.Name,
+		"avatar": p.Avatar,
+		"state":  state,
+		"target": target,
 	})
 	if err != nil {
 		return fmt.Sprintf("执行模版错误: %v", err)

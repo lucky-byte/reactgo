@@ -9,11 +9,12 @@ import CampaignIcon from '@mui/icons-material/Campaign';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
-import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
-import ArchitectureIcon from '@mui/icons-material/Architecture';
 import PhotoOutlinedIcon from '@mui/icons-material/PhotoOutlined';
 import SlideshowIcon from '@mui/icons-material/Slideshow';
 import SupportIcon from '@mui/icons-material/Support';
+import DesignServicesIcon from '@mui/icons-material/DesignServices';
+import RouteIcon from '@mui/icons-material/Route';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 
 const menus = [{
   title: '欢迎',
@@ -27,20 +28,23 @@ const menus = [{
 }, {
   title: '资源管理',
   items: [{
-    code: 8100,
+    code: 7100,
     icon: PhotoOutlinedIcon,
   }, {
-    code: 8200,
+    code: 7200,
     icon: SlideshowIcon,
+  }, {
+    code: 7300,
+    icon: ArticleOutlinedIcon,
   }],
 }, {
   title: '设计工具',
   items: [{
-    code: 8500,
-    icon: ArchitectureIcon,
+    code: 7500,
+    icon: DesignServicesIcon,
   }, {
-    code: 8600,
-    icon: AirlineStopsIcon,
+    code: 7600,
+    icon: RouteIcon,
   }],
 }, {
   title: '系统管理',

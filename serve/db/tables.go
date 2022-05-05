@@ -234,6 +234,7 @@ type UserOAuth struct {
 	Email    string    `db:"email"     json:"email"`     // 邮箱地址
 	Login    string    `db:"login"     json:"login"`     // 登录名
 	Name     string    `db:"name"      json:"name"`      // 用户名
+	Avatar   string    `db:"avatar"    json:"avatar"`    // 头像
 	Profile  string    `db:"profile"   json:"profile"`   // 用户信息
 	Status   int       `db:"status"    json:"status"`    // 状态
 	Usage    int       `db:"usage"     json:"usage"`     // 用途

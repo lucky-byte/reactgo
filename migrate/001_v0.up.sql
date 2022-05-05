@@ -263,6 +263,7 @@ create table if not exists user_oauth (
   email       varchar(128)    not null default '',
   login       varchar(128)    not null default '',
   name        varchar(128)    not null default '',
+  avatar      varchar(256)    not null default '',
   profile     text            not null default '',
   status      int             not null default 1,
                               -- 1. 未授权

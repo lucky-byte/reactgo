@@ -9,13 +9,10 @@
 <body>
   <div class="block is-flex is-flex-direction-column p-4" style="height: 100%;">
     <div class="box is-flex-grow-1 p-6">
-      <p class="is-size-3 has-text-centered has-text-success mt-6">授权成功</p>
-      <p class="is-size-6 has-text-centered has-text-grey mt-3">
-        您已成功授权 GitHub 账号 <em>{{ .email }}</em>
-      </p>
-      <p class="is-size-7 has-text-centered has-text-grey-light mt-6">
-        本页面将在数秒后自动关闭
-      </p>
+      <figure class="image is-96x96 container">
+        <img class="is-rounded" src="{{ .avatar }}">
+      </figure>
+      <p class="is-size-5 has-text-centered mt-2">授权完成</p>
     </div>
   </div>
 
@@ -23,15 +20,18 @@
     (function () {
       var message = {
         source: 'reactgo-github-authorize',
-        payload: {
+        profile: {
           userid: '{{ .userid }}',
+          login: '{{ .login }}',
           email: '{{ .email }}',
-          state: '{{ .state }}',
-        }
+          name: '{{ .name }}',
+          avatar: '{{ .avatar }}',
+        },
+        state: '{{ .state }}',
       }
       var target = '{{ .target }}';
 
-      setTimeout(() => { window.opener.postMessage(message, target); }, 1000);
+      setTimeout(() => { window.opener.postMessage(message, target); }, 500);
     })();
   </script>
 </body>

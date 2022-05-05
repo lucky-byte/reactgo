@@ -15,6 +15,14 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
+type profile struct {
+	ID     json.Number `json:"id"`
+	Email  string      `json:"email"`
+	Login  string      `json:"login"`
+	Name   string      `json:"name"`
+	Avatar string      `json:"avatar_url"`
+}
+
 func callback(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -54,22 +62,6 @@ func callback(c echo.Context) error {
 	if oauth.CreateAt.Before(time.Now().Add(-5 * time.Minute)) {
 		cc.Log().Error("GitHub 授权回调超时")
 		return errorHtml(http.StatusRequestTimeout, "授权超出时间限制，请重试")
-	}
-	// 查询用户已授权 GitHub 账号，不能授权多个
-	ql = `
-		select count(*) from user_oauth
-		where user_uuid = ? and provider = 'github' and status = 2
-	`
-	var count int
-
-	err = db.SelectOne(ql, &count, oauth.UserUUID)
-	if err != nil {
-		cc.ErrLog(err).Error("查询用户 GitHub 授权账号错")
-		return errorHtml(http.StatusInternalServerError, "系统繁忙，请稍候重试")
-	}
-	if count > 0 {
-		cc.Log().Error("用户已存在 GitHub 授权账号，不能再次授权")
-		return errorHtml(http.StatusForbidden, "已存在授权账号，本次授权无效")
 	}
 	// 查询系统 GitHub 授权配置
 	ql = `select * from oauth where provider = 'github'`
@@ -144,68 +136,59 @@ func callback(c echo.Context) error {
 		cc.ErrLog(err).Error("读取 GitHub 响应数据错")
 		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
 	}
-	cc.Log().Infof("user: %s", body)
-	var profile map[string]any
+	var p profile
 
-	err = json.Unmarshal(body, &profile)
+	err = json.Unmarshal(body, &p)
 	if err != nil {
 		err = errors.Wrap(err, string(body))
 		cc.ErrLog(err).Error("解析 GitHub 用户信息错")
 		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
 	}
-	// 检查响应用户数据
-	var id, email, login, name string
-
-	if v, ok := profile["id"]; !ok {
+	if len(p.ID.String()) == 0 || len(p.Email) == 0 || len(p.Login) == 0 {
 		err = fmt.Errorf("%v", body)
-		cc.ErrLog(err).Error("GitHub 用户信息缺少 id")
+		cc.ErrLog(err).Error("GitHub 用户信息缺少 id, email 或 login")
 		return errorHtml(http.StatusUnprocessableEntity, "授权账号信息不完整")
-	} else {
-		id = fmt.Sprintf("%d", int64(v.(float64)))
 	}
-	if v, ok := profile["email"]; !ok {
-		err = fmt.Errorf("%v", body)
-		cc.ErrLog(err).Error("GitHub 用户信息缺少 email")
-		return errorHtml(http.StatusUnprocessableEntity, "授权账号信息不完整")
-	} else {
-		email = v.(string)
-	}
-	if v, ok := profile["login"]; !ok {
-		err = fmt.Errorf("%v", body)
-		cc.ErrLog(err).Error("GitHub 用户信息缺少 login")
-		return errorHtml(http.StatusUnprocessableEntity, "授权账号信息不完整")
-	} else {
-		login = v.(string)
-	}
-	if v, ok := profile["name"]; !ok {
-		err = fmt.Errorf("%v", body)
-		cc.ErrLog(err).Error("GitHub 用户信息缺少 name")
-		return errorHtml(http.StatusUnprocessableEntity, "授权账号信息不完整")
-	} else {
-		name = v.(string)
-	}
-	if oauth.Usage == 1 { // usage == 1 表示授权
+	if oauth.Usage == 1 { // 授权
 		// 检查账号是否已授权给其他用户
 		ql = `
 			select count(*) from user_oauth
 			where status = 2 and userid = ? and provider = 'github'
 		`
-		err = db.SelectOne(ql, &count, id)
+		var count int
+
+		err = db.SelectOne(ql, &count, p.ID.String())
 		if err != nil {
 			cc.ErrLog(err).Error("查询用户授权账号错")
 			return errorHtml(http.StatusInternalServerError, "服务器内部错")
 		}
 		if count > 0 {
-			cc.Log().Errorf("GitHub 账号 %s 已授权给其他用户", email)
+			cc.Log().Errorf("GitHub 账号 %s 已授权给其他用户", p.Email)
 			return errorHtml(http.StatusConflict, "该 GitHub 账号已授权给其他用户")
+		}
+		// 查询用户已授权 GitHub 账号，不能授权多个
+		ql = `
+			select count(*) from user_oauth
+			where user_uuid = ? and provider = 'github' and status = 2
+		`
+		err = db.SelectOne(ql, &count, oauth.UserUUID)
+		if err != nil {
+			cc.ErrLog(err).Error("查询用户 GitHub 授权账号错")
+			return errorHtml(http.StatusInternalServerError, "系统繁忙，请稍候重试")
+		}
+		if count > 0 {
+			cc.Log().Error("用户已存在 GitHub 授权账号，不能再次授权")
+			return errorHtml(http.StatusForbidden, "已存在授权账号，本次授权无效")
 		}
 		// 更新记录
 		ql = `
 			update user_oauth set userid = ?, email = ?, login = ?, name = ?,
-				profile = ?, status = 2
+				avatar = ?, profile = ?, status = 2
 			where uuid = ?
 		`
-		err = db.ExecOne(ql, id, email, login, name, body, state)
+		err = db.ExecOne(
+			ql, p.ID.String(), p.Email, p.Login, p.Name, p.Avatar, body, state,
+		)
 		if err != nil {
 			cc.ErrLog(err).Error("更新用户授权账号信息错")
 			return errorHtml(http.StatusInternalServerError, "服务器内部错")
@@ -218,5 +201,5 @@ func callback(c echo.Context) error {
 	if cc.Config().Dev() {
 		target = "*"
 	}
-	return c.HTML(http.StatusOK, buildSuccessHtml(id, email, state, target))
+	return c.HTML(http.StatusOK, buildSuccessHtml(&p, state, target))
 }

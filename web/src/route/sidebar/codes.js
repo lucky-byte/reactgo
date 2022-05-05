@@ -26,6 +26,7 @@ const urlCodes = {
   // 资源管理
   7100: { title: '图片管理', to: '/media/images' },
   7200: { title: '视频管理', to: '/media/videos' },
+  7300: { title: '文档管理', to: '/media/files' },
 
   // 设计工具
   7500: { title: '页面设计', to: '/designer/page' },

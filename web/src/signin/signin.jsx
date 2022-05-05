@@ -13,6 +13,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
+import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import PersonIcon from '@mui/icons-material/Person';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -24,7 +25,9 @@ import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
 import { put, get } from "~/rest";
+import Beian from '~/img/beian.png';
 import ForgetUserid from './userid';
+import GitHub from "./github";
 
 export default function SignIn() {
   const theme = useTheme();
@@ -33,6 +36,7 @@ export default function SignIn() {
   const setUser = useSetRecoilState(userState);
   const [lookUserid, setLookUserid] = useState(false);
   const [resetPass, setResetPass] = useState(false);
+  const [providers, setProviders] = useState([]);
   const [clientId, setClientId] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -52,6 +56,7 @@ export default function SignIn() {
           const resp = await get('/signin/settings')
           setLookUserid(resp.lookuserid);
           setResetPass(resp.resetpass);
+          setProviders(resp.providers || []);
         }
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -172,9 +177,8 @@ export default function SignIn() {
       <Toolbar>
         <img src={Logo} alt='Logo' height='28px' />
       </Toolbar>
-      <Container maxWidth='xs'
-        sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Paper elevation={3} sx={{ mt: 8, py: 3, px: 4, width: '100%' }}>
+      <Container maxWidth='xs'>
+        <Paper elevation={3} sx={{ my: 7, py: 3, px: 4, width: '100%' }}>
           <Typography as='h1' variant='h6' sx={{ mt: 1 }}>欢迎，请登录</Typography>
           <TextField required label='登录名' placeholder="请输入登录名"
             fullWidth autoComplete="username" autoFocus
@@ -217,42 +221,55 @@ export default function SignIn() {
             }}
             sx={{ mt: 4 }}
           />
-          <Help loading={loading} resetpass={resetPass} />
+          <Forget loading={loading} resetpass={resetPass} />
           <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={submitting}>
             登录
           </Button>
+          {providers.length > 0 &&
+            <Stack mt={4}>
+              <Divider>
+                <FormHelperText>或使用下列账号登录</FormHelperText>
+              </Divider>
+              <Stack direction='row' justifyContent='center' alignItems='center'
+                spacing={2} mt={1}>
+                {providers.map(p => (
+                  <Authorize key={p} provider={p} submitting={submitting}
+                    setSubmitting={setSubmitting}
+                  />
+                ))}
+              </Stack>
+            </Stack>
+          }
         </Paper>
-        <Stack direction='row' spacing={2} sx={{ mt: 4 }}>
+      </Container>
+      <Stack direction='row' alignItems='center' justifyContent='center' spacing={1}
+        sx={{ p: 2, position: 'fixed', bottom: 0, left: 0, right: 0 }}>
         <Typography variant='caption'>
-          <Link component='a' href='/privacy' target='_blank' underline='hover'>
-            隐私政策
-          </Link>
-        </Typography>
-        <Typography variant='caption'>
-          <Link component='a' href='/terms' target='_blank' underline='hover'>
-            服务条款
-          </Link>
-        </Typography>
-        </Stack>
-        <FormHelperText sx={{ mt: 1 }}>
           版权所有 &copy; {new Date().getFullYear()}&nbsp;
-          {process.env.REACT_APP_COMPANY_NAME}，保留所有权利。
-        </FormHelperText>
+          {process.env.REACT_APP_COMPANY_NAME}，保留所有权利
+        </Typography>
         {process.env.REACT_APP_ICP &&
-          <FormHelperText sx={{ mt: 1 }}>
-            <Link component='a' href={process.env.REACT_APP_ICP_LINK}
-              target='_blank' underline='hover'>
+          <Typography variant='caption'>
+            <img src={Beian} alt='备案' height={12} width={12} />
+            <Link href={process.env.REACT_APP_ICP_LINK} target='_blank'
+              underline='hover' sx={{ ml: '3px' }}>
               {process.env.REACT_APP_ICP}
             </Link>
-          </FormHelperText>
+          </Typography>
         }
-      </Container>
+        <Typography variant='caption'>
+          <Link href='/privacy' target='_blank' underline='hover'>隐私政策</Link>
+        </Typography>
+        <Typography variant='caption'>
+          <Link href='/terms' target='_blank' underline='hover'>服务条款</Link>
+        </Typography>
+      </Stack>
     </Stack>
   )
 }
 
-function Help(props) {
+function Forget(props) {
   const { loading, resetpass } = props;
 
   if (loading) {
@@ -272,4 +289,15 @@ function Help(props) {
       如忘记登录信息或手机号/邮箱地址发生变更，请联系工作人员重置登录信息。
     </FormHelperText>
   )
+}
+
+// 三方账号登录
+function Authorize(props) {
+  const { provider, submitting, setSubmitting } = props;
+
+  if (provider === 'github') {
+    return <GitHub submitting={submitting} setSubmitting={setSubmitting} />
+  }
+
+  return null;
 }

@@ -2,6 +2,8 @@ package signin
 
 import (
 	"github.com/labstack/echo/v4"
+
+	"github.com/lucky-byte/reactgo/serve/route/index/signin/oauth"
 )
 
 func Attach(engine *echo.Group) {
@@ -15,4 +17,6 @@ func Attach(engine *echo.Group) {
 	router.PUT("/smsverify", smsVerify)
 	router.POST("/smsresend", smsResend)
 	router.PUT("/otpverify", otpVerify)
+
+	oauth.Attach(router)
 }
