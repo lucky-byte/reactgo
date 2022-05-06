@@ -30,6 +30,7 @@ import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
 import { get, del, put } from '~/rest';
+import { Chip } from '@mui/material';
 
 export default function List() {
   const navigate = useNavigate();
@@ -180,7 +181,7 @@ function AclInfo(props) {
   const onDelete = async () => {
     try {
       await confirm({
-        description: '确定要删除该角色吗？删除后不能恢复。',
+        description: '确定要删除该角色吗？删除后不能恢复，如果已经有用户在使用此角色，则删除失败。',
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
@@ -209,14 +210,15 @@ function AclInfo(props) {
 
   return (
     <Paper variant='outlined' sx={{ flex: 1, maxHeight: maxHeight, overflow: 'scroll' }}>
-      <Stack sx={{ mx: 3, mt: 1 }} spacing={1} direction='row'>
+      <Stack sx={{ mx: 3, mt: 1 }} spacing={1} direction='row' alignItems='center'>
         <InplaceInput variant='h6' sx={{ flex: 1 }} text={info.name || ''}
           fontSize='large' onConfirm={onChangeName}
         />
+        <Chip label={`${info?.users} 个用户`} size='small' variant='outlined' />
         <IconButton aria-label='展开' onClick={() => { setCollapsed(!collapsed) }}>
           {collapsed ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
-        <Button color='error' onClick={onDelete}>删除</Button>
+        <Button color='error' onClick={onDelete}>删除角色</Button>
       </Stack>
       <Stack sx={{ mx: 3, mb: 1 }} spacing={1}>
         <InplaceInput variant='body2' text={info.summary || ''} multiline
@@ -239,7 +241,7 @@ function AclInfo(props) {
           <Typography variant='subtitle2' sx={{ flex: 1 }}>
             允许访问 ({info?.allows?.length || 0} 项)
           </Typography>
-          <Button onClick={onModifyAllows}>修改</Button>
+          <Button onClick={onModifyAllows}>修改权限</Button>
         </Stack>
         <TableContainer>
           <Table>

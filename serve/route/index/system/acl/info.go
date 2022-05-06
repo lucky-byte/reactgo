@@ -22,7 +22,8 @@ func info(c echo.Context) error {
 	`
 	var acl db.ACL
 
-	if err := db.SelectOne(ql, &acl, uuid); err != nil {
+	err := db.SelectOne(ql, &acl, uuid)
+	if err != nil {
 		cc.ErrLog(err).Error("查询访问控制信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -33,7 +34,8 @@ func info(c echo.Context) error {
 	`
 	var result []db.ACLAllow
 
-	if err := db.Select(ql, &result, uuid); err != nil {
+	err = db.Select(ql, &result, uuid)
+	if err != nil {
 		cc.ErrLog(err).Error("查询访问控制信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -48,6 +50,15 @@ func info(c echo.Context) error {
 			"iadmin": v.IAdmin,
 		})
 	}
+	// 查询用户数量
+	ql = `select count(*) from users where acl = ?`
+	var count int
+
+	err = db.SelectOne(ql, &count, uuid)
+	if err != nil {
+		cc.ErrLog(err).Error("查询访问控制用户错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"uuid":      uuid,
 		"create_at": acl.CreateAt,
@@ -56,5 +67,6 @@ func info(c echo.Context) error {
 		"name":      acl.Name,
 		"summary":   acl.Summary,
 		"allows":    allows,
+		"users":     count,
 	})
 }
