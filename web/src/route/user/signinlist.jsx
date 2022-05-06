@@ -13,6 +13,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
@@ -60,6 +61,7 @@ export default function SignInList() {
             <TableHead>
               <TableRow>
                 <TableCell align="center">登录时间</TableCell>
+                <TableCell align="center">账号</TableCell>
                 <TableCell align="center">系统</TableCell>
                 <TableCell align="center">浏览器</TableCell>
                 <TableCell align="center">位置</TableCell>
@@ -74,6 +76,9 @@ export default function SignInList() {
                         {dayjs(row.create_at).fromNow()}
                       </Typography>
                     </Tooltip>
+                  </TableCell>
+                  <TableCell align="center">
+                    <ActType acttype={row.acttype} oauthp={row.oauthp} />
                   </TableCell>
                   <TableCell align="center">{row.os}</TableCell>
                   <TableCell align="center">{row.browser}</TableCell>
@@ -92,4 +97,15 @@ export default function SignInList() {
       </Paper>
     </Container>
   )
+}
+
+function ActType(props) {
+  const { acttype, oauthp } = props;
+
+  if (acttype === 1) {
+    return <Typography variant='body2'>系统</Typography>
+  }
+  if (oauthp === 'github') {
+    return <GitHubIcon sx={{ verticalAlign: 'middle' }} />
+  }
 }

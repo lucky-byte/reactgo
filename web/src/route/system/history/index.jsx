@@ -15,6 +15,7 @@ import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
@@ -84,7 +85,7 @@ export default function History() {
   }
 
   return (
-    <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
+    <Container as='main' maxWidth='lg' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={loading} onChange={onKeywordChange}
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
@@ -95,7 +96,9 @@ export default function History() {
           inputFormat='MM/DD/YYYY'
           maxDate={dayjs()}
           renderInput={props => (
-            <TextField {...props} variant='standard' sx={{ ml: 2, width: 180 }} />
+            <TextField {...props} variant='standard' sx={{ ml: 2, width: 180 }}
+              placeholder='登录日期'
+            />
           )}
         />
       </Toolbar>
@@ -105,8 +108,9 @@ export default function History() {
             <TableRow>
               <TableCell align="center">登录名</TableCell>
               <TableCell align="center">姓名</TableCell>
+              <TableCell align="center">登录账号</TableCell>
               <TableCell align="center">设备</TableCell>
-              <TableCell align="center">信任</TableCell>
+              <TableCell align="center">信任设备</TableCell>
               <TableCell align="center">位置</TableCell>
               <TableCell align="center">登录时间</TableCell>
             </TableRow>
@@ -116,6 +120,9 @@ export default function History() {
               <TableRow key={index} hover>
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
+                <TableCell align="center">
+                  <ActType acttype={row.acttype} oauthp={row.oauthp} />
+                </TableCell>
                 <TableCell align="center">{row.browser} on {row.os}</TableCell>
                 <TableCell align="center" padding='none'>
                   {row.trust ?
@@ -145,7 +152,7 @@ export default function History() {
             <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TablePagination
                 rowsPerPageOptions={[10, 25, 50, 100]}
-                colSpan={6}
+                colSpan={10}
                 count={count}
                 rowsPerPage={rows}
                 page={page}
@@ -159,4 +166,15 @@ export default function History() {
       </TableContainer>
     </Container>
   )
+}
+
+function ActType(props) {
+  const { acttype, oauthp } = props;
+
+  if (acttype === 1) {
+    return <Typography variant='body2'>系统</Typography>
+  }
+  if (oauthp === 'github') {
+    return <GitHubIcon sx={{ verticalAlign: 'middle' }} />
+  }
 }

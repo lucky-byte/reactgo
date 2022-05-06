@@ -53,6 +53,8 @@ func signinlist(c echo.Context) error {
 			"latitude":  h.Latitude,
 			"os":        os,
 			"browser":   browser,
+			"acttype":   h.ActType,
+			"oauthp":    h.OAuthP,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"list": list})
