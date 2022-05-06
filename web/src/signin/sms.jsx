@@ -30,7 +30,7 @@ export default function SignInSMS() {
   const location = useLocation();
   const [user, setUser] = useRecoilState(userState);
   const { enqueueSnackbar } = useSnackbar();
-  const [clientId, setClientId] = useState('');
+  const [trust, setTrust] = useState(false);
   const [historyId, setHistoryId] = useState('');
   const [smsid, setSmsid] = useState('');
   const [code, setCode] = useState('');
@@ -84,11 +84,7 @@ export default function SignInSMS() {
 
   // 信任设备
   const onTrustCheck = e => {
-    if (e.target.checked) {
-      setClientId(localStorage.getItem('client-id'));
-    } else {
-      setClientId('');
-    }
+    setTrust(e.target.checked);
   }
 
   // 提交认证
@@ -101,8 +97,8 @@ export default function SignInSMS() {
     try {
       setLoading(true);
 
-      const resp = await put('/signin/smsverify', new URLSearchParams({
-        smsid, code, historyid: historyId, clientid: clientId,
+      const resp = await put('/signin/sms/verify', new URLSearchParams({
+        smsid, code, historyid: historyId, trust,
       }));
       if (!resp?.token) {
         return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
@@ -127,7 +123,7 @@ export default function SignInSMS() {
   // 重新发送验证码
   const onReSendClick = async () => {
     try {
-      const resp = await post('/signin/smsresend');
+      const resp = await post('/signin/sms/resend');
       if (!resp.smsid) {
         throw new Error('响应数据无效');
       }
@@ -210,9 +206,7 @@ export default function SignInSMS() {
           </FormControl>
           <FormControlLabel sx={{ mt: 2 }}
             control={
-              <Checkbox
-                checked={clientId.length > 0}
-                onChange={onTrustCheck}
+              <Checkbox checked={trust} onChange={onTrustCheck}
                 inputProps={{ 'aria-label': '信任当前设备' }}
               />
             }

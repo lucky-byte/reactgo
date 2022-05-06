@@ -18,37 +18,35 @@ import (
 )
 
 // 添加操作记录
-func opsMiddleware() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			cc := c.(*ctx.Context)
+func opsRecorder(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		cc := c.(*ctx.Context)
 
-			req := c.Request()
+		req := c.Request()
 
-			// 忽略 GET 请求
-			if strings.ToUpper(req.Method) == http.MethodGet {
-				return next(c)
-			}
-			// 获取请求数据
-			body, audit, noop := opsReadBody(cc)
-			if noop {
-				return next(c)
-			}
-			ql := `
-				insert into ops (uuid, user_uuid, method, url, body, audit)
-				values (?, ?, ?, ?, ?, ?)
-			`
-			id := uuid.NewString()
-			user := cc.User()
-
-			err := db.ExecOne(
-				ql, id, user.UUID, req.Method, req.URL.Path, body, audit,
-			)
-			if err != nil {
-				cc.ErrLog(err).Error("添加操作记录错")
-			}
+		// 忽略 GET 请求
+		if strings.ToUpper(req.Method) == http.MethodGet {
 			return next(c)
 		}
+		// 获取请求数据
+		body, audit, noop := opsReadBody(cc)
+		if noop {
+			return next(c)
+		}
+		ql := `
+			insert into ops (uuid, user_uuid, method, url, body, audit)
+			values (?, ?, ?, ?, ?, ?)
+		`
+		id := uuid.NewString()
+		user := cc.User()
+
+		err := db.ExecOne(
+			ql, id, user.UUID, req.Method, req.URL.Path, body, audit,
+		)
+		if err != nil {
+			cc.ErrLog(err).Error("添加操作记录错")
+		}
+		return next(c)
 	}
 }
 

@@ -30,7 +30,7 @@ export default function SignInOTP() {
   const location = useLocation();
   const [user, setUser] = useRecoilState(userState);
   const { enqueueSnackbar } = useSnackbar();
-  const [clientId, setClientId] = useState('');
+  const [trust, setTrust] = useState(false);
   const [historyId, setHistoryId] = useState('');
   const [tfa, setTFA] = useState(false);
   const [code, setCode] = useState('');
@@ -38,17 +38,19 @@ export default function SignInOTP() {
 
   const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
 
-  useEffect(() => { document.title = '两因素认证'; }, []);
+  useEffect(() => { document.title = '动态密码认证'; }, []);
 
+  // 获取页面传入的数据
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token || !user || !user.userid) {
       return navigate('/signin', { replace: true });
     }
-    setHistoryId(location?.state?.historyid || '');
-    setTFA(location?.state?.tfa || false);
+    setHistoryId(location.state?.historyid || '');
+    setTFA(location.state?.tfa || false);
   }, [user, navigate, location?.state]);
 
+  // 输入密码
   const onCodeChange = e => {
     const v = e.target.value;
 
@@ -57,6 +59,7 @@ export default function SignInOTP() {
     }
   }
 
+  // 输入框按下回车提交
   const onCodeKeyDown = e => {
     if (e.key === 'Enter') {
       onSubmit();
@@ -65,11 +68,7 @@ export default function SignInOTP() {
 
   // 信任设备
   const onTrustCheck = e => {
-    if (e.target.checked) {
-      setClientId(localStorage.getItem('client-id'));
-    } else {
-      setClientId('');
-    }
+    setTrust(e.target.checked);
   }
 
   // 提交认证
@@ -82,8 +81,8 @@ export default function SignInOTP() {
     try {
       setLoading(true);
 
-      const resp = await put('/signin/otpverify', new URLSearchParams({
-        code, clientid: clientId, historyid: historyId,
+      const resp = await put('/signin/otp/verify', new URLSearchParams({
+        code, trust, historyid: historyId,
       }));
       if (!resp || !resp.token) {
         return enqueueSnackbar('响应数据不完整', { variant: 'error' });
@@ -108,7 +107,7 @@ export default function SignInOTP() {
   // 切换到短信认证
   const onSwitchSMS = async () => {
     try {
-      const resp = await post('/signin/smsresend');
+      const resp = await post('/signin/sms/resend');
       if (!resp.smsid) {
         throw new Error('响应数据无效');
       }
@@ -134,7 +133,7 @@ export default function SignInOTP() {
       <Container maxWidth='xs'
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 6, py: 3, px: 4, width: '100%' }}>
-          <Typography as='h1' variant="h6">两因素认证</Typography>
+          <Typography as='h1' variant="h6">动态密码认证</Typography>
           <Typography variant='caption'>请输入 6 位 TOTP 数字口令完成认证</Typography>
           <FormControl fullWidth sx={{ mt: 3 }}>
             <TextField required autoFocus autoComplete="off"
@@ -162,9 +161,7 @@ export default function SignInOTP() {
           </FormControl>
           <FormControlLabel sx={{ mt: 2 }}
             control={
-              <Checkbox
-                checked={clientId.length > 0}
-                onChange={onTrustCheck}
+              <Checkbox checked={trust} onChange={onTrustCheck}
                 inputProps={{ 'aria-label': '信任当前设备' }}
               />
             }

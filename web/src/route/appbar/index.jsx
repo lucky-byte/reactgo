@@ -131,8 +131,6 @@ export default function Appbar(params) {
     localStorage.clear();
     setUser(null);
 
-    enqueueSnackbar('已退出登录', { variant: 'success' });
-
     // 记录最后访问页面，下次登录时进行跳转
     setLastAccess(window.location.pathname);
     navigate('/signin', { replace: true });

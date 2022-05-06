@@ -21,6 +21,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import uuid from "uuid";
+import Cookies from 'universal-cookie';
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
@@ -69,12 +70,20 @@ export default function SignIn() {
 
   // 查询客户端ID
   useEffect(() => {
-    const id = localStorage.getItem('client-id');
+    const cookies = new Cookies();
+
+    const id = cookies.get('reactgo-clientid');
     if (id) {
       setClientId(id);
     } else {
       const newid = uuid.v4();
-      localStorage.setItem('client-id', newid);
+
+      cookies.set('reactgo-clientid', newid, {
+        path: '/',
+        maxAge: 3600 * 24 * 3650,
+        httpOnly: false,
+        sameSite: 'strict',
+      });
       setClientId(newid);
     }
   }, []);
@@ -280,7 +289,7 @@ function Forget(props) {
   const { loading, resetpass } = props;
 
   if (loading) {
-    return <Box sx={{height: 26}} />
+    return <Box sx={{ height: 26 }} />
   }
   if (resetpass) {
     return (
@@ -293,7 +302,7 @@ function Forget(props) {
   }
   return (
     <FormHelperText sx={{ mt: 2 }}>
-      当前系统安全设置不允许用户找回登录密码，如忘记登录信息，请联系管理员重置
+      当前系统设置不允许找回登录密码，如忘记登录信息，请联系管理员重置
     </FormHelperText>
   )
 }

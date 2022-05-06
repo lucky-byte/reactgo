@@ -30,25 +30,26 @@ func signin(c echo.Context) error {
 	var user db.User
 
 	// 查询用户信息
-	if err = db.SelectOne(ql, &user, username); err != nil {
+	err = db.SelectOne(ql, &user, username)
+	if err != nil {
 		cc.ErrLog(err).Errorf("登录失败, 用户 %s 不存在", username)
 		return c.String(http.StatusForbidden, "用户名或密码错误")
 	}
-	// 这里的主要作用是给日志增加用户信息
+	// 给日志增加用户信息
 	cc.SetUser(&user)
 
 	// 验证密码
 	phc, err := secure.ParsePHC(user.Passwd)
 	if err != nil {
 		cc.ErrLog(err).Errorf("%s 登录失败, 解析用户密码错", user.Name)
-		return c.String(http.StatusForbidden, "登录名或密码错误")
+		return c.String(http.StatusForbidden, "用户名或密码错误")
 	}
-	if err = phc.Verify(password); err != nil {
+	err = phc.Verify(password)
+	if err != nil {
 		cc.ErrLog(err).Errorf("%s 登录失败, 验证登录密码错", user.Name)
-		return c.String(http.StatusForbidden, "登录名或密码错误")
+		return c.String(http.StatusForbidden, "用户名或密码错误")
 	}
 
-	// 完成登录
+	// 完成后续登录过程
 	return auth.Login(cc, &user, clientid, 1, "")
-
 }

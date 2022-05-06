@@ -42,7 +42,7 @@ func Attach(up *echo.Echo, conf *config.ViperConfig) {
 
 	user.Attach(group) // 用户设置
 
-	group.Use(opsMiddleware()) // 操作审计
+	group.Use(opsRecorder) // 操作审计
 
 	system.Attach(group) // 系统管理
 }
