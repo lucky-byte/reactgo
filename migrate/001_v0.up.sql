@@ -38,6 +38,10 @@ create table if not exists signin_history (
   ua          varchar(512)    not null,
   clientid    varchar(36)     not null,
   trust       boolean,
+  tfa         int             default 0,
+                              -- 0. 无
+                              -- 1. 短信
+                              -- 2. 动态密码
   act_type    int             not null default 1,
                               -- 1. 账号密码登录
                               -- 2. 三方账号登录

@@ -55,6 +55,7 @@ type SigninHistory struct {
 	UA        string    `db:"ua"        json:"ua"`        // 客户端 userAgent
 	ClientId  string    `db:"clientid"  json:"clientid"`  // 客户端id
 	Trust     bool      `db:"trust"     json:"trust"`     // 信任设备
+	TFA       int       `db:"tfa"       json:"tfa"`       // 两因素认证方式
 	ActType   int       `db:"act_type"  json:"act_type"`  // 登录方法
 	OAuthP    string    `db:"oauthp"    json:"oauthp"`    // 三方账号提供方
 }

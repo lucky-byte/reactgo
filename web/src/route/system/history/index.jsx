@@ -114,6 +114,7 @@ export default function History() {
               <TableCell align="center">信任设备</TableCell>
               <TableCell align="center">位置</TableCell>
               <TableCell align="center">登录时间</TableCell>
+              <TableCell align="center">TFA</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -146,6 +147,9 @@ export default function History() {
                       {dayjs(row.create_at).fromNow()}
                     </Typography>
                   </Tooltip>
+                </TableCell>
+                <TableCell align="center" padding='none'>
+                  {row.tfa === 0 ? '无' : row.tfa === 1 ? '短信' : 'OTP'}
                 </TableCell>
               </TableRow>
             ))}

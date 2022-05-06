@@ -154,7 +154,7 @@ export default function SignInOTP() {
               {tfa &&
                 <Link underline="hover" onClick={onSwitchSMS}
                   sx={{ cursor: 'pointer' }}>
-                  或切换到短码认证
+                  或切换到短信认证
                 </Link>
               }
             </FormHelperText>

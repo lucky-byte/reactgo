@@ -31,7 +31,7 @@ export default function OTP() {
   const [secret, setSecret] = useState('');
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useTitle('两因素认证');
+  useTitle('动态密码认证');
 
   useEffect(() => {
     (async () => {
@@ -84,14 +84,12 @@ export default function OTP() {
             <ArrowBackIcon color='primary' />
           </IconButton>
           <Stack>
-            <Typography variant='h6'>设置两因素认证</Typography>
+            <Typography variant='h6'>设置动态密码认证</Typography>
             <Typography variant='caption'>
-              两因素认证使用存储在您手机 APP 中的一次性口令作为第二个认证因素，
+              动态密码认证使用存储在您手机 APP 中的一次性口令作为第二个认证因素，
               可以增强您的账户安全。
-            </Typography>
-            <Typography variant='caption'>
               您需要在手机中安装 TOTP<sup>1</sup> 客户端<sup>2</sup>来完成设置，
-              并不能卸载<sup>3</sup>，否则无法找回口令。
+              并不能卸载<sup>3</sup>，否则可能无法找回口令。
             </Typography>
           </Stack>
         </Stack>
@@ -139,7 +137,7 @@ export default function OTP() {
         <FormHelperText>
           2. 常见的 TOTP 客户端有: <strong>Google Authenticator</strong>、
           <strong>Microsoft Authenticator</strong>、
-          <strong>RedHat FreeOTP</strong>
+          <strong>RedHat FreeOTP</strong>，您可以从手机应用市场下载安装。
         </FormHelperText>
         <FormHelperText>
           3. 某些客户端提供备份功能，卸载后重新安装可以恢复数据，根据您使用的客户端而定。

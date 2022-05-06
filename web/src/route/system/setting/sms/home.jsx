@@ -26,6 +26,7 @@ import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore
 import BlockIcon from '@mui/icons-material/Block';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from "@mui/material/Divider";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import { saveAs } from 'file-saver';
@@ -165,7 +166,7 @@ function AddButton(props) {
 
   return (
     <>
-      <Button onClick={onOpen}>添加</Button>
+      <Button onClick={onOpen} endIcon={<KeyboardArrowDownIcon />}>添加</Button>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose} onClick={onClose}>
         <MenuItem component={Link} to='tencent/add'>
           <ListItemText>腾讯云短信服务</ListItemText>

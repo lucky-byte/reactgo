@@ -188,7 +188,7 @@ export default function SignInSMS() {
                 {user?.totp_isset &&
                   <Link underline="hover" onClick={onSwitchOTP}
                     sx={{ cursor: 'pointer' }}>
-                    或切换到 TOTP 认证
+                    或切换到动态密码认证
                   </Link>
                 }
               </FormHelperText>
@@ -198,7 +198,7 @@ export default function SignInSMS() {
                 {user?.totp_isset &&
                   <Link underline="hover" onClick={onSwitchOTP}
                     sx={{ cursor: 'pointer' }}>
-                    或切换到 TOTP 认证
+                    或切换到动态密码认证
                   </Link>
                 }
               </FormHelperText>

@@ -83,6 +83,7 @@ func list(c echo.Context) error {
 			"browser":   browser,
 			"is_mobile": ua.Mobile(),
 			"trust":     h.Trust,
+			"tfa":       h.TFA,
 			"acttype":   h.ActType,
 			"oauthp":    h.OAuthP,
 		})

@@ -52,11 +52,11 @@ func verify(c echo.Context) error {
 		cc.ErrLog(err).Error("生成登录 TOKEN 错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	// 信任设备
-	if trust && len(historyid) > 0 {
-		ql = `update signin_history set trust = true where uuid = ?`
+	// 更新登录历史记录
+	if len(historyid) > 0 {
+		ql = `update signin_history set trust = ?, tfa = 1 where uuid = ?`
 
-		if err = db.ExecOne(ql, historyid); err != nil {
+		if err = db.ExecOne(ql, trust, historyid); err != nil {
 			cc.ErrLog(err).Error("更新登录历史错")
 		}
 	}
