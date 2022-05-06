@@ -149,8 +149,9 @@ func callback(c echo.Context) error {
 		cc.ErrLog(err).Error("GitHub 用户信息缺少 id, email 或 login")
 		return errorHtml(http.StatusUnprocessableEntity, "授权账号信息不完整")
 	}
-	if oauth.Usage == 1 { // 授权
-		// 检查账号是否已授权给其他用户
+	// 授权，将 GitHub 账号绑定到用户
+	if oauth.Usage == 1 {
+		// 检查 GitHub 账号是否已授权给其他用户
 		ql = `
 			select count(*) from user_oauth
 			where status = 2 and userid = ? and provider = 'github'
@@ -189,6 +190,16 @@ func callback(c echo.Context) error {
 		err = db.ExecOne(
 			ql, p.ID.String(), p.Email, p.Login, p.Name, p.Avatar, body, state,
 		)
+		if err != nil {
+			cc.ErrLog(err).Error("更新用户授权账号信息错")
+			return errorHtml(http.StatusInternalServerError, "服务器内部错")
+		}
+	}
+	// 登录，记录授权信息，登录时进行匹配
+	if oauth.Usage == 2 {
+		ql = `update user_oauth set userid = ?, email = ?, login = ? where uuid = ?`
+
+		err = db.ExecOne(ql, p.ID.String(), p.Email, p.Login, state)
 		if err != nil {
 			cc.ErrLog(err).Error("更新用户授权账号信息错")
 			return errorHtml(http.StatusInternalServerError, "服务器内部错")

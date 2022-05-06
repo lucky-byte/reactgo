@@ -8,27 +8,32 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/route/index/auth"
 )
 
 func signin(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var userid, state string
+	var userid, state, clientid string
 
 	err := echo.FormFieldBinder(c).
+		MustString("clientid", &clientid).
 		MustString("userid", &userid).
 		MustString("state", &state).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
 	}
+	cc.Trim(&clientid, &userid, &state)
 
+	// 查询登录授权时创建的记录是否匹配
 	ql := `
 		select * from user_oauth
-		where uuid = ? and usage = 2 and status = 1 and provider = 'github'
+		where uuid = ? and userid = ? and usage = 2 and status = 1
+			and provider = 'github'
 	`
 	var record db.UserOAuth
 
-	err = db.SelectOne(ql, &record, state)
+	err = db.SelectOne(ql, &record, state, userid)
 	if err != nil {
 		cc.ErrLog(err).Error("查询 OAuth 登录记录错")
 		return c.NoContent(http.StatusInternalServerError)
@@ -37,9 +42,14 @@ func signin(c echo.Context) error {
 		cc.Log().Error("OAuth 登录超时")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	// 该记录不能再次使用
+	// 该记录不能再次使用，删除
 	ql = `delete from user_oauth where uuid = ? and usage = 2`
-	db.Exec(ql, state)
+
+	err = db.Exec(ql, state)
+	if err != nil {
+		cc.ErrLog(err).Error("清除 OAuth 登录记录错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
 
 	// 查询授权账号信息
 	ql = `
@@ -63,7 +73,7 @@ func signin(c echo.Context) error {
 		cc.ErrLog(err).Error("查询用户信息错")
 		return c.String(http.StatusNotFound, "用户不存在")
 	}
-	cc.Log().Infof("user: %v", user)
 
-	return c.NoContent(http.StatusOK)
+	// 完成登录
+	return auth.Login(c, &user, clientid)
 }

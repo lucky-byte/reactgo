@@ -137,9 +137,8 @@ export default function SignIn() {
         activate: resp.activate,
       });
 
-      // 当前设备不可信任
+      // 当前设备不可信任，如果设置了 TOTP，则进入 TOTP 认证
       if (!resp.trust) {
-        // 如果设置了 TOTP，则进入 TOTP 认证
         if (resp.totp_isset) {
           return navigate('otp', {
             state: {
@@ -234,8 +233,8 @@ export default function SignIn() {
               <Stack direction='row' justifyContent='center' alignItems='center'
                 spacing={2} mt={1}>
                 {providers.map(p => (
-                  <Authorize key={p} provider={p} submitting={submitting}
-                    setSubmitting={setSubmitting}
+                  <Authorize key={p} provider={p} clientId={clientId}
+                    submitting={submitting} setSubmitting={setSubmitting}
                   />
                 ))}
               </Stack>
@@ -293,10 +292,14 @@ function Forget(props) {
 
 // 三方账号登录
 function Authorize(props) {
-  const { provider, submitting, setSubmitting } = props;
+  const { provider, clientId, submitting, setSubmitting } = props;
 
   if (provider === 'github') {
-    return <GitHub submitting={submitting} setSubmitting={setSubmitting} />
+    return (
+      <GitHub clientId={clientId} submitting={submitting}
+        setSubmitting={setSubmitting}
+      />
+    )
   }
 
   return null;
