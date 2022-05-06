@@ -19,7 +19,7 @@ import SecretText from '~/comp/secret-text';
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
-import { get } from '~/rest';
+import { get } from '~/lib/rest';
 
 export default function Info() {
   const location = useLocation();

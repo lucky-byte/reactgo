@@ -11,7 +11,7 @@ import { useSnackbar } from 'notistack';
 import InplaceInput from '~/comp/inplace-input';
 import useTitle from "~/hook/title";
 import progressState from '~/state/progress';
-import { get, put } from "~/rest";
+import { get, put } from "~/lib/rest";
 import { useGeoipTab } from '../tabstate';
 
 export default function Home() {

@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import { useSecretCode } from '~/comp/secretcode';
 import userState from "~/state/user";
 import useTitle from "~/hook/title";
-import { get, post } from '~/rest';
+import { get, post } from '~/lib/rest';
 
 export default function OTP() {
   const navigate = useNavigate();

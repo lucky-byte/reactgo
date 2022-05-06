@@ -23,7 +23,7 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
 import { useSetCode } from "~/state/code";
-import { get } from '~/rest';
+import { get } from '~/lib/rest';
 import { geo } from '~/lib/geo';
 
 export default function History() {

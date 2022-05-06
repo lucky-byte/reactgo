@@ -28,7 +28,7 @@ import natsState from "~/state/nats";
 import Ellipsis from "~/comp/ellipsis";
 import lastNotificationState from "~/state/notification";
 import { notificationOutdatedState } from "~/state/notification";
-import { get } from "~/rest";
+import { get } from "~/lib/rest";
 
 export default function Notification() {
   const navigate = useNavigate();

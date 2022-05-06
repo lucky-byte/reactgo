@@ -18,9 +18,9 @@ import KeyIcon from '@mui/icons-material/Key';
 import isEmail from 'validator/lib/isEmail';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { put, post } from "~/lib/rest";
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
-import { put, post } from "~/rest";
 
 export default function Resetpass() {
   const theme = useTheme();

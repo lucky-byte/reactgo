@@ -20,7 +20,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
-import { get, put } from "~/rest";
+import { get, put } from "~/lib/rest";
 import CronHelp from './cronhelp';
 
 export default function Modify() {

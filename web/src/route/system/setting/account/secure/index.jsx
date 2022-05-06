@@ -9,7 +9,7 @@ import { useSnackbar } from 'notistack';
 import InplaceInput from '~/comp/inplace-input';
 import SecretText from '~/comp/secret-text';
 import useTitle from "~/hook/title";
-import { get, put } from "~/rest";
+import { get, put } from "~/lib/rest";
 import progressState from '~/state/progress';
 import { useSecureTab } from "../state";
 import JWTSignKeyButton from "./jwtsignkey";

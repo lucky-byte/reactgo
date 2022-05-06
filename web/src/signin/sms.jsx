@@ -21,7 +21,8 @@ import { useSnackbar } from 'notistack';
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
-import { post, put } from "~/rest";
+import { post, put } from "~/lib/rest";
+import { getLastAccess } from '~/lib/last-access';
 
 export default function SignInSMS() {
   const theme = useTheme();
@@ -40,18 +41,20 @@ export default function SignInSMS() {
 
   useEffect(() => { document.title = '短信验证'; }, []);
 
+  // 获取页面传入的数据
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token || !user || !user.userid) {
       return navigate('/signin', { replace: true });
     }
-    if (!location?.state?.smsid) {
+    if (!location.state?.smsid) {
       return navigate('/signin', { replace: true });
     }
     setSmsid(location.state.smsid);
-    setHistoryId(location?.state?.historyid || '');
-  }, [user, navigate, location?.state]);
+    setHistoryId(location.state?.historyid || '');
+  }, [user, navigate, location.state]);
 
+  // 更新计时器
   useEffect(() => {
     const timer = setTimeout(() => {
       if (time > 0) {
@@ -63,10 +66,16 @@ export default function SignInSMS() {
     return () => { clearTimeout(timer); }
   }, [time]);
 
+  // 输入短信验证码
   const onCodeChange = e => {
-    setCode(e.target.value);
+    const v = e.target.value;
+
+    if (/^[0-9]{0,6}$/.test(v)) {
+      setCode(v);
+    }
   }
 
+  // 输入框按下回车提交
   const onCodeKeyDown = e => {
     if (e.key === 'Enter') {
       onSubmit();
@@ -95,7 +104,7 @@ export default function SignInSMS() {
       const resp = await put('/signin/smsverify', new URLSearchParams({
         smsid, code, historyid: historyId, clientid: clientId,
       }));
-      if (!resp || !resp.token) {
+      if (!resp?.token) {
         return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
       }
       // 保存新的 token
@@ -107,12 +116,7 @@ export default function SignInSMS() {
       setLoading(false);
 
       // 跳转到最近访问页面
-      let last = localStorage.getItem('last-access');
-      if (last?.startsWith('/signin') || last?.startsWith('/resetpass')) {
-        last = '/';
-      }
-      localStorage.removeItem('last-access');
-      navigate(last || '/', { replace: true });
+      navigate(getLastAccess());
     } catch (err) {
       enqueueSnackbar(err.message);
     } finally {

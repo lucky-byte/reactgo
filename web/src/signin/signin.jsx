@@ -24,7 +24,8 @@ import uuid from "uuid";
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
-import { put, get } from "~/rest";
+import { put, get } from "~/lib/rest";
+import { getLastAccess } from '~/lib/last-access';
 import Beian from '~/img/beian.png';
 import ForgetUserid from './userid';
 import GitHub from "./github";
@@ -148,8 +149,9 @@ export default function SignIn() {
         activate: resp.activate,
       });
 
-      // 当前设备不可信任，如果设置了 TOTP，则进入 TOTP 认证
+      // 当前设备不可信任
       if (!resp.trust) {
+        // 如果设置了 TOTP，则进入 TOTP 认证
         if (resp.totp_isset) {
           return navigate('otp', {
             state: {
@@ -170,12 +172,7 @@ export default function SignIn() {
         }
       }
       // 跳转到最近访问页面
-      let last = localStorage.getItem('last-access');
-      if (last?.startsWith('/signin') || last?.startsWith('/resetpass')) {
-        last = '/';
-      }
-      localStorage.removeItem('last-access');
-      navigate(last || '/', { replace: true });
+      navigate(getLastAccess());
     } catch (err) {
       enqueueSnackbar(err.message, { variant: 'error' });
     }

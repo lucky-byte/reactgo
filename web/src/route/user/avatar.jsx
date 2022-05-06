@@ -14,7 +14,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import AvatarEditor from 'react-avatar-editor';
 import { useSnackbar } from 'notistack';
 import userState from "~/state/user";
-import { put } from "~/rest";
+import { put } from "~/lib/rest";
 
 export default function AvatarPicker(props) {
   const theme = useTheme();

@@ -17,7 +17,7 @@ import PinInput from '~/comp/pin-input';
 import { useSecretCode } from '~/comp/secretcode';
 import userState from "~/state/user";
 import useTitle from "~/hook/title";
-import { put } from '~/rest';
+import { put } from '~/lib/rest';
 
 export default function SecretCode() {
   const navigate = useNavigate();

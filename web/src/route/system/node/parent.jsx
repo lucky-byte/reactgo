@@ -14,7 +14,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import BlockIcon from '@mui/icons-material/Block';
 import CommitIcon from '@mui/icons-material/Commit';
 import { useSnackbar } from 'notistack';
-import { get, put } from '~/rest';
+import { get, put } from '~/lib/rest';
 import StyledTreeItem from './treeitem';
 
 export default function Parent(props) {

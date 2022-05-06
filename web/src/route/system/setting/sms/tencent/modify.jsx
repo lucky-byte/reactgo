@@ -17,7 +17,7 @@ import { useSnackbar } from 'notistack';
 import useTitle from "~/hook/title";
 import progressState from "~/state/progress";
 import SecretInput from "~/comp/secret-input";
-import { post, get } from '~/rest';
+import { post, get } from '~/lib/rest';
 import { useSMSTab } from '../../tabstate';
 import NumberTip from './numtip';
 

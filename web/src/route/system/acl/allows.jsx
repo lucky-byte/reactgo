@@ -21,7 +21,7 @@ import OutlinedPaper from "~/comp/outlined-paper";
 import urlCodes from "~/route/sidebar/codes";
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
-import { post, get, put } from '~/rest';
+import { post, get, put } from '~/lib/rest';
 
 export default function Allows() {
   const location = useLocation();

@@ -3,7 +3,7 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { useSnackbar } from 'notistack';
-import { put } from "~/rest";
+import { put } from "~/lib/rest";
 import popupWindow from '~/lib/popup';
 
 export default function GitHub(props) {

@@ -17,7 +17,7 @@ import { useSnackbar } from 'notistack';
 import SecretInput from "~/comp/secret-input";
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
-import { get, put } from '~/rest';
+import { get, put } from '~/lib/rest';
 
 export default function Modify() {
   const navigate = useNavigate();

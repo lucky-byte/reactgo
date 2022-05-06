@@ -17,7 +17,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import useTitle from "~/hook/title";
-import { post } from '~/rest';
+import { post } from '~/lib/rest';
 import { useMailTab } from '../tabstate';
 
 export default function Add() {

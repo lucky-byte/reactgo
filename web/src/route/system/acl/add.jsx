@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import useTitle from "~/hook/title";
-import { post } from '~/rest';
+import { post } from '~/lib/rest';
 
 export default function Add() {
   const navigate = useNavigate();

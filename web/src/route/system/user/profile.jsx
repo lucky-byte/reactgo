@@ -22,7 +22,7 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
 import usePrint from '~/hook/print';
-import { get } from '~/rest';
+import { get } from '~/lib/rest';
 import { geo } from '~/lib/geo';
 
 export default function Profile() {

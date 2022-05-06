@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
+import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
@@ -29,8 +30,7 @@ import InplaceInput from '~/comp/inplace-input';
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
-import { get, del, put } from '~/rest';
-import { Chip } from '@mui/material';
+import { get, del, put } from '~/lib/rest';
 
 export default function List() {
   const navigate = useNavigate();

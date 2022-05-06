@@ -21,7 +21,8 @@ import { useSnackbar } from 'notistack';
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
-import { put, post } from "~/rest";
+import { put, post } from "~/lib/rest";
+import { getLastAccess } from '~/lib/last-access';
 
 export default function SignInOTP() {
   const theme = useTheme();
@@ -49,7 +50,11 @@ export default function SignInOTP() {
   }, [user, navigate, location?.state]);
 
   const onCodeChange = e => {
-    setCode(e.target.value);
+    const v = e.target.value;
+
+    if (/^[0-9]{0,6}$/.test(v)) {
+      setCode(v);
+    }
   }
 
   const onCodeKeyDown = e => {
@@ -92,12 +97,7 @@ export default function SignInOTP() {
       setLoading(false);
 
       // 跳转到最近访问页面
-      let last = localStorage.getItem('last-access');
-      if (last?.startsWith('/signin') || last?.startsWith('/resetpass')) {
-        last = '/';
-      }
-      localStorage.removeItem('last-access');
-      navigate(last || '/', { replace: true });
+      navigate(getLastAccess());
     } catch (err) {
       enqueueSnackbar(err.message);
     } finally {

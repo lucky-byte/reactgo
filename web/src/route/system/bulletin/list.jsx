@@ -30,6 +30,8 @@ import Menu from '@mui/material/Menu';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
@@ -39,8 +41,7 @@ import { useSetCode } from "~/state/code";
 import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
-import { post, del, get } from '~/rest';
-import { IconButton, Tooltip } from '@mui/material';
+import { post, del, get } from '~/lib/rest';
 
 // 代码拆分
 const Markdown = lazy(() => import('~/comp/markdown'));

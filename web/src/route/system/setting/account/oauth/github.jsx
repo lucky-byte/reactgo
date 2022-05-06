@@ -18,7 +18,7 @@ import Checkbox from '@mui/material/Checkbox';
 import { useSnackbar } from 'notistack';
 import SecretInput from '~/comp/secret-input';
 import progressState from '~/state/progress';
-import { get, put } from "~/rest";
+import { get, put } from "~/lib/rest";
 
 export default function Github() {
   const { enqueueSnackbar } = useSnackbar();

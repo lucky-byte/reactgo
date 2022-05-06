@@ -19,7 +19,7 @@ import nats from '~/lib/nats';
 import userState from "./state/user";
 import natsState from "./state/nats";
 import { ColorModeContext } from "./hook/colormode";
-import { get } from "~/rest";
+import { get } from "~/lib/rest";
 import ErrorBoundary from "./error";
 import SignIn from "./signin";
 import ResetPass from "./resetpass";

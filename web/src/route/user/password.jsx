@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useSnackbar } from 'notistack';
@@ -15,8 +16,7 @@ import { useSecretCode } from '~/comp/secretcode';
 import SecretInput from '~/comp/secret-input';
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
-import { put } from "~/rest";
-import { Typography } from '@mui/material';
+import { put } from "~/lib/rest";
 
 export default function Password() {
   const navigate = useNavigate();

@@ -24,7 +24,7 @@ import isIdentityCard from 'validator/lib/isIdentityCard'
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
-import { get, post } from '~/rest';
+import { get, post } from '~/lib/rest';
 
 export default function Add() {
   const navigate = useNavigate();

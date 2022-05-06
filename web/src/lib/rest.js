@@ -1,4 +1,5 @@
 import Cookies from 'universal-cookie';
+import { setLastAccess } from './last-access';
 
 /**
  * 异步 HTTP 请求
@@ -26,7 +27,10 @@ const rest = async (url, args) => {
     if (resp.status === 401) {
       cookies.remove('csrf');
       localStorage.clear();
-      localStorage.setItem('last-access', window.location.pathname);
+
+      setLastAccess(window.location.pathname);
+
+      // 跳转到登录页面
       setTimeout(() => { window.location.href = '/signin'; }, 500);
       throw new Error('认证失败，请重新登录');
     }

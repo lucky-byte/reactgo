@@ -41,7 +41,7 @@ import OutlinedPaper from "~/comp/outlined-paper";
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
-import { get, put, del } from '~/rest';
+import { get, put, del } from '~/lib/rest';
 
 export default function User() {
   const navigate = useNavigate();

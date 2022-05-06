@@ -17,7 +17,7 @@ import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import isMobile from 'validator/lib/isMobilePhone';
-import { post } from "~/rest";
+import { post } from "~/lib/rest";
 
 // 找回登录名
 export default function ForgetUserid() {

@@ -16,7 +16,7 @@ import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
 import { notificationOutdatedState } from "~/state/notification";
 import usePrint from "~/hook/print";
-import { get } from '~/rest';
+import { get } from '~/lib/rest';
 
 const Markdown = lazy(() => import('~/comp/markdown'));
 

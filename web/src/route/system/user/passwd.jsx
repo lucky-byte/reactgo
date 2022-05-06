@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import useTitle from "~/hook/title";
-import { put } from '~/rest';
+import { put } from '~/lib/rest';
 
 export default function Password() {
   const location = useLocation();

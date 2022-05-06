@@ -12,7 +12,7 @@ import Radio from '@mui/material/Radio';
 import Typography from "@mui/material/Typography";
 import { useSnackbar } from 'notistack';
 import { useSecretCode } from '~/comp/secretcode';
-import { put } from "~/rest";
+import { put } from "~/lib/rest";
 
 export default function JWTSignKeyButton(props) {
   const { enqueueSnackbar } = useSnackbar();

@@ -6,14 +6,14 @@ import DialogContentText from '@mui/material/DialogContentText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
+import FormHelperText from '@mui/material/FormHelperText';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Zoom from '@mui/material/Zoom';
 import Collapse from '@mui/material/Collapse';
 import PinInput from '~/comp/pin-input';
-import { put } from '~/rest';
-import { FormHelperText } from '@mui/material';
+import { put } from '~/lib/rest';
 
 const SecretCodeDialog = ({ open, onSuccess, onClose }) => {
   const [hide, setHide] = useState(true);

@@ -20,7 +20,7 @@ import SearchInput from '~/comp/search-input';
 import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
-import { get } from '~/rest';
+import { get } from '~/lib/rest';
 
 // 代码拆分
 const Markdown = lazy(() => import('~/comp/markdown'));

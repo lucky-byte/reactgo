@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useSnackbar } from 'notistack';
 import userState from '~/state/user';
-import { post } from "~/rest";
+import { post } from "~/lib/rest";
 
 // 发送测试短信
 export default function Test(props) {

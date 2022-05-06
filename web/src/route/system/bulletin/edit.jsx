@@ -15,7 +15,7 @@ import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import MDEditor, { getAutoSaved, delAutoSaved } from '~/comp/mdeditor';
 import useTitle from "~/hook/title";
-import { post } from '~/rest';
+import { post } from '~/lib/rest';
 
 export default function Edit() {
   const navigate = useNavigate();

@@ -19,7 +19,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
-import { get, post } from '~/rest';
+import { get, post } from '~/lib/rest';
 import CronHelp from './cronhelp';
 
 export default function Add() {

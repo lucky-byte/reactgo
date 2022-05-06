@@ -32,7 +32,7 @@ import Avatar from '~/comp/avatar';
 import userState from "~/state/user";
 import { useSetCode } from "~/state/code";
 import useTitle from "~/hook/title";
-import { get, put } from "~/rest";
+import { get, put } from "~/lib/rest";
 import AvatarPicker from './avatar';
 
 // https://github.com/PaulLeCam/react-leaflet/issues/255#issuecomment-261904061

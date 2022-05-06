@@ -15,9 +15,9 @@ import FormHelperText from "@mui/material/FormHelperText";
 import Button from "@mui/material/Button";
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
+import { post, put } from "~/lib/rest";
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
-import { post, put } from "~/rest";
 
 export default function SMS() {
   const theme = useTheme();

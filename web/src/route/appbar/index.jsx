@@ -38,7 +38,8 @@ import Avatar from '~/comp/avatar';
 import titleState from "~/state/title";
 import userState from "~/state/user";
 import sidebarState from "~/state/sidebar";
-import { get } from "~/rest";
+import { get } from "~/lib/rest";
+import { setLastAccess } from '~/lib/last-access';
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import Navigator from './navigator';
@@ -74,7 +75,7 @@ export default function Appbar(params) {
     // 如果 token 无效，则跳转登录页面
     const token = localStorage.getItem('token');
     if (!token) {
-      localStorage.setItem('last-access', window.location.pathname);
+      setLastAccess(window.location.pathname);
       return navigate('/signin', { replace: true });
     }
     // 更新用户信息
@@ -129,10 +130,11 @@ export default function Appbar(params) {
     cookies.remove('csrf', { path: '/' });
     localStorage.clear();
     setUser(null);
+
     enqueueSnackbar('已退出登录', { variant: 'success' });
 
     // 记录最后访问页面，下次登录时进行跳转
-    localStorage.setItem('last-access', window.location.pathname);
+    setLastAccess(window.location.pathname);
     navigate('/signin', { replace: true });
   }
 

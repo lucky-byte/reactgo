@@ -34,7 +34,7 @@ import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import progressState from '~/state/progress';
-import { get, post, put, del } from "~/rest";
+import { get, post, put, del } from "~/lib/rest";
 import { useMailTab } from '../tabstate';
 import Import from "./import";
 import Test from "./test";

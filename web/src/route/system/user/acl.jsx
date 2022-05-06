@@ -16,7 +16,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
-import { get, put } from '~/rest';
+import { get, put } from '~/lib/rest';
 
 export default function ACL() {
   const location = useLocation();

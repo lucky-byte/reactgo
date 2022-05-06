@@ -9,7 +9,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormHelperText from "@mui/material/FormHelperText";
 import Button from "@mui/material/Button";
 import { useSnackbar } from 'notistack';
-import { post } from "~/rest";
+import { post } from "~/lib/rest";
 
 // 导入
 export default function Import(props) {

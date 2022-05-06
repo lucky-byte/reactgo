@@ -15,7 +15,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import useTitle from "~/hook/title";
 import progressState from "~/state/progress";
-import { post } from '~/rest';
+import { post } from '~/lib/rest';
 import { useSMSTab } from '../../tabstate';
 import NumberTip from './numtip';
 

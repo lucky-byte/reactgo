@@ -43,7 +43,7 @@ import { useSecretCode } from '~/comp/secretcode';
 import Avatar from '~/comp/avatar';
 import usePageData from '~/hook/pagedata';
 import { useSetCode } from "~/state/code";
-import { post, del, get } from '~/rest';
+import { post, del, get } from '~/lib/rest';
 
 export default function List() {
   const navigate = useNavigate();

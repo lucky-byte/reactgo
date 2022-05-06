@@ -7,7 +7,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import { useSecretCode } from '~/comp/secretcode';
-import { get, put } from "~/rest";
+import { get, put } from "~/lib/rest";
 import popupWindow from '~/lib/popup';
 
 export default function GitHub() {

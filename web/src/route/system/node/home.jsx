@@ -38,7 +38,7 @@ import progressState from "~/state/progress";
 import { useSetCode } from "~/state/code";
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
-import { get, post, put } from '~/rest';
+import { get, post, put } from '~/lib/rest';
 import StyledTreeItem from './treeitem';
 import ChangeParent from './parent';
 

@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
 import useTitle from "~/hook/title";
-import { get } from "~/rest";
+import { get } from "~/lib/rest";
 import { geo } from '~/lib/geo';
 
 export default function SignInList() {
