@@ -127,7 +127,7 @@ export default function Appbar(params) {
   const onLogout = () => {
     const cookies = new Cookies();
     cookies.remove('csrf', { path: '/' });
-    localStorage.removeItem('token');
+    localStorage.clear();
     setUser(null);
     enqueueSnackbar('已退出登录', { variant: 'success' });
 

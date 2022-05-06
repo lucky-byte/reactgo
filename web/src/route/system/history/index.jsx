@@ -109,7 +109,8 @@ export default function History() {
               <TableCell align="center">登录名</TableCell>
               <TableCell align="center">姓名</TableCell>
               <TableCell align="center">登录账号</TableCell>
-              <TableCell align="center">设备</TableCell>
+              <TableCell align="center">系统</TableCell>
+              <TableCell align="center">浏览器</TableCell>
               <TableCell align="center">信任设备</TableCell>
               <TableCell align="center">位置</TableCell>
               <TableCell align="center">登录时间</TableCell>
@@ -123,7 +124,8 @@ export default function History() {
                 <TableCell align="center">
                   <ActType acttype={row.acttype} oauthp={row.oauthp} />
                 </TableCell>
-                <TableCell align="center">{row.browser} on {row.os}</TableCell>
+                <TableCell align="center">{row.os}</TableCell>
+                <TableCell align="center">{row.browser}</TableCell>
                 <TableCell align="center" padding='none'>
                   {row.trust ?
                     <CheckIcon fontSize='small' sx={{ verticalAlign: 'middle' }} /> :

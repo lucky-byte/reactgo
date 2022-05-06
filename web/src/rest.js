@@ -25,7 +25,7 @@ const rest = async (url, args) => {
     // 认证失败，跳转到登录页面
     if (resp.status === 401) {
       cookies.remove('csrf');
-      localStorage.removeItem('token');
+      localStorage.clear();
       localStorage.setItem('last-access', window.location.pathname);
       setTimeout(() => { window.location.href = '/signin'; }, 500);
       throw new Error('认证失败，请重新登录');

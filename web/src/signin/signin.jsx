@@ -236,7 +236,7 @@ export default function SignIn() {
             登录
           </Button>
           {providers.length > 0 &&
-            <Stack mt={4}>
+            <Stack mt={3}>
               <Divider>
                 <FormHelperText>或使用下列账号登录</FormHelperText>
               </Divider>
@@ -296,7 +296,7 @@ function Forget(props) {
   }
   return (
     <FormHelperText sx={{ mt: 2 }}>
-      如忘记登录信息或手机号/邮箱地址发生变更，请联系工作人员重置登录信息。
+      当前系统安全设置不允许用户找回登录密码，如忘记登录信息，请联系管理员重置
     </FormHelperText>
   )
 }

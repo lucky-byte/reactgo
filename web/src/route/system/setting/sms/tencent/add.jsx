@@ -172,9 +172,9 @@ export default function Add() {
               </FormHelperText>
             </Stack>
             <Stack>
-              <TextField label='验证码模版编号' variant='standard' required
+              <TextField label='通用验证码模版编号' variant='standard' required
                 autoComplete='off'
-                placeholder='短信验证码模版编号'
+                placeholder='通用短信验证码模版编号'
                 disabled={progress}
                 helperText={errors?.textno1?.message}
                 error={errors?.textno1}
@@ -189,7 +189,8 @@ export default function Add() {
                 })}
               />
               <FormHelperText>
-                参考正文：您的验证码是 <NumberTip n={1} tip='短信验证码' />，请勿告诉他人
+                参考正文：您本次操作的验证码是 <NumberTip n={1} tip='短信验证码' />，
+                5分钟内有效，请勿告诉他人
               </FormHelperText>
             </Stack>
           </Stack>

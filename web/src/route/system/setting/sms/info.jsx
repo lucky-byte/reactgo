@@ -120,7 +120,7 @@ export default function Info() {
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>验证码</TableCell>
+              <TableCell>通用验证码</TableCell>
               <TableCell colSpan={3}>{sms.textno1}</TableCell>
             </TableRow>
           </TableBody>

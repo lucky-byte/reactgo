@@ -115,6 +115,11 @@ export default function Home() {
             </TableRow>
           </TableHead>
           <TableBody>
+            {list?.length === 0 &&
+              <TableRow disabled>
+                <TableCell colSpan={10} align="center">空</TableCell>
+              </TableRow>
+            }
             {list.map(item => (
               <TableRow key={item.uuid} disabled={item.disabled}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -277,11 +282,17 @@ function MenuButton(props) {
         <MoreVertIcon color="primary" />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose} onClick={onClose}>
-        <MenuItem onClick={onInfo}>
+        <MenuItem disabled={sms.disabled} onClick={onTest}>
           <ListItemIcon>
-            <ListAltIcon fontSize="small" />
+            <ForwardToInboxIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>详细信息</ListItemText>
+          <ListItemText>测试</ListItemText>
+        </MenuItem>
+        <MenuItem disabled={sms.disabled} onClick={onModify}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>修改</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem onClick={() => onSort('top')}>
@@ -297,18 +308,11 @@ function MenuButton(props) {
           <ListItemText>移到最后</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem disabled={sms.disabled} onClick={onModify}>
+        <MenuItem onClick={onInfo}>
           <ListItemIcon>
-            <EditIcon fontSize="small" />
+            <ListAltIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>修改</ListItemText>
-        </MenuItem>
-        <Divider />
-        <MenuItem disabled={sms.disabled} onClick={onTest}>
-          <ListItemIcon>
-            <ForwardToInboxIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>测试</ListItemText>
+          <ListItemText>详细信息</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem onClick={onDisableClick}>

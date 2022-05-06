@@ -171,7 +171,7 @@ export default function SignInOTP() {
             label={
               <Stack>
                 <Typography as='span'>信任当前设备</Typography>
-                <Typography variant='caption'>下次在该设备登录时无需验证</Typography>
+                <Typography variant='caption'>下次在该设备登录时无需再次验证</Typography>
               </Stack>
             }
           />
