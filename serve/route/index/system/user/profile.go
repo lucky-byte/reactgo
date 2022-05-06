@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/mssola/user_agent"
@@ -31,13 +32,19 @@ func profile(c echo.Context) error {
 	// 查询访问控制信息
 	acl, err := profileAcl(user.ACL)
 	if err != nil {
-		cc.ErrLog(err).Error("查询访问控制信息错")
+		cc.ErrLog(err).Error("查询用户访问控制信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	// 查询绑定节点
 	node, err := profileNode(uuid)
 	if err != nil {
-		cc.ErrLog(err).Error("查询绑定节点信息错")
+		cc.ErrLog(err).Error("查询用户绑定节点信息错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	// 查询授权账号
+	oauth, err := profileOAuth(uuid)
+	if err != nil {
+		cc.ErrLog(err).Error("查询用户授权账号错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	// 查询登录历史
@@ -51,6 +58,7 @@ func profile(c echo.Context) error {
 		"update_at":        user.UpdateAt,
 		"signin_at":        user.SigninAt,
 		"userid":           user.UserId,
+		"avatar":           user.Avatar,
 		"name":             user.Name,
 		"mobile":           user.Mobile,
 		"email":            user.Email,
@@ -64,6 +72,7 @@ func profile(c echo.Context) error {
 		"deleted":          user.Deleted,
 		"acl":              acl,
 		"node":             node,
+		"oauth":            oauth,
 		"history":          history,
 	})
 }
@@ -76,10 +85,7 @@ func profileAcl(acl_uuid string) (*echo.Map, error) {
 	if err := db.SelectOne(ql, &result, acl_uuid); err != nil {
 		return nil, err
 	}
-	acl := echo.Map{
-		"name":    result.Name,
-		"summary": result.Summary,
-	}
+	acl := echo.Map{"name": result.Name, "summary": result.Summary}
 	return &acl, nil
 }
 
@@ -101,11 +107,19 @@ func profileNode(user_uuid string) (*echo.Map, error) {
 	if len(nodes) > 1 {
 		return nil, fmt.Errorf("用户绑定了多个节点")
 	}
-	result := echo.Map{
-		"name":   nodes[0].Name,
-		"nlevel": nodes[0].NLevel,
-	}
+	result := echo.Map{"name": nodes[0].Name, "nlevel": nodes[0].NLevel}
 	return &result, nil
+}
+
+// 查询授权账号
+func profileOAuth(user_uuid string) (string, error) {
+	ql := `select provider from user_oauth where user_uuid = ? and status = 2`
+	var result []string
+
+	if err := db.Select(ql, &result, user_uuid); err != nil {
+		return "", err
+	}
+	return strings.Join(result, ","), nil
 }
 
 // 查询登录历史

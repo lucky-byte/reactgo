@@ -1,21 +1,16 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useSetRecoilState } from "recoil"
-import { useNavigate } from "react-router-dom";
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { useSnackbar } from 'notistack';
-import userState from "~/state/user";
 import { put } from "~/rest";
 import popupWindow from '~/lib/popup';
 
 export default function GitHub(props) {
-  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const setUser = useSetRecoilState(userState);
   const [state, setState] = useState('');
 
-  const { clientId, submitting, setSubmitting } = props;
+  const { clientId, submitting, setSubmitting, login } = props;
 
   const popupRef = useRef();
 
@@ -47,54 +42,8 @@ export default function GitHub(props) {
           }));
           setSubmitting(false);
 
-          if (!resp || !resp.token) {
-            throw new Error('响应数据无效');
-          }
-          localStorage.setItem('token', resp.token);
-
-          // 保存用户信息到全局状态
-          setUser({
-            uuid: resp.uuid,
-            userid: resp.userid,
-            avatar: resp.avatar ? `/image/?u=${resp.avatar}` : '',
-            name: resp.name,
-            email: resp.email,
-            mobile: resp.mobile,
-            address: resp.address,
-            secretcode_isset: resp.secretcode_isset,
-            totp_isset: resp.totp_isset,
-            allows: resp.allows,
-            activate: resp.activate,
-          });
-
-          // 当前设备不可信任，如果设置了 TOTP，则进入 TOTP 认证
-          if (!resp.trust) {
-            if (resp.totp_isset) {
-              return navigate('otp', {
-                state: {
-                  tfa: resp.tfa, historyid: resp.historyid,
-                }
-              });
-            }
-            // 如果设置了短信认证，则进入短信认证
-            if (resp.tfa) {
-              if (!resp.smsid) {
-                return enqueueSnackbar('响应数据不完整', { variant: 'error' });
-              }
-              return navigate('sms', {
-                state: {
-                  smsid: resp.smsid, historyid: resp.historyid,
-                }
-              });
-            }
-          }
-          // 跳转到最近访问页面
-          let last = localStorage.getItem('last-access');
-          if (last?.startsWith('/signin') || last?.startsWith('/resetpass')) {
-            last = '/';
-          }
-          localStorage.removeItem('last-access');
-          navigate(last || '/', { replace: true });
+          // 登录成功，更新前端信息
+          login(resp);
         } catch (err) {
           enqueueSnackbar(err.message);
         } finally {
@@ -102,9 +51,9 @@ export default function GitHub(props) {
         }
       }
     }
-  }, [state, enqueueSnackbar, setSubmitting, clientId, navigate, setUser]);
+  }, [state, enqueueSnackbar, setSubmitting, clientId, login]);
 
-  // 重新事件监听
+  // 监听窗口消息，授权成功后将通过窗口间 PostMessage 进行通信
   useEffect(() => {
     console.log('use effect')
     if (state) {
@@ -116,19 +65,19 @@ export default function GitHub(props) {
     }
   }, [onAuthorizedListener, state]);
 
-  const onClick = async () => {
+  // 开始授权
+  const onAuthorizeClick = async () => {
     try {
       const resp = await put('/signin/oauth/github/authorize');
 
       setState(resp.state);
 
+      // 打开新窗口进行授权
       const q = new URLSearchParams({
         client_id: resp.clientid, redirect_uri: resp.url, state: resp.state,
         scope: 'user:email',
       });
       const url = 'https://github.com/login/oauth/authorize?' + q.toString();
-
-      // window.addEventListener('message', onAuthorizedListener);
       popupRef.current = popupWindow(url, 'GithubSignIn', 650, 600);
     } catch (err) {
       if (err) {
@@ -139,7 +88,7 @@ export default function GitHub(props) {
 
   return (
     <Tooltip title='GitHub' arrow>
-      <IconButton size='large' disabled={submitting} onClick={onClick}>
+      <IconButton size='large' disabled={submitting} onClick={onAuthorizeClick}>
         <GitHubIcon fontSize='large' />
       </IconButton>
     </Tooltip>

@@ -6,7 +6,6 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
@@ -29,6 +28,7 @@ import isEmail from 'validator/lib/isEmail';
 import isMobile from 'validator/lib/isMobilePhone';
 import InplaceInput from '~/comp/inplace-input';
 import { useSecretCode } from '~/comp/secretcode';
+import Avatar from '~/comp/avatar';
 import userState from "~/state/user";
 import { useSetCode } from "~/state/code";
 import useTitle from "~/hook/title";
@@ -142,8 +142,8 @@ export default function Profile() {
       <Paper elevation={3} sx={{ mt: 4, px: 4, py: 3 }}>
         <Stack direction='row' spacing={3}>
           <Stack spacing={1}>
-            <Avatar sx={{ width: 96, height: 96 }} alt='头像'
-              src={user?.avatar}
+            <Avatar avatar={user?.avatar} name={user?.name}
+              sx={{ width: 96, height: 96 }}
             />
             <AvatarPicker />
           </Stack>

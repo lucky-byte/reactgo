@@ -161,7 +161,7 @@ function BaseInfoTable(props) {
           <TableRow>
             <TableCell>安全操作码</TableCell>
             <TableCell>{profile.secretcode_isset ? '已设置' : '未设置'}</TableCell>
-            <TableCell>两因素认证</TableCell>
+            <TableCell>一次性密码</TableCell>
             <TableCell>{profile.totp_isset ? '已设置' : '未设置'}</TableCell>
           </TableRow>
           <TableRow>
@@ -169,6 +169,10 @@ function BaseInfoTable(props) {
             <TableCell colSpan={3}>
               {profile.node ? `${profile.node.name}，${profile.node.nlevel} 级` : '无'}
             </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>授权账号</TableCell>
+            <TableCell colSpan={3}>{profile.oauth || '无'}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

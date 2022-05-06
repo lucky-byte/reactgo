@@ -82,13 +82,11 @@ export default function ACL() {
   return (
     <Container as='main' maxWidth='sm' sx={{ mb: 2 }}>
       <Paper sx={{ px: 5, py: 3, mt: 5 }}>
-        <Typography variant='h6'>修改访问控制角色</Typography>
-        <Typography variant='button' color='info' paragraph>
-          {location?.state?.name}
-        </Typography>
-        <Paper variant='outlined' sx={{ px: 3, py: 3 }}>
+        <Typography variant='h6'>修改 {location.state?.name} 的访问控制权限</Typography>
+        <Typography variant='caption'>修改访问控制权限将立即生效</Typography>
+        <Paper variant='outlined' sx={{ px: 3, py: 3, mt: 3 }}>
           <Stack spacing={4}>
-            <TextField id='acl' label='访问控制角色' variant='standard' fullWidth
+            <TextField id='acl' label='访问控制权限' variant='standard' fullWidth
               required select
               value={acl} onChange={onAclChange}>
               {acls.map(acl => (

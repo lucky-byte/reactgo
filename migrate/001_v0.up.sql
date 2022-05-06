@@ -37,7 +37,11 @@ create table if not exists signin_history (
   latitude    float,
   ua          varchar(512)    not null,
   clientid    varchar(36)     not null,
-  trust       boolean
+  trust       boolean,
+  act_type    int             not null default 1,
+                              -- 1. 账号密码登录
+                              -- 2. 三方账号登录
+  oauthp      varchar(32)     not null default ''
 );
 
 create table if not exists acl (

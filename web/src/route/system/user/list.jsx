@@ -5,8 +5,6 @@ import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import Tooltip from '@mui/material/Tooltip';
 import SecurityIcon from '@mui/icons-material/Security';
 import Button from '@mui/material/Button';
 import TableContainer from '@mui/material/TableContainer';
@@ -32,7 +30,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import KeyIcon from '@mui/icons-material/Key';
 import KeyOffIcon from '@mui/icons-material/KeyOff';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import CodeOffOutlinedIcon from '@mui/icons-material/CodeOffOutlined';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
@@ -42,6 +40,7 @@ import useTitle from "~/hook/title";
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
+import Avatar from '~/comp/avatar';
 import usePageData from '~/hook/pagedata';
 import { useSetCode } from "~/state/code";
 import { post, del, get } from '~/rest';
@@ -120,24 +119,17 @@ export default function List() {
   }
 
   return (
-    <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
+    <Container as='main' maxWidth='lg' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={progress} onChange={onKeywordChange}
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
           sx={{ minWidth: 300 }}
         />
         <TextField select variant='standard' sx={{ ml: 2, minWidth: 140 }}
-          value={acl} onChange={onAclChange}
-          InputProps={{
-            startAdornment:
-              <InputAdornment position="start">
-                <Tooltip title='通过访问控制角色筛选'>
-                  <SecurityIcon fontSize='small' sx={{
-                    cursor: 'help', color: '#8888'
-                  }} />
-                </Tooltip>
-              </InputAdornment>,
-          }}>
+          value={acl} onChange={onAclChange}>
+          <MenuItem disabled value="">
+            <em>角色筛选</em>
+          </MenuItem>
           {acls.map(a => (
             <MenuItem key={a.uuid} value={a.uuid}>{a.name}</MenuItem>
           ))}
@@ -153,11 +145,13 @@ export default function List() {
         <Table size='medium'>
           <TableHead>
             <TableRow sx={{ whiteSpace:'nowrap' }}>
+              <TableCell align='center'></TableCell>
               <TableCell align='center'>登录名</TableCell>
               <TableCell align='center'>姓名</TableCell>
-              <TableCell align='center'>角色</TableCell>
+              <TableCell align='center'>访问角色</TableCell>
               <TableCell align='center'>创建时间</TableCell>
-              <TableCell align='center'>最后登录时间</TableCell>
+              <TableCell align='center'>更新时间</TableCell>
+              <TableCell align='center'>最后登录</TableCell>
               <TableCell align='center'>登录次数</TableCell>
               <TableCell colSpan={2} />
             </TableRow>
@@ -166,6 +160,11 @@ export default function List() {
             {list.map(u => (
               <TableRow hover key={u.userid}
                 disabled={u.disabled} deleted={u.deleted?.toString()}>
+                <TableCell align="center" padding='checkbox'>
+                  <Avatar avatar={u.avatar} name={u.name}
+                    sx={{ width: 32, height: 32, mx: 1 }}
+                  />
+                </TableCell>
                 <TableCell align="center">{u.userid}</TableCell>
                 <TableCell align="center">{u.name}</TableCell>
                 <TableCell align="center">
@@ -178,6 +177,7 @@ export default function List() {
                   }
                 </TableCell>
                 <TableCell align="center">{dayjs(u.create_at).fromNow()}</TableCell>
+                <TableCell align="center">{dayjs(u.update_at).fromNow()}</TableCell>
                 <TableCell align="center">{dayjs(u.signin_at).fromNow()}</TableCell>
                 <TableCell align="center">{u.n_signin}</TableCell>
                 <TableCell align='center' padding='none'>
@@ -267,7 +267,7 @@ function UserMenuIconButton(props) {
       await post('/system/user/clearsecretcode', new URLSearchParams({
         uuid: user.uuid, _audit,
       }));
-      enqueueSnackbar('已清除', { variant: 'success' });
+      enqueueSnackbar('已清除用户安全操作码', { variant: 'success' });
 
       if (currentUser.userid === user.userid) {
         setCurrentUser({ ...currentUser, secretcode_isset: false });
@@ -283,17 +283,17 @@ function UserMenuIconButton(props) {
   const onClearTOTP = async () => {
     try {
       await confirm({
-        description: `确定要清除 ${user.name} 的两因素认证吗？`,
+        description: `确定要清除 ${user.name} 的一次性密码设置吗？`,
         confirmationText: '清除',
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      const _audit = `清除用户 ${user.name} 的两因素认证`;
+      const _audit = `清除用户 ${user.name} 的一次性密码`;
 
       await post('/system/user/cleartotp', new URLSearchParams({
         uuid: user.uuid, _audit,
       }));
-      enqueueSnackbar('已清除', { variant: 'success' });
+      enqueueSnackbar('已清除用户一次性密码设置', { variant: 'success' });
 
       if (currentUser.userid === user.userid) {
         setCurrentUser({ ...currentUser, totp_isset: false });
@@ -310,14 +310,14 @@ function UserMenuIconButton(props) {
     try {
       await confirm({
         description: user.disabled ?
-          `确定要恢复 ${user.name} 的账号吗？恢复后该账号可正常使用。`
+          `确定要恢复 ${user.name} 的账号吗？恢复后该账号将立即恢复正常使用。`
           :
-          `确定要禁用 ${user.name} 的账号吗？禁用后该账号不可以继续使用，直到恢复为止。`,
-        confirmationText: user.disabled ? '恢复' : '禁用',
+          `确定要停用 ${user.name} 的账号吗？停用后该账号不能再继续使用，直到恢复为止。`,
+        confirmationText: user.disabled ? '恢复' : '停用',
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      const _audit = `${user.disabled ? '恢复' : '禁用'}用户 ${user.name}`;
+      const _audit = `${user.disabled ? '恢复' : '停用'}用户 ${user.name}`;
 
       await post('/system/user/disable', new URLSearchParams({
         uuid: user.uuid, _audit,
@@ -335,11 +335,10 @@ function UserMenuIconButton(props) {
   const onDeleteClick = async () => {
     try {
       await confirm({
-        description: `确定要删除用户 ${user.name} 吗？删除后用户数据将保留，但账号将永久停用，无法恢复!`,
+        description: `确定要删除用户 ${user.name} 吗？删除后用户数据将保留，但账号将永久停用，且无法恢复!`,
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
-
       const token = await secretCode();
 
       const _audit = `删除用户 ${user.name}`;
@@ -368,13 +367,6 @@ function UserMenuIconButton(props) {
         <MoreVertIcon />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose} onClick={onClose}>
-        <MenuItem onClick={onProfileClick}>
-          <ListItemIcon>
-            <AccountCircleIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>详细资料</ListItemText>
-        </MenuItem>
-        <Divider />
         <MenuItem disabled={user.disabled || user.deleted} onClick={onModifyClick}>
           <ListItemIcon>
             <ManageAccountsIcon fontSize="small" />
@@ -389,7 +381,7 @@ function UserMenuIconButton(props) {
         </MenuItem>
         <MenuItem disabled={user.disabled || user.deleted} onClick={onACLClick}>
           <ListItemIcon>
-            <SecurityIcon fontSize="small" color='info' />
+            <SecurityIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>访问控制</ListItemText>
         </MenuItem>
@@ -402,11 +394,17 @@ function UserMenuIconButton(props) {
         </MenuItem>
         <MenuItem disabled={user.disabled || user.deleted} onClick={onClearTOTP}>
           <ListItemIcon>
-            <DeleteForeverIcon fontSize="small" />
+            <CodeOffOutlinedIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>清除两因素认证</ListItemText>
+          <ListItemText>清除一次性密码</ListItemText>
         </MenuItem>
         <Divider />
+        <MenuItem onClick={onProfileClick}>
+          <ListItemIcon>
+            <AccountCircleIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>详细资料</ListItemText>
+        </MenuItem>
         <MenuItem disabled={user.deleted} onClick={onDisableClick}>
           <ListItemIcon>
             {user.disabled ?
@@ -418,14 +416,14 @@ function UserMenuIconButton(props) {
           {user.disabled ?
             <ListItemText>恢复</ListItemText>
             :
-            <ListItemText>禁用</ListItemText>
+            <ListItemText>停用</ListItemText>
           }
         </MenuItem>
         <MenuItem disabled={user.deleted} onClick={onDeleteClick}>
           <ListItemIcon>
             <RemoveCircleOutlineIcon fontSize="small" color='error' />
           </ListItemIcon>
-          <ListItemText>删除</ListItemText>
+          <ListItemText>删除用户</ListItemText>
         </MenuItem>
       </Menu>
     </>

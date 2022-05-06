@@ -14,17 +14,17 @@ func Attach(up *echo.Group, code int) {
 	group := up.Group("/user", acl.AllowRead(code))
 
 	group.GET("/list", list)
-	group.GET("/profile", profile)
-	group.GET("/info", infoGet)
 
 	group.Use(acl.AllowWrite(code))
 
+	group.GET("/info", infoGet)
 	group.PUT("/info", infoUpdate)
 	group.PUT("/passwd", passwd)
 	group.PUT("/acl", aclUpdate)
 
 	group.Use(acl.AllowAdmin(code))
 
+	group.GET("/profile", profile)
 	group.POST("/add", add)
 	group.POST("/clearsecretcode", clearSecretCode)
 	group.POST("/cleartotp", clearTOTP)

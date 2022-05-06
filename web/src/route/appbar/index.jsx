@@ -11,7 +11,6 @@ import IconButton from '@mui/material/IconButton';
 import Link from "@mui/material/Link";
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
-import Avatar from "@mui/material/Avatar";
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -35,6 +34,7 @@ import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import useColorModeContent from "~/hook/colormode";
+import Avatar from '~/comp/avatar';
 import titleState from "~/state/title";
 import userState from "~/state/user";
 import sidebarState from "~/state/sidebar";
@@ -88,7 +88,7 @@ export default function Appbar(params) {
           setUser({
             uuid: resp.uuid,
             userid: resp.userid,
-            avatar: resp.avatar ? `/image/?u=${resp.avatar}` : '',
+            avatar: resp.avatar,
             name: resp.name,
             mobile: resp.mobile,
             email: resp.email,
@@ -167,7 +167,7 @@ export default function Appbar(params) {
           </Tooltip>
           {user?.avatar ?
             <IconButton onClick={onUserMenuOpen}>
-              <Avatar src={user.avatar} alt={user.name || user.userid} />
+              <Avatar avatar={user?.avatar} name={user?.name} />
             </IconButton>
             :
             <Button

@@ -22,7 +22,7 @@ func list(c echo.Context) error {
 	err := echo.QueryParamsBinder(c).
 		MustUint("page", &page).
 		MustUint("rows", &rows).
-		MustString("acl", &acl).
+		String("acl", &acl).
 		String("keyword", &keyword).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
@@ -38,7 +38,7 @@ func list(c echo.Context) error {
 		pg.Col("mobile").ILike(keyword),
 		pg.Col("email").ILike(keyword),
 	))
-	if acl != "all" {
+	if len(acl) > 0 && acl != "all" {
 		pg.Where(pg.Col("acl").Eq(acl))
 	}
 	aclTable := goqu.T("acl")
@@ -72,6 +72,7 @@ func list(c echo.Context) error {
 			"create_at": u.CreateAt,
 			"update_at": u.UpdateAt,
 			"userid":    u.UserId,
+			"avatar":    u.Avatar,
 			"name":      u.Name,
 			"email":     u.Email,
 			"mobile":    u.Mobile,

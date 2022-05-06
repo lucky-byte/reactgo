@@ -75,5 +75,5 @@ func signin(c echo.Context) error {
 	}
 
 	// 完成登录
-	return auth.Login(c, &user, clientid)
+	return auth.Login(c, &user, clientid, 2, "github")
 }

@@ -40,8 +40,9 @@ func Attach(up *echo.Echo, conf *config.ViperConfig) {
 
 	secretcode.Attach(group) // 验证安全码
 
+	user.Attach(group) // 用户设置
+
 	group.Use(opsMiddleware()) // 操作审计
 
-	user.Attach(group)   // 用户设置
 	system.Attach(group) // 系统管理
 }

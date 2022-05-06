@@ -14,8 +14,11 @@ import (
 	"github.com/lucky-byte/reactgo/serve/sms"
 )
 
-func Login(c echo.Context, user *db.User, clientid string) error {
+func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp string) error {
 	cc := c.(*ctx.Context)
+
+	// 日志增加用户信息
+	cc.SetUser(user)
 
 	// 检查用户状态
 	if user.Disabled || user.Deleted {
@@ -109,17 +112,13 @@ func Login(c echo.Context, user *db.User, clientid string) error {
 		cc.ErrLog(err).Error("记录登录历史时查询 IP 地理位置错")
 		geoInfo = new(geoip.Info)
 	}
-	// 如果当前设备不被信任，则记入随机值
-	// if !trust {
-	// 	clientid = uuid.NewString()
-	// }
 	historyid := uuid.NewString()
 
 	ql = `
 		insert into signin_history (
 			uuid, user_uuid, userid, name, ip, country, province, city,
-			district, longitude, latitude, ua, clientid, trust
-		) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			district, longitude, latitude, ua, clientid, trust, act_type, oauthp
+		) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 	err = db.ExecOne(ql,
 		historyid,
@@ -136,6 +135,8 @@ func Login(c echo.Context, user *db.User, clientid string) error {
 		cc.Request().UserAgent(),
 		clientid,
 		trust,
+		acttype,
+		oauthp,
 	)
 	if err != nil {
 		cc.ErrLog(err).Error("登记用户登录历史错误")

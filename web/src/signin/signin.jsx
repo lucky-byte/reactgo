@@ -117,6 +117,17 @@ export default function SignIn() {
       }));
       setSubmitting(false);
 
+      // 登录成功，更新前端信息
+      login(resp);
+    } catch (err) {
+      enqueueSnackbar(err.message, { variant: 'error' });
+      setSubmitting(false);
+    }
+  }
+
+  // 登录系统
+  const login = resp => {
+    try {
       if (!resp || !resp.token) {
         throw new Error('响应数据无效');
       }
@@ -126,7 +137,7 @@ export default function SignIn() {
       setUser({
         uuid: resp.uuid,
         userid: resp.userid,
-        avatar: resp.avatar ? `/image/?u=${resp.avatar}` : '',
+        avatar: resp.avatar,
         name: resp.name,
         email: resp.email,
         mobile: resp.mobile,
@@ -167,7 +178,6 @@ export default function SignIn() {
       navigate(last || '/', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message, { variant: 'error' });
-      setSubmitting(false);
     }
   }
 
@@ -235,6 +245,7 @@ export default function SignIn() {
                 {providers.map(p => (
                   <Authorize key={p} provider={p} clientId={clientId}
                     submitting={submitting} setSubmitting={setSubmitting}
+                    login={login}
                   />
                 ))}
               </Stack>
@@ -292,14 +303,10 @@ function Forget(props) {
 
 // 三方账号登录
 function Authorize(props) {
-  const { provider, clientId, submitting, setSubmitting } = props;
+  const { provider, ...others } = props;
 
   if (provider === 'github') {
-    return (
-      <GitHub clientId={clientId} submitting={submitting}
-        setSubmitting={setSubmitting}
-      />
-    )
+    return <GitHub {...others} />
   }
 
   return null;

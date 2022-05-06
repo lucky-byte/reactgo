@@ -40,28 +40,30 @@ type User struct {
 
 // 登录历史
 type SigninHistory struct {
-	UUID      string    `db:"uuid"      json:"uuid"`      // unique id
-	CreateAt  time.Time `db:"create_at" json:"create_at"` // create time
-	User      string    `db:"user_uuid" json:"user_uuid"` // user uuid
-	UserId    string    `db:"userid"    json:"userid"`    // userid
+	UUID      string    `db:"uuid"      json:"uuid"`      // uuid
+	CreateAt  time.Time `db:"create_at" json:"create_at"` // 创建时间
+	User      string    `db:"user_uuid" json:"user_uuid"` // 用户 uuid
+	UserId    string    `db:"userid"    json:"userid"`    // 用户 userid
 	Name      string    `db:"name"      json:"name"`      // 姓名
-	IP        string    `db:"ip"        json:"ip"`        // ip 地址
+	IP        string    `db:"ip"        json:"ip"`        // IP 地址
 	Country   string    `db:"country"   json:"country"`   // 国家
 	Province  string    `db:"province"  json:"province"`  // 省
 	City      string    `db:"city"      json:"city"`      // 市
 	District  string    `db:"district"  json:"district"`  // 区
 	Longitude float64   `db:"longitude" json:"longitude"` // 精度
 	Latitude  float64   `db:"latitude"  json:"latitude"`  // 纬度
-	UA        string    `db:"ua"        json:"ua"`        // user agent
+	UA        string    `db:"ua"        json:"ua"`        // 客户端 userAgent
 	ClientId  string    `db:"clientid"  json:"clientid"`  // 客户端id
 	Trust     bool      `db:"trust"     json:"trust"`     // 信任设备
+	ActType   int       `db:"act_type"  json:"act_type"`  // 登录方法
+	OAuthP    string    `db:"oauthp"    json:"oauthp"`    // 三方账号提供方
 }
 
 // 访问控制角色
 type ACL struct {
 	UUID     string    `db:"uuid"       json:"uuid"`      // uuid
-	CreateAt time.Time `db:"create_at"  json:"create_at"` // create time
-	UpdateAt time.Time `db:"update_at"  json:"update_at"` // update time
+	CreateAt time.Time `db:"create_at"  json:"create_at"` // 创建时间
+	UpdateAt time.Time `db:"update_at"  json:"update_at"` // 更新时间
 	Code     int       `db:"code"       json:"code"`      // 代码
 	Name     string    `db:"name"       json:"name"`      // 名称
 	Summary  string    `db:"summary"    json:"summary"`   // 描述

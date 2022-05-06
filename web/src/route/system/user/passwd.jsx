@@ -58,12 +58,9 @@ export default function Password() {
   return (
     <Container as='main' maxWidth='sm' sx={{ mb: 2 }}>
       <Paper sx={{ px: 5, py: 3, mt: 5 }}>
-        <Typography variant='h6'>修改登录密码</Typography>
-        <Typography variant='button' color='secondary' paragraph>
-          {location?.state?.name}
-        </Typography>
+        <Typography variant='h6'>修改 {location.state?.name} 的登录密码</Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
+          <Paper variant='outlined' sx={{ px: 4, py: 3, mt: 3 }}>
             <Stack spacing={4}>
               <TextField label='登录密码' variant='standard' fullWidth
                 required type='password' autoComplete='new-password'
