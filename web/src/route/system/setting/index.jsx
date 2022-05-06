@@ -6,7 +6,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { useSetCode } from "~/state/code";
-import NotFound from "~/route/notfound";
+import NotFound from "~/comp/notfound";
 import Mail from './mail';
 import SMS from "./sms";
 import Geoip from "./geoip";

@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import NotFound from "~/route/notfound";
+import NotFound from "~/comp/notfound";
 import Home from "./home";
 
 export default function Geoip() {

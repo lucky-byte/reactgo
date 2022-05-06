@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Routes, Route } from "react-router-dom";
 import LinearProgress from '@mui/material/LinearProgress';
-import NotFound from "../notfound";
+import NotFound from "~/comp/notfound";
 import User from "./user";
 import Acl from "./acl";
 import History from "./history";

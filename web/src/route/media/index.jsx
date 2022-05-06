@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Routes, Route } from "react-router-dom";
 import LinearProgress from '@mui/material/LinearProgress';
-import NotFound from "~/route/notfound";
+import NotFound from "~/comp/notfound";
 import Images from './images';
 import Videos from './videos';
 

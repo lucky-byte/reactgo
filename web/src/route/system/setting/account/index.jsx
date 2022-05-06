@@ -6,7 +6,7 @@ import Tab from '@mui/material/Tab';
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import useTitle from "~/hook/title";
-import NotFound from "~/route/notfound";
+import NotFound from "~/comp/notfound";
 import { useAccountTab } from '../tabstate';
 import tabState from "./state";
 import Secure from './secure';

@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Routes, Route } from "react-router-dom";
 import LinearProgress from '@mui/material/LinearProgress';
-import NotFound from "../notfound";
+import NotFound from "~/comp/notfound";
 import Avatar from "./avatar";
 import Password from "./password";
 import Security from "./security";

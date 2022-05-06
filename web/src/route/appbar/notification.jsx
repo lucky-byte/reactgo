@@ -149,14 +149,63 @@ export default function Notification() {
     setOutdated,
   ]);
 
+  // 订阅系统通知
+  useEffect(() => {
+    if (!user?.uuid || !natsActivate) {
+      return;
+    }
+    const broker = nats.getBroker();
+    if (!broker) {
+      return;
+    }
+
+    // 检查用户是否有事件访问权限
+    let event_allow = false;
+
+    for (let i = 0; i < user.allows?.length; i++) {
+      if (user.allows[i].code === 9040) {
+        event_allow = true;
+        break;
+      }
+    }
+    // 如果没有权限，则不订阅事件通知
+    if (!event_allow) {
+      return;
+    }
+    let sub = null;
+
+    (async () => {
+      try {
+        sub = broker.subscribe("reactgo.system.event");
+        const codec = await nats.JSONCodec();
+
+        // 收到事件时弹出提示
+        for await (const m of sub) {
+          const event = codec.decode(m.data);
+
+          popupNotification(event);
+          popupWebNotification(event);
+        }
+      } catch (err) {
+        enqueueSnackbar(err.message || '连接消息通道失败');
+      }
+    })();
+
+    // 取消订阅
+    return () => { sub && sub.unsubscribe(); }
+  }, [enqueueSnackbar, natsActivate, popupNotification, user.allows, user.uuid]);
+
+  // 打开下拉通知面板
   const onOpen = e => {
     setAnchorEl(e.currentTarget);
   }
 
+  // 关闭下拉通知面板
   const onClose = () => {
     setAnchorEl(null);
   };
 
+  // 点击某个通知
   const onItemClick = item => {
     navigate(`/user/notification/${item.uuid}`, { state: { status: item.status } });
   }

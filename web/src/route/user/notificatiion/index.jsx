@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import NotFound from "~/route/notfound";
+import NotFound from "~/comp/notfound";
 import List from "./list";
 import Item from "./item";
 
