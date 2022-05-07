@@ -85,7 +85,7 @@ export default function OTP() {
           </IconButton>
           <Stack>
             <Typography variant='h6'>设置动态密码认证</Typography>
-            <Typography variant='caption'>
+            <Typography variant='body2'>
               动态密码认证使用存储在您手机 APP 中的一次性口令作为第二个认证因素，
               可以增强您的账户安全。
               您需要在手机中安装 TOTP<sup>1</sup> 客户端<sup>2</sup>来完成设置，

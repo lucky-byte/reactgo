@@ -28,14 +28,14 @@ export default function Home() {
           <Typography variant='h5'>安全设置</Typography>
         </Stack>
         <Typography variant='h6' sx={{ mt: 4 }}>安全操作码</Typography>
-        <Typography variant='caption'>
+        <Typography variant='body2'>
           安全操作码是只有您本人知晓的 6 位数字，在执行敏感操作时，安全操作码可以提供额外的安全保护
         </Typography>
         <Paper variant='outlined' sx={{ p: 2, mt: 1 }}>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             {user?.secretcode_isset
               ?
-              <Typography>安全操作码已设置</Typography>
+              <Typography variant='button' color='green'>安全操作码已设置</Typography>
               :
               <Typography color='error'>还未设置安全操作码</Typography>
             }
@@ -45,13 +45,13 @@ export default function Home() {
           </Stack>
         </Paper>
         <Typography variant='h6' sx={{ mt: 4 }}>动态密码认证</Typography>
-        <Typography variant='caption'>
-          在验证身份时，除密码外，还可以添加第二个认证因子，这样即使别人知道了你的密码也无法完成身份认证
+        <Typography variant='body2'>
+          在认证时，除密码外还可以添加第二个认证因子，这样即使别人知道了你的密码也无法冒充你的身份
         </Typography>
         <Paper variant='outlined' sx={{ p: 2, mt: 1 }}>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             {user?.totp_isset ?
-              <Typography>动态密码认证已设置</Typography>
+              <Typography color='green' variant='button'>动态密码认证已设置</Typography>
               :
               <Typography color='error'>还未设置动态密码认证</Typography>
             }

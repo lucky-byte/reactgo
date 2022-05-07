@@ -98,7 +98,7 @@ export default function Ops() {
   }
 
   return (
-    <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
+    <Container as='main' role='main' maxWidth='lg' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={loading} onChange={onKeywordChange}
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}

@@ -99,8 +99,8 @@ export default function SecretCode() {
           </IconButton>
           <Stack>
             <Typography variant='h6'>设置安全操作码</Typography>
-            <Typography variant='caption'>
-              安全操作码由 6 位数字组成，用于保护危险操作，例如修改个人重要信息，进行资金操作等
+            <Typography variant='body2'>
+              安全操作码由 6 位数字组成，用于保护敏感操作，例如修改个人重要信息，进行资金操作等
             </Typography>
           </Stack>
         </Stack>

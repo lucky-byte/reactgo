@@ -36,8 +36,8 @@ export default function Home() {
           </IconButton>
           <Stack>
             <Typography variant='h5'>身份授权</Typography>
-            <Typography variant='caption'>
-              你可以授权使用你在下列网站的账号登录本系统
+            <Typography variant='body2'>
+              您可以授权使用您在下列网站拥有的账号登录本系统
             </Typography>
           </Stack>
         </Stack>
@@ -87,12 +87,6 @@ export default function Home() {
             </Button>
           </Stack>
         </Paper>
-        <Typography variant='caption'>
-          OpenID Connect 是基于 OAuth 2.0 系列规范的可互操作身份验证协议，更多信息请参考
-          <Link href='https://openid.net/connect/' target='_blank'>
-            https://openid.net/connect
-          </Link>
-        </Typography>
       </Paper>
     </Container>
   )

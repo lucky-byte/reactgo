@@ -131,7 +131,7 @@ export default function GitHub() {
           {loading ? <Skeleton variant="text" width={300} /> : enabled ?
             <Typography variant='caption'>
               {status === 2 ?
-                `已授权帐号 ${email}` : '授权使用您的 GitHub 账号登录本系统'
+                `已授权 ${email}` : '授权使用您的 GitHub 账号登录本系统'
               }
             </Typography>
             :
