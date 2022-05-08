@@ -15,6 +15,7 @@ func Attach(up *echo.Group, code int) {
 
 	group.PUT("/name", name)
 	group.PUT("/summary", summary)
+	group.PUT("/features", features)
 
 	group.Use(acl.AllowAdmin(code))
 

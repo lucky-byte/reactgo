@@ -43,7 +43,7 @@ create table if not exists signin_history (
                               -- 1. 短信
                               -- 2. 动态密码
   act_type    int             not null default 1,
-                              -- 1. 账号密码登录
+                              -- 1. 系统账号登录
                               -- 2. 三方账号登录
   oauthp      varchar(32)     not null default ''
 );
@@ -54,7 +54,8 @@ create table if not exists acl (
   update_at   timestamp       not null default current_timestamp,
   code        int             not null unique,
   name        varchar(64)     not null unique,
-  summary     varchar(512)    not null
+  summary     varchar(512)    not null,
+  features    text            not null
 );
 
 insert into acl (uuid, code, name, summary) values (

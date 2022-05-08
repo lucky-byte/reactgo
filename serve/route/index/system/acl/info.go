@@ -2,6 +2,7 @@ package acl
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 
@@ -16,16 +17,18 @@ func info(c echo.Context) error {
 	if len(uuid) == 0 {
 		return c.NoContent(http.StatusBadRequest)
 	}
-	ql := `
-		select create_at, update_at, code, name, summary
-		from acl where uuid = ?
-	`
+	ql := `select * from acl where uuid = ?`
 	var acl db.ACL
 
 	err := db.SelectOne(ql, &acl, uuid)
 	if err != nil {
 		cc.ErrLog(err).Error("查询访问控制信息错")
 		return c.NoContent(http.StatusInternalServerError)
+	}
+	features := []string{}
+
+	if len(acl.Features) > 0 {
+		features = strings.Split(acl.Features, ",")
 	}
 	// 查询允许列表
 	ql = `
@@ -66,6 +69,7 @@ func info(c echo.Context) error {
 		"code":      acl.Code,
 		"name":      acl.Name,
 		"summary":   acl.Summary,
+		"features":  features,
 		"allows":    allows,
 		"users":     count,
 	})

@@ -68,6 +68,7 @@ type ACL struct {
 	Code     int       `db:"code"       json:"code"`      // 代码
 	Name     string    `db:"name"       json:"name"`      // 名称
 	Summary  string    `db:"summary"    json:"summary"`   // 描述
+	Features string    `db:"features"   json:"features"`  // 特征
 }
 
 // 访问控制权限

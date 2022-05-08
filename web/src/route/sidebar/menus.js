@@ -62,10 +62,10 @@ const menus = [{
     icon: AppRegistrationIcon,
   }, {
     code: 9030,
-    icon: SettingsIcon,
+    icon: ReportGmailerrorredIcon,
   }, {
     code: 9040,
-    icon: ReportGmailerrorredIcon,
+    icon: SettingsIcon,
   }, {
     code: 9050,
     icon: AccessAlarmIcon,

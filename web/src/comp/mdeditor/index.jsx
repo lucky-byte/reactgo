@@ -13,7 +13,6 @@ import usePrint from "~/hook/print";
 import SimpleMDEDark from './dark';
 import help from './help.md';
 import "easymde/dist/easymde.min.css";
-import "codemirror/theme/abcdef.css";
 
 // 代码拆分
 const SimpleMDE = lazy(() => import('react-simplemde-editor'));
@@ -29,7 +28,7 @@ export default function MDEditor(props) {
   const [helpPrintNode, setHelpPrintNode] = useState(null);
   const [previewOpen, setPreviewOpen] = useState(false);
 
-  const { placeholder, uniqueId, ...others } = props;
+  const { placeholder, uniqueId, onChange, ...others } = props;
 
   const printHelp = usePrint(helpPrintNode);
 
@@ -121,23 +120,28 @@ export default function MDEditor(props) {
     })();
   }, [theme.palette.mode, enqueueSnackbar, placeholder, uniqueId]);
 
-  const onMDEChange = v => {
+  // 修改内容
+  const onContentChange = v => {
     setContent(v);
+    onChange && onChange(v);
   }
 
+  // 关闭帮助窗口
   const onHelpClose = () => {
     setHelpOpen(false);
   }
 
+  // 关闭预览窗口
   const onPreviewClose = () => {
     setPreviewOpen(false);
   }
 
+  // 支持 Dark 模式
   const MDE = theme.palette.mode === 'light' ? SimpleMDE : SimpleMDEDark;
 
   return (
     <>
-      <MDE {...others} options={options} onChange={onMDEChange} />
+      <MDE {...others} options={options} onChange={onContentChange} />
       <Dialog open={helpOpen} maxWidth='md' fullWidth onClose={onHelpClose}>
         <DialogTitle>
           <Stack direction='row' spacing={2} justifyContent='flex-end'>

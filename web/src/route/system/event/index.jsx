@@ -41,7 +41,7 @@ export default function Event() {
   const [loading, setLoading] = useState(false);
 
   useTitle('系统事件');
-  useSetCode(9040);
+  useSetCode(9030);
 
   useEffect(() => {
     (async () => {

@@ -9,10 +9,11 @@ import Link from '@mui/material/Link';
 import Popover from '@mui/material/Popover';
 import AppleIcon from '@mui/icons-material/Apple';
 import useTitle from "~/hook/title";
-import Google from '~/img/google.svg';
 import Microsoft from '~/img/microsoft.svg';
 import { useOAuthTab } from "../state";
 import Github from "./github";
+import Google from "./google";
+import Twitter from "./twitter";
 
 export default function OAuth() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -39,6 +40,9 @@ export default function OAuth() {
       <Paper variant='outlined' sx={{ mt: 3 }}>
         <Github />
         <Divider />
+        <Google />
+        <Divider />
+        <Twitter />
         <Stack direction='row' justifyContent='space-between' alignItems='center'>
           <Stack direction='row' spacing={1} alignItems='center'>
             <AppleIcon fontSize='large' />
@@ -48,21 +52,6 @@ export default function OAuth() {
             </Stack>
           </Stack>
           <Button variant='contained'>
-            授权
-          </Button>
-        </Stack>
-        <Divider sx={{ my: 2 }} />
-        <Stack direction='row' justifyContent='space-between' alignItems='center'>
-          <Stack direction='row' spacing={1} alignItems='center'>
-            <Box width={35} height={35} display='flex' justifyContent='center'>
-              <img src={Google} alt='LOGO' style={{ width: 28 }} />
-            </Box>
-            <Stack>
-              <Typography variant='h6'>Google</Typography>
-              <Typography variant='caption'>未授权</Typography>
-            </Stack>
-          </Stack>
-          <Button variant='contained' to='secretcode'>
             授权
           </Button>
         </Stack>

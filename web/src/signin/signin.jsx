@@ -30,6 +30,7 @@ import { getLastAccess } from '~/lib/last-access';
 import Beian from '~/img/beian.png';
 import ForgetUserid from './userid';
 import GitHub from "./github";
+import Twitter from "./twitter";
 
 export default function SignIn() {
   const theme = useTheme();
@@ -247,7 +248,7 @@ export default function SignIn() {
                 <FormHelperText>或使用下列账号登录</FormHelperText>
               </Divider>
               <Stack direction='row' justifyContent='center' alignItems='center'
-                spacing={2} mt={1}>
+                spacing={1} mt={1}>
                 {providers.map(p => (
                   <Authorize key={p} provider={p} clientId={clientId}
                     submitting={submitting} setSubmitting={setSubmitting}
@@ -301,7 +302,7 @@ function Forget(props) {
     )
   }
   return (
-    <FormHelperText sx={{ mt: 2 }}>
+    <FormHelperText sx={{ mt: 2, textAlign: 'justify' }}>
       当前系统设置不允许找回登录密码，如忘记登录信息，请联系管理员重置
     </FormHelperText>
   )
@@ -313,6 +314,10 @@ function Authorize(props) {
 
   if (provider === 'github') {
     return <GitHub {...others} />
+  }
+
+  if (provider === 'twitter') {
+    return <Twitter {...others} />
   }
 
   return null;

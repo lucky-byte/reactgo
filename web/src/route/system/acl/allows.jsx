@@ -90,7 +90,7 @@ export default function Allows() {
     } else {
       setCodeAllInterminate(true);
     }
-    setCodeAllChecked(nchecked === codeList.length);
+    setCodeAllChecked(nchecked > 0 && nchecked === codeList.length);
     setNCodeChecked(nchecked);
   }, [codeList]);
 
@@ -118,7 +118,7 @@ export default function Allows() {
     } else {
       setAllowAllInterminate(true);
     }
-    setAllowAllChecked(nchecked === allowList.length);
+    setAllowAllChecked(nchecked > 0 && nchecked === allowList.length);
     setNAllowChecked(nchecked);
   }, [allowList]);
 
@@ -252,7 +252,7 @@ export default function Allows() {
       </Stack>
       <Stack direction='row' alignItems='center' spacing={2}>
         <TableContainer component={OutlinedPaper} sx={{
-          flex: 3, height: maxHeight, overflow: 'scroll'
+          flex: 3, height: maxHeight, overflow: 'auto'
         }}>
           <Table>
             <TableHead>
@@ -295,7 +295,7 @@ export default function Allows() {
           </Button>
         </Stack>
         <TableContainer component={OutlinedPaper} sx={{
-          flex: 5, height: maxHeight, overflow: 'scroll'
+          flex: 5, height: maxHeight, overflow: 'auto'
         }}>
           <Table>
             <TableHead>

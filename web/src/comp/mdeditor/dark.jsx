@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { useTheme } from "@mui/material/styles";
 import Box from '@mui/material/Box';
+import "codemirror/theme/abcdef.css";
 
 const SimpleMDE = lazy(() => import('react-simplemde-editor'));
 
@@ -15,9 +16,6 @@ export default function SimpleMDEDark(props) {
           color: theme.palette.common.white,
           borderColor: theme.palette.grey[700],
           backgroundColor: theme.palette.background.default,
-        },
-        "& .cm-s-easymde .CodeMirror-cursor": {
-          borderColor: theme.palette.grey[500],
         },
         "& .editor-toolbar > *": {
           color: theme.palette.common.white,

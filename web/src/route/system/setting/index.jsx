@@ -25,7 +25,7 @@ const tabsArray = [
 export default function Setting() {
   const [tab, setTab] = useRecoilState(tabState);
 
-  useSetCode(9030);
+  useSetCode(9040);
 
   return (
     <Container as='main' maxWidth='lg' sx={{ py: 4 }}>
