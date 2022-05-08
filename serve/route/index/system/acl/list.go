@@ -12,7 +12,7 @@ import (
 func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	ql := `select uuid, code, name, summary from acl order by create_at desc`
+	ql := `select * from acl order by create_at desc`
 	var result []db.ACL
 
 	if err := db.Select(ql, &result); err != nil {
@@ -23,10 +23,11 @@ func list(c echo.Context) error {
 
 	for _, r := range result {
 		acls = append(acls, echo.Map{
-			"uuid":    r.UUID,
-			"code":    r.Code,
-			"name":    r.Name,
-			"summary": r.Summary,
+			"uuid":     r.UUID,
+			"code":     r.Code,
+			"name":     r.Name,
+			"summary":  r.Summary,
+			"features": r.Features,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"acls": acls})

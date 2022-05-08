@@ -137,7 +137,7 @@ export default function Home() {
           </Stack>
         </Paper>
         <AclInfo info={info} setInfo={setInfo} acls={acls} setAcls={setAcls}
-          setReload={setReloadAll}
+          setReloadAll={setReloadAll}
         />
       </Stack>
     </Container>

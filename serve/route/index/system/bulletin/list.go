@@ -41,14 +41,14 @@ func list(c echo.Context) error {
 		pg.Col("title").ILike(keyword), pg.Col("content").ILike(keyword),
 	))
 	if len(date) > 0 {
-		t, err := time.ParseInLocation("2006/01/02", date, time.Local)
+		t, err := db.ParseDate(date)
 		if err != nil {
 			cc.ErrLog(err).Error("解析上传日期错")
 			return c.NoContent(http.StatusInternalServerError)
 		}
 		te := t.AddDate(0, 0, 1).Add(-time.Millisecond)
 
-		pg.Where(pg.Col("create_at").Between(goqu.Range(t, te)))
+		pg.Where(pg.Col("create_at").Between(db.TimeRange(t, te)))
 	}
 	pg.Select(pg.Col("*"),
 		userTable.Col("name").As("user_name"),
