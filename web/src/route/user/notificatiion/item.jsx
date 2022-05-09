@@ -14,8 +14,9 @@ import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
-import { notificationOutdatedState } from "~/state/notification";
 import usePrint from "~/hook/print";
+import { notificationOutdatedState } from "~/state/notification";
+import { useSetCode } from "~/state/code";
 import { get } from '~/lib/rest';
 
 const Markdown = lazy(() => import('~/comp/markdown'));
@@ -31,6 +32,7 @@ export default function Item() {
 
   useHotkeys('esc', () => { navigate(-1); }, { enableOnTags: ["INPUT"] });
   useTitle('通知');
+  useSetCode(0);
 
   const contentRef = useRef();
   const print = usePrint(contentRef.current);

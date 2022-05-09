@@ -103,11 +103,13 @@ export default function Home() {
                 <Tab key={a.uuid} value={a.uuid} sx={{ alignItems: 'flex-start' }}
                   label={
                     <Stack direction='row'>
-                      <Typography variant='button' color='#8888'
-                        sx={{ width: 24, textAlign: 'left' }}>
+                      <Typography variant='button' textAlign='left' color='#8888'
+                        sx={{ width: 24 }}>
                         {i + 1}
                       </Typography>
-                      <Typography variant='button'>{a.name}</Typography>
+                      <Typography variant='button' textAlign='left'>
+                        {a.name}
+                      </Typography>
                     </Stack>
                   }
                 />

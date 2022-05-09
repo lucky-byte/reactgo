@@ -1,12 +1,13 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
+import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import TwitterIcon from '@mui/icons-material/Twitter';
 import { useSnackbar } from 'notistack';
 import { put } from "~/lib/rest";
 import popupWindow from '~/lib/popup';
+import GoogleIcon from '~/img/google.svg';
 
-export default function Twitter(props) {
+export default function Google(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [state, setState] = useState('');
 
@@ -87,9 +88,12 @@ export default function Twitter(props) {
   }
 
   return (
-    <Tooltip title='Twitter' arrow>
+    <Tooltip title='Google' arrow>
       <IconButton size='large' disabled={submitting} onClick={onAuthorizeClick}>
-        <TwitterIcon fontSize='large' color="info" sx={{ verticalAlign: 'middle' }} />
+        <Box width={35} height={35}
+          display='flex' alignItems='flex-end' justifyContent='center'>
+          <img src={GoogleIcon} alt='LOGO' style={{ width: 32, height: 32 }} />
+        </Box>
       </IconButton>
     </Tooltip>
   )

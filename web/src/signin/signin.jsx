@@ -30,7 +30,7 @@ import { getLastAccess } from '~/lib/last-access';
 import Beian from '~/img/beian.png';
 import ForgetUserid from './userid';
 import GitHub from "./github";
-import Twitter from "./twitter";
+import Google from "./google";
 
 export default function SignIn() {
   const theme = useTheme();
@@ -316,8 +316,8 @@ function Authorize(props) {
     return <GitHub {...others} />
   }
 
-  if (provider === 'twitter') {
-    return <Twitter {...others} />
+  if (provider === 'google') {
+    return <Google {...others} />
   }
 
   return null;
