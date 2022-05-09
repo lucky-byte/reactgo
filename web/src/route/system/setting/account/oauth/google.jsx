@@ -110,16 +110,18 @@ export default function Google() {
       <Dialog open={open} onClose={onSettingClose} maxWidth='sm' fullWidth>
         <DialogTitle>Google 设置</DialogTitle>
         <DialogContent>
-          <Typography variant="body2">请输入您的 Google 客户端 ID 和客户端密钥</Typography>
+          <Typography variant="body2">
+            请输入您的 Google OAuth 2.0 客户端 ID 和客户端密钥
+          </Typography>
           <Paper variant='outlined' sx={{ px: 4, pt: 3, pb: 2, my: 2 }}>
             <TextField fullWidth variant="standard" required
               label="客户端 ID"
-              placeholder="请输入 Client ID"
+              placeholder="Google OAuth 2.0 Client ID"
               value={clientId} onChange={onClientIdChange}
             />
             <SecretInput fullWidth variant="standard" margin='normal' required
               label="客户端密钥"
-              placeholder="请输入 Client Secret"
+              placeholder="Google OAuth 2.0 客户端密钥"
               value={secret} onChange={onClientSecretChange}
               autoComplete='new-password'
             />
@@ -128,14 +130,14 @@ export default function Google() {
             } />
           </Paper>
           <Typography variant="caption" component='p'>
-            如果您还没有 ID 和密钥，可以从
-            <Link href='https://github.com/settings/developers' target='_blank'
+            如果您还没有客户端 ID 和密钥，可以从&nbsp;
+            <Link href='https://console.developers.google.com' target='_blank'
               underline="hover">
-              GitHub OAuth Apps
+              Google API 控制台
             </Link>
-            页面获取。在创建 GitHub OAuth App 时，授权回调(Authorization callback) URL
-            请填写为：&lt;域&gt;<strong>/oauth/github/callback</strong>
-            ，例如：http://host:3456/oauth/github/callback
+            &nbsp;获取。在创建 Google OAuth 2.0 客户端凭据时，已授权的重定向 URI(Redirect
+            URI)请填写为：&lt;域&gt;<strong>/oauth/google/callback</strong>
+            ，例如：http://host:3456/oauth/google/callback
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>

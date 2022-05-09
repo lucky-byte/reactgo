@@ -72,5 +72,6 @@ func setting(c echo.Context) error {
 		"login":    account.Login,
 		"name":     account.Name,
 		"status":   account.Status,
+		"avatar":   account.Avatar,
 	})
 }

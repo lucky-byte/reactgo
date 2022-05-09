@@ -7,6 +7,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import { useSecretCode } from '~/comp/secretcode';
+import Avatar from '~/comp/avatar';
 import { get, put } from "~/lib/rest";
 import popupWindow from '~/lib/popup';
 
@@ -19,6 +20,7 @@ export default function GitHub() {
   const [enabled, setEnabled] = useState(false);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState(1);
+  const [avatar, setAvatar] = useState('');
   const [refresh, setRefresh] = useState(true);
 
   const popupRef = useRef();
@@ -35,6 +37,7 @@ export default function GitHub() {
           setEnabled(resp.enabled);
           setEmail(resp.email);
           setStatus(resp.status);
+          setAvatar(resp.avatar);
         }
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -47,8 +50,8 @@ export default function GitHub() {
 
   // 授权成功后将收到消息
   const onAuthorizedListener = useCallback(e => {
-    // 必须是来自同源的消息
     if (process.env.NODE_ENV === 'production') {
+      // 必须是来自同源的消息
       if (e.origin !== window.location.origin) {
         return;
       }
@@ -123,35 +126,37 @@ export default function GitHub() {
   }
 
   return (
-    <Stack direction='row' justifyContent='space-between' alignItems='center'>
-      <Stack direction='row' spacing={2} alignItems='center'>
+    <Stack direction='row' alignItems='center' spacing={2}>
+      <Stack direction='row' spacing={2} alignItems='center' flex={1}>
         <GitHubIcon fontSize='large' />
         <Stack>
           <Typography variant='h6' lineHeight='1.2'>GitHub</Typography>
           {loading ? <Skeleton variant="text" width={300} /> : enabled ?
             <Typography variant='caption'>
-              {status === 2 ?
-                `已授权 ${email}` : '授权使用您的 GitHub 账号登录本系统'
-              }
+              {status === 2 ? '已授权' : '授权使用您的 GitHub 账号登录本系统'}
             </Typography>
             :
             <Typography variant='caption' color='orange'>
-              系统尚未启用 GitHub 身份授权，请联系系统管理员
+              系统尚未配置或启用 GitHub 身份授权服务，请联系管理员
             </Typography>
           }
         </Stack>
       </Stack>
-      {status === 2 ?
-        <Button variant='contained' color='warning' disabled={!enabled}
-          onClick={onRevoke}>
+      {enabled && (status === 2 &&
+        <Stack direction='row' alignItems='center' spacing={1}>
+          {avatar && <Avatar src={avatar} sx={{ width: 22, height: 22 }} />}
+          <Typography variant='body2'>{email}</Typography>
+        </Stack>
+      )}
+      {enabled && (status === 2 ?
+        <Button variant='contained' color='warning' onClick={onRevoke}>
           撤销
         </Button>
         :
-        <Button variant='contained' color='success' disabled={!enabled}
-          onClick={onAuthorize}>
+        <Button variant='contained' color='success' onClick={onAuthorize}>
           授权
         </Button>
-      }
+      )}
     </Stack>
   )
 }

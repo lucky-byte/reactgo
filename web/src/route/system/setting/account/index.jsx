@@ -16,6 +16,7 @@ const tabsArray = [
   { title: '账号设置', value: 1, to: 'secure', },
   { title: '单点登录', value: 2, to: 'saml', },
   { title: '身份授权', value: 3, to: 'oauth', },
+  { title: '身份提供', value: 4, to: 'oidc', },
 ]
 
 export default function Account() {

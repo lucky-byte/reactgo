@@ -19,8 +19,8 @@ const (
 	menuCodeACL      = 9010
 	menuCodeHistory  = 9020
 	menuCodeOps      = 9025
-	menuCodeSetting  = 9030
-	menuCodeEvent    = 9040
+	menuCodeEvent    = 9030
+	menuCodeSetting  = 9040
 	menuCodeTask     = 9050
 	menuCodeNode     = 9060
 	menuCodeBulletin = 9070

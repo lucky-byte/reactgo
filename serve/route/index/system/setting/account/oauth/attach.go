@@ -10,10 +10,12 @@ func Attach(up *echo.Group, code int) {
 	group := up.Group("/oauth", acl.AllowRead(code))
 
 	group.GET("/github", githubGet)
+	group.GET("/google", googleGet)
 	group.GET("/twitter", twitterGet)
 
 	group.Use(acl.AllowWrite(code)) // Write 权限
 
 	group.PUT("/github", githubSet)
+	group.PUT("/google", googleSet)
 	group.PUT("/twitter", twitterSet)
 }

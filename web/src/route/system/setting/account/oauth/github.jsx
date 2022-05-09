@@ -111,12 +111,12 @@ export default function Github() {
           <Paper variant='outlined' sx={{ px: 4, pt: 3, pb: 2, my: 2 }}>
             <TextField fullWidth variant="standard" required
               label="客户端 ID"
-              placeholder="请输入 Client ID"
+              placeholder="GitHub Client ID"
               value={clientId} onChange={onClientIdChange}
             />
             <SecretInput fullWidth variant="standard" margin='normal' required
               label="客户端密钥"
-              placeholder="请输入 Client Secret"
+              placeholder="GitHub Client Secret"
               value={secret} onChange={onClientSecretChange}
               autoComplete='new-password'
             />
@@ -125,14 +125,14 @@ export default function Github() {
             } />
           </Paper>
           <Typography variant="caption" component='p'>
-            如果您还没有 ID 和密钥，可以从
+            如果还没有客户端 ID 和密钥，可以从&nbsp;
             <Link href='https://github.com/settings/developers' target='_blank'
               underline="hover">
               GitHub OAuth Apps
             </Link>
-            页面获取。在创建 GitHub OAuth App 时，授权回调(Authorization callback) URL
-            请填写为：&lt;域&gt;<strong>/oauth/github/callback</strong>
-            ，例如：http://host:3456/oauth/github/callback
+            &nbsp;获取。在创建 GitHub OAuth App 时，授权回调 URL(Authorization
+            callback URL)请填写为：&lt;域&gt;<strong>/oauth/github/callback</strong>
+            ，例如：https://my-domain-name:3456/oauth/github/callback
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
