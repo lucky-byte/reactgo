@@ -55,10 +55,11 @@ func list(c echo.Context) error {
 	}
 
 	// 查询未读事件数
-	ql := `select count(*) from events where fresh = true`
+	ql := `select count(*) from events where fresh = true and level >= ?`
 	freshCount := 0
 
-	if err = db.SelectOne(ql, &freshCount); err != nil {
+	err = db.SelectOne(ql, &freshCount, level)
+	if err != nil {
 		cc.ErrLog(err).Error("查询事件表错")
 		return c.NoContent(http.StatusInternalServerError)
 	}

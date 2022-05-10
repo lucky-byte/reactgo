@@ -108,7 +108,7 @@ export default function Google() {
         </Button>
       </Stack>
       <Dialog open={open} onClose={onSettingClose} maxWidth='sm' fullWidth>
-        <DialogTitle>Google 设置</DialogTitle>
+        <DialogTitle>Google 授权设置</DialogTitle>
         <DialogContent>
           <Typography variant="body2">
             请输入您的 Google OAuth 2.0 客户端 ID 和客户端密钥
@@ -130,14 +130,22 @@ export default function Google() {
             } />
           </Paper>
           <Typography variant="caption" component='p'>
-            如果您还没有客户端 ID 和密钥，可以从&nbsp;
+            如果您还没有客户端 ID 和密钥，可以从
             <Link href='https://console.developers.google.com' target='_blank'
               underline="hover">
-              Google API 控制台
+              &nbsp;Google API 控制台&nbsp;
             </Link>
-            &nbsp;获取。在创建 Google OAuth 2.0 客户端凭据时，已授权的重定向 URI(Redirect
+            获取。在创建 Google OAuth 2.0 客户端凭据时，已授权的重定向 URI(Redirect
             URI)请填写为：&lt;域&gt;<strong>/oauth/google/callback</strong>
-            ，例如：http://host:3456/oauth/google/callback
+            ，例如：<em>http://host:3456/oauth/google/callback</em>
+          </Typography>
+          <Typography variant="caption" component='p' mt={1}>
+            进一步信息请参考
+            <Link target='_blank'
+              href='https://developers.google.com/identity/protocols/oauth2/openid-connect'
+              underline="hover">
+              &nbsp;Google OpenID Connect 文档
+            </Link>
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>

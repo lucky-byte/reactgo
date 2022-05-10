@@ -1,11 +1,13 @@
 package google
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -15,12 +17,29 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-type profile struct {
-	ID     json.Number `json:"id"`
-	Email  string      `json:"email"`
-	Login  string      `json:"login"`
-	Name   string      `json:"name"`
-	Avatar string      `json:"avatar_url"`
+type endpoints struct {
+	TokenEndpoint string `json:"token_endpoint"`
+}
+
+type tokenRes struct {
+	AccessToken      string `json:"access_token"`
+	IdToken          string `json:"id_token"`
+	ExpiresIn        int    `json:"expires_in"`
+	Scope            string `json:"scope"`
+	TokenType        string `json:"token_type"`
+	Error            string `json:"error"`
+	ErrorDescription string `json:"error_description"`
+}
+
+type idToken struct {
+	Aud     string `json:"aud"`
+	Iss     string `json:"iss"`
+	Sub     string `json:"sub"`
+	Azp     string `json:"azp"`
+	Email   string `json:"email"`
+	Name    string `json:"name"`
+	Picture string `json:"picture"`
+	Locale  string `json:"locale"`
 }
 
 func callback(c echo.Context) error {
@@ -28,13 +47,6 @@ func callback(c echo.Context) error {
 
 	errorHtml := func(status int, message string) error {
 		return c.HTML(status, buildErrorHtml(message))
-	}
-
-	// Github 返回错误，例如用户拒绝授权等
-	e := c.QueryParam("error")
-	if len(e) > 0 {
-		desc := c.QueryParam("error_description")
-		return errorHtml(http.StatusBadRequest, fmt.Sprintf("%s: %s", e, desc))
 	}
 	var code, state string
 
@@ -82,74 +94,21 @@ func callback(c echo.Context) error {
 		cc.Log().Error("Google 授权配置不完整或未启用，不能完成授权")
 		return errorHtml(http.StatusForbidden, "系统配置不允许此操作")
 	}
-
-	// 获取 access token
-	form := url.Values{
-		"client_id":     {google.ClientId},
-		"client_secret": {google.Secret},
-		"code":          {code},
-	}
-	res1, err := http.PostForm("https://github.com/login/oauth/access_token", form)
+	// 查询 discovery 配置
+	dc, err := discovery()
 	if err != nil {
-		cc.ErrLog(err).Error("获取 Google Access Token 错")
+		cc.ErrLog(err).Error("获取 Google Discovery 配置错")
 		return errorHtml(http.StatusBadRequest, "网络错误，请稍后重试")
 	}
-	defer res1.Body.Close()
+	baseurl := cc.Config().ServerHttpURL()
 
-	body, err := ioutil.ReadAll(res1.Body)
+	// 获取 Id Token
+	t, p, err := getIdToken(&google, code, baseurl, dc)
 	if err != nil {
-		cc.ErrLog(err).Error("读取 Google 响应数据错")
-		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
-	}
-	v, err := url.ParseQuery(string(body))
-	if err != nil {
-		err = errors.Wrap(err, string(body))
-		cc.ErrLog(err).Error("解析 Google 响应数据错")
-		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
-	}
-	access_token := v.Get("access_token")
-
-	if len(access_token) == 0 {
-		err = errors.Wrap(err, string(body))
-		cc.Log().Error("Google 响应缺少 access token")
-		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
-	}
-	// 获取用户信息
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
-	if err != nil {
-		cc.ErrLog(err).Error("创建 HTTP 客户端请求错")
-		return errorHtml(http.StatusInternalServerError, "网络错误，请稍后重试")
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("token %s", access_token))
-
-	res2, err := client.Do(req)
-	if err != nil {
-		cc.ErrLog(err).Error("获取 Google 用户信息错")
+		cc.ErrLog(err).Error("获取 Google Tokens 错")
 		return errorHtml(http.StatusBadRequest, "网络错误，请稍后重试")
 	}
-	defer res2.Body.Close()
-
-	body, err = ioutil.ReadAll(res2.Body)
-	if err != nil {
-		cc.ErrLog(err).Error("读取 Google 响应数据错")
-		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
-	}
-	var p profile
-
-	err = json.Unmarshal(body, &p)
-	if err != nil {
-		err = errors.Wrap(err, string(body))
-		cc.ErrLog(err).Error("解析 Google 用户信息错")
-		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
-	}
-	if len(p.ID.String()) == 0 || len(p.Email) == 0 || len(p.Login) == 0 {
-		err = fmt.Errorf("%v", body)
-		cc.ErrLog(err).Error("Google 用户信息缺少 id, email 或 login")
-		return errorHtml(http.StatusUnprocessableEntity, "授权账号信息不完整")
-	}
-	// 授权，将 Google 账号绑定到用户
+	// 如果是授权，将 Google 账号绑定到用户
 	if oauth.Usage == 1 {
 		// 检查 Google 账号是否已授权给其他用户
 		ql = `
@@ -158,13 +117,13 @@ func callback(c echo.Context) error {
 		`
 		var count int
 
-		err = db.SelectOne(ql, &count, p.ID.String())
+		err = db.SelectOne(ql, &count, t.Sub)
 		if err != nil {
 			cc.ErrLog(err).Error("查询用户授权账号错")
 			return errorHtml(http.StatusInternalServerError, "服务器内部错")
 		}
 		if count > 0 {
-			cc.Log().Errorf("Google 账号 %s 已授权给其他用户", p.Email)
+			cc.Log().Errorf("Google 账号 %s 已授权给其他用户", t.Email)
 			return errorHtml(http.StatusConflict, "该 Google 账号已授权给其他用户")
 		}
 		// 查询用户已授权 Google 账号，不能授权多个
@@ -188,29 +147,101 @@ func callback(c echo.Context) error {
 			where uuid = ?
 		`
 		err = db.ExecOne(
-			ql, p.ID.String(), p.Email, p.Login, p.Name, p.Avatar, body, state,
+			ql, t.Sub, t.Email, t.Email, t.Name, t.Picture, p, state,
 		)
 		if err != nil {
 			cc.ErrLog(err).Error("更新用户授权账号信息错")
 			return errorHtml(http.StatusInternalServerError, "服务器内部错")
 		}
 	}
-	// 登录，记录授权信息，登录时进行匹配
+	// 如果是登录，记录授权信息，登录时进行匹配
 	if oauth.Usage == 2 {
 		ql = `update user_oauth set userid = ?, email = ?, login = ? where uuid = ?`
 
-		err = db.ExecOne(ql, p.ID.String(), p.Email, p.Login, state)
+		err = db.ExecOne(ql, t.Sub, t.Email, t.Email, state)
 		if err != nil {
 			cc.ErrLog(err).Error("更新用户授权账号信息错")
 			return errorHtml(http.StatusInternalServerError, "服务器内部错")
 		}
 	}
 	// 返回授权成功网页
-	target := cc.Config().ServerHttpURL()
-
-	// Dev 模式下 target 设置为 *，这样可以避免开发时端口不同源的问题，但存在安全隐患
+	// Dev 模式下 target 设置为 *，这样可以避免开发时端口不同源的问题(存在安全隐患)
 	if cc.Config().Dev() {
-		target = "*"
+		baseurl = "*"
 	}
-	return c.HTML(http.StatusOK, buildSuccessHtml(&p, state, target))
+	return c.HTML(http.StatusOK, buildSuccessHtml(t, state, baseurl))
+}
+
+// 查询 discovery 配置
+func discovery() (*endpoints, error) {
+	res, err := http.Get("https://accounts.google.com/.well-known/openid-configuration")
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	var d endpoints
+
+	err = json.Unmarshal(body, &d)
+	if err != nil {
+		return nil, errors.Wrap(err, string(body))
+	}
+	if len(d.TokenEndpoint) == 0 {
+		return nil, fmt.Errorf("Google Discovery 配置缺少 token_endpoint: %s", body)
+	}
+	return &d, nil
+}
+
+// 获取 tokens
+func getIdToken(google *db.OAuth, code, uri string, dc *endpoints) (*idToken, string, error) {
+	redirect_uri := uri + "/oauth/google/callback"
+
+	form := url.Values{
+		"code":          {code},
+		"client_id":     {google.ClientId},
+		"client_secret": {google.Secret},
+		"redirect_uri":  {redirect_uri},
+		"grant_type":    {"authorization_code"},
+	}
+	res, err := http.PostForm(dc.TokenEndpoint, form)
+	if err != nil {
+		return nil, "", err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, "", err
+	}
+	var t tokenRes
+
+	err = json.Unmarshal(body, &t)
+	if err != nil {
+		return nil, "", errors.Wrap(err, string(body))
+	}
+	if len(t.Error) > 0 {
+		return nil, "", fmt.Errorf("%s: %s", t.Error, t.ErrorDescription)
+	}
+	if len(t.IdToken) == 0 {
+		return nil, "", fmt.Errorf("Google 响应缺少 id_token: %s", body)
+	}
+	arr := strings.Split(t.IdToken, ".")
+	if len(arr) != 3 {
+		return nil, "", fmt.Errorf("ID Token 不是有效的 JWT: %s", t.IdToken)
+	}
+	decoded, err := base64.RawURLEncoding.DecodeString(arr[1])
+	if err != nil {
+		return nil, "", err
+	}
+	var i idToken
+
+	err = json.Unmarshal(decoded, &i)
+	if err != nil {
+		return nil, "", errors.Wrap(err, string(decoded))
+	}
+	return &i, string(decoded), nil
 }

@@ -93,15 +93,16 @@ export default function Google() {
         secretcode_token: token,
       }));
 
-      // 查询 Google endpoint 配置
-      const c = await fetch('https://accounts.google.com/.well-known/openid-configuration');
+      // 查询 Google discovery 配置
+      const c = await fetch(
+        'https://accounts.google.com/.well-known/openid-configuration'
+      );
       const discovery = await c.json();
-      console.log(discovery.authorization_endpoint)
 
       const q = new URLSearchParams({
         client_id: clientId,
         response_type: 'code',
-        scope: 'openid email',
+        scope: 'openid email profile',
         redirect_uri: resp.url,
         state: resp.state,
         nonce: Math.random(),
@@ -109,7 +110,7 @@ export default function Google() {
       const url = discovery.authorization_endpoint + '?' + q.toString();
 
       window.addEventListener('message', onAuthorizedListener);
-      popupRef.current = popupWindow(url, 'GoogleAuthorize', 650, 600);
+      popupRef.current = popupWindow(url, 'GoogleAuthorize', 650, 650);
     } catch (err) {
       if (err) {
         enqueueSnackbar(err.message);

@@ -2,18 +2,45 @@
 <html>
 
 <head>
-  <title>GitHub 授权失败</title>
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <title>授权错误</title>
+  <meta name="color-scheme" content="dark light">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/bulma-prefers-dark" />
 </head>
 
 <body>
-  <section class="hero is-warning is-fullheight">
-    <div class="block p-6">
-      <p class="title has-text-danger">授权失败</p>
-      <p class="subtitle has-text-grey-dark">{{ .reason }}</p>
-      <p id="href" class="has-text-grey" style="line-break: anywhere;"></p>
+  <section class="hero is-fullheight is-align-items-center">
+    <div class="box mt-6 mb-0 p-6 container" style="width: 500px;">
+      <figure class="image is-64x64 container">
+        <img class="is-rounded" src="/logo192.png">
+      </figure>
+      <p class="is-size-4 has-text-centered mt-4">授权错误</p>
+      <p class="is-size-6 has-text-centered has-text-danger mt-2">{{ .reason }}</p>
+      <p class="is-size-7 has-text-centered mt-2">
+        这可能只是临时性错误，您可以安全关闭该窗口，然后重新授权，欲了解更多信息，请查阅
+        <a href="https://docs.github.com/cn/developers/apps/building-oauth-apps/authorizing-oauth-apps#troubleshooting">
+          疑难解答
+        </a>
+      </p>
+      <p class="is-size-7 mt-6">请求详细网址：</p>
+      <p id="href" class="has-text-grey is-size-7" style="line-break: anywhere;" />
     </div>
+
+    <nav class="level is-mobile my-5" style="width: 480px;">
+      <div class="level-left">
+        <div class="level-item">
+          <img src="/banner.png" style="width: 96px; object-fit: contain;" />
+        </div>
+      </div>
+      <div class="level-right">
+        <p class="level-item is-size-7">
+          <a href="/terms" target="_blank">服务条款</a>
+        </p>
+        <p class="level-item is-size-7">
+          <a href="/privacy" target="_blank">隐私政策</a>
+        </p>
+      </div>
+    </nav>
   </section>
 
   <script>
@@ -21,6 +48,7 @@
       document.getElementById('href').textContent = window.location.href;
     })();
   </script>
+
 </body>
 
 </html>

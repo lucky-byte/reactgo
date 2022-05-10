@@ -39,7 +39,6 @@ func buildSuccessHtml(p *profile, state, target string) string {
 	err = t.Execute(&o, map[string]string{
 		"userid": p.ID.String(),
 		"email":  p.Email,
-		"login":  p.Login,
 		"name":   p.Name,
 		"avatar": p.Avatar,
 		"state":  state,

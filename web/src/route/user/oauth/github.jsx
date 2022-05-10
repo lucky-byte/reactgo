@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
+import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { useSnackbar } from 'notistack';
@@ -143,10 +144,9 @@ export default function GitHub() {
         </Stack>
       </Stack>
       {enabled && (status === 2 &&
-        <Stack direction='row' alignItems='center' spacing={1}>
-          {avatar && <Avatar src={avatar} sx={{ width: 22, height: 22 }} />}
-          <Typography variant='body2'>{email}</Typography>
-        </Stack>
+        <Chip variant='outlined' label={email}
+          avatar={avatar ? <Avatar src={avatar} /> : null}
+        />
       )}
       {enabled && (status === 2 ?
         <Button variant='contained' color='warning' onClick={onRevoke}>

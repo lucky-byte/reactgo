@@ -83,74 +83,19 @@ func callback(c echo.Context) error {
 		cc.Log().Error("GitHub 授权配置不完整或未启用，不能完成授权")
 		return errorHtml(http.StatusForbidden, "系统配置不允许此操作")
 	}
-
 	// 获取 access token
-	form := url.Values{
-		"client_id":     {github.ClientId},
-		"client_secret": {github.Secret},
-		"code":          {code},
-	}
-	res1, err := http.PostForm("https://github.com/login/oauth/access_token", form)
+	access_token, err := getAccessToken(&github, code)
 	if err != nil {
 		cc.ErrLog(err).Error("获取 GitHub Access Token 错")
 		return errorHtml(http.StatusBadRequest, "网络错误，请稍后重试")
 	}
-	defer res1.Body.Close()
-
-	body, err := ioutil.ReadAll(res1.Body)
-	if err != nil {
-		cc.ErrLog(err).Error("读取 GitHub 响应数据错")
-		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
-	}
-	v, err := url.ParseQuery(string(body))
-	if err != nil {
-		err = errors.Wrap(err, string(body))
-		cc.ErrLog(err).Error("解析 GitHub 响应数据错")
-		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
-	}
-	access_token := v.Get("access_token")
-
-	if len(access_token) == 0 {
-		err = errors.Wrap(err, string(body))
-		cc.Log().Error("GitHub 响应缺少 access token")
-		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
-	}
 	// 获取用户信息
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
-	if err != nil {
-		cc.ErrLog(err).Error("创建 HTTP 客户端请求错")
-		return errorHtml(http.StatusInternalServerError, "网络错误，请稍后重试")
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("token %s", access_token))
-
-	res2, err := client.Do(req)
+	p, body, err := getProfile(access_token)
 	if err != nil {
 		cc.ErrLog(err).Error("获取 GitHub 用户信息错")
-		return errorHtml(http.StatusBadRequest, "网络错误，请稍后重试")
+		return errorHtml(http.StatusInternalServerError, "网络错误，请稍后重试")
 	}
-	defer res2.Body.Close()
-
-	body, err = ioutil.ReadAll(res2.Body)
-	if err != nil {
-		cc.ErrLog(err).Error("读取 GitHub 响应数据错")
-		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
-	}
-	var p profile
-
-	err = json.Unmarshal(body, &p)
-	if err != nil {
-		err = errors.Wrap(err, string(body))
-		cc.ErrLog(err).Error("解析 GitHub 用户信息错")
-		return errorHtml(http.StatusUnprocessableEntity, "网络错误，请稍后重试")
-	}
-	if len(p.ID.String()) == 0 || len(p.Email) == 0 || len(p.Login) == 0 {
-		err = fmt.Errorf("%v", body)
-		cc.ErrLog(err).Error("GitHub 用户信息缺少 id, email 或 login")
-		return errorHtml(http.StatusUnprocessableEntity, "授权账号信息不完整")
-	}
-	// 授权，将 GitHub 账号绑定到用户
+	// 如果是授权，将 GitHub 账号绑定到用户
 	if oauth.Usage == 1 {
 		// 检查 GitHub 账号是否已授权给其他用户
 		ql = `
@@ -196,7 +141,7 @@ func callback(c echo.Context) error {
 			return errorHtml(http.StatusInternalServerError, "服务器内部错")
 		}
 	}
-	// 登录，记录授权信息，登录时进行匹配
+	// 如果是登录，记录授权信息，登录时进行匹配
 	if oauth.Usage == 2 {
 		ql = `update user_oauth set userid = ?, email = ?, login = ? where uuid = ?`
 
@@ -207,11 +152,72 @@ func callback(c echo.Context) error {
 		}
 	}
 	// 返回授权成功网页
-	target := cc.Config().ServerHttpURL()
+	baseurl := cc.Config().ServerHttpURL()
 
-	// Dev 模式下 target 设置为 *，这样可以避免开发时端口不同源的问题，但存在安全隐患
+	// Dev 模式下 target 设置为 *，这样可以避免开发时端口不同源的问题(存在安全隐患)
 	if cc.Config().Dev() {
-		target = "*"
+		baseurl = "*"
 	}
-	return c.HTML(http.StatusOK, buildSuccessHtml(&p, state, target))
+	return c.HTML(http.StatusOK, buildSuccessHtml(p, state, baseurl))
+}
+
+// 获取 access token
+func getAccessToken(github *db.OAuth, code string) (string, error) {
+	form := url.Values{
+		"client_id":     {github.ClientId},
+		"client_secret": {github.Secret},
+		"code":          {code},
+	}
+	res, err := http.PostForm("https://github.com/login/oauth/access_token", form)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+	v, err := url.ParseQuery(string(body))
+	if err != nil {
+		return "", errors.Wrap(err, string(body))
+	}
+	access_token := v.Get("access_token")
+
+	if len(access_token) == 0 {
+		return "", fmt.Errorf("GitHub 响应缺少 access token")
+	}
+	return access_token, nil
+}
+
+// 获取用户信息
+func getProfile(access_token string) (*profile, []byte, error) {
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("token %s", access_token))
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, nil, err
+	}
+	var p profile
+
+	err = json.Unmarshal(body, &p)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, string(body))
+	}
+	if len(p.ID.String()) == 0 || len(p.Email) == 0 || len(p.Login) == 0 {
+		return nil, nil, fmt.Errorf("GitHub 用户信息缺少 id, email 或 login: %v", body)
+	}
+	return &p, body, nil
 }

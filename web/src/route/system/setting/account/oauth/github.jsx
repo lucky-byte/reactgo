@@ -105,7 +105,7 @@ export default function Github() {
         </Button>
       </Stack>
       <Dialog open={open} onClose={onSettingClose} maxWidth='sm' fullWidth>
-        <DialogTitle>GitHub 设置</DialogTitle>
+        <DialogTitle>GitHub 授权设置</DialogTitle>
         <DialogContent>
           <Typography variant="body2">请输入您的 GitHub 客户端 ID 和客户端密钥</Typography>
           <Paper variant='outlined' sx={{ px: 4, pt: 3, pb: 2, my: 2 }}>
@@ -125,14 +125,14 @@ export default function Github() {
             } />
           </Paper>
           <Typography variant="caption" component='p'>
-            如果还没有客户端 ID 和密钥，可以从&nbsp;
+            如果还没有客户端 ID 和密钥，可以从
             <Link href='https://github.com/settings/developers' target='_blank'
               underline="hover">
-              GitHub OAuth Apps
+              &nbsp;GitHub OAuth Apps&nbsp;
             </Link>
-            &nbsp;获取。在创建 GitHub OAuth App 时，授权回调 URL(Authorization
+            获取。在创建 GitHub OAuth App 时，授权回调 URL(Authorization
             callback URL)请填写为：&lt;域&gt;<strong>/oauth/github/callback</strong>
-            ，例如：https://my-domain-name:3456/oauth/github/callback
+            ，例如：<em>https://my-domain-name:3456/oauth/github/callback</em>
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>

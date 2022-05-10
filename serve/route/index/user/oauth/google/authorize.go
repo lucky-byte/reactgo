@@ -48,13 +48,13 @@ func authorize(c echo.Context) error {
 	if count > 0 {
 		return c.String(http.StatusForbidden, "用户已存在授权的 Google 账号")
 	}
-	httpurl := cc.Config().ServerHttpURL()
+	baseurl := cc.Config().ServerHttpURL()
 
-	if len(httpurl) == 0 {
+	if len(baseurl) == 0 {
 		cc.Log().Error("未配置 Server Http URL")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	url := httpurl + "/oauth/google/callback2"
+	url := baseurl + "/oauth/google/callback"
 
 	// 插入未授权的记录
 	ql = `insert into user_oauth (uuid, user_uuid, provider) values (?, ?, ?)`

@@ -268,7 +268,7 @@ create table if not exists user_oauth (
   create_at   timestamp       not null default current_timestamp,
   user_uuid   varchar(36)     not null,
   provider    varchar(32)     not null,
-  userid      varchar(128)    not null default '',
+  userid      varchar(256)    not null default '',
   email       varchar(128)    not null default '',
   login       varchar(128)    not null default '',
   name        varchar(128)    not null default '',
