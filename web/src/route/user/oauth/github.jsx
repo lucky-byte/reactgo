@@ -53,12 +53,12 @@ export default function GitHub() {
     if (process.env.NODE_ENV === 'production') {
       // 必须是来自同源的消息
       if (e.origin !== window.location.origin) {
-        return;
+        return enqueueSnackbar('接收到来自非同源消息，忽略...');
       }
     }
     if (e.data.source === 'reactgo-github-authorize') {
       if (e.source !== popupRef.current) {
-        return enqueueSnackbar('接收到来自非期望的窗口的消息，忽略...');
+        return enqueueSnackbar('接收到来自非期望窗口的消息，忽略...');
       }
       window.removeEventListener('message', onAuthorizedListener);
 
@@ -99,7 +99,7 @@ export default function GitHub() {
       const url = 'https://github.com/login/oauth/authorize?' + q.toString();
 
       window.addEventListener('message', onAuthorizedListener);
-      popupRef.current = popupWindow(url, 'GithubAuthorize', 650, 600);
+      popupRef.current = popupWindow(url, 'GithubAuthorize', 650, 650);
     } catch (err) {
       if (err) {
         enqueueSnackbar(err.message);

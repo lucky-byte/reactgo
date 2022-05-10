@@ -1,0 +1,39 @@
+<html>
+
+<head>
+  <title>GitHub 授权成功</title>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+</head>
+
+<body>
+  <div class="block is-flex is-flex-direction-column p-4" style="height: 100%;">
+    <div class="box is-flex-grow-1 p-6">
+      <figure class="image is-96x96 container">
+        <img class="is-rounded" src="{{ .avatar }}">
+      </figure>
+      <p class="is-size-5 has-text-centered mt-2">授权完成</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var message = {
+        source: 'reactgo-github-authorize',
+        profile: {
+          userid: '{{ .userid }}',
+          login: '{{ .login }}',
+          email: '{{ .email }}',
+          name: '{{ .name }}',
+          avatar: '{{ .avatar }}',
+        },
+        state: '{{ .state }}',
+      }
+      var target = '{{ .target }}';
+
+      setTimeout(() => { window.opener.postMessage(message, target); }, 500);
+    })();
+  </script>
+</body>
+
+</html>
