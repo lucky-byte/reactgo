@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 import Button from '@mui/material/Button';
@@ -54,7 +55,7 @@ export default function Google() {
     if (process.env.NODE_ENV === 'production') {
       // 必须是来自同源的消息
       if (e.origin !== window.location.origin) {
-        return;
+        return enqueueSnackbar('接收到来自非同源消息，忽略...');
       }
     }
     if (e.data.source === 'reactgo-google-authorize') {
@@ -66,7 +67,7 @@ export default function Google() {
       if (popupRef.current) {
         popupRef.current.close();
       }
-      enqueueSnackbar('账号授权成功', { variant: 'success' });
+      enqueueSnackbar(`已授权账号 ${e.data.profile?.email}`, { variant: 'success' });
       setRefresh(true);
     }
   }, [enqueueSnackbar]);
@@ -127,7 +128,7 @@ export default function Google() {
         confirmationButtonProps: { color: 'warning' },
       });
       await put('/user/oauth/google/revoke');
-      enqueueSnackbar('成功撤销授权', { variant: 'success' });
+      enqueueSnackbar('撤销成功', { variant: 'success' });
       setRefresh(true);
     } catch (err) {
       if (err) {
@@ -157,10 +158,9 @@ export default function Google() {
         </Stack>
       </Stack>
       {enabled && (status === 2 &&
-        <Stack direction='row' alignItems='center' spacing={1}>
-          {avatar && <Avatar src={avatar} sx={{ width: 22, height: 22 }} />}
-          <Typography variant='body2'>{email}</Typography>
-        </Stack>
+        <Chip variant='outlined' label={email}
+          avatar={avatar ? <Avatar src={avatar} /> : null}
+        />
       )}
       {enabled && (status === 2 ?
         <Button variant='contained' color='warning' onClick={onRevoke}>

@@ -66,7 +66,7 @@ export default function GitHub() {
       if (popupRef.current) {
         popupRef.current.close();
       }
-      enqueueSnackbar('账号授权成功', { variant: 'success' });
+      enqueueSnackbar(`已授权账号 ${e.data.profile?.email}`, { variant: 'success' });
       setRefresh(true);
     }
   }, [enqueueSnackbar]);
@@ -117,7 +117,7 @@ export default function GitHub() {
         confirmationButtonProps: { color: 'warning' },
       });
       await put('/user/oauth/github/revoke');
-      enqueueSnackbar('成功撤销授权', { variant: 'success' });
+      enqueueSnackbar('撤销成功', { variant: 'success' });
       setRefresh(true);
     } catch (err) {
       if (err) {

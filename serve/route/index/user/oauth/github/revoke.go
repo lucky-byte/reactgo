@@ -16,7 +16,8 @@ func revoke(c echo.Context) error {
 
 	ql := `delete from user_oauth where user_uuid = ? and provider = 'github'`
 
-	if err := db.Exec(ql, user.UUID); err != nil {
+	err := db.Exec(ql, user.UUID)
+	if err != nil {
 		cc.ErrLog(err).Error("撤销用户 GitHub 授权账号错")
 		return c.NoContent(http.StatusInternalServerError)
 	}

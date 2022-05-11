@@ -22,7 +22,7 @@ export default function Secure() {
   const [duration, setDuration] = useState(0);
   const [jwtSignKey, setJWTSignKey] = useState(0);
 
-  useTitle('账号安全设置');
+  useTitle('账号安全');
   useSecureTab();
 
   useEffect(() => {

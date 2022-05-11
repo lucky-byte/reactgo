@@ -20,7 +20,7 @@ func googleGet(c echo.Context) error {
 		cc.ErrLog(err).Error("查询 Google 授权配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var google db.OAuth
+	var oauth db.OAuth
 
 	if len(result) == 0 {
 		ql = `insert into oauth (provider) values ('google')`
@@ -31,12 +31,12 @@ func googleGet(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	} else {
-		google = result[0]
+		oauth = result[0]
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"clientid": google.ClientId,
-		"secret":   google.Secret,
-		"enabled":  google.Enabled,
+		"clientid": oauth.ClientId,
+		"secret":   oauth.Secret,
+		"enabled":  oauth.Enabled,
 	})
 }
 

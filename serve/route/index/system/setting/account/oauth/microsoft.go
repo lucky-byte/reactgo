@@ -9,38 +9,38 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-func twitterGet(c echo.Context) error {
+func microsoftGet(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	ql := `select * from oauth where provider = 'twitter'`
+	ql := `select * from oauth where provider = 'microsoft'`
 	var result []db.OAuth
 
 	err := db.Select(ql, &result)
 	if err != nil {
-		cc.ErrLog(err).Error("查询 Twitter 授权配置错")
+		cc.ErrLog(err).Error("查询 Microsoft 授权配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var twitter db.OAuth
+	var oauth db.OAuth
 
 	if len(result) == 0 {
-		ql = `insert into oauth (provider) values ('twitter')`
+		ql = `insert into oauth (provider) values ('microsoft')`
 
 		err = db.ExecOne(ql)
 		if err != nil {
-			cc.ErrLog(err).Error("新增 Twitter 授权配置错")
+			cc.ErrLog(err).Error("新增 Microsoft 授权配置错")
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	} else {
-		twitter = result[0]
+		oauth = result[0]
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"clientid": twitter.ClientId,
-		"secret":   twitter.Secret,
-		"enabled":  twitter.Enabled,
+		"clientid": oauth.ClientId,
+		"secret":   oauth.Secret,
+		"enabled":  oauth.Enabled,
 	})
 }
 
-func twitterSet(c echo.Context) error {
+func microsoftSet(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
 	var clientid, secret string
@@ -57,10 +57,11 @@ func twitterSet(c echo.Context) error {
 
 	ql := `
 		update oauth set clientid = ?, secret = ?, enabled = ?
-		where provider = 'twitter'
+		where provider = 'microsoft'
 	`
-	if err = db.ExecOne(ql, clientid, secret, enabled); err != nil {
-		cc.ErrLog(err).Error("更新 Twitter 授权配置错")
+	err = db.ExecOne(ql, clientid, secret, enabled)
+	if err != nil {
+		cc.ErrLog(err).Error("更新 Microsoft 授权配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.NoContent(http.StatusOK)

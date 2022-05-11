@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
+import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
-import TwitterIcon from '@mui/icons-material/Twitter';
 import CheckIcon from '@mui/icons-material/CheckCircle';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -19,8 +19,9 @@ import { useSnackbar } from 'notistack';
 import SecretInput from '~/comp/secret-input';
 import progressState from '~/state/progress';
 import { get, put } from "~/lib/rest";
+import MicrosoftIcon from '~/img/microsoft.svg';
 
-export default function Twitter() {
+export default function Microsoft() {
   const { enqueueSnackbar } = useSnackbar();
   const setProgress = useSetRecoilState(progressState);
   const [open, setOpen] = useState(false);
@@ -33,7 +34,7 @@ export default function Twitter() {
       try {
         setProgress(true);
 
-        const resp = await get('/system/setting/account/oauth/twitter');
+        const resp = await get('/system/setting/account/oauth/microsoft');
         setClientId(resp.clientid);
         setSecret(resp.secret);
         setEnabled(resp.enabled);
@@ -74,7 +75,7 @@ export default function Twitter() {
       }
       const _audit = `修改 GitHub 身份授权配置`;
 
-      await put('/system/setting/account/oauth/twitter', new URLSearchParams({
+      await put('/system/setting/account/oauth/microsoft', new URLSearchParams({
         clientid: clientId, secret, enabled, _audit,
       }));
       onSettingClose();
@@ -87,17 +88,20 @@ export default function Twitter() {
     <>
       <Stack direction='row' alignItems='center' sx={{ p: 2 }}>
         <Stack direction='row' spacing={2} alignItems='center' flex={1}>
-          <TwitterIcon fontSize='large' color="info" />
+          {/* <TwitterIcon fontSize='large' color="info" /> */}
+            <Box width={35} height={35} display='flex' justifyContent='center'>
+              <img src={MicrosoftIcon} alt='LOGO' style={{ width: 28 }} />
+            </Box>
           <Stack>
             <Stack direction='row' alignItems='center' spacing={3}>
-              <Typography variant='h6'>Twitter</Typography>
+              <Typography variant='h6'>Microsoft</Typography>
               {enabled &&
                 <Chip icon={<CheckIcon />}
                   label='已启用' size="small" variant="outlined" color="success"
                 />
               }
             </Stack>
-            <Typography variant='caption'>允许用户使用 Twitter 账号登录本系统</Typography>
+            <Typography variant='caption'>允许用户使用 Microsoft 账号登录本系统</Typography>
           </Stack>
         </Stack>
         <Button variant='contained' disableElevation onClick={onSettingOpen}>
@@ -105,9 +109,9 @@ export default function Twitter() {
         </Button>
       </Stack>
       <Dialog open={open} onClose={onSettingClose} maxWidth='sm' fullWidth>
-        <DialogTitle>Twitter 设置</DialogTitle>
+        <DialogTitle>Microsoft 授权设置</DialogTitle>
         <DialogContent>
-          <Typography variant="body2">请输入您的 Twitter 客户端 ID 和客户端密钥</Typography>
+          <Typography variant="body2">请输入您的 Microsoft 客户端 ID 和客户端密钥</Typography>
           <Paper variant='outlined' sx={{ px: 4, pt: 3, pb: 2, my: 2 }}>
             <TextField fullWidth variant="standard" required
               label="客户端 ID"
@@ -120,7 +124,7 @@ export default function Twitter() {
               value={secret} onChange={onClientSecretChange}
               autoComplete='new-password'
             />
-            <FormControlLabel sx={{ mt: 1 }} label="启用 Twitter 身份授权" control={
+            <FormControlLabel sx={{ mt: 1 }} label="启用 Microsoft 身份授权" control={
               <Checkbox checked={enabled} onChange={onEnableCheck} />
             } />
           </Paper>

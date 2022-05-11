@@ -20,7 +20,7 @@ func githubGet(c echo.Context) error {
 		cc.ErrLog(err).Error("查询 GitHub 授权配置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var github db.OAuth
+	var oauth db.OAuth
 
 	if len(result) == 0 {
 		ql = `insert into oauth (provider) values ('github')`
@@ -31,12 +31,12 @@ func githubGet(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	} else {
-		github = result[0]
+		oauth = result[0]
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"clientid": github.ClientId,
-		"secret":   github.Secret,
-		"enabled":  github.Enabled,
+		"clientid": oauth.ClientId,
+		"secret":   oauth.Secret,
+		"enabled":  oauth.Enabled,
 	})
 }
 

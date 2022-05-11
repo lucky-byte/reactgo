@@ -27,9 +27,9 @@ func authorize(c echo.Context) error {
 		cc.Log().Error("系统未配置 GitHub 身份授权，不能完成授权")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	github := records[0]
+	oauth := records[0]
 
-	if !github.Enabled || len(github.ClientId) == 0 || len(github.Secret) == 0 {
+	if !oauth.Enabled || len(oauth.ClientId) == 0 || len(oauth.Secret) == 0 {
 		cc.Log().Error("GitHub 授权配置不完整或未启用，不能完成授权")
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -60,7 +60,8 @@ func authorize(c echo.Context) error {
 	ql = `insert into user_oauth (uuid, user_uuid, provider) values (?, ?, ?)`
 	state := uuid.NewString()
 
-	if err := db.ExecOne(ql, state, user.UUID, "github"); err != nil {
+	err = db.ExecOne(ql, state, user.UUID, "github")
+	if err != nil {
 		cc.ErrLog(err).Error("记录 user oauth 错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
