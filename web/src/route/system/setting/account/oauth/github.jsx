@@ -124,7 +124,7 @@ export default function Github() {
               <Checkbox checked={enabled} onChange={onEnableCheck} />
             } />
           </Paper>
-          <Typography variant="caption" component='p'>
+          <Typography variant="caption" component='p' color='gray'>
             如果还没有客户端 ID 和密钥，可以从
             <Link href='https://github.com/settings/developers' target='_blank'
               underline="hover">

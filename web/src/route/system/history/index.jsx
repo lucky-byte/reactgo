@@ -15,11 +15,11 @@ import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-import GitHubIcon from '@mui/icons-material/GitHub';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
+import ActTypeIcon from '~/comp/acttype-icon';
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
 import { useSetCode } from "~/state/code";
@@ -123,7 +123,7 @@ export default function History() {
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">
-                  <ActType acttype={row.acttype} oauthp={row.oauthp} />
+                  <ActTypeIcon type={row.acttype} provider={row.oauthp} />
                 </TableCell>
                 <TableCell align="center">{row.os}</TableCell>
                 <TableCell align="center">{row.browser}</TableCell>
@@ -172,15 +172,4 @@ export default function History() {
       </TableContainer>
     </Container>
   )
-}
-
-function ActType(props) {
-  const { acttype, oauthp } = props;
-
-  if (acttype === 1) {
-    return <Typography variant='body2'>系统</Typography>
-  }
-  if (oauthp === 'github') {
-    return <GitHubIcon sx={{ verticalAlign: 'middle' }} />
-  }
 }

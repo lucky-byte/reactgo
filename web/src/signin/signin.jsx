@@ -155,7 +155,8 @@ export default function SignIn() {
         address: resp.address,
         secretcode_isset: resp.secretcode_isset,
         totp_isset: resp.totp_isset,
-        allows: resp.allows,
+        acl_features: resp.acl_features,
+        acl_allows: resp.acl_allows,
         activate: resp.activate,
       });
 

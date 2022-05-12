@@ -162,8 +162,8 @@ export default function Notification() {
     // 检查用户是否有事件访问权限
     let event_allow = false;
 
-    for (let i = 0; i < user?.allows?.length; i++) {
-      if (user.allows[i].code === 9040) {
+    for (let i = 0; i < user?.acl_allows?.length; i++) {
+      if (user.acl_allows[i].code === 9040) {
         event_allow = true;
         break;
       }
@@ -193,7 +193,7 @@ export default function Notification() {
 
     // 取消订阅
     return () => { sub && sub.unsubscribe(); }
-  }, [enqueueSnackbar, natsActivate, popupNotification, user?.allows, user?.uuid]);
+  }, [enqueueSnackbar, natsActivate, popupNotification, user?.acl_allows, user?.uuid]);
 
   // 打开下拉通知面板
   const onOpen = e => {

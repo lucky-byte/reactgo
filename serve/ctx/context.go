@@ -19,11 +19,12 @@ type AclAllows map[int]db.ACLAllow
 
 type Context struct {
 	echo.Context
-	logger *logrus.Entry
-	config *config.ViperConfig
-	user   *db.User
-	allows AclAllows
-	node   *db.Tree
+	logger       *logrus.Entry
+	config       *config.ViperConfig
+	user         *db.User
+	acl_features []string
+	acl_allows   AclAllows
+	node         *db.Tree
 }
 
 func (c *Context) Log() *logrus.Entry {
@@ -64,24 +65,34 @@ func (c *Context) User() *db.User {
 }
 
 // 设置用户访问控制
-func (c *Context) SetAllows(a []db.ACLAllow) {
+func (c *Context) SetAclFeatures(a []string) {
+	c.acl_features = a
+}
+
+// 获取用户访问控制
+func (c *Context) AclFeatures() []string {
+	return c.acl_features
+}
+
+// 设置用户访问控制权限
+func (c *Context) SetAclAllows(a []db.ACLAllow) {
 	allows := AclAllows{}
 
 	for _, v := range a {
 		allows[v.Code] = v
 	}
-	c.allows = allows
+	c.acl_allows = allows
 }
 
-// 获取用户访问控制
-func (c *Context) Allows() AclAllows {
-	return c.allows
+// 获取用户访问控制权限
+func (c *Context) AclAllows() AclAllows {
+	return c.acl_allows
 }
 
 // 检查用户是否有访问权限
 func (c *Context) AllowRead(code int) bool {
-	if c.allows != nil {
-		if v, ok := c.allows[code]; ok {
+	if c.acl_allows != nil {
+		if v, ok := c.acl_allows[code]; ok {
 			return v.IRead
 		}
 	}
@@ -90,8 +101,8 @@ func (c *Context) AllowRead(code int) bool {
 
 // 检查用户是否有修改权限
 func (c *Context) AllowWrite(code int) bool {
-	if c.allows != nil {
-		if v, ok := c.allows[code]; ok {
+	if c.acl_allows != nil {
+		if v, ok := c.acl_allows[code]; ok {
 			return v.IWrite
 		}
 	}
@@ -100,8 +111,8 @@ func (c *Context) AllowWrite(code int) bool {
 
 // 检查用户是否有管理权限
 func (c *Context) AllowAdmin(code int) bool {
-	if c.allows != nil {
-		if v, ok := c.allows[code]; ok {
+	if c.acl_allows != nil {
+		if v, ok := c.acl_allows[code]; ok {
 			return v.IAdmin
 		}
 	}

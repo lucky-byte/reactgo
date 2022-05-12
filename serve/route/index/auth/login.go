@@ -1,7 +1,9 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -25,11 +27,32 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 		cc.Log().Errorf("用户 %s 已被禁用或删除, 不允许登录", user.Name)
 		return c.String(http.StatusForbidden, "账号状态异常")
 	}
+	// 查询用户访问控制角色是否含有 nologin 特征，如果有则不允许登录
+	ql := `select * from acl where uuid = ?`
+	var acl db.ACL
+
+	err := db.SelectOne(ql, &acl, user.ACL)
+	if err != nil {
+		cc.ErrLog(err).Errorf("查询用户 %s 访问控制信息错", user.Name)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	acl_features := strings.Split(acl.Features, ",")
+
+	for i, feature := range acl_features {
+		trimed := strings.TrimSpace(feature)
+
+		if trimed == "nologin" {
+			err = fmt.Errorf("访问控制角色 %s 含有 nologin 特征", acl.Name)
+			cc.ErrLog(err).Errorf("用户 %s 所属角色不允许登录", user.Name)
+			return c.String(http.StatusForbidden, "该账号不允许登录")
+		}
+		acl_features[i] = trimed
+	}
 	// 从账号设置中查询会话持续时间
-	ql := `select sessduration from account`
+	ql = `select sessduration from account`
 	var duration time.Duration
 
-	err := db.SelectOne(ql, &duration)
+	err = db.SelectOne(ql, &duration)
 	if err != nil {
 		cc.ErrLog(err).Error("查询账号设置错")
 		return c.NoContent(http.StatusInternalServerError)
@@ -87,17 +110,17 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 
 	// 查询用户访问控制权限
 	ql = `select code, iread, iwrite, iadmin from acl_allows where acl = ?`
-	var result []db.ACLAllow
+	var allows []db.ACLAllow
 
-	err = db.Select(ql, &result, user.ACL)
+	err = db.Select(ql, &allows, user.ACL)
 	if err != nil {
 		cc.ErrLog(err).Errorf("查询用户 %s 访问控制信息错", user.Name)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	allows := []echo.Map{}
+	acl_allows := []echo.Map{}
 
-	for _, v := range result {
-		allows = append(allows, echo.Map{
+	for _, v := range allows {
+		acl_allows = append(acl_allows, echo.Map{
 			"code":   v.Code,
 			"iread":  v.IRead,
 			"iwrite": v.IWrite,
@@ -105,8 +128,6 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 		})
 	}
 	// 记录登录历史
-	// historyid := addHistory(cc, user, trust, clientid)
-
 	geoInfo, err := geoip.Lookup(cc.RealIP()) // 查询 IP 位置
 	if err != nil {
 		cc.ErrLog(err).Error("记录登录历史时查询 IP 地理位置错")
@@ -153,7 +174,8 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 		"tfa":              user.TFA,
 		"secretcode_isset": len(user.SecretCode) > 0,
 		"totp_isset":       len(user.TOTPSecret) > 0,
-		"allows":           allows,
+		"acl_features":     acl_features,
+		"acl_allows":       acl_allows,
 		"smsid":            smsid,
 		"token":            token,
 		"trust":            trust,
@@ -161,45 +183,3 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 		"activate":         newJwt.Activate,
 	})
 }
-
-// 记录登录历史
-// func addHistory(cc *ctx.Context, user *db.User, trust bool, clientid string) string {
-// 	geoInfo, err := geoip.Lookup(cc.RealIP()) // 查询 IP 位置
-// 	if err != nil {
-// 		cc.ErrLog(err).Error("记录登录历史时查询 IP 地理位置错")
-// 		geoInfo = new(geoip.Info)
-// 	}
-// 	// 如果当前设备不被信任，则记入随机值
-// 	// if !trust {
-// 	// 	clientid = uuid.NewString()
-// 	// }
-// 	historyid := uuid.NewString()
-
-// 	ql := `
-// 		insert into signin_history (
-// 			uuid, user_uuid, userid, name, ip, country, province, city,
-// 			district, longitude, latitude, ua, clientid, trust
-// 		) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-// 	`
-// 	err = db.ExecOne(ql,
-// 		historyid,
-// 		user.UUID,
-// 		user.UserId,
-// 		user.Name,
-// 		cc.RealIP(),
-// 		geoInfo.Country,
-// 		geoInfo.Province,
-// 		geoInfo.City,
-// 		geoInfo.District,
-// 		geoInfo.Longitude,
-// 		geoInfo.Latitude,
-// 		cc.Request().UserAgent(),
-// 		clientid,
-// 		trust,
-// 	)
-// 	if err != nil {
-// 		cc.ErrLog(err).Error("登记用户登录历史错误")
-// 		return ""
-// 	}
-// 	return historyid
-// }

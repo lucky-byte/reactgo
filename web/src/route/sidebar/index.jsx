@@ -27,11 +27,11 @@ export default function Sidebar() {
 
   // 根据用户的权限计算可以展示的菜单
   useEffect(() => {
-    if (user?.allows) {
+    if (user?.acl_allows) {
       const allows = [];
 
-      for (let i = 0; i < user.allows.length; i++) {
-        const allow = user.allows[i];
+      for (let i = 0; i < user.acl_allows.length; i++) {
+        const allow = user.acl_allows[i];
         if (allow.iread) {
           allows.push(allow.code);
         }
@@ -61,7 +61,7 @@ export default function Sidebar() {
       }
       setVisibleMenus(visible);
     }
-  }, [user?.allows]);
+  }, [user?.acl_allows]);
 
   return (
     <Box sx={{

@@ -13,11 +13,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
-import GitHubIcon from '@mui/icons-material/GitHub';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
+import ActTypeIcon from '~/comp/acttype-icon';
 import useTitle from "~/hook/title";
 import { get } from "~/lib/rest";
 import { geo } from '~/lib/geo';
@@ -78,7 +78,7 @@ export default function SignInList() {
                     </Tooltip>
                   </TableCell>
                   <TableCell align="center">
-                    <ActType acttype={row.acttype} oauthp={row.oauthp} />
+                    <ActTypeIcon type={row.acttype} provider={row.oauthp} />
                   </TableCell>
                   <TableCell align="center">{row.os}</TableCell>
                   <TableCell align="center">{row.browser}</TableCell>
@@ -97,15 +97,4 @@ export default function SignInList() {
       </Paper>
     </Container>
   )
-}
-
-function ActType(props) {
-  const { acttype, oauthp } = props;
-
-  if (acttype === 1) {
-    return <Typography variant='body2'>系统</Typography>
-  }
-  if (oauthp === 'github') {
-    return <GitHubIcon sx={{ verticalAlign: 'middle' }} />
-  }
 }

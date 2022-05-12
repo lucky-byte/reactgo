@@ -49,7 +49,7 @@ export default function Codes() {
     setKeyword(e.target.value);
   }
 
-  const allow_codes = user?.allows.map(item => {
+  const allow_codes = user?.acl_allows.map(item => {
     return parseInt(item.code);
   });
 

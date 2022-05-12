@@ -1,7 +1,9 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 
@@ -44,7 +46,30 @@ func Authentication(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		cc.SetUser(&user)
 
-		// 查询用户访问控制
+		// 查询用户访问控制角色是否含有 nologin 特征，如果有则不允许登录
+		ql = `select * from acl where uuid = ?`
+		var acl db.ACL
+
+		err = db.SelectOne(ql, &acl, user.ACL)
+		if err != nil {
+			cc.ErrLog(err).Errorf("查询用户 %s 访问控制信息错", user.Name)
+			return c.NoContent(http.StatusUnauthorized)
+		}
+		acl_features := strings.Split(acl.Features, ",")
+
+		for i, feature := range acl_features {
+			trimed := strings.TrimSpace(feature)
+
+			if trimed == "nologin" {
+				err = fmt.Errorf("访问控制角色 %s 含有 nologin 特征", acl.Name)
+				cc.ErrLog(err).Errorf("用户 %s 所属角色不允许登录", user.Name)
+				return c.NoContent(http.StatusUnauthorized)
+			}
+			acl_features[i] = trimed
+		}
+		cc.SetAclFeatures(acl_features)
+
+		// 查询用户访问控制权限
 		ql = `select * from acl_allows where acl = ?`
 		var allows []db.ACLAllow
 
@@ -52,7 +77,7 @@ func Authentication(next echo.HandlerFunc) echo.HandlerFunc {
 			cc.ErrLog(err).Errorf("查询用户 %s 访问控制错误", user.Name)
 			return c.NoContent(http.StatusUnauthorized)
 		}
-		cc.SetAllows(allows)
+		cc.SetAclAllows(allows)
 
 		// 查询用户绑定的层级节点
 		ql = `

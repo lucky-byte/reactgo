@@ -13,10 +13,10 @@ func info(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 
-	allows := []echo.Map{}
+	acl_allows := []echo.Map{}
 
-	for _, v := range cc.Allows() {
-		allows = append(allows, echo.Map{
+	for _, v := range cc.AclAllows() {
+		acl_allows = append(acl_allows, echo.Map{
 			"code":   v.Code,
 			"iread":  v.IRead,
 			"iwrite": v.IWrite,
@@ -33,6 +33,7 @@ func info(c echo.Context) error {
 		"address":          user.Address,
 		"secretcode_isset": len(user.SecretCode) > 0,
 		"totp_isset":       len(user.TOTPSecret) > 0,
-		"allows":           allows,
+		"acl_features":     cc.AclFeatures(),
+		"acl_allows":       acl_allows,
 	})
 }

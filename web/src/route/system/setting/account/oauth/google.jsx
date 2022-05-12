@@ -129,7 +129,7 @@ export default function Google() {
               <Checkbox checked={enabled} onChange={onEnableCheck} />
             } />
           </Paper>
-          <Typography variant="caption" component='p'>
+          <Typography variant="caption" component='p' color='gray'>
             如果您还没有客户端 ID 和密钥，可以从
             <Link href='https://console.developers.google.com' target='_blank'
               underline="hover">
@@ -139,7 +139,7 @@ export default function Google() {
             URI)请填写为：&lt;域&gt;<strong>/oauth/google/callback</strong>
             ，例如：<em>http://host:3456/oauth/google/callback</em>
           </Typography>
-          <Typography variant="caption" component='p' mt={1}>
+          <Typography variant="caption" component='p' color='gray' mt={1}>
             进一步信息请参考
             <Link target='_blank'
               href='https://developers.google.com/identity/protocols/oauth2/openid-connect'
