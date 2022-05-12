@@ -189,12 +189,12 @@ export default function SignIn() {
   }
 
   return (
-    <Stack as='main' role='main'>
+    <Stack as='main' role='main' sx={{ mb: 5 }}>
       <Toolbar>
         <img src={Logo} alt='Logo' height='28px' />
       </Toolbar>
       <Container maxWidth='xs'>
-        <Paper elevation={3} sx={{ my: 7, py: 3, px: 4, width: '100%' }}>
+        <Paper elevation={3} sx={{ my: 6, py: 3, px: 4, width: '100%' }}>
           <Typography as='h1' variant='h6' sx={{ mt: 1 }}>欢迎，请登录</Typography>
           <TextField required label='登录名' placeholder="请输入登录名"
             fullWidth autoComplete="username" autoFocus
@@ -250,9 +250,8 @@ export default function SignIn() {
               <Stack direction='row' justifyContent='center' alignItems='center'
                 spacing={1} mt={1}>
                 {providers.map(p => (
-                  <Authorize key={p} provider={p} clientId={clientId}
+                  <Authorize key={p} provider={p} clientId={clientId} login={login}
                     submitting={submitting} setSubmitting={setSubmitting}
-                    login={login}
                   />
                 ))}
               </Stack>
@@ -260,20 +259,20 @@ export default function SignIn() {
           }
         </Paper>
       </Container>
-      <Stack direction='row' alignItems='center' justifyContent='center' spacing={1}
-        sx={{ p: 2, position: 'fixed', bottom: 0, left: 0, right: 0 }}>
+      <Stack direction='row' alignItems='center' justifyContent='center' spacing={1}>
         <Typography variant='caption'>
-          版权所有 &copy; {new Date().getFullYear()}&nbsp;
-          {process.env.REACT_APP_COMPANY_NAME}，保留所有权利
+          &copy; {new Date().getFullYear()} {process.env.REACT_APP_COMPANY_NAME}
         </Typography>
         {process.env.REACT_APP_ICP &&
-          <Typography variant='caption'>
-            <img src={Beian} alt='备案' height={12} width={12} />
-            <Link href={process.env.REACT_APP_ICP_LINK} target='_blank'
-              underline='hover' sx={{ ml: '3px' }}>
-              {process.env.REACT_APP_ICP}
-            </Link>
-          </Typography>
+          <Stack direction='row' alignItems='center'>
+            <img src={Beian} alt='备案' height={14} width={14} />
+            <Typography variant='caption'>
+              <Link href={process.env.REACT_APP_ICP_LINK} target='_blank'
+                underline='hover' sx={{ ml: '2px' }}>
+                {process.env.REACT_APP_ICP}
+              </Link>
+            </Typography>
+          </Stack>
         }
         <Typography variant='caption'>
           <Link href='/privacy' target='_blank' underline='hover'>隐私政策</Link>
@@ -308,7 +307,7 @@ function Forget(props) {
   )
 }
 
-// 三方账号登录
+// 授权账号登录
 function Authorize(props) {
   const { provider, ...others } = props;
 

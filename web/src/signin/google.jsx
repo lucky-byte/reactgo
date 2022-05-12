@@ -17,23 +17,20 @@ export default function Google(props) {
 
   // 授权成功后将收到消息
   const onAuthorizedListener = useCallback(async e => {
-    console.log('message: ', e.origin)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('google authorized message from ', e.origin);
+    }
     if (process.env.NODE_ENV === 'production') {
       if (e.origin !== window.location.origin) {
-        return;
+        return enqueueSnackbar('来自不同源的消息，忽略...');
       }
-    }
-    if (e.source !== popupRef.current) {
-      return;
     }
     if (e.data.source === 'reactgo-google-authorize') {
-      window.removeEventListener('message', onAuthorizedListener);
-
-      if (popupRef.current) {
-        popupRef.current.close();
+      if (e.source !== popupRef.current) {
+        return enqueueSnackbar('来自不明窗口的消息，忽略...');
       }
-      console.log(state)
-      console.log(e.data.state)
+      popupRef.current?.close();
+
       if (state === e.data.state) {
         try {
           setSubmitting(true);
@@ -56,12 +53,10 @@ export default function Google(props) {
 
   // 监听窗口消息，授权成功后将通过窗口间 PostMessage 进行通信
   useEffect(() => {
-    console.log('use effect')
     if (state) {
       window.addEventListener('message', onAuthorizedListener);
     }
     return () => {
-      console.log('cleanup')
       window.removeEventListener('message', onAuthorizedListener);
     }
   }, [onAuthorizedListener, state]);
@@ -70,7 +65,6 @@ export default function Google(props) {
   const onAuthorizeClick = async () => {
     try {
       const resp = await put('/signin/oauth/google/authorize');
-
       setState(resp.state);
 
       // 查询 Google discovery 配置
@@ -81,10 +75,10 @@ export default function Google(props) {
 
       const q = new URLSearchParams({
         client_id: resp.clientid,
-        response_type: 'code',
-        scope: 'openid email profile',
         redirect_uri: resp.url,
         state: resp.state,
+        response_type: 'code',
+        scope: 'openid email profile',
         nonce: Math.random(),
       });
       const url = discovery.authorization_endpoint + '?' + q.toString();
@@ -92,9 +86,7 @@ export default function Google(props) {
       // 打开新窗口进行授权
       popupRef.current = popupWindow(url, 'GoogleAuthorize', 650, 650);
     } catch (err) {
-      if (err) {
-        enqueueSnackbar(err.message);
-      }
+      enqueueSnackbar(err.message);
     }
   }
 

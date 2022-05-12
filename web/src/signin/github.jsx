@@ -16,23 +16,20 @@ export default function GitHub(props) {
 
   // 授权成功后将收到消息
   const onAuthorizedListener = useCallback(async e => {
-    console.log('message: ', e.origin)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('github authorized message from ', e.origin);
+    }
     if (process.env.NODE_ENV === 'production') {
       if (e.origin !== window.location.origin) {
-        return;
+        return enqueueSnackbar('来自不同源的消息，忽略...');
       }
-    }
-    if (e.source !== popupRef.current) {
-      return;
     }
     if (e.data.source === 'reactgo-github-authorize') {
-      window.removeEventListener('message', onAuthorizedListener);
-
-      if (popupRef.current) {
-        popupRef.current.close();
+      if (e.source !== popupRef.current) {
+        return enqueueSnackbar('来自不明窗口的消息，忽略...');
       }
-      console.log(state)
-      console.log(e.data.state)
+      popupRef.current?.close();
+
       if (state === e.data.state) {
         try {
           setSubmitting(true);
@@ -55,12 +52,10 @@ export default function GitHub(props) {
 
   // 监听窗口消息，授权成功后将通过窗口间 PostMessage 进行通信
   useEffect(() => {
-    console.log('use effect')
     if (state) {
       window.addEventListener('message', onAuthorizedListener);
     }
     return () => {
-      console.log('cleanup')
       window.removeEventListener('message', onAuthorizedListener);
     }
   }, [onAuthorizedListener, state]);

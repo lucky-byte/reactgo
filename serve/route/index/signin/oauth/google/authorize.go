@@ -32,22 +32,22 @@ func authorize(c echo.Context) error {
 		cc.Log().Error("Google 授权配置不完整或未启用，不能完成授权")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	httpurl := cc.Config().ServerHttpURL()
+	baseurl := cc.Config().ServerHttpURL()
 
-	if len(httpurl) == 0 {
+	if len(baseurl) == 0 {
 		cc.Log().Error("未配置 Server Http URL")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	url := httpurl + "/oauth/google/callback"
+	url := baseurl + "/oauth/google/callback"
 
 	// 插入未授权的记录
 	ql = `
 		insert into user_oauth (uuid, user_uuid, provider, usage)
-		values (?, ?, ?, 2)
+		values (?, '', ?, 2)
 	`
 	state := uuid.NewString()
 
-	if err := db.ExecOne(ql, state, "", "google"); err != nil {
+	if err := db.ExecOne(ql, state, "google"); err != nil {
 		cc.ErrLog(err).Error("记录 user oauth 错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
