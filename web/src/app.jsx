@@ -85,7 +85,7 @@ export default function App() {
   // 更新色彩模式
   useEffect(() => { setMode(prefersDarkMode ? 'dark' : 'light'); }, [prefersDarkMode]);
 
-  // 连接 NATS 服务器
+  // 连接 NATS 服务器，接收异步通知
   useEffect(() => {
     // 用户未登录的情况下不连接
     const token = localStorage.getItem('token');

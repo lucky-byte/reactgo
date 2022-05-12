@@ -22,6 +22,7 @@ export default function GitHub() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState(1);
   const [avatar, setAvatar] = useState('');
+  const [state, setState] = useState('');
   const [refresh, setRefresh] = useState(true);
 
   const popupRef = useRef();
@@ -51,6 +52,9 @@ export default function GitHub() {
 
   // 授权成功后将收到消息
   const onAuthorizedListener = useCallback(e => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('github authorized message from ', e.origin);
+    }
     if (process.env.NODE_ENV === 'production') {
       // 必须是来自同源的消息
       if (e.origin !== window.location.origin) {
@@ -73,10 +77,13 @@ export default function GitHub() {
 
   // 卸载时删除事件监听
   useEffect(() => {
+    if (state) {
+      window.addEventListener('message', onAuthorizedListener);
+    }
     return () => {
       window.removeEventListener('message', onAuthorizedListener);
     }
-  }, [onAuthorizedListener]);
+  }, [onAuthorizedListener, state]);
 
   // 授权
   const onAuthorize = async () => {
@@ -92,14 +99,15 @@ export default function GitHub() {
       const resp = await put('/user/oauth/github/authorize', new URLSearchParams({
         secretcode_token: token,
       }));
+      setState(resp.state);
 
       const q = new URLSearchParams({
-        client_id: clientId, redirect_uri: resp.url, state: resp.state,
+        client_id: clientId,
+        redirect_uri: resp.url,
+        state: resp.state,
         scope: 'user:email',
       });
       const url = 'https://github.com/login/oauth/authorize?' + q.toString();
-
-      window.addEventListener('message', onAuthorizedListener);
       popupRef.current = popupWindow(url, 'GithubAuthorize', 650, 650);
     } catch (err) {
       if (err) {

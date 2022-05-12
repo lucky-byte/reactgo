@@ -23,6 +23,7 @@ export default function Google() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState(1);
   const [avatar, setAvatar] = useState('');
+  const [state, setState] = useState('');
   const [refresh, setRefresh] = useState(true);
 
   const popupRef = useRef();
@@ -52,6 +53,9 @@ export default function Google() {
 
   // 授权成功后将收到消息
   const onAuthorizedListener = useCallback(e => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('google authorized message from ', e.origin);
+    }
     if (process.env.NODE_ENV === 'production') {
       // 必须是来自同源的消息
       if (e.origin !== window.location.origin) {
@@ -74,10 +78,13 @@ export default function Google() {
 
   // 卸载时删除事件监听
   useEffect(() => {
+    if (state) {
+      window.addEventListener('message', onAuthorizedListener);
+    }
     return () => {
       window.removeEventListener('message', onAuthorizedListener);
     }
-  }, [onAuthorizedListener]);
+  }, [onAuthorizedListener, state]);
 
   // 授权
   const onAuthorize = async () => {
@@ -93,6 +100,7 @@ export default function Google() {
       const resp = await put('/user/oauth/google/authorize', new URLSearchParams({
         secretcode_token: token,
       }));
+      setState(resp.state);
 
       // 查询 Google discovery 配置
       const c = await fetch(
@@ -109,8 +117,6 @@ export default function Google() {
         nonce: Math.random(),
       });
       const url = discovery.authorization_endpoint + '?' + q.toString();
-
-      window.addEventListener('message', onAuthorizedListener);
       popupRef.current = popupWindow(url, 'GoogleAuthorize', 650, 650);
     } catch (err) {
       if (err) {

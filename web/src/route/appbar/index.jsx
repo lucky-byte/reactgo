@@ -66,6 +66,9 @@ export default function Appbar(params) {
     enableOnTags: ['INPUT'],
   });
 
+  // 用户角色具有开放平台特征
+  const openpt = user?.acl_features?.indexOf('openpt') >= 0;
+
   const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
 
   // 自动更新文档标题
@@ -141,14 +144,22 @@ export default function Appbar(params) {
     <AppBar position="static" color='transparent' elevation={0}
       sx={{ zIndex: 1, borderBottom: `1px solid #8882` }}>
       <Toolbar>
-        <IconButton aria-label="菜单" sx={{ mr: 1 }} color='primary'
-          onClick={openSidebarClick}>
-          {sidebar ? <MenuOpenIcon /> : <MenuIcon />}
-        </IconButton>
-        {!sidebar &&
+        {openpt ?
           <Link component={RouteLink} to='/' sx={{ mr: 2, lineHeight: 1 }}>
             <img src={Logo} alt='Logo' height='24px' width='100px' />
           </Link>
+          :
+          <>
+            <IconButton aria-label="菜单" sx={{ mr: 1 }} color='primary'
+              onClick={openSidebarClick}>
+              {sidebar ? <MenuOpenIcon /> : <MenuIcon />}
+            </IconButton>
+            {!sidebar &&
+              <Link component={RouteLink} to='/' sx={{ mr: 2, lineHeight: 1 }}>
+                <img src={Logo} alt='Logo' height='24px' width='100px' />
+              </Link>
+            }
+          </>
         }
         <Typography component='h1' variant="h6" sx={{ flexGrow: 1 }}>
           {title}

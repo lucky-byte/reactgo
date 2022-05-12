@@ -10,6 +10,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import CircularProgress from '@mui/material/CircularProgress';
+import userState from "~/state/user";
 import sidebarState from "~/state/sidebar";
 import progressState from "~/state/progress";
 import printModalState from "~/state/printmodal";
@@ -26,9 +27,13 @@ import System from "./system";
 import User from "./user";
 
 export default function Index() {
+  const user = useRecoilValue(userState);
   const sidebar = useRecoilValue(sidebarState);
   const progress = useRecoilValue(progressState);
   const [progressVisible, setProgressVisible] = useState(false);
+
+  // 用户角色具有开放平台特征
+  const openpt = user?.acl_features?.indexOf('openpt') >= 0;
 
   // 延迟显示全局进度条
   useEffect(() => {
@@ -50,9 +55,11 @@ export default function Index() {
             }} />
           </Portal>
         }
-        <Collapse orientation="horizontal" in={sidebar}>
-          <Sidebar />
-        </Collapse>
+        {!openpt &&
+          <Collapse orientation="horizontal" in={sidebar}>
+            <Sidebar />
+          </Collapse>
+        }
         <Stack sx={{ flex: 1, height: '100vh', '@media print': { height: '100%' } }}>
           <Appbar />
           <Box sx={{ maxHeight: '100%', overflow: 'auto' }}>
