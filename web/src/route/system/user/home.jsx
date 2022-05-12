@@ -6,6 +6,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import SecurityIcon from '@mui/icons-material/Security';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
@@ -128,12 +129,17 @@ export default function Home() {
         <TextField select variant='standard' sx={{ ml: 2, minWidth: 140 }}
           value={acl} onChange={onAclChange}>
           <MenuItem disabled value="">
-            <em>角色筛选</em>
+            <Typography variant='body2'>角色筛选</Typography>
           </MenuItem>
-          {acls.map(a => (
-            <MenuItem key={a.uuid} value={a.uuid}>{a.name}</MenuItem>
-          ))}
           <MenuItem value='all'>所有角色</MenuItem>
+          {acls.map(a => (
+            <MenuItem key={a.uuid} value={a.uuid}>
+              <Stack direction='row' alignItems='center' sx={{ width: '100%' }}>
+                <Typography textAlign='left' sx={{ flex: 1 }}>{a.name}</Typography>
+                <Typography color='gray' sx={{ ml: 2 }}>{a.usercount}</Typography>
+              </Stack>
+            </MenuItem>
+          ))}
         </TextField>
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Button variant='outlined' size='small' startIcon={<AddIcon />}

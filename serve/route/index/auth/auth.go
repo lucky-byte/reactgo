@@ -36,19 +36,19 @@ func Authentication(next echo.HandlerFunc) echo.HandlerFunc {
 		// 查询用户信息
 		err = setAuthUser(cc, jwt.User)
 		if err != nil {
-			cc.ErrLog(err).Error("认证失败")
+			cc.ErrLog(err).Error("认证失败，查询用户信息错")
 			return c.NoContent(http.StatusUnauthorized)
 		}
 		// 查询用户访问控制角色
 		err = SetAcl(cc)
 		if err != nil {
-			cc.ErrLog(err).Error("认证失败")
+			cc.ErrLog(err).Error("认证失败，查询用户访问控制错")
 			return c.NoContent(http.StatusUnauthorized)
 		}
 		// 查询用户绑定的层级节点
 		err = setTreeNode(cc)
 		if err != nil {
-			cc.ErrLog(err).Error("认证失败")
+			cc.ErrLog(err).Error("认证失败，查询绑定节点错")
 			return c.NoContent(http.StatusUnauthorized)
 		}
 		return next(c)
@@ -92,9 +92,7 @@ func SetAcl(cc *ctx.Context) error {
 		trimed := strings.TrimSpace(feature)
 
 		if trimed == "nologin" {
-			return fmt.Errorf("用户 %s 所属角色 %s 不允许登录，因为其含有 nologin 特征",
-				user.Name, acl.Name,
-			)
+			return fmt.Errorf("用户 %s 角色 %s 含有 nologin 特征", user.Name, acl.Name)
 		}
 		features[i] = trimed
 	}

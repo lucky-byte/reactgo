@@ -111,7 +111,7 @@ func markdownEscape(s string) string {
 	var sb strings.Builder
 
 	for _, c := range s {
-		if strings.IndexRune("#{}[]()<>!`*_\\+-.|", c) >= 0 {
+		if strings.IndexRune("#{}[]()<>!`*_\\+-|", c) >= 0 {
 			sb.WriteRune('\\')
 		}
 		sb.WriteRune(c)

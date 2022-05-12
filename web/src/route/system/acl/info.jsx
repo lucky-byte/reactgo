@@ -105,8 +105,9 @@ export default function Info(props) {
           <InplaceInput variant='h6' sx={{ flex: 1 }} text={info.name || ''}
             fontSize='large' onConfirm={onChangeName}
           />
-          <Chip label={`${info?.users || 0} 个用户`} size='small' variant='outlined' />
-          <Typography variant='caption' color='gray' sx={{ mx: 2 }}>
+          <Chip label={`${info.users || 0} 个用户`} size='small' variant='outlined' />
+          <Chip label={`${info.code}`} size='small' sx={{ ml: 1 }} />
+          <Typography variant='caption' color='gray' sx={{ mx: 1 }}>
             {dayjs(info.create_at).fromNow()}
           </Typography>
           <IconButton color='primary' onClick={print}>

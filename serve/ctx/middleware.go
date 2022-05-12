@@ -43,7 +43,7 @@ func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 					// 如果处理请求超出 1 秒，记录一条信息
 					if conf.Debug() {
 						s := fmt.Sprintf("%s %s 耗时 %f 秒", method, urlpath, elapsed)
-						m := fmt.Sprintf("IP: %s, ReqID: %s", c.RealIP(), reqid)
+						m := fmt.Sprintf("IP: `%s`, ReqID: `%s`", c.RealIP(), reqid)
 						event.Add(event.LevelTodo, s, m)
 					}
 				}

@@ -46,7 +46,7 @@ export default function Profile() {
 
           const params = new URLSearchParams({ uuid: location.state.uuid });
           const resp = await get('/system/user/profile?' + params.toString());
-          setProfile(resp);
+          setProfile(resp || {});
         }
       } catch (err) {
         enqueueSnackbar(err.message);
@@ -82,7 +82,9 @@ export default function Profile() {
           </Tooltip>
         </Stack>
         <BaseInfoTable profile={profile} />
-        <Typography variant='subtitle1' sx={{ mt: 2, mb: 1 }}>登录历史</Typography>
+        <Typography variant='subtitle1' sx={{ mt: 2, mb: 1 }}>
+          登录历史({profile.history?.length})
+        </Typography>
         <SigninHistory history={profile.history || []} />
       </Paper>
     </Container>

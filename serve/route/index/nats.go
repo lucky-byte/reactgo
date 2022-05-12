@@ -10,14 +10,15 @@ import (
 
 var counter = 0
 
-// 查询 nats 配置信息
+// 查询 NATS 配置信息
 func nats(c echo.Context) error {
 	cc := c.(*ctx.Context)
+	user := cc.User()
 
 	counter += 1
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"servers": cc.Config().NatsWebSocket(),
-		"name":    fmt.Sprintf("%s-%d", cc.User().UserId, counter),
-	})
+	servers := cc.Config().NatsWebSocket()
+	name := fmt.Sprintf("%s-%d", user.UserId, counter)
+
+	return c.JSON(http.StatusOK, echo.Map{"servers": servers, "name": name})
 }

@@ -9,6 +9,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
+import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import { useSnackbar } from 'notistack';
 import progressState from "~/state/progress";
@@ -74,6 +75,9 @@ export default function Home() {
     })();
   }, [enqueueSnackbar, setProgress, reloadAll]);
 
+  const onSearchClick = () => {
+  }
+
   const onAddClick = () => {
     navigate('add');
   }
@@ -86,29 +90,31 @@ export default function Home() {
   return (
     <Container as='main' maxWidth='md' sx={{ py: 4 }}>
       <Stack direction='row' spacing={2}>
-        <Paper elevation={0} sx={{ width: 180 }}>
+        <Paper elevation={0} sx={{ width: 200 }}>
           <Stack>
             <Stack direction='row' alignItems='center' sx={{ pl: 2, py: '3px' }}>
               <Stack direction='row' alignItems='baseline' sx={{ flex: 1 }}>
                 <Typography variant='h6' sx={{ mr: 1 }}>角色</Typography>
-                <Typography variant='body2'>{acls.length} 项</Typography>
+                <Typography variant='body2' color='gray'>{acls.length} 项</Typography>
               </Stack>
+              <IconButton aria-label='搜索' onClick={onSearchClick}>
+                <SearchIcon fontSize='small' />
+              </IconButton>
               <IconButton aria-label='添加' onClick={onAddClick}>
                 <AddIcon color='primary' />
               </IconButton>
             </Stack>
             <Divider sx={{ mb: 1 }} />
             <Tabs orientation="vertical" value={tabValue} onChange={onTabChange}>
-              {acls.map((a, i) => (
+              {acls.map(a => (
                 <Tab key={a.uuid} value={a.uuid} sx={{ alignItems: 'flex-start' }}
                   label={
-                    <Stack direction='row'>
-                      <Typography variant='button' textAlign='left' color='#8888'
-                        sx={{ width: 24 }}>
-                        {i + 1}
-                      </Typography>
-                      <Typography variant='button' textAlign='left'>
+                    <Stack direction='row' alignItems='center' sx={{ width: '100%' }}>
+                      <Typography variant='button' textAlign='left' sx={{ flex: 1 }}>
                         {a.name}
+                      </Typography>
+                      <Typography variant='button' color='gray' sx={{ ml: 1 }}>
+                        {a.usercount}
                       </Typography>
                     </Stack>
                   }

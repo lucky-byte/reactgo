@@ -40,9 +40,7 @@ func opsRecorder(next echo.HandlerFunc) echo.HandlerFunc {
 		id := uuid.NewString()
 		user := cc.User()
 
-		err := db.ExecOne(
-			ql, id, user.UUID, req.Method, req.URL.Path, body, audit,
-		)
+		err := db.ExecOne(ql, id, user.UUID, req.Method, req.URL.Path, body, audit)
 		if err != nil {
 			cc.ErrLog(err).Error("添加操作记录错")
 		}
@@ -57,6 +55,7 @@ var sensitiveKeys = []string{
 	"password2",
 }
 
+// 读取请求数据
 func opsReadBody(cc *ctx.Context) (string, string, bool) {
 	req := cc.Request()
 
