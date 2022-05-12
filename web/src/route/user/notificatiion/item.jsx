@@ -65,7 +65,7 @@ export default function Item() {
   }
 
   return (
-    <Container as='main' role='main' maxWidth='md' sx={{ my: 3 }} ref={contentRef}>
+    <Container as='main' role='main' maxWidth='md' sx={{ mt: 3, my: 6 }} ref={contentRef}>
       <Stack spacing={2} direction='row' justifyContent='flex-end'>
         <Tooltip title='打印'>
           <IconButton onClick={print}>

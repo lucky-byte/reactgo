@@ -8,6 +8,7 @@ func Attach(up *echo.Group) {
 	group := up.Group("/notification")
 
 	group.GET("/", list)
-	group.GET("/:uuid", item)
 	group.GET("/last", last)
+	group.GET("/:uuid", item)
+	group.DELETE("/:uuid", del)
 }
