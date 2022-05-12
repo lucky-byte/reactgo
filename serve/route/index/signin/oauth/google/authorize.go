@@ -24,13 +24,13 @@ func authorize(c echo.Context) error {
 	}
 	if len(records) == 0 {
 		cc.Log().Error("系统未配置 Google 身份授权，不能完成授权")
-		return c.NoContent(http.StatusInternalServerError)
+		return c.NoContent(http.StatusForbidden)
 	}
 	oauth := records[0]
 
 	if !oauth.Enabled || len(oauth.ClientId) == 0 || len(oauth.Secret) == 0 {
 		cc.Log().Error("Google 授权配置不完整或未启用，不能完成授权")
-		return c.NoContent(http.StatusInternalServerError)
+		return c.NoContent(http.StatusForbidden)
 	}
 	baseurl := cc.Config().ServerHttpURL()
 
@@ -47,7 +47,8 @@ func authorize(c echo.Context) error {
 	`
 	state := uuid.NewString()
 
-	if err := db.ExecOne(ql, state, "google"); err != nil {
+	err = db.ExecOne(ql, state, "google")
+	if err != nil {
 		cc.ErrLog(err).Error("记录 user oauth 错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
