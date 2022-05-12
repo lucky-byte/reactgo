@@ -210,7 +210,7 @@ export default function Profile() {
         <Stack sx={{ mt: 3 }}>
           <Typography variant='h6'>访问地图</Typography>
           <Typography variant='caption'>
-            您曾经在下列位置登录系统，位置信息通过 IP 获取，可能存在误差，尤其是使用 VPN
+            您曾经在下列位置登录系统，位置信息通过 IP 获取，可能存在误差
           </Typography>
         </Stack>
         <Map />

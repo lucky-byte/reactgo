@@ -69,15 +69,17 @@ export default function GitHub(props) {
   const onAuthorizeClick = async () => {
     try {
       const resp = await put('/signin/oauth/github/authorize');
-
       setState(resp.state);
 
-      // 打开新窗口进行授权
       const q = new URLSearchParams({
-        client_id: resp.clientid, redirect_uri: resp.url, state: resp.state,
+        client_id: resp.clientid,
+        redirect_uri: resp.url,
+        state: resp.state,
         scope: 'user:email',
       });
       const url = 'https://github.com/login/oauth/authorize?' + q.toString();
+
+      // 打开新窗口进行授权
       popupRef.current = popupWindow(url, 'GithubSignIn', 650, 600);
     } catch (err) {
       if (err) {

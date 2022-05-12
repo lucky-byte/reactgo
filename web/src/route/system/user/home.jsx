@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRecoilState } from "recoil";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -17,6 +17,7 @@ import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
+import UploadIcon from '@mui/icons-material/Upload';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import BlockIcon from '@mui/icons-material/Block';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
@@ -45,8 +46,7 @@ import usePageData from '~/hook/pagedata';
 import { useSetCode } from "~/state/code";
 import { post, del, get } from '~/lib/rest';
 
-export default function List() {
-  const navigate = useNavigate();
+export default function Home() {
   const [progress, setProgress] = useRecoilState(progressState);
   const [pageData, setPageData] = usePageData();
   const { enqueueSnackbar } = useSnackbar();
@@ -137,8 +137,12 @@ export default function List() {
         </TextField>
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Button variant='outlined' size='small' startIcon={<AddIcon />}
-          onClick={() => { navigate('add') }}>
+          LinkComponent={Link} to='add'>
           添加
+        </Button>
+        <Button variant='outlined' size='small' color='warning' sx={{ ml: 2 }}
+          startIcon={<UploadIcon />} LinkComponent={Link} to='import'>
+          批量导入
         </Button>
       </Toolbar>
       <TableContainer component={OutlinedPaper}>

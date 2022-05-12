@@ -54,6 +54,7 @@ func profile(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
+		"uuid":             user.UUID,
 		"create_at":        user.CreateAt,
 		"update_at":        user.UpdateAt,
 		"signin_at":        user.SigninAt,
@@ -119,7 +120,7 @@ func profileOAuth(user_uuid string) (string, error) {
 	if err := db.Select(ql, &result, user_uuid); err != nil {
 		return "", err
 	}
-	return strings.Join(result, ","), nil
+	return strings.Join(result, ", "), nil
 }
 
 // 查询登录历史

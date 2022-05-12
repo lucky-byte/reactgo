@@ -123,7 +123,7 @@ export default function Event() {
   }
 
   return (
-    <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
+    <Container as='main' role='main' maxWidth='lg' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={loading} onChange={onKeywordChange}
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
@@ -136,6 +136,7 @@ export default function Event() {
             <ToggleButton value='1' aria-label="信息">信息</ToggleButton>
             <ToggleButton value='2' aria-label="警告">警告</ToggleButton>
             <ToggleButton value='3' aria-label="错误">错误</ToggleButton>
+            <ToggleButton value='4' aria-label="错误">安全</ToggleButton>
           </ToggleButtonGroup>
           <ToggleButtonGroup exclusive size='small' color='primary' aria-label="状态"
             value={fresh} onChange={onFreshChange}>

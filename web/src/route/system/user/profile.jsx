@@ -113,6 +113,10 @@ function BaseInfoTable(props) {
             <TableCell>{profile.name}</TableCell>
           </TableRow>
           <TableRow>
+            <TableCell>唯一标识</TableCell>
+            <TableCell colSpan={3}>{profile.uuid}</TableCell>
+          </TableRow>
+          <TableRow>
             <TableCell>手机号</TableCell>
             <TableCell>{profile.mobile}</TableCell>
             <TableCell>邮箱地址</TableCell>
@@ -191,7 +195,8 @@ function SigninHistory(props) {
             <TableCell align="center">登录时间</TableCell>
             <TableCell align="center">登录名</TableCell>
             <TableCell align="center">姓名</TableCell>
-            <TableCell align="center">设备</TableCell>
+            <TableCell align="center">系统</TableCell>
+            <TableCell align="center">浏览器</TableCell>
             <TableCell align="center">位置</TableCell>
           </TableRow>
         </TableHead>
@@ -209,7 +214,8 @@ function SigninHistory(props) {
                 </TableCell>
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
-                <TableCell align="center">{row.browser} on {row.os}</TableCell>
+                <TableCell align="center">{row.os}</TableCell>
+                <TableCell align="center">{row.browser}</TableCell>
                 <TableCell align="center">
                   <Tooltip title={row.ip} arrow placement='right'>
                     <Typography variant='body2' sx={{ cursor: 'default' }}>

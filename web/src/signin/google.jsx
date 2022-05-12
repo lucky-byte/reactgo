@@ -26,7 +26,7 @@ export default function Google(props) {
     if (e.source !== popupRef.current) {
       return;
     }
-    if (e.data.source === 'reactgo-github-authorize') {
+    if (e.data.source === 'reactgo-google-authorize') {
       window.removeEventListener('message', onAuthorizedListener);
 
       if (popupRef.current) {
@@ -38,7 +38,7 @@ export default function Google(props) {
         try {
           setSubmitting(true);
 
-          const resp = await put('/signin/oauth/github/signin', new URLSearchParams({
+          const resp = await put('/signin/oauth/google/signin', new URLSearchParams({
             clientid: clientId, userid: e.data.profile?.userid, state,
           }));
           setSubmitting(false);
@@ -69,17 +69,28 @@ export default function Google(props) {
   // 开始授权
   const onAuthorizeClick = async () => {
     try {
-      const resp = await put('/signin/oauth/github/authorize');
+      const resp = await put('/signin/oauth/google/authorize');
 
       setState(resp.state);
 
-      // 打开新窗口进行授权
+      // 查询 Google discovery 配置
+      const c = await fetch(
+        'https://accounts.google.com/.well-known/openid-configuration'
+      );
+      const discovery = await c.json();
+
       const q = new URLSearchParams({
-        client_id: resp.clientid, redirect_uri: resp.url, state: resp.state,
-        scope: 'user:email',
+        client_id: resp.clientid,
+        response_type: 'code',
+        scope: 'openid email profile',
+        redirect_uri: resp.url,
+        state: resp.state,
+        nonce: Math.random(),
       });
-      const url = 'https://github.com/login/oauth/authorize?' + q.toString();
-      popupRef.current = popupWindow(url, 'GithubSignIn', 650, 600);
+      const url = discovery.authorization_endpoint + '?' + q.toString();
+
+      // 打开新窗口进行授权
+      popupRef.current = popupWindow(url, 'GoogleAuthorize', 650, 650);
     } catch (err) {
       if (err) {
         enqueueSnackbar(err.message);

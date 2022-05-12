@@ -91,7 +91,7 @@ export default function Features(props) {
         transformOrigin={{
           vertical: 'top', horizontal: 'left',
         }}>
-        <List sx={{ pt: 0 }}>
+        <List sx={{ pt: 0 }} dense>
           <ListItem disablePadding>
             <ListItemButton onClick={() => onFeatureToggle('event')}>
               <Checkbox edge="start" tabIndex={-1} disableRipple
@@ -100,20 +100,38 @@ export default function Features(props) {
               <ListItemText primary='事件通知' secondary='开启后可以接收系统事件通知' />
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => onFeatureToggle('openpt')}>
+              <Checkbox edge="start" tabIndex={-1} disableRipple
+                checked={features.indexOf('openpt') >= 0}
+              />
+              <ListItemText primary='开放平台' secondary='开启后仅限于访问开发平台' />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => onFeatureToggle('nologin')}>
+              <Checkbox edge="start" tabIndex={-1} disableRipple
+                checked={features.indexOf('nologin') >= 0}
+              />
+              <ListItemText primary='禁止登录' secondary='开启后禁止用户登录本系统' />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Popover>
     </>
   )
 }
 
+const featureNames = {
+  'event':   '事件通知',
+  'nologin': '禁止登录',
+  'openpt':  '开放平台',
+}
+
 function Feature(props) {
   const { name, ...others } = props;
 
-  let label = '';
-
-  if (name === 'event') {
-    label = '事件通知'
-  }
+  const label = featureNames[name] || '';
 
   return (
     <Chip {...others}

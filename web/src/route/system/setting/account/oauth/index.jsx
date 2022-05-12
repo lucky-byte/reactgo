@@ -3,10 +3,8 @@ import Stack from "@mui/material/Stack";
 import Paper from '@mui/material/Paper';
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Popover from '@mui/material/Popover';
-import AppleIcon from '@mui/icons-material/Apple';
 import useTitle from "~/hook/title";
 import { useOAuthTab } from "../state";
 import Github from "./github";
@@ -41,19 +39,6 @@ export default function OAuth() {
         <Google />
         <Divider />
         <Microsoft />
-        <Divider />
-        <Stack direction='row' justifyContent='space-between' alignItems='center'>
-          <Stack direction='row' spacing={1} alignItems='center'>
-            <AppleIcon fontSize='large' />
-            <Stack>
-              <Typography variant='h6'>Apple</Typography>
-              <Typography variant='caption'>未授权</Typography>
-            </Stack>
-          </Stack>
-          <Button variant='contained'>
-            授权
-          </Button>
-        </Stack>
       </Paper>
       <Popover open={helpOpen} anchorEl={anchorEl} onClose={onHelpClose}
         anchorOrigin={{
