@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
-import ActTypeIcon from '~/comp/acttype-icon';
+import OAuthIcon from '~/comp/oauth-icon';
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
 import { useSetCode } from "~/state/code";
@@ -123,7 +123,7 @@ export default function History() {
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">
-                  <ActTypeIcon type={row.acttype} provider={row.oauthp} />
+                  <OAuthIcon type={row.acttype} provider={row.oauthp} />
                 </TableCell>
                 <TableCell align="center">{row.os}</TableCell>
                 <TableCell align="center">{row.browser}</TableCell>

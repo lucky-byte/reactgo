@@ -60,14 +60,15 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 	smsid := ""
 
 	// 查询登录历史是否有受信任的 client id，如果有则表示当前设备受信任，不需要2步认证
+	// client id 存储在客户端，有可能被窃取
 	ql = `
 		select count(*) from signin_history
 		where user_uuid = ? and clientid = ? and trust = true and create_at > ?
 	`
 	var count int
 
-	days := time.Now().AddDate(0, 0, -7) // 7 天之内
-	err = db.SelectOne(ql, &count, user.UUID, clientid, days)
+	since := time.Now().AddDate(0, 0, -7) // 7 天之内
+	err = db.SelectOne(ql, &count, user.UUID, clientid, since)
 	if err != nil {
 		cc.ErrLog(err).Error("查询登录历史错")
 		return c.NoContent(http.StatusInternalServerError)

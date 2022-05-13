@@ -82,7 +82,7 @@ export default function Appbar(params) {
       return navigate('/signin', { replace: true });
     }
     // 更新用户信息
-    if (user && user.activate && (!user.userid || !user.uuid)) {
+    if (!user || !user.userid || !user.uuid) {
       (async () => {
         try {
           const resp = await get('/user/info');
@@ -99,9 +99,10 @@ export default function Appbar(params) {
             address: resp.address,
             secretcode_isset: resp.secretcode_isset,
             totp_isset: resp.totp_isset,
+            noti_popup: resp.noti_popup,
+            noti_browser: resp.noti_browser,
             acl_features: resp.acl_features,
             acl_allows: resp.acl_allows,
-            activate: true,
           });
         } catch (err) {
           enqueueSnackbar(err.message, { variant: 'error' });

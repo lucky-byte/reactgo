@@ -112,7 +112,7 @@ export default function Secure() {
           </FormHelperText>
         </Stack>
         <Switch checked={lookUserid} onChange={onLookUseridCheck}
-          inputProps={{ 'aria-label': '开关' }}
+          inputProps={{ 'aria-label': '允许或禁止找回登录名' }}
         />
       </Stack>
       <Divider sx={{ my: 2 }} />
@@ -125,7 +125,7 @@ export default function Secure() {
           </FormHelperText>
         </Stack>
         <Switch checked={resetPass} onChange={onResetPassCheck}
-          inputProps={{ 'aria-label': '开关' }}
+          inputProps={{ 'aria-label': '允许或禁止找回登录密码' }}
         />
       </Stack>
       <Typography variant="h6" paragraph sx={{ mt: 6 }}>签名密钥</Typography>

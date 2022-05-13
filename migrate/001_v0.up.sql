@@ -21,7 +21,7 @@ create table if not exists users (
   totp_secret  varchar(256)    not null default '',
   n_signin     int             not null default 0,
   noti_popup   boolean         default true,
-  noti_browser boolean         default true
+  noti_browser boolean         default false
 );
 
 create table if not exists signin_history (

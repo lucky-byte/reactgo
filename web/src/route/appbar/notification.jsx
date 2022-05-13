@@ -9,6 +9,7 @@ import Stack from "@mui/material/Stack";
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -232,6 +233,13 @@ export default function Notification() {
         }}>
         <Stack sx={{ mx: 2, my: 2 }} spacing={2}>
           <List>
+            {lastNotification.last?.length === 0 &&
+              <ListItem>
+                <ListItemText primary='没有通知'
+                  primaryTypographyProps={{ textAlign: 'center', color: 'gray' }}
+                />
+              </ListItem>
+            }
             {lastNotification.last?.map(item => (
               <ListItemButton key={item.uuid} alignItems='flex-start' dense
                 onClick={() => onItemClick(item)}>
@@ -270,8 +278,8 @@ export default function Notification() {
           </List>
           <Divider />
           <Stack direction='row' justifyContent='space-between'>
-            <Button LinkComponent={RouteLink} to='/user/notification'>
-              查看更多...
+            <Button size='small' LinkComponent={RouteLink} to='/user/notification'>
+              更多通知...
             </Button>
             <IconButton size='small' color='primary' edge='end'
               LinkComponent={RouteLink} to='/user/notification/setting'>

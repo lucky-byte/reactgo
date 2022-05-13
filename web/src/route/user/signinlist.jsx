@@ -17,7 +17,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
-import ActTypeIcon from '~/comp/acttype-icon';
+import OAuthIcon from '~/comp/oauth-icon';
 import useTitle from "~/hook/title";
 import { get } from "~/lib/rest";
 import { geo } from '~/lib/geo';
@@ -78,7 +78,7 @@ export default function SignInList() {
                     </Tooltip>
                   </TableCell>
                   <TableCell align="center">
-                    <ActTypeIcon type={row.acttype} provider={row.oauthp} />
+                    <OAuthIcon type={row.acttype} provider={row.oauthp} />
                   </TableCell>
                   <TableCell align="center">{row.os}</TableCell>
                   <TableCell align="center">{row.browser}</TableCell>

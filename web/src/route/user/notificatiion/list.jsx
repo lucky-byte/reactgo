@@ -215,12 +215,21 @@ export default function Lists() {
             />
           </ListItem>
         ))}
+        {list.length === 0 &&
+          <ListItem>
+            <ListItemText primary='没有通知'
+              primaryTypographyProps={{ textAlign: 'center', color: 'gray' }}
+            />
+          </ListItem>
+        }
       </List>
-      <Stack alignItems='center' sx={{ mt: 2 }}>
-        <Pagination count={pageCount} color="primary" page={page + 1}
-          onChange={(_, newPage) => { setPage(newPage - 1) }}
-        />
-      </Stack>
+      {list.length > 0 &&
+        <Stack alignItems='center' sx={{ mt: 2 }}>
+          <Pagination count={pageCount} color="primary" page={page + 1}
+            onChange={(_, newPage) => { setPage(newPage - 1) }}
+          />
+        </Stack>
+      }
     </Container>
   )
 }
