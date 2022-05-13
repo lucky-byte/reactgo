@@ -33,6 +33,8 @@ func info(c echo.Context) error {
 		"address":          user.Address,
 		"secretcode_isset": len(user.SecretCode) > 0,
 		"totp_isset":       len(user.TOTPSecret) > 0,
+		"noti_popup":       user.NotiPopup,
+		"noti_browser":     user.NotiBrowser,
 		"acl_features":     cc.AclFeatures(),
 		"acl_allows":       acl_allows,
 	})

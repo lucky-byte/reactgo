@@ -21,7 +21,7 @@ import { useSnackbar } from 'notistack';
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
-import { put, post } from "~/lib/rest";
+import { put } from "~/lib/rest";
 import { getLastAccess } from '~/lib/last-access';
 
 export default function SignInOTP() {
@@ -31,8 +31,10 @@ export default function SignInOTP() {
   const [user, setUser] = useRecoilState(userState);
   const { enqueueSnackbar } = useSnackbar();
   const [trust, setTrust] = useState(false);
-  const [historyId, setHistoryId] = useState('');
   const [tfa, setTFA] = useState(false);
+  const [mobile, setMobile] = useState('');
+  const [smsid, setSmsid] = useState('');
+  const [historyId, setHistoryId] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -43,12 +45,14 @@ export default function SignInOTP() {
   // 获取页面传入的数据
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token || !user || !user.userid) {
+    if (!token) {
       return navigate('/signin', { replace: true });
     }
-    setHistoryId(location.state?.historyid || '');
     setTFA(location.state?.tfa || false);
-  }, [user, navigate, location?.state]);
+    setMobile(location.state?.mobile || '');
+    setSmsid(location.state?.smsid || '');
+    setHistoryId(location.state?.historyid || '');
+  }, [navigate, location?.state]);
 
   // 输入密码
   const onCodeChange = e => {
@@ -87,15 +91,12 @@ export default function SignInOTP() {
       if (!resp || !resp.token) {
         return enqueueSnackbar('响应数据不完整', { variant: 'error' });
       }
-      // 保存新的 token
+      // 保存新的 token, 更新用户信息
       localStorage.setItem('token', resp.token);
-
-      // 更新用户信息
       setUser({ ...user, activate: true });
 
-      setLoading(false);
-
       // 跳转到最近访问页面
+      setLoading(false);
       navigate(getLastAccess());
     } catch (err) {
       enqueueSnackbar(err.message);
@@ -106,19 +107,11 @@ export default function SignInOTP() {
 
   // 切换到短信认证
   const onSwitchSMS = async () => {
-    try {
-      const resp = await post('/signin/sms/resend');
-      if (!resp.smsid) {
-        throw new Error('响应数据无效');
+    navigate('../sms', {
+      state: {
+        totp: true, mobile, smsid, historyid: historyId,
       }
-      navigate('../sms', {
-        state: {
-          smsid: resp.smsid, historyid: historyId,
-        }
-      });
-    } catch (err) {
-      enqueueSnackbar(err.message)
-    }
+    });
   }
 
   return (

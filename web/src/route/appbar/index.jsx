@@ -82,7 +82,7 @@ export default function Appbar(params) {
       return navigate('/signin', { replace: true });
     }
     // 更新用户信息
-    if (!user || !user.userid) {
+    if (user && user.activate && (!user.userid || !user.uuid)) {
       (async () => {
         try {
           const resp = await get('/user/info');

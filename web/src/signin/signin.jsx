@@ -144,19 +144,8 @@ export default function SignIn() {
       }
       localStorage.setItem('token', resp.token);
 
-      // 保存用户信息到全局状态
+      // 保存用户活动状态
       setUser({
-        uuid: resp.uuid,
-        userid: resp.userid,
-        avatar: resp.avatar,
-        name: resp.name,
-        email: resp.email,
-        mobile: resp.mobile,
-        address: resp.address,
-        secretcode_isset: resp.secretcode_isset,
-        totp_isset: resp.totp_isset,
-        acl_features: resp.acl_features,
-        acl_allows: resp.acl_allows,
         activate: resp.activate,
       });
 
@@ -166,7 +155,10 @@ export default function SignIn() {
         if (resp.totp_isset) {
           return navigate('otp', {
             state: {
-              tfa: resp.tfa, historyid: resp.historyid,
+              tfa: resp.tfa,
+              smsid: resp.smsid,
+              mobile: resp.mobile,
+              historyid: resp.historyid,
             }
           });
         }
@@ -177,7 +169,10 @@ export default function SignIn() {
           }
           return navigate('sms', {
             state: {
-              smsid: resp.smsid, historyid: resp.historyid,
+              totp: resp.totp_isset,
+              smsid: resp.smsid,
+              mobile: resp.mobile,
+              historyid: resp.historyid,
             }
           });
         }
@@ -315,10 +310,8 @@ function Authorize(props) {
   if (provider === 'github') {
     return <GitHub {...others} />
   }
-
   if (provider === 'google') {
     return <Google {...others} />
   }
-
   return null;
 }

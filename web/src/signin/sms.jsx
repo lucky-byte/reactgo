@@ -31,11 +31,13 @@ export default function SignInSMS() {
   const [user, setUser] = useRecoilState(userState);
   const { enqueueSnackbar } = useSnackbar();
   const [trust, setTrust] = useState(false);
-  const [historyId, setHistoryId] = useState('');
+  const [mobile, setMobile] = useState('');
   const [smsid, setSmsid] = useState('');
+  const [totp, setTotp] = useState('');
+  const [historyId, setHistoryId] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const [time, setTime] = useState(60);
+  const [time, setTime] = useState(0);
 
   const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
 
@@ -44,15 +46,17 @@ export default function SignInSMS() {
   // 获取页面传入的数据
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token || !user || !user.userid) {
+    if (!token) {
       return navigate('/signin', { replace: true });
     }
-    if (!location.state?.smsid) {
-      return navigate('/signin', { replace: true });
+    if (location.state?.smsid) {
+      setSmsid(location.state.smsid);
+      setTime(60);
     }
-    setSmsid(location.state.smsid);
+    setTotp(location.state?.totp || false);
+    setMobile(location.state?.mobile || '');
     setHistoryId(location.state?.historyid || '');
-  }, [user, navigate, location.state]);
+  }, [navigate, location.state]);
 
   // 更新计时器
   useEffect(() => {
@@ -103,15 +107,12 @@ export default function SignInSMS() {
       if (!resp?.token) {
         return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
       }
-      // 保存新的 token
+      // 保存新的 token, 更新用户信息
       localStorage.setItem('token', resp.token);
-
-      // 更新用户信息
       setUser({ ...user, activate: true });
 
-      setLoading(false);
-
       // 跳转到最近访问页面
+      setLoading(false);
       navigate(getLastAccess());
     } catch (err) {
       enqueueSnackbar(err.message);
@@ -138,7 +139,7 @@ export default function SignInSMS() {
   const onSwitchOTP = () => {
     navigate('../otp', {
       state: {
-        tfa: true, historyid: historyId,
+        tfa: true, mobile, smsid, historyid: historyId,
       }
     });
   }
@@ -156,10 +157,16 @@ export default function SignInSMS() {
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 6, py: 3, px: 4, width: '100%' }}>
           <Typography as='h1' variant="h6">短信认证</Typography>
-          <Typography as='p' variant='caption' sx={{ mt: 1 }}>
-            短信验证码已发送到手机号 ****{user?.mobile?.substring(7)}，
-            请输入短信中的验证码完成验证
-          </Typography>
+          {smsid ?
+            <Typography as='p' variant='caption' sx={{ mt: 1 }}>
+              短信验证码已发送到手机号 ****{mobile?.substring(7)}，
+              请输入短信中的验证码完成验证
+            </Typography>
+            :
+            <Typography as='p' variant='caption' sx={{ mt: 1 }}>
+              短信验证码将发送到手机号 ****{mobile?.substring(7)}，请获取短信验证码
+            </Typography>
+          }
           <FormControl fullWidth sx={{ mt: 3 }}>
             <TextField required autoFocus autoComplete="off"
               label='短信验证码' placeholder="请输入短信验证码"
@@ -185,7 +192,7 @@ export default function SignInSMS() {
               <FormHelperText sx={{ mx: 0, my: 1 }}>
                 没有收到验证码？请等待 {time} 秒后尝试重新获取，如尝试多次无效，
                 请联系管理员协助处理。
-                {user?.totp_isset &&
+                {totp &&
                   <Link underline="hover" onClick={onSwitchOTP}
                     sx={{ cursor: 'pointer' }}>
                     或切换到动态密码认证
@@ -195,7 +202,7 @@ export default function SignInSMS() {
               :
               <FormHelperText sx={{ mx: 0, my: 1 }}>
                 没有收到验证码？请尝试重新获取，如尝试多次无效，请联系管理员协助处理。
-                {user?.totp_isset &&
+                {totp &&
                   <Link underline="hover" onClick={onSwitchOTP}
                     sx={{ cursor: 'pointer' }}>
                     或切换到动态密码认证

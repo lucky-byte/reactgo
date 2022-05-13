@@ -1,25 +1,27 @@
 begin;
 
 create table if not exists users (
-  uuid        varchar(36)     primary key not null,
-  create_at   timestamp       not null default current_timestamp,
-  update_at   timestamp       not null default current_timestamp,
-  signin_at   timestamp       not null default current_timestamp,
-  disabled    boolean         not null default false,
-  deleted     boolean         not null default false,
-  userid      varchar(128)    unique not null,
-  passwd      varchar(256)    not null,
-  name        varchar(64)     default '',
-  avatar      varchar(36)     default '',
-  email       varchar(128)    not null,
-  mobile      varchar(16)     not null,
-  idno        varchar(32)     not null default '',
-  address     varchar(256)    default '',
-  tfa         boolean         not null default true,
-  acl         varchar(36)     not null,
-  secretcode  varchar(256)    not null default '',
-  totp_secret varchar(256)    not null default '',
-  n_signin    int             not null default 0
+  uuid         varchar(36)     primary key not null,
+  create_at    timestamp       not null default current_timestamp,
+  update_at    timestamp       not null default current_timestamp,
+  signin_at    timestamp       not null default current_timestamp,
+  disabled     boolean         not null default false,
+  deleted      boolean         not null default false,
+  userid       varchar(128)    unique not null,
+  passwd       varchar(256)    not null,
+  name         varchar(64)     default '',
+  avatar       varchar(36)     default '',
+  email        varchar(128)    not null,
+  mobile       varchar(16)     not null,
+  idno         varchar(32)     not null default '',
+  address      varchar(256)    default '',
+  tfa          boolean         not null default true,
+  acl          varchar(36)     not null,
+  secretcode   varchar(256)    not null default '',
+  totp_secret  varchar(256)    not null default '',
+  n_signin     int             not null default 0,
+  noti_popup   boolean         default true,
+  noti_browser boolean         default true
 );
 
 create table if not exists signin_history (
@@ -58,8 +60,8 @@ create table if not exists acl (
   features    text            not null
 );
 
-insert into acl (uuid, code, name, summary) values (
-  '7e9633f6-c83a-49a4-9a96-e120d6ca6055', 0, '系统管理', '可以访问系统所有功能'
+insert into acl (uuid, code, name, summary, features) values (
+  '7e9633f6-c83a-49a4-9a96-e120d6ca6055', 0, '系统管理', '可以访问系统所有功能', 'event',
 );
 
 create table if not exists acl_allows (

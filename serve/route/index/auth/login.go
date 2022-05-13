@@ -28,7 +28,7 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 		return c.String(http.StatusForbidden, "账号状态异常")
 	}
 	// 查询用户访问控制角色是否含有 nologin 特征，如果有则不允许登录
-	ql := `select * from acl where uuid = ?`
+	ql := `select features from acl where uuid = ?`
 	var acl db.ACL
 
 	err := db.SelectOne(ql, &acl, user.ACL)
@@ -38,7 +38,7 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 	}
 	acl_features := strings.Split(acl.Features, ",")
 
-	for i, feature := range acl_features {
+	for _, feature := range acl_features {
 		trimed := strings.TrimSpace(feature)
 
 		if trimed == "nologin" {
@@ -46,7 +46,6 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 			cc.ErrLog(err).Errorf("用户 %s 所属角色不允许登录", user.Name)
 			return c.String(http.StatusForbidden, "该账号不允许登录")
 		}
-		acl_features[i] = trimed
 	}
 	// 从账号设置中查询会话持续时间
 	ql = `select sessduration from account`
@@ -108,25 +107,6 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 		cc.ErrLog(err).Error("更新用户最后登录时间错")
 	}
 
-	// 查询用户访问控制权限
-	ql = `select code, iread, iwrite, iadmin from acl_allows where acl = ?`
-	var allows []db.ACLAllow
-
-	err = db.Select(ql, &allows, user.ACL)
-	if err != nil {
-		cc.ErrLog(err).Errorf("查询用户 %s 访问控制信息错", user.Name)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	acl_allows := []echo.Map{}
-
-	for _, v := range allows {
-		acl_allows = append(acl_allows, echo.Map{
-			"code":   v.Code,
-			"iread":  v.IRead,
-			"iwrite": v.IWrite,
-			"iadmin": v.IAdmin,
-		})
-	}
 	// 记录登录历史
 	geoInfo, err := geoip.Lookup(cc.RealIP()) // 查询 IP 位置
 	if err != nil {
@@ -164,22 +144,13 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"uuid":             user.UUID,
-		"userid":           user.UserId,
-		"avatar":           user.Avatar,
-		"name":             user.Name,
-		"email":            user.Email,
-		"mobile":           user.Mobile,
-		"address":          user.Address,
-		"tfa":              user.TFA,
-		"secretcode_isset": len(user.SecretCode) > 0,
-		"totp_isset":       len(user.TOTPSecret) > 0,
-		"acl_features":     acl_features,
-		"acl_allows":       acl_allows,
-		"smsid":            smsid,
-		"token":            token,
-		"trust":            trust,
-		"historyid":        historyid,
-		"activate":         newJwt.Activate,
+		"mobile":     user.Mobile,
+		"tfa":        user.TFA,
+		"totp_isset": len(user.TOTPSecret) > 0,
+		"smsid":      smsid,
+		"token":      token,
+		"trust":      trust,
+		"historyid":  historyid,
+		"activate":   newJwt.Activate,
 	})
 }
