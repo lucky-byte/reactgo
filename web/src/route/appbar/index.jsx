@@ -101,6 +101,7 @@ export default function Appbar(params) {
             totp_isset: resp.totp_isset,
             noti_popup: resp.noti_popup,
             noti_browser: resp.noti_browser,
+            noti_mail: resp.noti_mail,
             acl_features: resp.acl_features,
             acl_allows: resp.acl_allows,
           });

@@ -38,6 +38,7 @@ type User struct {
 	NSignin     int       `db:"n_signin"     json:"n_signin"`     // 总登录次数
 	NotiPopup   bool      `db:"noti_popup"   json:"noti_popup"`   // 弹出通知消息
 	NotiBrowser bool      `db:"noti_browser" json:"noti_browser"` // 弹出浏览器通知
+	NotiMail    bool      `db:"noti_mail"    json:"noti_mail"`    // 通知发送邮件
 }
 
 // 登录历史

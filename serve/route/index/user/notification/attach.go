@@ -2,6 +2,8 @@ package notification
 
 import (
 	"github.com/labstack/echo/v4"
+
+	"github.com/lucky-byte/reactgo/serve/route/index/user/notification/setting"
 )
 
 func Attach(up *echo.Group) {
@@ -12,6 +14,6 @@ func Attach(up *echo.Group) {
 	group.GET("/:uuid", item)
 	group.DELETE("/:uuid", del)
 	group.PUT("/clear", clear)
-	group.POST("/popup", popup)
-	group.POST("/browser", browser)
+
+	setting.Attach(group)
 }

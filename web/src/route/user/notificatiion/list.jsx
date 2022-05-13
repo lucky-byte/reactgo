@@ -114,7 +114,7 @@ export default function Lists() {
   const onClearClick = async () => {
     try {
       await confirm({
-        description: '确定要删除全部通知吗？这是不可撤销的操作，数据将被永久删除，且无法恢复！',
+        description: '确定要删除全部通知吗？该操作不可撤销，数据将被永久删除，且无法恢复！',
         confirmationText: '删除全部通知',
         confirmationButtonProps: { color: 'error' },
       });
@@ -132,7 +132,7 @@ export default function Lists() {
   const onDeleteClick = async item => {
     try {
       await confirm({
-        description: '确定要删除该通知吗？这是不可撤销的操作，删除后无法恢复！',
+        description: '确定要删除该通知吗？该操作不可撤销，删除后无法恢复！',
         confirmationText: '确定',
         confirmationButtonProps: { color: 'warning' },
       });
@@ -217,7 +217,7 @@ export default function Lists() {
         ))}
         {list.length === 0 &&
           <ListItem>
-            <ListItemText primary='没有通知'
+            <ListItemText primary={loading ? '正在查询' : '没有通知'}
               primaryTypographyProps={{ textAlign: 'center', color: 'gray' }}
             />
           </ListItem>

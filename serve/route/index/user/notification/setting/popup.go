@@ -1,15 +1,16 @@
-package notification
+package setting
 
 import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-// 设置是否允许浏览器通知
-func browser(c echo.Context) error {
+// 设置是否允许通知提醒
+func popup(c echo.Context) error {
 	cc := c.(*ctx.Context)
 	user := cc.User()
 
@@ -19,7 +20,7 @@ func browser(c echo.Context) error {
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-	ql := `update users set noti_browser = ? where uuid = ?`
+	ql := `update users set noti_popup = ? where uuid = ?`
 
 	err = db.ExecOne(ql, enable, user.UUID)
 	if err != nil {

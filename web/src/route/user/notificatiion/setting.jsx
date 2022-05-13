@@ -31,7 +31,7 @@ export default function Setting() {
     try {
       const enable = e.target.checked;
 
-      await post('/user/notification/popup', new URLSearchParams({ enable }));
+      await post('/user/notification/setting/popup', new URLSearchParams({ enable }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       setUser({ ...user, noti_popup: enable });
     } catch (err) {
@@ -59,9 +59,22 @@ export default function Setting() {
   // 修改浏览器通知
   const changeNotiBrowser = async enable => {
     try {
-      await post('/user/notification/browser', new URLSearchParams({ enable }));
+      await post('/user/notification/setting/browser', new URLSearchParams({ enable }));
       enqueueSnackbar('更新成功', { variant: 'success' });
       setUser({ ...user, noti_browser: enable });
+    } catch (err) {
+      enqueueSnackbar(err.message);
+    }
+  }
+
+  // 允许转发邮箱
+  const onNotiMailCheck = async e => {
+    try {
+      const enable = e.target.checked;
+
+      await post('/user/notification/setting/mail', new URLSearchParams({ enable }));
+      enqueueSnackbar('更新成功', { variant: 'success' });
+      setUser({ ...user, noti_mail: enable });
     } catch (err) {
       enqueueSnackbar(err.message);
     }
@@ -98,6 +111,18 @@ export default function Setting() {
             </Stack>
             <Switch inputProps={{ 'aria-label': '允许或禁止浏览器通知' }}
               checked={user?.noti_browser || false} onChange={onNotiBrowserCheck}
+            />
+          </Stack>
+          <Divider sx={{ my: 2 }} />
+          <Stack direction='row' alignItems='center' justifyContent='space-between'>
+            <Stack>
+              <Typography>转发到邮箱</Typography>
+              <FormHelperText>
+                将新通知发送到您的邮箱 {user?.email}
+              </FormHelperText>
+            </Stack>
+            <Switch inputProps={{ 'aria-label': '允许或禁止通知转发邮箱' }}
+              checked={user?.noti_mail || false} onChange={onNotiMailCheck}
             />
           </Stack>
         </Paper>
