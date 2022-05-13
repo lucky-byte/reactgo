@@ -11,4 +11,5 @@ func Attach(up *echo.Group) {
 	group.GET("/last", last)
 	group.GET("/:uuid", item)
 	group.DELETE("/:uuid", del)
+	group.PUT("/clear", clear)
 }

@@ -275,7 +275,7 @@ export default function Notification() {
             </Button>
             <IconButton size='small' color='primary' edge='end'
               LinkComponent={RouteLink} to='/user/notification/setting'>
-              <SettingIcon />
+              <SettingIcon fontSize="small" />
             </IconButton>
           </Stack>
         </Stack>

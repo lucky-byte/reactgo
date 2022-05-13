@@ -6,14 +6,17 @@ import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Link from '@mui/material/Link';
 import Badge from '@mui/material/Badge';
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SettingIcon from '@mui/icons-material/Settings';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
@@ -24,7 +27,7 @@ import SearchInput from '~/comp/search-input';
 import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
-import { get, del } from '~/lib/rest';
+import { get, del, put } from '~/lib/rest';
 
 export default function Lists() {
   const navigate = useNavigate();
@@ -107,12 +110,29 @@ export default function Lists() {
     }
   }
 
-  const onDeleteClick = async (e, item) => {
-    e.stopPropagation();
-
+  // 全部删除
+  const onClearClick = async () => {
     try {
       await confirm({
-        description: '确定要删除该通知吗？删除后无法恢复',
+        description: '确定要删除全部通知吗？这是不可撤销的操作，数据将被永久删除，且无法恢复！',
+        confirmationText: '删除全部通知',
+        confirmationButtonProps: { color: 'error' },
+      });
+      await put('/user/notification/clear');
+      enqueueSnackbar('删除成功', { variant: 'success' });
+      setRefresh(true);
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  }
+
+  // 单个删除
+  const onDeleteClick = async item => {
+    try {
+      await confirm({
+        description: '确定要删除该通知吗？这是不可撤销的操作，删除后无法恢复！',
         confirmationText: '确定',
         confirmationButtonProps: { color: 'warning' },
       });
@@ -149,17 +169,24 @@ export default function Lists() {
             <ToggleButton value='1' aria-label="警告">通知</ToggleButton>
             <ToggleButton value='2' aria-label="信息">公告</ToggleButton>
           </ToggleButtonGroup>
+          <Stack direction='row' spacing={1}>
+            <Tooltip title='设置' arrow>
+              <IconButton color='primary' LinkComponent={RouteLink} to='setting'>
+                <SettingIcon fontSize='small' />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title='全部删除' arrow>
+              <IconButton color='error' edge='end' onClick={onClearClick}>
+                <DeleteSweepIcon fontSize='small' />
+              </IconButton>
+            </Tooltip>
+          </Stack>
         </Stack>
-        <IconButton color='primary' edge='end' sx={{ ml: 1 }}
-          LinkComponent={RouteLink} to='setting'>
-          <SettingIcon />
-        </IconButton>
       </Toolbar>
 
       <List>
         {list.map(item => (
-          <ListItemButton key={item.uuid} alignItems="flex-start"
-            onClick={() => onItemClick(item)}>
+          <ListItem key={item.uuid} alignItems="flex-start">
             <ListItemIcon>
               <Badge variant='dot' color='secondary' invisible={item.status !== 1}>
               {item.type === 1 && <NotificationsIcon color="success" />}
@@ -170,11 +197,13 @@ export default function Lists() {
               disableTypography
               primary={
                 <Stack direction='row' alignItems='center' spacing={1}>
-                  <Ellipsis variant="subtitle1" sx={{ flex: 1, fontWeight: 'bold' }}>
-                    {item.title}
-                  </Ellipsis>
-                  <Button size='small' color='error'
-                    onClick={e => onDeleteClick(e, item)}>
+                  <Link underline='hover' sx={{ flex: 1, cursor: 'pointer' }}
+                    onClick={() => onItemClick(item)}>
+                    <Ellipsis variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                      {item.title}
+                    </Ellipsis>
+                  </Link>
+                  <Button size='small' color='error' onClick={() => onDeleteClick(item)}>
                     删除
                   </Button>
                   <Typography variant='caption' sx={{ color: 'gray' }}>
@@ -184,7 +213,7 @@ export default function Lists() {
               }
               secondary={<Ellipsis lines={3}>{item.content}</Ellipsis>}
             />
-          </ListItemButton>
+          </ListItem>
         ))}
       </List>
       <Stack alignItems='center' sx={{ mt: 2 }}>
