@@ -76,11 +76,11 @@ export default function Appbar(params) {
 
   useEffect(() => {
     // 如果 token 无效，则跳转登录页面
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setLastAccess(window.location.pathname);
-      return navigate('/signin', { replace: true });
-    }
+    // const token = localStorage.getItem('token');
+    // if (!token) {
+    //   setLastAccess(window.location.pathname);
+    //   return navigate('/signin', { replace: true });
+    // }
     // 更新用户信息
     if (!user || !user.userid || !user.uuid) {
       (async () => {

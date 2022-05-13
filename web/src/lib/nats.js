@@ -1,18 +1,43 @@
-let broker = null;
+const brokers = [];
 
+// 连接 NATs 服务器
 const open = async (servers, name) => {
   const { connect } = await import('nats.ws');
-  broker = await connect({
+
+  const broker = await connect({
     servers: servers,
     name: name,
-    reconnectTimeWait: 3000,
+    reconnect: true,
+    maxReconnectAttempts: -1,
+    waitOnFirstConnect: true,
     debug: process.env.NODE_ENV === 'development',
+    verbose: process.env.NODE_ENV === 'development',
   });
-  return broker;
+  brokers.push(broker);
+
+  // 只需要保留最后的连接
+  if (brokers.length > 1) {
+    const unwanted = brokers.splice(0, brokers.length - 1);
+    for (let i = 0; i < unwanted.length; i++) {
+      await unwanted[i].close();
+    }
+  }
 }
 
+// 关闭 NATs 服务器
+const close = async () => {
+  const unwanted = brokers.splice(0, brokers.length);
+  for (let i = 0; i < unwanted.length; i++) {
+    await unwanted[i].close();
+  }
+}
+
+// 获取当前的连接
 const getBroker = () => {
-  return broker;
+  if (brokers.length === 0) {
+    return null;
+  }
+  return brokers[brokers.length - 1];
 }
 
 const JSONCodec = async () => {
@@ -21,7 +46,7 @@ const JSONCodec = async () => {
 }
 
 const exports = {
-  JSONCodec, open, getBroker,
+  JSONCodec, open, close, getBroker,
 }
 
 export default exports;

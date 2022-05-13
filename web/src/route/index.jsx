@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { Routes, Route } from "react-router-dom";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Collapse from '@mui/material/Collapse';
 import Stack from "@mui/material/Stack";
@@ -10,12 +10,17 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import CircularProgress from '@mui/material/CircularProgress';
+import { useSnackbar } from 'notistack';
 import userState from "~/state/user";
 import sidebarState from "~/state/sidebar";
 import progressState from "~/state/progress";
 import printModalState from "~/state/printmodal";
+import natsState from "~/state/nats";
 import { SecretCodeProvider } from "../comp/secretcode";
 import NotFound from "~/comp/notfound";
+import nats from '~/lib/nats';
+import { get } from "~/lib/rest";
+import { setLastAccess } from '~/lib/last-access';
 import Appbar from "./appbar";
 import Sidebar from "./sidebar";
 import ErrorBoundary from "~/error";
@@ -27,9 +32,12 @@ import System from "./system";
 import User from "./user";
 
 export default function Index() {
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
   const user = useRecoilValue(userState);
   const sidebar = useRecoilValue(sidebarState);
   const progress = useRecoilValue(progressState);
+  const setNatsActivate = useSetRecoilState(natsState);
   const [progressVisible, setProgressVisible] = useState(false);
 
   // 用户角色具有开放平台特征
@@ -44,6 +52,39 @@ export default function Index() {
       setProgressVisible(false);
     }
   }, [progress]);
+
+  // 如果 token 无效，则跳转登录页面
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setLastAccess(window.location.pathname);
+      return navigate('/signin', { replace: true });
+    }
+  }, [navigate]);
+
+  // 连接 NATS 服务器，接收异步通知
+  useEffect(() => {
+    (async () => {
+      try {
+        // 获取 nats 服务器配置
+        const resp = await get('/nats');
+        if (!resp.servers) {
+          enqueueSnackbar('未配置 NATS 消息通道，不能接收异步通知', { variant: 'info' });
+          return;
+        }
+        // 连接服务器
+        await nats.open(resp.servers, resp.name);
+        setNatsActivate(Math.random());
+      } catch (err) {
+        enqueueSnackbar(err.message || '连接消息通道失败');
+      }
+    })();
+
+    // 关闭连接
+    return async () => {
+      await nats.close();
+    }
+  }, [setNatsActivate, enqueueSnackbar]);
 
   return (
     <SecretCodeProvider>

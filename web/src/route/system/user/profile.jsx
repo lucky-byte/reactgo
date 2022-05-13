@@ -83,7 +83,7 @@ export default function Profile() {
         </Stack>
         <BaseInfoTable profile={profile} />
         <Typography variant='subtitle1' sx={{ mt: 2, mb: 1 }}>
-          登录历史({profile.history?.length})
+          登录历史({profile.history?.length || 0})
         </Typography>
         <SigninHistory history={profile.history || []} />
       </Paper>
@@ -205,7 +205,7 @@ function SigninHistory(props) {
         <TableBody>
           {history.length === 0 ?
             <TableRow>
-              <TableCell align='center' colSpan={5}>没有登录记录</TableCell>
+              <TableCell align='center' colSpan={10}>没有登录记录</TableCell>
             </TableRow>
             :
             history.map((row, index) => (

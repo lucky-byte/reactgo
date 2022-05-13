@@ -94,83 +94,36 @@ export default function Notification() {
     if (!notification.title) {
       return;
     }
+    if (!Push.Permission.has()) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('浏览器通知权限拒绝');
+      }
+      return;
+    }
     const tag = uuid.v4();
 
-    // web 通知
-    if (Push.Permission.has()) {
-      Push.create(notification.title, {
-        icon: '/logo192.png',
-        body: '点击查看详情',
-        tag: tag,
-        timeout: 1000 * 600,
-        vibrate: [200, 100, 200, 100],
-        link: '/user/notification',
-        onClick: () => {
-          window.focus();
-          Push.close(tag);
-        },
-      });
-    }
+    Push.create(notification.title, {
+      icon: '/logo192.png',
+      body: '点击查看详情',
+      tag: tag,
+      timeout: 1000 * 600,
+      vibrate: [200, 100, 200, 100],
+      link: '/user/notification',
+      onClick: () => {
+        window.focus();
+        Push.close(tag);
+      },
+    });
   }
 
-  // 订阅用户通知
+  // 订阅系统事件通知
   useEffect(() => {
-    if (!user?.uuid || !natsActivate) {
-      return;
-    }
     const broker = nats.getBroker();
     if (!broker) {
       return;
     }
-    let sub = null;
-
-    (async () => {
-      try {
-        sub = broker.subscribe("reactgo.user.notification." + user.uuid);
-        const codec = await nats.JSONCodec();
-
-        for await (const m of sub) {
-          const n = codec.decode(m.data);
-
-          popupNotification(n);
-          popupWebNotification(n);
-
-          // 更新最近通知
-          setOutdated(true);
-        }
-      } catch (err) {
-        enqueueSnackbar(err.message || '连接消息通道失败');
-      }
-    })();
-
-    // 取消订阅
-    return () => { sub && sub.unsubscribe(); }
-  }, [
-    enqueueSnackbar, closeSnackbar, natsActivate, user?.uuid, popupNotification,
-    setOutdated,
-  ]);
-
-  // 订阅系统通知
-  useEffect(() => {
-    if (!user?.uuid || !natsActivate) {
-      return;
-    }
-    const broker = nats.getBroker();
-    if (!broker) {
-      return;
-    }
-
-    // 检查用户是否有事件访问权限
-    let event_allow = false;
-
-    for (let i = 0; i < user?.acl_allows?.length; i++) {
-      if (user.acl_allows[i].code === 9040) {
-        event_allow = true;
-        break;
-      }
-    }
-    // 如果没有权限，则不订阅事件通知
-    if (!event_allow) {
+    // 用户角色没有接收事件通知的特征
+    if (user?.acl_features?.indexOf('event') < 0) {
       return;
     }
     let sub = null;
@@ -180,12 +133,18 @@ export default function Notification() {
         sub = broker.subscribe("reactgo.system.event");
         const codec = await nats.JSONCodec();
 
-        // 收到事件时弹出提示
+        // 循环收到事件通知
         for await (const m of sub) {
           const event = codec.decode(m.data);
 
-          popupNotification(event);
-          popupWebNotification(event);
+          // 弹出提醒，如果用户允许的话
+          if (user?.noti_popup) {
+            popupNotification(event);
+          }
+          // 弹出浏览器通知，如果用户允许的话
+          if (user?.noti_browser) {
+            popupWebNotification(event);
+          }
         }
       } catch (err) {
         enqueueSnackbar(err.message || '连接消息通道失败');
@@ -194,7 +153,49 @@ export default function Notification() {
 
     // 取消订阅
     return () => { sub && sub.unsubscribe(); }
-  }, [enqueueSnackbar, natsActivate, popupNotification, user?.acl_allows, user?.uuid]);
+  }, [
+    enqueueSnackbar, popupNotification, natsActivate,
+    user?.acl_features, user?.noti_popup, user?.noti_browser,
+  ]);
+
+  // 订阅用户通知
+  // useEffect(() => {
+  //   if (!user?.uuid || !natsActivate) {
+  //     return;
+  //   }
+  //   const broker = nats.getBroker();
+  //   if (!broker) {
+  //     return;
+  //   }
+  //   let sub = null;
+
+  //   (async () => {
+  //     try {
+  //       sub = broker.subscribe("reactgo.user.notification." + user.uuid);
+  //       const codec = await nats.JSONCodec();
+
+  //       for await (const m of sub) {
+  //         const n = codec.decode(m.data);
+
+  //         if (user?.noti_popup) {
+  //           popupNotification(n);
+  //         }
+  //         if (user?.noti_browser) {
+  //           popupWebNotification(n);
+  //         }
+  //         // 更新最近通知
+  //         setOutdated(true);
+  //       }
+  //     } catch (err) {
+  //       enqueueSnackbar(err.message || '连接消息通道失败');
+  //     }
+  //   })();
+
+  //   // 取消订阅
+  //   return () => { sub && sub.unsubscribe(); }
+  // }, [
+  //   enqueueSnackbar, natsActivate, user, popupNotification, setOutdated,
+  // ]);
 
   // 打开下拉通知面板
   const onOpen = e => {
