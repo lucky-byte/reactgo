@@ -37,7 +37,7 @@ export default function Notification() {
   const user = useRecoilValue(userState);
   const [lastNotification, setLastNotification] = useRecoilState(lastNotificationState);
   const [outdated, setOutdated] = useRecoilState(notificationOutdatedState);
-  const natsActivate = useRecoilValue(natsState);
+  const natsChange = useRecoilValue(natsState);
   const [anchorEl, setAnchorEl] = useState(null);
 
   // 更新未读通知数量以及最近通知
@@ -60,17 +60,9 @@ export default function Notification() {
   }, [ enqueueSnackbar, setLastNotification, outdated, setOutdated, user?.uuid ]);
 
   // 弹出提示信息
-  const popupNotification = useCallback(notification => {
-    if (!notification.title) {
-      return;
-    }
-    const seeMore = () => {
-      closeSnackbar();
-      window.location.href = '/user/notification';
-    }
-
-    enqueueSnackbar(notification.title, {
-      variant: 'default',
+  const popupMessage = useCallback((variant, title, url) => {
+    enqueueSnackbar(title, {
+      variant: variant,
       preventDuplicate: true,
       autoHideDuration: 10000,
       anchorOrigin: {
@@ -78,7 +70,8 @@ export default function Notification() {
       },
       action: (
         <>
-          <IconButton onClick={seeMore}>
+          <IconButton LinkComponent='a' href={url} target='_blank'
+            onClick={() => { closeSnackbar() }}>
             <MoreHorizIcon sx={{ color: 'white' }} />
           </IconButton>
           <IconButton onClick={() => { closeSnackbar() }}>
@@ -90,10 +83,7 @@ export default function Notification() {
   }, [enqueueSnackbar, closeSnackbar]);
 
   // 弹出浏览器通知
-  const popupWebNotification = notification => {
-    if (!notification.title) {
-      return;
-    }
+  const pushNotification = title => {
     if (!Push.Permission.has()) {
       if (process.env.NODE_ENV === 'development') {
         console.log('浏览器通知权限拒绝');
@@ -102,7 +92,7 @@ export default function Notification() {
     }
     const tag = uuid.v4();
 
-    Push.create(notification.title, {
+    Push.create(title, {
       icon: '/logo192.png',
       body: '点击查看详情',
       tag: tag,
@@ -139,11 +129,13 @@ export default function Notification() {
 
           // 弹出提醒，如果用户允许的话
           if (user?.noti_popup) {
-            popupNotification(event);
+            const variants = ['', 'info', 'warning', 'error'];
+            const variant = variants[event.level] || 'default';
+            popupMessage(variant, event.title, '/system/event');
           }
           // 弹出浏览器通知，如果用户允许的话
           if (user?.noti_browser) {
-            popupWebNotification(event);
+            pushNotification(event.title);
           }
         }
       } catch (err) {
@@ -154,48 +146,49 @@ export default function Notification() {
     // 取消订阅
     return () => { sub && sub.unsubscribe(); }
   }, [
-    enqueueSnackbar, popupNotification, natsActivate,
+    enqueueSnackbar, popupMessage, natsChange,
     user?.acl_features, user?.noti_popup, user?.noti_browser,
   ]);
 
   // 订阅用户通知
-  // useEffect(() => {
-  //   if (!user?.uuid || !natsActivate) {
-  //     return;
-  //   }
-  //   const broker = nats.getBroker();
-  //   if (!broker) {
-  //     return;
-  //   }
-  //   let sub = null;
+  useEffect(() => {
+    if (!user?.uuid) {
+      return;
+    }
+    const broker = nats.getBroker();
+    if (!broker) {
+      return;
+    }
+    let sub = null;
 
-  //   (async () => {
-  //     try {
-  //       sub = broker.subscribe("reactgo.user.notification." + user.uuid);
-  //       const codec = await nats.JSONCodec();
+    (async () => {
+      try {
+        sub = broker.subscribe("reactgo.user.notification." + user.uuid);
+        const codec = await nats.JSONCodec();
 
-  //       for await (const m of sub) {
-  //         const n = codec.decode(m.data);
+        for await (const m of sub) {
+          const n = codec.decode(m.data);
 
-  //         if (user?.noti_popup) {
-  //           popupNotification(n);
-  //         }
-  //         if (user?.noti_browser) {
-  //           popupWebNotification(n);
-  //         }
-  //         // 更新最近通知
-  //         setOutdated(true);
-  //       }
-  //     } catch (err) {
-  //       enqueueSnackbar(err.message || '连接消息通道失败');
-  //     }
-  //   })();
+          if (user?.noti_popup) {
+            popupMessage('success', n.title, '/user/notification');
+          }
+          if (user?.noti_browser) {
+            pushNotification(n.title);
+          }
+          // 更新最近通知
+          setOutdated(true);
+        }
+      } catch (err) {
+        enqueueSnackbar(err.message || '连接消息通道失败');
+      }
+    })();
 
-  //   // 取消订阅
-  //   return () => { sub && sub.unsubscribe(); }
-  // }, [
-  //   enqueueSnackbar, natsActivate, user, popupNotification, setOutdated,
-  // ]);
+    // 取消订阅
+    return () => { sub && sub.unsubscribe(); }
+  }, [
+    enqueueSnackbar, popupMessage, setOutdated, natsChange,
+    user?.uuid, user?.noti_popup, user?.noti_browser,
+  ]);
 
   // 打开下拉通知面板
   const onOpen = e => {

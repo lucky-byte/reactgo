@@ -73,7 +73,7 @@ export default function AvatarPicker(props) {
             const resp = await put('/user/avatar', form);
 
             // 更新本地缓存, 加一个随机数来强制刷新
-            const image = `/image/?u=${resp}&rand=${Math.random()}`
+            const image = `${resp}&rand=${Math.random()}`;
             setUser({ ...user, avatar: image });
             enqueueSnackbar('更新成功', { variant: 'success' });
           }

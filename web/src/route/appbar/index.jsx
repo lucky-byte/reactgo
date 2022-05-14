@@ -31,14 +31,12 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import PhoneForwardedIcon from '@mui/icons-material/PhoneForwarded';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import useColorModeContent from "~/hook/colormode";
 import Avatar from '~/comp/avatar';
 import titleState from "~/state/title";
 import userState from "~/state/user";
 import sidebarState from "~/state/sidebar";
-import { get } from "~/lib/rest";
 import { setLastAccess } from '~/lib/last-access';
 import Banner from '~/img/banner.png';
 import BannerDark from '~/img/banner-dark.png';
@@ -56,7 +54,6 @@ export default function Appbar(params) {
   const [sidebar, setSidebar] = useRecoilState(sidebarState);
   const [anchorEl, setAnchorEl] = useState(null);
   const sidebarOpen = Boolean(anchorEl);
-  const { enqueueSnackbar } = useSnackbar();
   const [navigatorOpen, setNavigatorOpen] = useState(false);
 
   useHotkeys('ctrl+k, cmd+k', () => { setNavigatorOpen(true); }, {
@@ -73,44 +70,6 @@ export default function Appbar(params) {
 
   // 自动更新文档标题
   useEffect(() => { document.title = title; }, [title])
-
-  useEffect(() => {
-    // 如果 token 无效，则跳转登录页面
-    // const token = localStorage.getItem('token');
-    // if (!token) {
-    //   setLastAccess(window.location.pathname);
-    //   return navigate('/signin', { replace: true });
-    // }
-    // 更新用户信息
-    if (!user || !user.userid || !user.uuid) {
-      (async () => {
-        try {
-          const resp = await get('/user/info');
-          if (!resp || !resp.userid) {
-            return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
-          }
-          setUser({
-            uuid: resp.uuid,
-            userid: resp.userid,
-            avatar: resp.avatar,
-            name: resp.name,
-            mobile: resp.mobile,
-            email: resp.email,
-            address: resp.address,
-            secretcode_isset: resp.secretcode_isset,
-            totp_isset: resp.totp_isset,
-            noti_popup: resp.noti_popup,
-            noti_browser: resp.noti_browser,
-            noti_mail: resp.noti_mail,
-            acl_features: resp.acl_features,
-            acl_allows: resp.acl_allows,
-          });
-        } catch (err) {
-          enqueueSnackbar(err.message, { variant: 'error' });
-        }
-      })();
-    }
-  }, [user, setUser, navigate, enqueueSnackbar]);
 
   // 显示/隐藏 菜单栏
   const openSidebarClick = () => {

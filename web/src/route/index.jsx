@@ -34,10 +34,10 @@ import User from "./user";
 export default function Index() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const user = useRecoilValue(userState);
+  const [user, setUser] = useRecoilState(userState);
   const sidebar = useRecoilValue(sidebarState);
-  const progress = useRecoilValue(progressState);
-  const setNatsActivate = useSetRecoilState(natsState);
+  const [progress, setProgress] = useRecoilState(progressState);
+  const setNatsChange = useSetRecoilState(natsState);
   const [progressVisible, setProgressVisible] = useState(false);
 
   // 用户角色具有开放平台特征
@@ -62,6 +62,42 @@ export default function Index() {
     }
   }, [navigate]);
 
+  // 更新用户信息
+  useEffect(() => {
+    if (!user || !user.userid || !user.uuid) {
+      (async () => {
+        try {
+          setProgress(true);
+
+          const resp = await get('/user/info');
+          if (!resp || !resp.userid) {
+            return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
+          }
+          setUser({
+            uuid: resp.uuid,
+            userid: resp.userid,
+            avatar: resp.avatar,
+            name: resp.name,
+            mobile: resp.mobile,
+            email: resp.email,
+            address: resp.address,
+            secretcode_isset: resp.secretcode_isset,
+            totp_isset: resp.totp_isset,
+            noti_popup: resp.noti_popup,
+            noti_browser: resp.noti_browser,
+            noti_mail: resp.noti_mail,
+            acl_features: resp.acl_features,
+            acl_allows: resp.acl_allows,
+          });
+        } catch (err) {
+          enqueueSnackbar(err.message, { variant: 'error' });
+        } finally {
+          setProgress(false);
+        }
+      })();
+    }
+  }, [user, setUser, navigate, enqueueSnackbar, setProgress]);
+
   // 连接 NATS 服务器，接收异步通知
   useEffect(() => {
     (async () => {
@@ -74,17 +110,15 @@ export default function Index() {
         }
         // 连接服务器
         await nats.open(resp.servers, resp.name);
-        setNatsActivate(Math.random());
+        setNatsChange(Math.random());
       } catch (err) {
         enqueueSnackbar(err.message || '连接消息通道失败');
       }
     })();
 
     // 关闭连接
-    return async () => {
-      await nats.close();
-    }
-  }, [setNatsActivate, enqueueSnackbar]);
+    return async () => { await nats.close() }
+  }, [setNatsChange, enqueueSnackbar]);
 
   return (
     <SecretCodeProvider>
