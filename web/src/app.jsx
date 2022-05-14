@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useRecoilValue } from 'recoil';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { zhCN } from '@mui/material/locale';
@@ -9,14 +10,17 @@ import CssBaseline from "@mui/material/CssBaseline";
 import LinearProgress from '@mui/material/LinearProgress';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { ColorModeContext } from "./hook/colormode";
+import titleState from "~/state/title";
 import ErrorBoundary from "./error";
 import SignIn from "./signin";
 import ResetPass from "./resetpass";
 import Index from "./route";
+import Bulletin from "./bulletin";
 
 export default function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [mode, setMode] = useState(prefersDarkMode ? 'dark' : 'light');
+  const title = useRecoilValue(titleState);
 
   const colorMode = useMemo(() => ({
     toggleColorMode: () => {
@@ -73,6 +77,9 @@ export default function App() {
     }
   }, zhCN), [mode]);
 
+  // 更新文档标题
+  useEffect(() => { document.title = title; }, [title])
+
   // 更新色彩模式
   useEffect(() => { setMode(prefersDarkMode ? 'dark' : 'light'); }, [prefersDarkMode]);
 
@@ -98,6 +105,7 @@ export default function App() {
                   <Routes>
                     <Route path='/signin/*' element={<SignIn />} />
                     <Route path='/resetpass/*' element={<ResetPass />} />
+                    <Route path='/bulletin/*' element={<Bulletin />} />
                     <Route path='/*' element={<Index />} />
                   </Routes>
                 </Suspense>

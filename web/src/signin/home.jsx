@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil"
-import { useTheme } from "@mui/material/styles";
 import { useNavigate, Link as RouteLink } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import Box from '@mui/material/Box';
@@ -11,6 +10,7 @@ import Paper from "@mui/material/Paper";
 import FormHelperText from "@mui/material/FormHelperText";
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
+import Tooltip from "@mui/material/Tooltip";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import Divider from "@mui/material/Divider";
@@ -19,21 +19,21 @@ import PersonIcon from '@mui/icons-material/Person';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import KeyIcon from '@mui/icons-material/Key';
+import CampaignIcon from '@mui/icons-material/Campaign';
 import { useSnackbar } from 'notistack';
 import uuid from "uuid";
 import Cookies from 'universal-cookie';
-import Banner from '~/img/banner.png';
-import BannerDark from '~/img/banner-dark.png';
 import userState from "~/state/user";
 import { put, get } from "~/lib/rest";
 import { getLastAccess } from '~/lib/last-access';
+import useTitle from "~/hook/title";
+import Banner from '~/comp/banner';
 import Beian from '~/img/beian.png';
 import ForgetUserid from './userid';
 import GitHub from "./github";
 import Google from "./google";
 
 export default function SignIn() {
-  const theme = useTheme();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const setUser = useSetRecoilState(userState);
@@ -47,9 +47,7 @@ export default function SignIn() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
-
-  useEffect(() => { document.title = '请登录'; }, []);
+  useTitle('请登录');
 
   // 查询系统设置
   useEffect(() => {
@@ -187,7 +185,14 @@ export default function SignIn() {
   return (
     <Stack as='main' role='main' sx={{ mb: 5 }}>
       <Toolbar>
-        <img src={Logo} alt='Logo' height='28px' />
+        <Box sx={{ flex: 1 }}>
+          <Banner height={28} />
+        </Box>
+        <Tooltip title='公告' arrow>
+          <IconButton LinkComponent={RouteLink} to='/bulletin'>
+            <CampaignIcon color='primary' />
+          </IconButton>
+        </Tooltip>
       </Toolbar>
       <Container maxWidth='xs'>
         <Paper elevation={3} sx={{ my: 6, py: 3, px: 4, width: '100%' }}>

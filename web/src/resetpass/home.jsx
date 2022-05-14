@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
 import { useNavigate, Link as RouteLink } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
@@ -19,11 +18,10 @@ import isEmail from 'validator/lib/isEmail';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { put, post } from "~/lib/rest";
-import Banner from '~/img/banner.png';
-import BannerDark from '~/img/banner-dark.png';
+import useTitle from "~/hook/title";
+import Banner from '~/comp/banner';
 
-export default function Resetpass() {
-  const theme = useTheme();
+export default function Home() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [username, setUsername] = useState('');
@@ -34,11 +32,8 @@ export default function Resetpass() {
   const [time, setTime] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
-  const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
-
   useHotkeys('esc', () => { navigate('/signin'); }, { enableOnTags: ["INPUT"] });
-
-  useEffect(() => { document.title = '找回登录密码'; }, []);
+  useTitle('找回登录密码');
 
   // 登录名改变
   const onUsernameChange = e => {
@@ -129,15 +124,14 @@ export default function Resetpass() {
   }
 
   return (
-    <Stack as='main' role='main'>
+    <Stack as='main' role='main' sx={{ mb: 5 }}>
       <Toolbar>
         <Box sx={{ flex: 1 }}>
-          <Link component='a' href='/signin'>
-            <img src={Logo} alt='Logo' height='28px' />
+          <Link component={RouteLink} to='/signin'>
+            <Banner height={28} />
           </Link>
         </Box>
-        <Button variant='outlined' sx={{ mt: 1 }}
-          LinkComponent={RouteLink} to='/signin'>
+        <Button variant='outlined' LinkComponent={RouteLink} to='/signin'>
           去登录
         </Button>
       </Toolbar>

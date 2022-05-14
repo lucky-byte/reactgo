@@ -238,8 +238,10 @@ function MenuIcon(props) {
   // 删除
   const onDeleteClick = async () => {
     try {
+      onClose();
+
       await confirm({
-        description: `确定要删除该公告吗？删除后无法恢复! 如果您希望从用户通知中删除此公告，请使用撤销`,
+        description: `确定要删除吗？删除后无法恢复! 如果您希望从用户通知中删除此公告，请使用撤回`,
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
@@ -264,8 +266,11 @@ function MenuIcon(props) {
   // 立即发布
   const onSendNowClick = async () => {
     try {
+      onClose();
+
       await confirm({
-        description: `确定要立即发布吗？`,
+        description: `确定要发布吗？这将会立即发布该公告，即使设置了发布时间也会被忽略，` +
+          '如果需要定时发布，请进入编辑页面内发布',
         confirmationText: '发布',
         confirmationButtonProps: { color: 'success' },
       });
@@ -286,12 +291,14 @@ function MenuIcon(props) {
   // 撤销
   const onRevokeClick = async () => {
     try {
+      onClose();
+
       await confirm({
-        description: `确定要撤销该公告吗？这将从用户通知列表中删除该公告`,
-        confirmationText: '撤销',
+        description: `确定要撤回吗？这将会使该公告变为草稿状态，同时从用户通知列表中删除该公告`,
+        confirmationText: '撤回',
         confirmationButtonProps: { color: 'warning' },
       });
-      const _audit = `撤销公告 ${bulletin.title}`;
+      const _audit = `撤回公告 ${bulletin.title}`;
 
       const token = await secretCode();
 
@@ -299,7 +306,7 @@ function MenuIcon(props) {
         uuid: bulletin.uuid, secretcode_token: token, _audit,
       }));
 
-      enqueueSnackbar('撤销成功', { variant: 'success' });
+      enqueueSnackbar('撤回成功', { variant: 'success' });
       requestRefresh();
     } catch (err) {
       if (err) {
@@ -319,7 +326,7 @@ function MenuIcon(props) {
         onClick={onOpenClick}>
         <MoreVertIcon fontSize='small' />
       </IconButton>
-      <Menu anchorEl={anchorEl} open={open} onClose={onClose} onClick={onClose}>
+      <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
         <FullScreenMenuItem bulletin={bulletin} closeMenu={onClose} />
         <MenuItem onClick={onEditClick} disabled={bulletin.status === 3}>
           <ListItemIcon>
@@ -344,7 +351,7 @@ function MenuIcon(props) {
           <ListItemIcon>
             <UndoIcon fontSize="small" color='warning' />
           </ListItemIcon>
-          <ListItemText>撤销</ListItemText>
+          <ListItemText>撤回</ListItemText>
         </MenuItem>
       </Menu>
     </>

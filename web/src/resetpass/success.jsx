@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
 import { Link as RouteLink, useLocation, useNavigate } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
@@ -10,18 +9,15 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import CheckIcon from '@mui/icons-material/Check';
-import Banner from '~/img/banner.png';
-import BannerDark from '~/img/banner-dark.png';
+import useTitle from "~/hook/title";
+import Banner from '~/comp/banner';
 
 export default function Success() {
-  const theme = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
 
-  const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
-
-  useEffect(() => { document.title = '密码已重置'; }, []);
+  useTitle('密码已重置');
 
   // 获取路由参数
   useEffect(() => {
@@ -35,8 +31,8 @@ export default function Success() {
     <Stack as='main' role='main'>
       <Toolbar>
         <Box sx={{ flex: 1 }}>
-          <Link component='a' href='/signin'>
-            <img src={Logo} alt='Logo' height='28px' />
+          <Link component={RouteLink} to='/signin'>
+            <Banner height={28} />
           </Link>
         </Box>
       </Toolbar>

@@ -10,9 +10,10 @@ import (
 
 // 发布公告
 func sendDo(b *db.Bulletin) {
-	// 更新状态为发送成功
 	ql := `update bulletins set status = 3 where uuid = ?`
 
+	// 更新状态为发送成功
+	// 这里有可能失败，例如用户设置了定时发布，未发布之前删除了该记录
 	err := db.ExecOne(ql, b.UUID)
 	if err != nil {
 		xlog.X.WithError(err).Error("更新公告状态错")

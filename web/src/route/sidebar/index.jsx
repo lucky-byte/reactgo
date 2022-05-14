@@ -12,18 +12,14 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import List from '@mui/material/List';
 import userState from "~/state/user";
 import codeState from "~/state/code";
-import Banner from '~/img/banner.png';
-import BannerDark from '~/img/banner-dark.png';
+import Banner from '~/comp/banner';
 import menus from "./menus";
 import codes from "./codes";
 import Item from './item';
 
 export default function Sidebar() {
-  const theme = useTheme();
   const user = useRecoilValue(userState);
   const [visibleMenus, setVisibleMenus] = useState([]);
-
-  const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
 
   // 根据用户的权限计算可以展示的菜单
   useEffect(() => {
@@ -72,7 +68,7 @@ export default function Sidebar() {
     }}>
       <Toolbar disableGutters sx={{ ml: 2 }}>
         <Link component={RouteLink} to='/'>
-          <img src={Logo} alt='Logo' height='28px' width='117px' />
+          <Banner height={26} />
         </Link>
       </Toolbar>
       <Box sx={{ flexGrow: 1, overflowY: 'scroll' }}>

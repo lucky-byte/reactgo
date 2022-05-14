@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useTheme } from "@mui/material/styles";
 import { useNavigate, Link as RouteLink } from "react-router-dom";
@@ -31,6 +31,7 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import PhoneForwardedIcon from '@mui/icons-material/PhoneForwarded';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import CampaignIcon from '@mui/icons-material/Campaign';
 import { useHotkeys } from 'react-hotkeys-hook';
 import useColorModeContent from "~/hook/colormode";
 import Avatar from '~/comp/avatar';
@@ -38,8 +39,7 @@ import titleState from "~/state/title";
 import userState from "~/state/user";
 import sidebarState from "~/state/sidebar";
 import { setLastAccess } from '~/lib/last-access';
-import Banner from '~/img/banner.png';
-import BannerDark from '~/img/banner-dark.png';
+import Banner from '~/comp/banner';
 import Navigator from './navigator';
 import Notification from './notification';
 import Chat from "./chat";
@@ -65,11 +65,6 @@ export default function Appbar(params) {
 
   // 用户角色具有开放平台特征
   const openpt = user?.acl_features?.indexOf('openpt') >= 0;
-
-  const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
-
-  // 自动更新文档标题
-  useEffect(() => { document.title = title; }, [title])
 
   // 显示/隐藏 菜单栏
   const openSidebarClick = () => {
@@ -107,7 +102,7 @@ export default function Appbar(params) {
       <Toolbar>
         {openpt ?
           <Link component={RouteLink} to='/' sx={{ mr: 2, lineHeight: 1 }}>
-            <img src={Logo} alt='Logo' height='24px' width='100px' />
+            <Banner height={24} />
           </Link>
           :
           <>
@@ -117,7 +112,7 @@ export default function Appbar(params) {
             </IconButton>
             {!sidebar &&
               <Link component={RouteLink} to='/' sx={{ mr: 2, lineHeight: 1 }}>
-                <img src={Logo} alt='Logo' height='24px' width='100px' />
+                <Banner height={24} />
               </Link>
             }
           </>
@@ -204,6 +199,12 @@ export default function Appbar(params) {
               <NotificationsNoneIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>通知</ListItemText>
+          </MenuItem>
+          <MenuItem component={RouteLink} to='/bulletin'>
+            <ListItemIcon>
+              <CampaignIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>公告</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem onClick={onLogout}>

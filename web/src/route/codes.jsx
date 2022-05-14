@@ -60,7 +60,7 @@ export default function Codes() {
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption'>
           共 {Object.keys(codeList).length} 条记录
         </Typography>
-        <IconButton edge='end' color='primary' sx={{ ml: 2 }} onClick={print}>
+        <IconButton color='primary' sx={{ ml: 1 }} onClick={print}>
           <PrintIcon />
         </IconButton>
       </Toolbar>

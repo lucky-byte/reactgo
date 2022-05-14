@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link as RouteLink } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
@@ -16,11 +15,10 @@ import Button from "@mui/material/Button";
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import { post, put } from "~/lib/rest";
-import Banner from '~/img/banner.png';
-import BannerDark from '~/img/banner-dark.png';
+import useTitle from "~/hook/title";
+import Banner from '~/comp/banner';
 
 export default function SMS() {
-  const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
@@ -32,9 +30,7 @@ export default function SMS() {
   const [loading, setLoading] = useState(false);
   const [time, setTime] = useState(60);
 
-  const Logo = theme.palette.mode === 'dark' ? BannerDark : Banner;
-
-  useEffect(() => { document.title = '短信验证'; }, []);
+  useTitle('短信验证');
 
   // 获取路由参数
   useEffect(() => {
@@ -106,8 +102,8 @@ export default function SMS() {
     <Stack as='main' role='main'>
       <Toolbar>
         <Box sx={{ flex: 1 }}>
-          <Link component='a' href='/signin'>
-            <img src={Logo} alt='Logo' height='28px' />
+          <Link component={RouteLink} to='/signin'>
+            <Banner height={28} />
           </Link>
         </Box>
       </Toolbar>
