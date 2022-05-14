@@ -1,5 +1,5 @@
 import { lazy, useEffect, useState, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from 'recoil';
 import { useParams } from "react-router-dom";
 import Container from '@mui/material/Container';
@@ -23,7 +23,6 @@ const Markdown = lazy(() => import('~/comp/markdown'));
 
 export default function Item() {
   const params = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const setProgress = useSetRecoilState(progressState);
@@ -46,7 +45,7 @@ export default function Item() {
         setNotification(resp);
 
         // 如果是未读状态，则请求更新本地通知状态
-        if (location?.state?.status === 1) {
+        if (resp.status === 1) {
           setNotificationOutdated(true);
         }
       } catch (err) {
@@ -55,10 +54,7 @@ export default function Item() {
         setProgress(false);
       }
     })();
-  }, [
-    setProgress, enqueueSnackbar, params.uuid, location?.state?.status,
-    setNotificationOutdated,
-  ]);
+  }, [setProgress, enqueueSnackbar, params.uuid, setNotificationOutdated]);
 
   const onCloseClick = () => {
     navigate(-1);

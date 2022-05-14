@@ -27,7 +27,7 @@ import nats from '~/lib/nats';
 import userState from "~/state/user";
 import natsState from "~/state/nats";
 import Ellipsis from "~/comp/ellipsis";
-import lastNotificationState from "~/state/notification";
+import latestNotificationState from "~/state/notification";
 import { notificationOutdatedState } from "~/state/notification";
 import { get } from "~/lib/rest";
 
@@ -35,29 +35,26 @@ export default function Notification() {
   const navigate = useNavigate();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const user = useRecoilValue(userState);
-  const [lastNotification, setLastNotification] = useRecoilState(lastNotificationState);
+  const [latest, setLatest] = useRecoilState(latestNotificationState);
   const [outdated, setOutdated] = useRecoilState(notificationOutdatedState);
   const natsChange = useRecoilValue(natsState);
   const [anchorEl, setAnchorEl] = useState(null);
 
   // 更新未读通知数量以及最近通知
   useEffect(() => {
-    if (!user?.uuid) {
-      return;
-    }
-    if (outdated) {
-      (async () => {
-        try {
+    (async () => {
+      try {
+        if (outdated) {
           const resp = await get('/user/notification/last');
 
-          setLastNotification({ last: resp.last || [], unread: resp.unread });
+          setLatest({ last: resp.last || [], unread: resp.unread });
           setOutdated(false);
-        } catch (err) {
-          enqueueSnackbar(err.message);
         }
-      })();
-    }
-  }, [ enqueueSnackbar, setLastNotification, outdated, setOutdated, user?.uuid ]);
+      } catch (err) {
+        enqueueSnackbar(err.message);
+      }
+    })();
+  }, [enqueueSnackbar, setLatest, outdated, setOutdated]);
 
   // 弹出提示信息
   const popupMessage = useCallback((variant, title, url) => {
@@ -202,14 +199,14 @@ export default function Notification() {
 
   // 点击某个通知
   const onItemClick = item => {
-    navigate(`/user/notification/${item.uuid}`, { state: { status: item.status } });
+    navigate(`/user/notification/${item.uuid}`);
   }
 
   return (
     <>
       <Tooltip title='通知' arrow>
         <IconButton aria-label="通知" onClick={onOpen} color="primary">
-          <Badge color="secondary" badgeContent={lastNotification.unread} max={99}>
+          <Badge color="secondary" badgeContent={latest.unread} max={99}>
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -225,19 +222,19 @@ export default function Notification() {
         PaperProps={{
           style: { width: '30%' },
         }}>
-        <Stack sx={{ mx: 2, my: 2 }} spacing={2}>
-          <List>
-            {lastNotification.last?.length === 0 &&
+        <Stack sx={{ my: 2 }} spacing={2}>
+          <List disablePadding>
+            {latest.last?.length === 0 &&
               <ListItem>
                 <ListItemText primary='没有通知'
                   primaryTypographyProps={{ textAlign: 'center', color: 'gray' }}
                 />
               </ListItem>
             }
-            {lastNotification.last?.map(item => (
+            {latest.last?.map(item => (
               <ListItemButton key={item.uuid} alignItems='flex-start' dense
                 onClick={() => onItemClick(item)}>
-                <ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 36 }}>
                   {item.type === 1 &&
                     <Badge variant="dot" color="secondary" invisible={item.status !== 1}>
                       <NotificationsIcon color="info" />
@@ -271,7 +268,7 @@ export default function Notification() {
             ))}
           </List>
           <Divider />
-          <Stack direction='row' justifyContent='space-between'>
+          <Stack direction='row' justifyContent='space-between' sx={{ px: 2 }}>
             <Button size='small' LinkComponent={RouteLink} to='/user/notification'>
               更多通知...
             </Button>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link as RouteLink } from "react-router-dom";
+import { useSetRecoilState } from 'recoil';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Stack from '@mui/material/Stack';
@@ -27,12 +28,14 @@ import SearchInput from '~/comp/search-input';
 import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
+import { notificationOutdatedState } from "~/state/notification";
 import { get, del, put } from '~/lib/rest';
 
 export default function Lists() {
   const navigate = useNavigate();
   const confirm = useConfirm();
   const { enqueueSnackbar } = useSnackbar();
+  const setNotificationOutdated = useSetRecoilState(notificationOutdatedState);
   const [keyword, setKeyword] = useState('');
   const [type, setType] = useState('0');
   const [status, setStatus] = useState('0');
@@ -119,7 +122,9 @@ export default function Lists() {
         confirmationButtonProps: { color: 'error' },
       });
       await put('/user/notification/clear');
+
       enqueueSnackbar('删除成功', { variant: 'success' });
+      setNotificationOutdated(true);
       setRefresh(true);
     } catch (err) {
       if (err) {
@@ -137,7 +142,9 @@ export default function Lists() {
         confirmationButtonProps: { color: 'warning' },
       });
       await del('/user/notification/' + item.uuid);
+
       enqueueSnackbar('删除成功', { variant: 'success' });
+      setNotificationOutdated(true);
       setRefresh(true);
     } catch (err) {
       if (err) {
@@ -147,7 +154,7 @@ export default function Lists() {
   }
 
   const onItemClick = item => {
-    navigate(`/user/notification/${item.uuid}`, { state: { status: item.status } });
+    navigate(`/user/notification/${item.uuid}`);
   }
 
   return (

@@ -15,16 +15,23 @@ func item(c echo.Context) error {
 
 	uuid := c.Param("uuid")
 
-	ql := `
-		update notifications set status = 2 where user_uuid = ? and uuid = ?
-		returning *
-	`
+	ql := `select * from notifications where user_uuid = ? and uuid = ?`
 	var result db.Notification
 
 	err := db.SelectOne(ql, &result, user.UUID, uuid)
 	if err != nil {
 		cc.ErrLog(err).Error("查询通知错")
 		return c.NoContent(http.StatusInternalServerError)
+	}
+	// 如果是未读状态，改为已读状态
+	if result.Status == 1 {
+		ql := `update notifications set status = 2 where user_uuid = ? and uuid = ?`
+
+		err := db.ExecOne(ql, user.UUID, uuid)
+		if err != nil {
+			cc.ErrLog(err).Error("更新通知错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
 	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"uuid":      result.UUID,
