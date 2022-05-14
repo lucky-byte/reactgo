@@ -5,9 +5,9 @@ import (
 )
 
 type Notification struct {
+	Type    int    `json:"type"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
-	Type    int    `json:"type"`
 }
 
 // 发布用户通知
@@ -17,9 +17,12 @@ func PublishNotification(user, title, content string, ntype int) error {
 	}
 	subject := "reactgo.user.notification." + user
 
+	if len(content) > 200 {
+		content = content[:200]
+	}
 	return Broker.Publish(subject, &Notification{
+		Type:    ntype,
 		Title:   title,
 		Content: content,
-		Type:    ntype,
 	})
 }

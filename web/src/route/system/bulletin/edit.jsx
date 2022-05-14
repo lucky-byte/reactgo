@@ -9,6 +9,9 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
@@ -24,6 +27,8 @@ export default function Edit() {
   const [title, setTitle] = useState('');
   const [titleHelpText, setTitleHelpText] = useState('');
   const [content, setContent] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
+  const [isNotify, setIsNotify] = useState(true);
   const [sendTime, setSendTime] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(0);
@@ -41,6 +46,8 @@ export default function Edit() {
     if (bulletin) {
       setTitle(bulletin.title);
       setContent(bulletin.content);
+      setIsPublic(bulletin.is_public);
+      setIsNotify(bulletin.is_notify);
 
       const sendtime = dayjs(bulletin.send_time);
       if (sendtime.isAfter(dayjs())) {
@@ -59,6 +66,16 @@ export default function Edit() {
   const onTitleChange = e => {
     setTitle(e.target.value);
     setTitleHelpText('');
+  }
+
+  // 修改公开访问
+  const onIsPublicCheck = e => {
+    setIsPublic(e.target.checked);
+  }
+
+  // 修改通知用户
+  const onIsNotifyCheck = e => {
+    setIsNotify(e.target.checked);
   }
 
   // 修改发布时间
@@ -102,7 +119,8 @@ export default function Edit() {
       const _noop = status === 1;
 
       await post('/system/bulletin/edit', new URLSearchParams({
-        uuid, status, title, content, send_time, _audit, _noop,
+        uuid, status, title, content, send_time,
+        is_public: isPublic, is_notify: isNotify, _audit, _noop,
       }));
 
       // 清除自动保存数据
@@ -145,20 +163,38 @@ export default function Edit() {
               placeholder='公告内容，支持 Markdown 语法'
               uniqueId={editorId}
             />
-          <DateTimePicker
-            label="发布时间"
-            minDateTime={dayjs().add(3, 'minute')}
-            maxDateTime={dayjs().add(7, 'day')}
-            value={sendTime}
-            onChange={onSendTimeChange}
-            renderInput={props => (
-              <TextField
-                {...props}
-                variant='standard'
-                helperText='可以设置在未来一周内的某个时间发布，如果不设置则立即发布'
+            <DateTimePicker
+              label="发布时间"
+              minDateTime={dayjs().add(3, 'minute')}
+              maxDateTime={dayjs().add(7, 'day')}
+              value={sendTime}
+              onChange={onSendTimeChange}
+              ampm={false}
+              mask='____/__/__ __:__'
+              inputFormat='YYYY/MM/DD hh:mm'
+              clearable
+              clearText='清除'
+              renderInput={props => (
+                <TextField
+                  {...props}
+                  helperText='可以设置在未来一周内的某个时间发布，如果不设置则立即发布'
+                />
+              )}
+            />
+            <FormGroup>
+              <FormControlLabel
+                label="公开访问，任何人都可以查看此公告"
+                control={
+                  <Checkbox checked={isPublic} onChange={onIsPublicCheck} />
+                }
               />
-            )}
-          />
+              <FormControlLabel
+                label="通知用户，将公告以通知形式发送给系统内所有用户"
+                control={
+                  <Checkbox checked={isNotify} onChange={onIsNotifyCheck} />
+                }
+              />
+            </FormGroup>
           </Stack>
         </Paper>
         <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ mt: 2 }}>

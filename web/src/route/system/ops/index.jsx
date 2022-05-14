@@ -1,8 +1,6 @@
 import { lazy, useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
-import TextField from '@mui/material/TextField';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -17,6 +15,7 @@ import Chip from '@mui/material/Chip';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
+import DateInput from "~/comp/date-input";
 import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
@@ -104,13 +103,11 @@ export default function Ops() {
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
           sx={{ minWidth: 300 }}
         />
-        <DatePicker
-          value={date} onChange={onDateChange}
-          inputFormat='MM/DD/YYYY'
-          maxDate={dayjs()}
-          renderInput={props => (
-            <TextField {...props} variant='standard' sx={{ ml: 2, width: 180 }} />
-          )}
+        <DateInput
+          value={date} onChange={onDateChange} maxDate={dayjs()}
+          inputProps={{
+            variant: 'standard', sx: { ml: 2, width: 180 },
+          }}
         />
         <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ flex: 1 }}>
           <ToggleButtonGroup exclusive size='small' color='primary' aria-label="级别"

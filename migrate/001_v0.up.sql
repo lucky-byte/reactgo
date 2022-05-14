@@ -227,6 +227,8 @@ create table if not exists bulletins (
   title       varchar(256)    not null,
   content     text            not null,
   send_time   timestamp       not null,
+  is_public   boolean         default false,
+  is_notify   boolean         default true,
   status      int             not null default 1
                               -- 1. 草稿
                               -- 2. 等待发布

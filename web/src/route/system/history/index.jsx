@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import Container from "@mui/material/Container";
 import Toolbar from '@mui/material/Toolbar';
-import TextField from '@mui/material/TextField';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Tooltip from '@mui/material/Tooltip';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -18,6 +16,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
+import DateInput from "~/comp/date-input";
 import OutlinedPaper from '~/comp/outlined-paper';
 import OAuthIcon from '~/comp/oauth-icon';
 import useTitle from "~/hook/title";
@@ -91,15 +90,11 @@ export default function History() {
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
           sx={{ minWidth: 300 }}
         />
-        <DatePicker
-          value={date} onChange={onDateChange}
-          inputFormat='MM/DD/YYYY'
-          maxDate={dayjs()}
-          renderInput={props => (
-            <TextField {...props} variant='standard' sx={{ ml: 2, width: 180 }}
-              placeholder='登录日期'
-            />
-          )}
+        <DateInput
+          value={date} onChange={onDateChange} maxDate={dayjs()}
+          inputProps={{
+            variant: 'standard', sx: { ml: 2, width: 180 },
+          }}
         />
       </Toolbar>
       <TableContainer component={OutlinedPaper}>

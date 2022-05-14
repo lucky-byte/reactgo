@@ -40,7 +40,7 @@ export default function PinInput(props) {
     <ReactPinField
       ref={ref}
       className={styles.pininput}
-      autoComplete="new-password"
+      autoComplete="one-time-code"
       placeholder='○'
       length={6}
       validate='0123456789'

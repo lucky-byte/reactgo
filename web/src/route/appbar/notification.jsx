@@ -166,11 +166,13 @@ export default function Notification() {
         for await (const m of sub) {
           const n = codec.decode(m.data);
 
-          if (user?.noti_popup) {
-            popupMessage('success', n.title, '/user/notification');
-          }
-          if (user?.noti_browser) {
-            pushNotification(n.title);
+          if (n.type > 0) {
+            if (user?.noti_popup) {
+              popupMessage('success', n.title, '/user/notification');
+            }
+            if (user?.noti_browser) {
+              pushNotification(n.title);
+            }
           }
           // 更新最近通知
           setOutdated(true);

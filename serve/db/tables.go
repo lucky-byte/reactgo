@@ -193,10 +193,12 @@ type TreeBind struct {
 type Bulletin struct {
 	UUID     string    `db:"uuid"      json:"uuid"`      // uuid
 	CreateAt time.Time `db:"create_at" json:"create_at"` // 创建时间
+	UserUUID string    `db:"user_uuid" json:"user_uuid"` // 用户
 	Title    string    `db:"title"     json:"title"`     // 标题
 	Content  string    `db:"content"   json:"content"`   // 内容
 	SendTime time.Time `db:"send_time" json:"send_time"` // 发布时间
-	UserUUID string    `db:"user_uuid" json:"user_uuid"` // 用户
+	IsPublic bool      `db:"is_public" json:"is_public"` // 公开访问
+	IsNotify bool      `db:"is_notify" json:"is_notify"` // 通知用户
 	Status   int       `db:"status"    json:"status"`    // 状态
 }
 

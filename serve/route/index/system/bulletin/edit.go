@@ -19,11 +19,14 @@ func edit(c echo.Context) error {
 	var id, title, content string
 	var status int
 	var send_time time.Time
+	var is_public, is_notify bool
 
 	err := echo.FormFieldBinder(c).
 		MustString("title", &title).
 		MustString("content", &content).
 		MustInt("status", &status).
+		MustBool("is_public", &is_public).
+		MustBool("is_notify", &is_notify).
 		String("uuid", &id).
 		Time("send_time", &send_time, time.RFC3339).BindError()
 	if err != nil {
@@ -38,13 +41,18 @@ func edit(c echo.Context) error {
 	if send_time.IsZero() {
 		send_time = time.Now().UTC()
 	}
+	var bulletin db.Bulletin
+
 	if len(id) > 0 {
 		ql := `
 			update bulletins set user_uuid = ?, title = ?, content = ?,
-				send_time = ?, status = ?
+				send_time = ?, is_public = ?, is_notify = ?, status = ?
 			where uuid = ?
+			returning *
 		`
-		err = db.ExecOne(ql, user.UUID, title, content, send_time, status, id)
+		err = db.SelectOne(ql, &bulletin, user.UUID, title, content, send_time,
+			is_public, is_notify, status, id,
+		)
 		if err != nil {
 			cc.ErrLog(err).Error("更新公告记录错")
 			return c.NoContent(http.StatusInternalServerError)
@@ -52,14 +60,18 @@ func edit(c echo.Context) error {
 	} else {
 		ql := `
 			insert into bulletins (
-				uuid, user_uuid, title, content, send_time, status
+				uuid, user_uuid, title, content, send_time,
+				is_public, is_notify, status
 			) values (
-				?, ?, ?, ?, ?, ?
+				?, ?, ?, ?, ?, ?, ?, ?
 			)
+			returning *
 		`
 		id = uuid.NewString()
 
-		err = db.ExecOne(ql, id, user.UUID, title, content, send_time, status)
+		err = db.SelectOne(ql, &bulletin, id, user.UUID, title, content, send_time,
+			is_public, is_notify, status,
+		)
 		if err != nil {
 			cc.ErrLog(err).Error("添加公告记录错")
 			return c.NoContent(http.StatusInternalServerError)
@@ -70,7 +82,7 @@ func edit(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 	// 发布
-	sendAt(id, title, content, send_time)
+	sendAt(&bulletin)
 
 	return c.NoContent(http.StatusOK)
 }

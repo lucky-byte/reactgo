@@ -2,8 +2,6 @@ import { lazy, useEffect, useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
-import TextField from '@mui/material/TextField';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -24,7 +22,9 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
+import UndoIcon from '@mui/icons-material/Undo';
 import CloseIcon from '@mui/icons-material/Close';
+import NotificationIcon from '@mui/icons-material/Notifications';
 import PrintIcon from '@mui/icons-material/Print';
 import Menu from '@mui/material/Menu';
 import ListItemText from '@mui/material/ListItemText';
@@ -38,6 +38,7 @@ import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import { useSecretCode } from '~/comp/secretcode';
 import { useSetCode } from "~/state/code";
+import DateInput from "~/comp/date-input";
 import Ellipsis from "~/comp/ellipsis";
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
@@ -46,7 +47,7 @@ import { post, del, get } from '~/lib/rest';
 // 代码拆分
 const Markdown = lazy(() => import('~/comp/markdown'));
 
-export default function List() {
+export default function Home() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [keyword, setKeyword] = useState([]);
@@ -141,13 +142,11 @@ export default function List() {
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
           sx={{ minWidth: 300 }}
         />
-        <DatePicker
-          value={date} onChange={onDateChange}
-          inputFormat='MM/DD/YYYY'
-          maxDate={dayjs()}
-          renderInput={props => (
-            <TextField {...props} variant='standard' sx={{ ml: 2, width: 180 }} />
-          )}
+        <DateInput
+          value={date} onChange={onDateChange} maxDate={dayjs()}
+          inputProps={{
+            variant: 'standard', sx: { ml: 2, width: 180 },
+          }}
         />
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Button variant='outlined' size='small' startIcon={<AddIcon />}
@@ -183,6 +182,8 @@ export default function List() {
                 {b.status === 4 &&
                   <Chip label="失败" color='error' size='small' variant='outlined' />
                 }
+                {b.is_public && <Chip label="公开" color='success' size='small' />}
+                {b.is_notify && <NotificationIcon fontSize='small' color='disabled' />}
                 <Typography variant='caption' sx={{ color: 'gray' }}
                   onClick={() => onAccordionTitleClick(b)}>
                   {b.timeAgo || dayjs(b.create_at).fromNow()}
@@ -237,22 +238,20 @@ function MenuIcon(props) {
   // 删除
   const onDeleteClick = async () => {
     try {
-      onClose();
-
       await confirm({
-        description: `确定要删除该记录吗？删除后无法恢复!`,
+        description: `确定要删除该公告吗？删除后无法恢复! 如果您希望从用户通知中删除此公告，请使用撤销`,
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
+      const _audit = `删除公告 ${bulletin.title}`;
 
       const token = await secretCode();
-
-      const _audit = `删除公告 ${bulletin.title}`;
 
       const params = new URLSearchParams({
         uuid: bulletin.uuid, secretcode_token: token, _audit,
       });
       await del('/system/bulletin/del?' + params.toString());
+
       enqueueSnackbar('删除成功', { variant: 'success' });
       requestRefresh();
     } catch (err) {
@@ -265,8 +264,6 @@ function MenuIcon(props) {
   // 立即发布
   const onSendNowClick = async () => {
     try {
-      onClose();
-
       await confirm({
         description: `确定要立即发布吗？`,
         confirmationText: '发布',
@@ -286,6 +283,31 @@ function MenuIcon(props) {
     }
   }
 
+  // 撤销
+  const onRevokeClick = async () => {
+    try {
+      await confirm({
+        description: `确定要撤销该公告吗？这将从用户通知列表中删除该公告`,
+        confirmationText: '撤销',
+        confirmationButtonProps: { color: 'warning' },
+      });
+      const _audit = `撤销公告 ${bulletin.title}`;
+
+      const token = await secretCode();
+
+      await post('/system/bulletin/revoke', new URLSearchParams({
+        uuid: bulletin.uuid, secretcode_token: token, _audit,
+      }));
+
+      enqueueSnackbar('撤销成功', { variant: 'success' });
+      requestRefresh();
+    } catch (err) {
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
+    }
+  };
+
   return (
     <>
       <IconButton
@@ -297,7 +319,7 @@ function MenuIcon(props) {
         onClick={onOpenClick}>
         <MoreVertIcon fontSize='small' />
       </IconButton>
-      <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
+      <Menu anchorEl={anchorEl} open={open} onClose={onClose} onClick={onClose}>
         <FullScreenMenuItem bulletin={bulletin} closeMenu={onClose} />
         <MenuItem onClick={onEditClick} disabled={bulletin.status === 3}>
           <ListItemIcon>
@@ -305,7 +327,7 @@ function MenuIcon(props) {
           </ListItemIcon>
           <ListItemText>编辑</ListItemText>
         </MenuItem>
-        <MenuItem onClick={onDeleteClick} disabled={bulletin.status === 3}>
+        <MenuItem onClick={onDeleteClick}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" color='error' />
           </ListItemIcon>
@@ -317,6 +339,12 @@ function MenuIcon(props) {
             <SendIcon fontSize="small" color='success' />
           </ListItemIcon>
           <ListItemText>发布</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={onRevokeClick} disabled={bulletin.status !== 3}>
+          <ListItemIcon>
+            <UndoIcon fontSize="small" color='warning' />
+          </ListItemIcon>
+          <ListItemText>撤销</ListItemText>
         </MenuItem>
       </Menu>
     </>
