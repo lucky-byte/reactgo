@@ -8,6 +8,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/route/index/auth"
+	"github.com/lucky-byte/reactgo/serve/route/index/bulletin"
 	"github.com/lucky-byte/reactgo/serve/route/index/resetpass"
 	"github.com/lucky-byte/reactgo/serve/route/index/secretcode"
 	"github.com/lucky-byte/reactgo/serve/route/index/signin"
@@ -33,16 +34,13 @@ func Attach(up *echo.Echo, conf *config.ViperConfig) {
 
 	signin.Attach(group)    // 登录
 	resetpass.Attach(group) // 找回密码
+	bulletin.Attach(group)  // 公开公告
 
 	group.Use(auth.Authentication) // 用户认证
 
 	group.GET("/nats", nats) // NATS 配置
-
 	secretcode.Attach(group) // 验证安全码
-
-	user.Attach(group) // 用户设置
-
-	group.Use(opsRecorder) // 操作审计
-
-	system.Attach(group) // 系统管理
+	user.Attach(group)       // 用户设置
+	group.Use(opsRecorder)   // 操作审计
+	system.Attach(group)     // 系统管理
 }

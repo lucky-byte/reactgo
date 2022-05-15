@@ -10,7 +10,7 @@ export default function Banner(props) {
 
   return (
     <img src={Logo} alt='Banner' height={height}
-      style={{ objectFit: 'contain' }}
+      style={{ objectFit: 'contain', verticalAlign: 'middle' }}
     />
   )
 }

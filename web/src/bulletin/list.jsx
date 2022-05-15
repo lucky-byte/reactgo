@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link as RouteLink } from "react-router-dom";
 import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Link from '@mui/material/Link';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
+import CampaignIcon from '@mui/icons-material/Campaign';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import Ellipsis from "~/comp/ellipsis";
 import SearchBar from '~/comp/search-bar';
 import useTitle from "~/hook/title";
-import { useSetCode } from "~/state/code";
 import { get } from '~/lib/rest';
 import Banner from '~/comp/banner';
 
@@ -29,39 +29,34 @@ export default function Lists() {
   const [rows] = useState(15);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [refresh, setRefresh] = useState(true);
 
   useTitle('公告');
-  useSetCode(0);
 
   useEffect(() => {
     (async () => {
       try {
-        if (refresh) {
-          setLoading(true);
+        setLoading(true);
 
-          const query = new URLSearchParams({ page, rows, keyword });
-          const resp = await get('/bulletin/?' + query.toString());
-          if (resp.count > 0) {
-            let pages = resp.count / rows;
-            if (resp.count % rows > 0) {
-              pages += 1;
-            }
-            setPageCount(parseInt(pages));
-          } else {
-            setPageCount(0);
+        const query = new URLSearchParams({ page, rows, keyword });
+        const resp = await get('/bulletin/?' + query.toString());
+        if (resp.count > 0) {
+          let pages = resp.count / rows;
+          if (resp.count % rows > 0) {
+            pages += 1;
           }
-          setCount(resp.count);
-          setList(resp.list || []);
+          setPageCount(parseInt(pages));
+        } else {
+          setPageCount(0);
         }
+        setCount(resp.count);
+        setList(resp.list || []);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
         setLoading(false);
-        setRefresh(false);
       }
     })();
-  }, [enqueueSnackbar, page, rows, keyword, refresh]);
+  }, [enqueueSnackbar, page, rows, keyword]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -70,25 +65,27 @@ export default function Lists() {
   }
 
   const onItemClick = item => {
-    navigate(`/user/notification/${item.uuid}`);
+    navigate(`/bulletin/${item.uuid}`);
   }
 
   return (
-    <Container as='main' role='main' maxWidth='md' sx={{ my: 4 }}>
+    <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar disableGutters>
-        <Box sx={{ flex: 1 }}>
+        <Stack direction='row' alignItems='flex-end' spacing={3} sx={{ flex: 1 }}>
           <Link component={RouteLink} to='/'>
             <Banner height={28} />
           </Link>
-        </Box>
+          <Chip size='small' label='公告' variant='outlined' color='info'
+            icon={<CampaignIcon />}
+          />
+        </Stack>
         <SearchBar value={keyword} onChange={onKeywordChange}
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
         />
       </Toolbar>
-      <Typography variant='h5'>公告</Typography>
       <List>
         {list.map(item => (
-          <ListItem key={item.uuid} disableGutters>
+          <ListItem key={item.uuid} disableGutters divider>
             <ListItemText
               disableTypography
               primary={
@@ -100,7 +97,7 @@ export default function Lists() {
                     </Ellipsis>
                   </Link>
                   <Typography variant='caption' sx={{ color: 'gray' }}>
-                    {dayjs(item.create_at).fromNow()}
+                    {dayjs(item.send_time).fromNow()}
                   </Typography>
                 </Stack>
               }

@@ -52,7 +52,7 @@ export default function Markdown(props) {
         props: {
           variant: 'body1', paragraph: true, textAlign: 'justify', lineHeight: 1.8,
           sx: {
-            lineBreak: 'anywhere',
+            lineBreak: 'loose',
           }
         }
       },
