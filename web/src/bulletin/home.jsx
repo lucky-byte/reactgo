@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
+import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -72,7 +73,7 @@ export default function Home() {
   }
 
   return (
-    <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
+    <Container as='main' role='main' maxWidth='md' sx={{ my: 4 }}>
       <Toolbar disableGutters>
         <Stack direction='row' alignItems='flex-end' spacing={3} sx={{ flex: 1 }}>
           <Link component={RouteLink} to='/'>
@@ -86,30 +87,32 @@ export default function Home() {
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
         />
       </Toolbar>
-      <List>
-        {list.map(item => (
-          <ListItem key={item.uuid} divider>
-            <ListItemText
-              disableTypography
-              primary={
-                <Stack direction='row' alignItems='center' spacing={1}>
-                  <Link underline='hover' sx={{ flex: 1, cursor: 'pointer' }}
-                    onClick={() => onItemClick(item)}>
-                    <EllipsisText variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                      {item.title}
-                    </EllipsisText>
-                  </Link>
-                  <Typography variant='caption' sx={{ color: 'gray' }}>
-                    {dayjs(item.send_time).fromNow()}
-                  </Typography>
-                </Stack>
-              }
-              secondary={<EllipsisText lines={3}>{item.content}</EllipsisText>}
-            />
-          </ListItem>
-        ))}
-      </List>
-      {list.length === 0 && (loading ? <Placeholder /> : <Empty />)}
+      <Paper variant='outlined' sx={{ mt: 3 }}>
+        <List>
+          {list.map((item, i) => (
+            <ListItem key={item.uuid} divider={i < list.length - 1}>
+              <ListItemText sx={{ mx: 2 }}
+                disableTypography
+                primary={
+                  <Stack direction='row' alignItems='center' spacing={1}>
+                    <Link underline='hover' sx={{ flex: 1, cursor: 'pointer' }}
+                      onClick={() => onItemClick(item)}>
+                      <EllipsisText variant="h6" sx={{ fontWeight: 'bold' }}>
+                        {item.title}
+                      </EllipsisText>
+                    </Link>
+                    <Typography variant='caption' sx={{ color: 'gray' }}>
+                      {dayjs(item.send_time).fromNow()}
+                    </Typography>
+                  </Stack>
+                }
+                secondary={<EllipsisText lines={3}>{item.content}</EllipsisText>}
+              />
+            </ListItem>
+          ))}
+        </List>
+        {list.length === 0 && (loading ? <Placeholder /> : <Empty />)}
+      </Paper>
       {list.length > 0 &&
         <Stack alignItems='center' sx={{ mt: 2 }}>
           <Pagination count={pageCount} color="primary" page={page + 1}
@@ -117,14 +120,14 @@ export default function Home() {
           />
         </Stack>
       }
-      <Footer sx={{ mt: 6 }} />
+      <Footer sx={{ mt: 8 }} />
     </Container>
   )
 }
 
 function Placeholder() {
   return (
-    <Stack mt={2}>
+    <Stack p={2}>
       <Typography variant='h5' width='50%'><Skeleton /></Typography>
       <Typography variant='body2' width='100%'><Skeleton /></Typography>
       <Typography variant='body2' width='100%'><Skeleton /></Typography>

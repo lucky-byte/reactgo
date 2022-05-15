@@ -8,6 +8,7 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Fab from '@mui/material/Fab';
@@ -63,7 +64,7 @@ export default function Item() {
   }
 
   return (
-    <Container as='main' role='main' maxWidth='md' sx={{ mb: 6 }} ref={contentRef}>
+    <Container as='main' role='main' maxWidth='md' sx={{ my: 4 }} ref={contentRef}>
       <Toolbar disableGutters>
         <Stack direction='row' alignItems='flex-end' spacing={3} sx={{ flex: 1 }}>
           <Link component={RouteLink} to='/'>
@@ -101,7 +102,8 @@ export default function Item() {
         sx={{ position: 'fixed', bottom: 30, right: 30 }}>
         <ArrowUpwardIcon />
       </Fab>
-      <Footer sx={{ mt: 6 }} />
+      <Divider sx={{ mt: 6, mb: 4 }} />
+      <Footer />
     </Container>
   )
 }
