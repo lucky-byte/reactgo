@@ -120,9 +120,9 @@ export default function Info() {
             </TableRow>
             <TableRow>
               <TableCell>创建时间</TableCell>
-              <TableCell>{dayjs(mta.create_at).format('LLLL')}</TableCell>
+              <TableCell>{dayjs(mta.create_at).format('LL dddd HH:mm:ss')}</TableCell>
               <TableCell>更新时间</TableCell>
-              <TableCell>{dayjs(mta.update_at).format('LLLL')}</TableCell>
+              <TableCell>{dayjs(mta.update_at).format('LL dddd HH:mm:ss')}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>序号</TableCell>

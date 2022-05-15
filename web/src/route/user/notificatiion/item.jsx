@@ -81,7 +81,7 @@ export default function Item() {
       </Typography>
       {notification.create_at &&
         <Typography variant='caption' paragraph textAlign='center'>
-          发布时间：{dayjs(notification.create_at).format('LLLL')}
+          发布时间：{dayjs(notification.create_at).format('LL dddd HH:mm:ss')}
         </Typography>
       }
       <Markdown>{notification.content}</Markdown>

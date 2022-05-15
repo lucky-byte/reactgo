@@ -171,7 +171,7 @@ export default function Edit() {
               onChange={onSendTimeChange}
               ampm={false}
               mask='____/__/__ __:__'
-              inputFormat='YYYY/MM/DD hh:mm'
+              inputFormat='YYYY/MM/DD HH:mm'
               clearable
               clearText='清除'
               renderInput={props => (

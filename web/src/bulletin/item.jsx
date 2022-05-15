@@ -93,7 +93,7 @@ export default function Item() {
             {bulletin.title}
           </Typography>
           <Typography variant='caption' paragraph textAlign='center'>
-            {dayjs(bulletin.send_time).format('LLLL')}
+            {dayjs(bulletin.send_time).format('LL dddd HH:mm:ss')}
           </Typography>
           <Markdown>{bulletin.content}</Markdown>
         </>

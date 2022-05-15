@@ -67,26 +67,29 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
+        if (refresh) {
+          setLoading(true);
 
-        const d = date ? date.format('L') : '';
-        const q = new URLSearchParams({ page, rows, keyword, date: d });
-        const resp = await get('/system/bulletin/?' + q.toString());
-        if (resp.count > 0) {
-          let pages = resp.count / rows;
-          if (resp.count % rows > 0) {
-            pages += 1;
+          const d = date ? date.format('L') : '';
+          const q = new URLSearchParams({ page, rows, keyword, date: d });
+          const resp = await get('/system/bulletin/?' + q.toString());
+          if (resp.count > 0) {
+            let pages = resp.count / rows;
+            if (resp.count % rows > 0) {
+              pages += 1;
+            }
+            setPageCount(parseInt(pages));
+          } else {
+            setPageCount(0);
           }
-          setPageCount(parseInt(pages));
-        } else {
-          setPageCount(0);
+          setCount(resp.count);
+          setList(resp.list || []);
         }
-        setCount(resp.count);
-        setList(resp.list || []);
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
         setLoading(false);
+        setRefresh(false);
       }
     })();
   }, [enqueueSnackbar, page, rows, keyword, date, refresh]);
@@ -100,17 +103,17 @@ export default function Home() {
         if (item.status === 2 && dayjs().isAfter(item.send_time)) {
           outdated = true;
         }
-        item.timeAgo = dayjs(item.create_at).fromNow();
+        item._rand = Math.random();
         return item;
       });
       if (outdated) {
-        setRefresh(!refresh);
+        setRefresh(true);
       } else {
         setList(newlist);
       }
     }, 1000);
     return () => clearInterval(timer)
-  }, [list, refresh]);
+  }, [list]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -171,7 +174,7 @@ export default function Home() {
                 </EllipsisText>
                 {b.status === 1 && <Chip label="草稿" size='small' />}
                 {b.status === 2 &&
-                  <Tooltip title={`${dayjs(b.send_time).format('LLL')} 发布`}>
+                  <Tooltip title={`${dayjs(b.send_time).format('LL dddd HH:mm:ss')} 发布`}>
                     <Chip
                       icon={<ScheduleIcon />}
                       label={`${dayjs().to(b.send_time, true)}后发布`}
@@ -186,9 +189,9 @@ export default function Home() {
                 {b.is_notify && <NotificationIcon fontSize='small' color='disabled' />}
                 <Typography variant='caption' sx={{ color: 'gray' }}
                   onClick={() => onAccordionTitleClick(b)}>
-                  {b.timeAgo || dayjs(b.create_at).fromNow()}
+                  {dayjs(b.create_at).fromNow()}
                 </Typography>
-                <MenuIcon bulletin={b} requestRefresh={() => setRefresh(!refresh)} />
+                <MenuIcon bulletin={b} requestRefresh={() => setRefresh(true)} />
               </Stack>
             </AccordionSummary>
             <AccordionDetails sx={{
@@ -388,7 +391,7 @@ function FullScreenMenuItem(props) {
         <Container maxWidth='md' sx={{ my: 4 }} ref={contentRef}>
           <Typography variant='h4' textAlign='center'>{bulletin.title}</Typography>
           <Typography variant='caption' paragraph textAlign='center'>
-            {dayjs(bulletin.create_at).format('LLLL')} by{' '}
+            {dayjs(bulletin.create_at).format('LL dddd HH:mm:ss')} by{' '}
             {bulletin.user_name || bulletin.userid}
           </Typography>
           <Markdown>{bulletin.content}</Markdown>

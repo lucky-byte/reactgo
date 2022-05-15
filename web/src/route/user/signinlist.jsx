@@ -71,7 +71,7 @@ export default function SignInList() {
               {list.map((row, index) => (
                 <TableRow key={index} hover>
                   <TableCell align="center">
-                    <Tooltip arrow title={dayjs(row.create_at).format('LLLL')}>
+                    <Tooltip arrow title={dayjs(row.create_at).format('LL dddd HH:mm:ss')}>
                       <Typography variant='body2'>
                         {dayjs(row.create_at).fromNow()}
                       </Typography>
