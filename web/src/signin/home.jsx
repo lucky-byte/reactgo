@@ -7,6 +7,7 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
+import LinearProgress from '@mui/material/LinearProgress';
 import FormHelperText from "@mui/material/FormHelperText";
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -195,7 +196,12 @@ export default function SignIn() {
         </Tooltip>
       </Toolbar>
       <Container maxWidth='xs'>
-        <Paper elevation={3} sx={{ my: 6, py: 3, px: 4, width: '100%' }}>
+        <Paper elevation={3} sx={{ my: 6, py: 3, px: 4, position: 'relative' }}>
+          {(loading || submitting) &&
+            <Box position='absolute' left={0} top={0} right={0}>
+              <LinearProgress />
+            </Box>
+          }
           <Typography as='h1' variant='h6' sx={{ mt: 1 }}>欢迎，请登录</Typography>
           <TextField required label='登录名' placeholder="请输入登录名"
             fullWidth autoComplete="username" autoFocus
@@ -286,6 +292,7 @@ export default function SignIn() {
   )
 }
 
+// 根据系统设置确定是否显示忘记登录密码
 function Forget(props) {
   const { loading, resetpass } = props;
 

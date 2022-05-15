@@ -50,10 +50,7 @@ export default function Markdown(props) {
       p: {
         component: Typography,
         props: {
-          variant: 'body1', paragraph: true, textAlign: 'justify', lineHeight: 1.8,
-          sx: {
-            lineBreak: 'loose',
-          }
+          variant: 'body1', paragraph: true, lineHeight: 1.8, textAlign: 'justify',
         }
       },
       hr: {
@@ -66,7 +63,7 @@ export default function Markdown(props) {
         component: 'li',
         props: {
           style: {
-            fontSize: '0.95rem', marginBottom: '6px', textAlign: 'justify',
+            fontSize: '0.95rem', marginBottom: '6px',
           },
         }
       },

@@ -48,6 +48,8 @@ export default function Item() {
         if (resp.status === 1) {
           setNotificationOutdated(true);
         }
+        // 滚动到顶部
+        contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {

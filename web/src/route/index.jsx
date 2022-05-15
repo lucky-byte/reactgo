@@ -53,18 +53,15 @@ export default function Index() {
     }
   }, [progress]);
 
-  // 如果 token 无效，则跳转登录页面
+  // 获取用户信息，保存到本地缓存
   useEffect(() => {
+    // 如果 token 无效，表示用户未登录，跳转登录页面
     const token = localStorage.getItem('token');
     if (!token) {
       setLastAccess(window.location.pathname);
       return navigate('/signin', { replace: true });
     }
-  }, [navigate]);
-
-  // 更新用户信息
-  useEffect(() => {
-    if (!user || !user.userid || !user.uuid) {
+    if (!user || !user.uuid) {
       (async () => {
         try {
           setProgress(true);
@@ -102,15 +99,17 @@ export default function Index() {
   useEffect(() => {
     (async () => {
       try {
-        // 获取 nats 服务器配置
-        const resp = await get('/nats');
-        if (!resp.servers) {
-          enqueueSnackbar('未配置 NATS 消息通道，不能接收异步通知', { variant: 'info' });
-          return;
+        if (user?.uuid) {
+          // 获取 nats 服务器配置
+          const resp = await get('/nats');
+          if (!resp.servers) {
+            enqueueSnackbar('未配置 NATS 消息通道，不能接收异步通知', { variant: 'info' });
+            return;
+          }
+          // 连接服务器
+          await nats.open(resp.servers, resp.name);
+          setNatsChange(Math.random());
         }
-        // 连接服务器
-        await nats.open(resp.servers, resp.name);
-        setNatsChange(Math.random());
       } catch (err) {
         enqueueSnackbar(err.message || '连接消息通道失败');
       }
@@ -118,7 +117,7 @@ export default function Index() {
 
     // 关闭连接
     return async () => { await nats.close() }
-  }, [setNatsChange, enqueueSnackbar]);
+  }, [setNatsChange, enqueueSnackbar, user?.uuid]);
 
   return (
     <SecretCodeProvider>

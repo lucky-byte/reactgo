@@ -44,7 +44,7 @@ export default function Notification() {
   useEffect(() => {
     (async () => {
       try {
-        if (outdated) {
+        if (user?.uuid && outdated) {
           const resp = await get('/user/notification/last');
 
           setLatest({ last: resp.last || [], unread: resp.unread });
@@ -54,7 +54,7 @@ export default function Notification() {
         enqueueSnackbar(err.message);
       }
     })();
-  }, [enqueueSnackbar, setLatest, outdated, setOutdated]);
+  }, [enqueueSnackbar, setLatest, outdated, setOutdated, user?.uuid]);
 
   // 弹出提示信息
   const popupMessage = useCallback((variant, title, url) => {

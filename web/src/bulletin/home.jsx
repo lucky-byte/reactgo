@@ -9,8 +9,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Link from '@mui/material/Link';
 import Pagination from '@mui/material/Pagination';
+import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import CampaignIcon from '@mui/icons-material/Campaign';
+import FitbitIcon from '@mui/icons-material/Fitbit';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import Ellipsis from "~/comp/ellipsis";
@@ -19,7 +21,7 @@ import useTitle from "~/hook/title";
 import { get } from '~/lib/rest';
 import Banner from '~/comp/banner';
 
-export default function Lists() {
+export default function Home() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [keyword, setKeyword] = useState('');
@@ -59,9 +61,9 @@ export default function Lists() {
   }, [enqueueSnackbar, page, rows, keyword]);
 
   // 搜索
-  const onKeywordChange = value => {
+  const onKeywordChange = e => {
     setPage(0);
-    setKeyword(value);
+    setKeyword(e.target.value);
   }
 
   const onItemClick = item => {
@@ -80,12 +82,12 @@ export default function Lists() {
           />
         </Stack>
         <SearchBar value={keyword} onChange={onKeywordChange}
-          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
+          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
         />
       </Toolbar>
       <List>
         {list.map(item => (
-          <ListItem key={item.uuid} disableGutters divider>
+          <ListItem key={item.uuid} divider>
             <ListItemText
               disableTypography
               primary={
@@ -105,14 +107,8 @@ export default function Lists() {
             />
           </ListItem>
         ))}
-        {list.length === 0 &&
-          <ListItem>
-            <ListItemText primary={loading ? '正在查询' : '没有公告'}
-              primaryTypographyProps={{ textAlign: 'center', color: 'gray' }}
-            />
-          </ListItem>
-        }
       </List>
+      {list.length === 0 && (loading ? <Placeholder /> : <Empty />)}
       {list.length > 0 &&
         <Stack alignItems='center' sx={{ mt: 2 }}>
           <Pagination count={pageCount} color="primary" page={page + 1}
@@ -121,5 +117,25 @@ export default function Lists() {
         </Stack>
       }
     </Container>
+  )
+}
+
+function Placeholder() {
+  return (
+    <Stack mt={2}>
+      <Typography variant='h5' width='50%'><Skeleton /></Typography>
+      <Typography variant='body2' width='100%'><Skeleton /></Typography>
+      <Typography variant='body2' width='100%'><Skeleton /></Typography>
+      <Typography variant='body2' width='100%'><Skeleton /></Typography>
+    </Stack>
+  )
+}
+
+function Empty() {
+  return (
+    <Stack alignItems='center' p={6} spacing={2}>
+      <FitbitIcon sx={{ fontSize: 96, color: '#8882' }} />
+      <Typography variant='body2'>没有公告</Typography>
+    </Stack>
   )
 }

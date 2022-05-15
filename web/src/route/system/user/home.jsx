@@ -123,7 +123,7 @@ export default function Home() {
     <Container as='main' maxWidth='lg' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={progress} onChange={onKeywordChange}
-          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : ''}
+          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
           sx={{ minWidth: 300 }}
         />
         <TextField select variant='standard' sx={{ ml: 2, minWidth: 140 }}
