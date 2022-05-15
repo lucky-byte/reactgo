@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
 
-export default function Ellipsis(props) {
+export default function EllipsisText(props) {
   const { children, sx, lines, ...others } = props;
 
   return (

@@ -25,7 +25,7 @@ import { useConfirm } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
-import Ellipsis from "~/comp/ellipsis";
+import EllipsisText from "~/comp/ellipsis-text";
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
 import { notificationOutdatedState } from "~/state/notification";
@@ -206,9 +206,9 @@ export default function Lists() {
                 <Stack direction='row' alignItems='center' spacing={1}>
                   <Link underline='hover' sx={{ flex: 1, cursor: 'pointer' }}
                     onClick={() => onItemClick(item)}>
-                    <Ellipsis variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    <EllipsisText variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                       {item.title}
-                    </Ellipsis>
+                    </EllipsisText>
                   </Link>
                   <Button size='small' color='error' onClick={() => onDeleteClick(item)}>
                     删除
@@ -218,7 +218,7 @@ export default function Lists() {
                   </Typography>
                 </Stack>
               }
-              secondary={<Ellipsis lines={3}>{item.content}</Ellipsis>}
+              secondary={<EllipsisText lines={3}>{item.content}</EllipsisText>}
             />
           </ListItem>
         ))}

@@ -16,7 +16,7 @@ import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import DateInput from "~/comp/date-input";
-import Ellipsis from "~/comp/ellipsis";
+import EllipsisText from "~/comp/ellipsis-text";
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
 import { get } from '~/lib/rest';
@@ -131,7 +131,7 @@ export default function Ops() {
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 2 }}>
                 <Stack sx={{ flex: 1 }}>
-                  <Ellipsis variant='subtitle1' lines={1}>{item.audit}</Ellipsis>
+                  <EllipsisText variant='subtitle1' lines={1}>{item.audit}</EllipsisText>
                   <Typography variant='body2' color='gray'>{item.url}</Typography>
                 </Stack>
                 <Chip label={item.method} size='small' variant='outlined' />

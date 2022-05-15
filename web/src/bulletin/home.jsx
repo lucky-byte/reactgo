@@ -15,11 +15,12 @@ import CampaignIcon from '@mui/icons-material/Campaign';
 import FitbitIcon from '@mui/icons-material/Fitbit';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
-import Ellipsis from "~/comp/ellipsis";
+import EllipsisText from "~/comp/ellipsis-text";
 import SearchBar from '~/comp/search-bar';
 import useTitle from "~/hook/title";
 import { get } from '~/lib/rest';
 import Banner from '~/comp/banner';
+import Footer from '~/comp/footer';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -94,16 +95,16 @@ export default function Home() {
                 <Stack direction='row' alignItems='center' spacing={1}>
                   <Link underline='hover' sx={{ flex: 1, cursor: 'pointer' }}
                     onClick={() => onItemClick(item)}>
-                    <Ellipsis variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    <EllipsisText variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                       {item.title}
-                    </Ellipsis>
+                    </EllipsisText>
                   </Link>
                   <Typography variant='caption' sx={{ color: 'gray' }}>
                     {dayjs(item.send_time).fromNow()}
                   </Typography>
                 </Stack>
               }
-              secondary={<Ellipsis lines={3}>{item.content}</Ellipsis>}
+              secondary={<EllipsisText lines={3}>{item.content}</EllipsisText>}
             />
           </ListItem>
         ))}
@@ -116,6 +117,7 @@ export default function Home() {
           />
         </Stack>
       }
+      <Footer sx={{ mt: 6 }} />
     </Container>
   )
 }

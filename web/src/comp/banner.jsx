@@ -9,7 +9,7 @@ export default function Banner(props) {
   const { height } = props;
 
   return (
-    <img src={Logo} alt='Banner' height={height}
+    <img src={Logo} alt='Banner' height={height || 24}
       style={{ objectFit: 'contain', verticalAlign: 'middle' }}
     />
   )

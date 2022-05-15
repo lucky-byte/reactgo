@@ -39,7 +39,7 @@ import SearchInput from '~/comp/search-input';
 import { useSecretCode } from '~/comp/secretcode';
 import { useSetCode } from "~/state/code";
 import DateInput from "~/comp/date-input";
-import Ellipsis from "~/comp/ellipsis";
+import EllipsisText from "~/comp/ellipsis-text";
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
 import { post, del, get } from '~/lib/rest';
@@ -165,10 +165,10 @@ export default function Home() {
             }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 1 }}>
-                <Ellipsis variant='subtitle1' sx={{ flex: 1 }}
+                <EllipsisText variant='subtitle1' sx={{ flex: 1 }}
                   onClick={() => onAccordionTitleClick(b)}>
                   {b.title}
-                </Ellipsis>
+                </EllipsisText>
                 {b.status === 1 && <Chip label="草稿" size='small' />}
                 {b.status === 2 &&
                   <Tooltip title={`${dayjs(b.send_time).format('LLL')} 发布`}>

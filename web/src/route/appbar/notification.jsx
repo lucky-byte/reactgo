@@ -26,7 +26,7 @@ import Push from 'push.js';
 import nats from '~/lib/nats';
 import userState from "~/state/user";
 import natsState from "~/state/nats";
-import Ellipsis from "~/comp/ellipsis";
+import EllipsisText from "~/comp/ellipsis-text";
 import latestNotificationState from "~/state/notification";
 import { notificationOutdatedState } from "~/state/notification";
 import { get } from "~/lib/rest";
@@ -252,18 +252,18 @@ export default function Notification() {
                   disableTypography
                   primary={
                     <Stack direction='row' alignItems='center' spacing={2}>
-                      <Ellipsis variant="subtitle1" sx={{
+                      <EllipsisText variant="subtitle1" sx={{
                         flex: 1, fontWeight: 'bold', textAlign: 'left'
                       }}>
                         {item.title}
-                      </Ellipsis>
+                      </EllipsisText>
                       <Typography variant="caption">
                         {dayjs(item.create_at).fromNow()}
                       </Typography>
                     </Stack>
                   }
                   secondary={
-                    <Ellipsis variant='body2' lines={3}>{item.content}</Ellipsis>
+                    <EllipsisText variant='body2' lines={3}>{item.content}</EllipsisText>
                   }
                 />
               </ListItemButton>

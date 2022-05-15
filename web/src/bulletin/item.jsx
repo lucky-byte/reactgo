@@ -22,6 +22,7 @@ import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
 import { get } from '~/lib/rest';
 import Banner from '~/comp/banner';
+import Footer from '~/comp/footer';
 
 const Markdown = lazy(() => import('~/comp/markdown'));
 
@@ -100,6 +101,7 @@ export default function Item() {
         sx={{ position: 'fixed', bottom: 30, right: 30 }}>
         <ArrowUpwardIcon />
       </Fab>
+      <Footer sx={{ mt: 6 }} />
     </Container>
   )
 }
