@@ -23,7 +23,7 @@ func googleGet(c echo.Context) error {
 	var oauth db.OAuth
 
 	if len(result) == 0 {
-		ql = `insert into oauth (provider) values ('google')`
+		ql = `insert into oauth (provider, sortno) values ('google', 2)`
 
 		err = db.ExecOne(ql)
 		if err != nil {

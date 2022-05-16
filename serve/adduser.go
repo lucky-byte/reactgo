@@ -19,7 +19,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/secure"
 )
 
-// fatal same as fmt.Fatal(), print error message and exit
+// 打印错误信息，然后退出
 func fatal(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
 	fmt.Println()
@@ -28,15 +28,15 @@ func fatal(format string, args ...any) {
 	os.Exit(1)
 }
 
-// addConsoleUser add console user to database directly.
-// This command is only use to add the first user(in the initialization phase)
-func addConsoleUser(conf *config.ViperConfig) {
+// 添加第一个管理员用户，用于初始化阶段
+func addFirstUser(conf *config.ViperConfig) {
 	db.Connect(conf.DatabaseDriver(), conf.DatabaseDSN())
 
-	fmt.Println("Welcome to BDB!")
-	fmt.Println()
+	bold := color.New(color.Bold)
+
+	bold.Printf("Welcome to %s!\n\n", Name)
 	fmt.Println("请按照下面的提示创建第一个管理员账号.")
-	fmt.Println("请确认录入正确的手机号和邮箱地址，将在登录时用于接收验证码.")
+	bold.Println("请录入正确的手机号和邮箱地址，将在登录时用于接收验证码.")
 
 	if hasUser() {
 		fatal("用户已存在，这个命令仅用于创建第一个管理员账号.")
@@ -64,16 +64,14 @@ func addConsoleUser(conf *config.ViperConfig) {
 	if !matched {
 		fatal("手机号格式错误")
 	}
-
-	// Generate random password
+	// 生成随机密码
 	passwd := password.MustGenerate(20, 6, 0, false, true)
 
-	// Add user to database
+	// 添加用户
 	err = addNewUser(username, email, mobile, passwd)
 	if err != nil {
 		fatal("添加用户错误: %v", err)
 	}
-
 	fmt.Println()
 	color.Green("恭喜! 用户 '%s' 添加成功.", username)
 	fmt.Println()
@@ -81,9 +79,10 @@ func addConsoleUser(conf *config.ViperConfig) {
 	fmt.Printf("登录密码: %s\n", color.MagentaString(passwd))
 	fmt.Println("====================================")
 	fmt.Println()
+	fmt.Printf("请使用上面的用户名和密码登录:\n%s\n\n", conf.ServerHttpURL())
 }
 
-// readLine Read one line from stdin
+// 从 stdin 读一行数据
 func readLine(reader *bufio.Reader, name string) string {
 	prompt := color.New(color.FgHiBlue)
 	prompt.Print(name + ": ")
@@ -106,7 +105,7 @@ func readLine(reader *bufio.Reader, name string) string {
 	return s
 }
 
-// hasUser check if user exist
+// 检查系统是否存在用户，如果存在用户，则该命令不能执行
 func hasUser() bool {
 	var count int
 
@@ -117,7 +116,7 @@ func hasUser() bool {
 	return count > 0
 }
 
-// addNewUser add new user to database
+// 将用户信息记录到数据库
 func addNewUser(userid, email, mobile, passwd string) error {
 	// generate hashed password with default algorithm
 	passwdHash, err := secure.DefaultPHC().Hash(passwd)
@@ -137,7 +136,7 @@ func addNewUser(userid, email, mobile, passwd string) error {
 		insert into users (uuid, userid, name, email, mobile, passwd, acl, tfa)
 		values (?, ?, ?, ?, ?, ?, ?, false)
 	`
-	return db.ExecOne(
-		ql, uuid.NewString(), userid, userid, email, mobile, passwdHash, acl,
-	)
+	id := uuid.NewString()
+
+	return db.ExecOne(ql, id, userid, userid, email, mobile, passwdHash, acl)
 }

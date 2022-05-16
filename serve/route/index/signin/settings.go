@@ -24,7 +24,7 @@ func settings(c echo.Context) error {
 	}
 
 	// 查询身份授权设置
-	ql = `select provider from oauth where enabled = true`
+	ql = `select provider from oauth where enabled = true order by sortno`
 	var providers []string
 
 	err = db.Select(ql, &providers)

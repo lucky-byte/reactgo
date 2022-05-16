@@ -62,7 +62,7 @@ create table if not exists acl (
 );
 
 insert into acl (uuid, code, name, summary, features) values (
-  '7e9633f6-c83a-49a4-9a96-e120d6ca6055', 0, '系统管理', '可以访问系统所有功能', 'event',
+  '7e9633f6-c83a-49a4-9a96-e120d6ca6055', 0, '系统管理', '可以访问系统所有功能', 'event'
 );
 
 create table if not exists acl_allows (
@@ -263,7 +263,8 @@ create table if not exists ops (
 
 create table if not exists oauth (
   provider    varchar(32)     not null unique,
-  clientid    varchar(64)     not null default '',
+  sortno      int             not null default 1,
+  clientid    varchar(128)    not null default '',
   secret      varchar(128)    not null default '',
   enabled     boolean         default false
 );

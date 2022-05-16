@@ -96,7 +96,7 @@ func main() {
 	}
 	// 添加用户，然后退出
 	if *addUser {
-		addConsoleUser(conf)
+		addFirstUser(conf)
 		return
 	}
 	debug := conf.Debug()

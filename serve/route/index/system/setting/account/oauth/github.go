@@ -23,7 +23,7 @@ func githubGet(c echo.Context) error {
 	var oauth db.OAuth
 
 	if len(result) == 0 {
-		ql = `insert into oauth (provider) values ('github')`
+		ql = `insert into oauth (provider, sortno) values ('github', 1)`
 
 		err = db.ExecOne(ql)
 		if err != nil {

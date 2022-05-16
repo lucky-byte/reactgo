@@ -26,7 +26,7 @@ func signin(c echo.Context) error {
 	}
 	cc.Trim(&username, &clientid)
 
-	ql := `select * from users where userid = ?`
+	ql := `select * from users where LOWER(userid) = LOWER(?)`
 	var user db.User
 
 	// 查询用户信息

@@ -228,6 +228,7 @@ type Ops struct {
 // 身份授权设置
 type OAuth struct {
 	Provider string `db:"provider"  json:"provider"` // 身份提供方
+	SortNo   string `db:"sortno"    json:"sortno"`   // 排序序号
 	ClientId string `db:"clientid"  json:"clientid"` // 客户端id
 	Secret   string `db:"secret"    json:"secret"`   // 客户端密钥
 	Enabled  bool   `db:"enabled"   json:"enabled"`  // 启用
