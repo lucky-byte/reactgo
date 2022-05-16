@@ -126,6 +126,7 @@ type SMS struct {
 
 // 账号设置
 type Account struct {
+	Signupable   bool   `db:"signupable"   json:"signupable"`   // 开放用户注册
 	LookUserid   bool   `db:"lookuserid"   json:"lookuserid"`   // 允许找回登录名
 	ResetPass    bool   `db:"resetpass"    json:"resetpass"`    // 允许找回密码
 	SessDuration int    `db:"sessduration" json:"sessduration"` // 会话持续时间

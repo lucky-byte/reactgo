@@ -128,7 +128,8 @@ create table if not exists smss (
   disabled    boolean         default false
 );
 
-create table if not exists  account (
+create table if not exists account (
+  signupable    boolean         default false,
   lookuserid    boolean         default true,
   resetpass     boolean         default true,
   sessduration  int             default 1440,

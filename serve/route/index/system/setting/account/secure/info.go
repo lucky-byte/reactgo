@@ -16,10 +16,11 @@ func info(c echo.Context) error {
 	var result db.Account
 
 	if err := db.SelectOne(ql, &result); err != nil {
-		cc.ErrLog(err).Error("查询系统设置错")
+		cc.ErrLog(err).Error("查询账号设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
+		"signupable":   result.Signupable,
 		"lookuserid":   result.LookUserid,
 		"resetpass":    result.ResetPass,
 		"sessduration": result.SessDuration,
