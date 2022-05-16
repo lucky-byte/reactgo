@@ -187,7 +187,7 @@ export default function SignInSMS() {
             {time > 0 ?
               <FormHelperText sx={{ mx: 0, my: 1 }}>
                 没有收到验证码？请等待 {time} 秒后尝试重新获取，如尝试多次无效，
-                请联系管理员协助处理。
+                请联系技术支持协助处理。
                 {totp &&
                   <Link underline="hover" onClick={onSwitchOTP}
                     sx={{ cursor: 'pointer' }}>

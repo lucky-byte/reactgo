@@ -141,7 +141,7 @@ export default function Home() {
           <Typography as='h1' variant='h6' sx={{ mt: 1 }}>找回登录密码</Typography>
           <FormHelperText>
             找回登录密码需要验证您的账号邮箱地址和手机号，如果邮箱地址或手机号已变更，
-            请联系管理员
+            请联系技术支持
           </FormHelperText>
           <TextField fullWidth required
             label='登录名' placeholder="登录名"

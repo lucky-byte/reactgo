@@ -310,7 +310,7 @@ function Forget(props) {
   }
   return (
     <FormHelperText sx={{ mt: 2, textAlign: 'justify' }}>
-      当前系统设置不允许找回登录密码，如忘记登录信息，请联系管理员重置
+      当前系统设置不允许找回登录密码，如忘记登录信息，请联系技术支持
     </FormHelperText>
   )
 }

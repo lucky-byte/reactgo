@@ -50,9 +50,9 @@ export default function Markdown(props) {
       p: {
         component: Typography,
         props: {
-          variant: 'body1', paragraph: true, lineHeight: 1.8, textAlign: 'justify',
+          variant: 'body1', paragraph: true, lineHeight: 1.8, align: 'justify',
           sx: {
-            maxWidth: '100%',
+            wordBreak: 'break-word',
           }
         }
       },
@@ -134,5 +134,9 @@ export default function Markdown(props) {
 function Wrapper(props) {
   const { children, sx } = props;
 
-  return <Box as='article' children={children} overflow='auto' sx={sx || {}} />
+  return (
+    <Box as='article' children={children}
+      sx={{ ...(sx || {}), wordBreak: 'break-word' }}
+    />
+  )
 }

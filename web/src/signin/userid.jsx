@@ -13,7 +13,7 @@ import Stack from '@mui/material/Stack';
 import Typography from "@mui/material/Typography";
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
-import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
+import DialpadIcon from '@mui/icons-material/Dialpad';
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import isMobile from 'validator/lib/isMobilePhone';
@@ -133,17 +133,17 @@ export default function ForgetUserid() {
         <DialogTitle sx={{ pb: 0 }}>找回登录名</DialogTitle>
         <DialogContent>
           <DialogContentText variant="caption">
-            找回登录名需要验证您的手机号，如果手机号已变更，请联系管理员
+            找回登录名需要验证您的手机号，如果手机号已变更，请联系技术支持
           </DialogContentText>
           <TextField fullWidth required autoFocus
-            label='手机号' placeholder="账号绑定手机号"
+            label='手机号' placeholder="账号手机号"
             autoComplete="mobile" variant='standard' type='tel'
             value={mobile} onChange={onMobileChange}
             inputProps={{ maxLength: 11 }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <PhoneIphoneIcon />
+                  <DialpadIcon fontSize="small" />
                 </InputAdornment>
               ),
             }}
@@ -157,7 +157,7 @@ export default function ForgetUserid() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <KeyIcon />
+                  <KeyIcon fontSize="small" />
                 </InputAdornment>
               ),
               endAdornment: (

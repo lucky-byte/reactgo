@@ -139,7 +139,7 @@ export default function SignInOTP() {
               }}
             />
             <FormHelperText sx={{ mx: 0, my: 1 }}>
-              您可以在手机 TOTP 客户端中查看认证口令，如无法访问，请联系管理员协助处理。
+              您可以在手机 TOTP 客户端中查看认证口令，如无法访问，请联系技术支持协助处理。
               {tfa &&
                 <Link underline="hover" onClick={onSwitchSMS}
                   sx={{ cursor: 'pointer' }}>
