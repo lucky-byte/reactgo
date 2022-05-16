@@ -144,7 +144,7 @@ export default function Google() {
   }
 
   return (
-    <Stack direction='row' alignItems='center' spacing={2}>
+    <Stack direction='row' alignItems='center' spacing={2} p={1}>
       <Stack direction='row' spacing={2} alignItems='center' flex={1}>
         <Box width={35} height={35}
           display='flex' justifyContent='center' alignItems='center'>

@@ -135,7 +135,7 @@ export default function GitHub() {
   }
 
   return (
-    <Stack direction='row' alignItems='center' spacing={2}>
+    <Stack direction='row' alignItems='center' spacing={2} p={1}>
       <Stack direction='row' spacing={2} alignItems='center' flex={1}>
         <GitHubIcon fontSize='large' />
         <Stack>

@@ -200,7 +200,8 @@ export default function Appbar(params) {
             </ListItemIcon>
             <ListItemText>通知</ListItemText>
           </MenuItem>
-          <MenuItem component={RouteLink} to='/bulletin'>
+          <Divider />
+          <MenuItem component={Link} href='/bulletin' target='_blank'>
             <ListItemIcon>
               <CampaignIcon fontSize="small" />
             </ListItemIcon>

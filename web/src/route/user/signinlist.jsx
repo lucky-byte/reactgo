@@ -49,8 +49,8 @@ export default function SignInList() {
             <ArrowBackIcon color='primary' />
           </IconButton>
           <Stack sx={{ flex: 1 }}>
-            <Typography variant='h6'>登录历史</Typography>
-            <Typography variant='caption'>
+            <Typography variant='h5'>登录历史</Typography>
+            <Typography variant='body2'>
               下面是您的账号近半年的登录记录，如存在可疑登录，请联系管理员排查
             </Typography>
           </Stack>
