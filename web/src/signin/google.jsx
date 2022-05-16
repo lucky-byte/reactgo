@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import { useSnackbar } from 'notistack';
 import { put } from "~/lib/rest";
 import popupWindow from '~/lib/popup';
-import GoogleIcon from '~/img/google.svg';
+import GoogleIcon from '~/img/google.png';
 
 export default function Google(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -93,9 +93,9 @@ export default function Google(props) {
   return (
     <Tooltip title='Google' arrow>
       <IconButton size='large' disabled={submitting} onClick={onAuthorizeClick}>
-        <Box width={35} height={35}
+        <Box width={36} height={36}
           display='flex' alignItems='flex-end' justifyContent='center'>
-          <img src={GoogleIcon} alt='LOGO' style={{ width: 32, height: 32 }} />
+          <img src={GoogleIcon} alt='LOGO' style={{ width: 34, height: 34 }} />
         </Box>
       </IconButton>
     </Tooltip>

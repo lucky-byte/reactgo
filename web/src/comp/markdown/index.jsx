@@ -10,6 +10,8 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableFooter from '@mui/material/TableFooter';
 import TableHead from '@mui/material/TableHead';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import { useSnackbar } from 'notistack';
 import TableWrapper from './table';
 import Pre from './pre';
@@ -46,6 +48,7 @@ export default function Markdown(props) {
   const options = useMemo(() => ({
     wrapper: Wrapper,
     forceWrapper: true,
+    // disableParsingRawHTML: true,
     overrides: {
       p: {
         component: Typography,
@@ -122,12 +125,20 @@ export default function Markdown(props) {
       img: {
         component: Image,
       },
+      form: {
+        component: Box,
+      },
+      script: {
+        component: Script,
+      },
     },
     createElement: createCustomElement,
   }), [codeBgColor, codeColor]);
 
   return (
-    <MarkdownJSX children={content || ''} options={options} sx={sx || {}} />
+    <MarkdownJSX options={options} sx={sx || {}}>
+      {content || ''}
+    </MarkdownJSX>
   )
 }
 
@@ -138,5 +149,15 @@ function Wrapper(props) {
     <Box as='article' children={children}
       sx={{ ...(sx || {}), wordBreak: 'break-word' }}
     />
+  )
+}
+
+// <script> 标签内容以错误形式显示出来
+function Script(props) {
+  return (
+    <Alert severity="error" variant='filled'>
+      <AlertTitle>脚本(script):</AlertTitle>
+      <Typography as='pre'><code>{props.children}</code></Typography>
+    </Alert>
   )
 }

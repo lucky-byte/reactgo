@@ -85,7 +85,7 @@ export default function Github() {
 
   return (
     <>
-      <Stack direction='row' alignItems='center' sx={{ p: 2 }}>
+      <Stack direction='row' alignItems='center' sx={{ px: 2, py: 3 }}>
         <Stack direction='row' spacing={2} alignItems='center' flex={1}>
           <GitHubIcon fontSize='large' />
           <Stack>

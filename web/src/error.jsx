@@ -56,6 +56,10 @@ function Content(props) {
     }
   }
 
+  const onRefresh = () => {
+    window.location.reload();
+  }
+
   return (
     <Container as='main' maxWidth='md' sx={{ my: 2 }} ref={contentRef}>
       <Stack alignItems='flex-start'>
@@ -66,6 +70,7 @@ function Content(props) {
             详细信息
           </Button>
           <Button size='small' onClick={onPrint}>打印</Button>
+          <Button size='small' onClick={onRefresh}>刷新页面</Button>
         </Stack>
         <Collapse in={expanded}>
           <Paper variant='outlined' sx={{ p: 2 }}>
@@ -82,7 +87,7 @@ function Content(props) {
               <Typography variant='subtitle2'>Component Stack:</Typography>
               {componentStack?.map(i => (
                 i.trim() ?
-                  <Typography variant='body2' sx={{ fontFamily: 'monospace' }}>
+                  <Typography key={i} variant='body2' sx={{ fontFamily: 'monospace' }}>
                     at {i}
                   </Typography> : null
               ))}

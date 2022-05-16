@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Chip from '@mui/material/Chip';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Skeleton from '@mui/material/Skeleton';
@@ -21,6 +22,7 @@ import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
+import EllipsisText from "~/comp/ellipsis-text";
 import { get } from '~/lib/rest';
 import Banner from '~/comp/banner';
 import Footer from '~/comp/footer';
@@ -70,12 +72,20 @@ export default function Item() {
           <Link component={RouteLink} to='/'>
             <Banner height={28} />
           </Link>
-          <Chip size='small' label='公告' variant='outlined' color='info'
-            icon={<CampaignIcon />} onClick={onCloseClick}
+          <Chip size='small' label='公告' color='info' icon={<CampaignIcon />}
+            onClick={onCloseClick}
           />
         </Stack>
       </Toolbar>
-      <Stack spacing={2} direction='row' justifyContent='flex-end' sx={{ mb: 2 }}>
+      <Stack spacing={2} direction='row' alignItems='center' sx={{ mb: 2 }}>
+        <Breadcrumbs aria-label="导航" sx={{ flex: 1 }}>
+          <Link underline="hover" color="primary" component={RouteLink} to="/bulletin">
+            公告
+          </Link>
+          <EllipsisText variant='body2' sx={{ maxWidth: 500, textAlign: 'left' }}>
+            {bulletin.title}
+          </EllipsisText>
+        </Breadcrumbs>
         <Tooltip title='打印'>
           <IconButton onClick={print}>
             <PrintIcon />

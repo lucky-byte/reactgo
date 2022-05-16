@@ -86,7 +86,7 @@ export default function Google() {
 
   return (
     <>
-      <Stack direction='row' alignItems='center' sx={{ p: 2 }}>
+      <Stack direction='row' alignItems='center' sx={{ px: 2, py: 3 }}>
         <Stack direction='row' spacing={2} alignItems='center' flex={1}>
           <Box width={35} height={35} display='flex' justifyContent='center'>
             <img src={GoogleIcon} alt='LOGO' style={{ width: 32, height: 32 }} />

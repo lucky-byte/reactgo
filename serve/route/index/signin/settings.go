@@ -9,7 +9,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 )
 
-// 查询账号设置
+// 查询登录相关设置
 func settings(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
@@ -34,6 +34,7 @@ func settings(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
+		"signupable": account.Signupable,
 		"lookuserid": account.LookUserid,
 		"resetpass":  account.ResetPass,
 		"providers":  providers,

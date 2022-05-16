@@ -206,11 +206,16 @@ export default function Home() {
           </Accordion>
         ))}
       </Paper>
-      <Stack alignItems='center' sx={{ mt: 2 }}>
-        <Pagination count={pageCount} color="primary" page={page + 1}
-          onChange={(e, newPage) => { setPage(newPage - 1) }}
-        />
-      </Stack>
+      {list.length === 0 &&
+        <Typography align='center' sx={{ m: 6 }} color='gray'>没有公告</Typography>
+      }
+      {list.length > 0 &&
+        <Stack alignItems='center' sx={{ mt: 3 }}>
+          <Pagination count={pageCount} color="primary" page={page + 1}
+            onChange={(e, newPage) => { setPage(newPage - 1) }}
+          />
+        </Stack>
+      }
     </Container>
   )
 }

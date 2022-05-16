@@ -1,26 +1,8 @@
 import { createElement } from 'react';
-import Stack from '@mui/material/Stack';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Divider from '@mui/material/Divider';
 import Image from './image';
 
 // 可以在 Markdown 中使用下列的组件
 const customElements = {
-  'Stack': Stack,
-  'Grid': Grid,
-  'Box': Box,
-  'Paper': Paper,
-  'Typography': Typography,
-  'Link': Link,
-  'IconButton': IconButton,
-  'Button': Button,
-  'Divier': Divider,
   'Image': Image,
 }
 

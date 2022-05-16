@@ -86,12 +86,11 @@ export default function Microsoft() {
 
   return (
     <>
-      <Stack direction='row' alignItems='center' sx={{ p: 2 }}>
+      <Stack direction='row' alignItems='center' sx={{ px: 2, py: 3 }}>
         <Stack direction='row' spacing={2} alignItems='center' flex={1}>
-          {/* <TwitterIcon fontSize='large' color="info" /> */}
-            <Box width={35} height={35} display='flex' justifyContent='center'>
-              <img src={MicrosoftIcon} alt='LOGO' style={{ width: 28 }} />
-            </Box>
+          <Box width={35} height={35} display='flex' justifyContent='center'>
+            <img src={MicrosoftIcon} alt='LOGO' style={{ width: 28 }} />
+          </Box>
           <Stack>
             <Stack direction='row' alignItems='center' spacing={3}>
               <Typography variant='h6'>Microsoft</Typography>

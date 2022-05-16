@@ -86,7 +86,7 @@ export default function GitHub(props) {
   return (
     <Tooltip title='GitHub' arrow>
       <IconButton size='large' disabled={submitting} onClick={onAuthorizeClick}>
-        <GitHubIcon fontSize='large' />
+        <GitHubIcon sx={{ height: 36, width: 36 }} />
       </IconButton>
     </Tooltip>
   )

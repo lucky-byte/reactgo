@@ -38,6 +38,7 @@ export default function SignIn() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const setUser = useSetRecoilState(userState);
+  const [signupable, setSignupable] = useState(false);
   const [lookUserid, setLookUserid] = useState(false);
   const [resetPass, setResetPass] = useState(false);
   const [providers, setProviders] = useState([]);
@@ -56,6 +57,8 @@ export default function SignIn() {
       try {
         if (loading) {
           const resp = await get('/signin/settings')
+
+          setSignupable(resp.signupable);
           setLookUserid(resp.lookuserid);
           setResetPass(resp.resetpass);
           setProviders(resp.providers || []);
@@ -189,14 +192,22 @@ export default function SignIn() {
         <Box sx={{ flex: 1 }}>
           <Banner height={28} />
         </Box>
-        <Tooltip title='公告' arrow>
-          <IconButton LinkComponent={RouteLink} to='/bulletin'>
-            <CampaignIcon color='primary' />
-          </IconButton>
-        </Tooltip>
+        <Stack direction='row' alignItems='center' spacing={1}>
+          {signupable &&
+            <Button color='info' size='small' variant='outlined'
+              LinkComponent={RouteLink} to='/signup' disabled={submitting}>
+              注册账号
+            </Button>
+          }
+          <Tooltip title='公告' arrow>
+            <IconButton LinkComponent={RouteLink} to='/bulletin'>
+              <CampaignIcon color='primary' />
+            </IconButton>
+          </Tooltip>
+        </Stack>
       </Toolbar>
       <Container maxWidth='xs'>
-        <Paper elevation={3} sx={{ my: 6, py: 3, px: 4, position: 'relative' }}>
+        <Paper elevation={3} sx={{ my: 6, pt: 2, pb: 4, px: 4, position: 'relative' }}>
           {(loading || submitting) &&
             <Box position='absolute' left={0} top={0} right={0}>
               <LinearProgress />
@@ -210,7 +221,7 @@ export default function SignIn() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <PersonIcon />
+                  <PersonIcon fontSize="small" />
                 </InputAdornment>
               ),
               endAdornment: lookUserid && (
@@ -229,7 +240,7 @@ export default function SignIn() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <KeyIcon />
+                  <KeyIcon fontSize="small" />
                 </InputAdornment>
               ),
               endAdornment: (
@@ -245,7 +256,7 @@ export default function SignIn() {
             sx={{ mt: 4 }}
           />
           <Forget loading={loading} resetpass={resetPass} />
-          <Button fullWidth variant="contained" size="large" sx={{ mt: 4 }}
+          <Button fullWidth color='success' variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={submitting}>
             登录
           </Button>
@@ -263,6 +274,12 @@ export default function SignIn() {
                 ))}
               </Stack>
             </Stack>
+          }
+          {signupable &&
+            <Button fullWidth color='info' size='small' sx={{ mt: 2 }}
+              LinkComponent={RouteLink} to='/signup' disabled={submitting}>
+              还没有账号？点击这里注册
+            </Button>
           }
         </Paper>
       </Container>

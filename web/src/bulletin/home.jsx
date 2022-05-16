@@ -79,9 +79,7 @@ export default function Home() {
           <Link component={RouteLink} to='/'>
             <Banner height={28} />
           </Link>
-          <Chip size='small' label='公告' variant='outlined' color='info'
-            icon={<CampaignIcon />}
-          />
+          <Chip size='small' label='公告' color='info' icon={<CampaignIcon />} />
         </Stack>
         <SearchBar value={keyword} onChange={onKeywordChange}
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
