@@ -9,6 +9,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Tooltip from '@mui/material/Tooltip';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
@@ -68,10 +69,13 @@ export default function Ops() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setList(list.map(e => {
+      const newlist = list.map(e => {
         e.timeAgo = dayjs(e.create_at).fromNow();
         return e;
-      }));
+      });
+      if (newlist.length > 0) {
+        setList(newlist);
+      }
     }, 1000);
     return () => clearInterval(timer)
   }, [list]);
@@ -97,7 +101,7 @@ export default function Ops() {
   }
 
   return (
-    <Container as='main' role='main' maxWidth='lg' sx={{ mb: 4 }}>
+    <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={loading} onChange={onKeywordChange}
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
@@ -138,23 +142,26 @@ export default function Ops() {
                 <Chip label={item.user_name || item.userid}
                   size='small' variant='outlined'
                 />
-                <Typography variant='caption' sx={{ color: 'gray' }}>
-                  {dayjs(item.create_at).format('L LT') + ' '}
-                  ({item.timeAgo || dayjs(item.create_at).fromNow()})
-                </Typography>
+                <Tooltip title={dayjs(item.create_at).format('LL LT')} arrow>
+                  <Typography variant='caption' sx={{ color: 'gray' }}>
+                    {dayjs(item.create_at).fromNow()}
+                  </Typography>
+                </Tooltip>
               </Stack>
             </AccordionSummary>
             <AccordionDetails sx={{ backgroundColor: theme =>
               theme.palette.mode === 'dark' ? 'black' : 'white',
             }}>
-              <Markdown>
-                {item.audit.length > 30 ? item.audit + '\n\n' + item.body : item.body}
-              </Markdown>
+              <Typography variant='body2' align='right' color='gray'>
+                {dayjs(item.create_at).format('LL LT')}
+              </Typography>
+              {item.audit.length > 30 && <Typography>{item.audit}</Typography>}
+              <Markdown>{item.body}</Markdown>
             </AccordionDetails>
           </Accordion>
         ))}
       </Paper>
-      <Stack alignItems='center' sx={{ mt: 2 }}>
+      <Stack alignItems='center' sx={{ mt: 3 }}>
         <Pagination count={pageCount} color="primary" page={page + 1}
           onChange={(e, newPage) => { setPage(newPage - 1)}}
         />

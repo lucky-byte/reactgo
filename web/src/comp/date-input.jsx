@@ -10,7 +10,7 @@ export default function DateInput(props) {
       inputFormat='YYYY/MM/DD'
       mask='____/__/__'
       renderInput={props => (
-        <TextField {...props} variant='standard' {...inputProps} />
+        <TextField {...props} variant='standard' placeholder='日期' {...inputProps} />
       )}
       OpenPickerButtonProps={{
         size: 'small', color: 'primary'

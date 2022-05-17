@@ -134,7 +134,9 @@ export default function Index() {
             <Sidebar />
           </Collapse>
         }
-        <Stack sx={{ flex: 1, height: '100vh', '@media print': { height: '100%' } }}>
+        <Stack sx={{
+          flex: 1, height: '100vh', minWidth: 0, '@media print': { height: '100%' }
+        }}>
           <Appbar />
           <Box sx={{ maxHeight: '100%', overflow: 'auto' }}>
             <ErrorBoundary>

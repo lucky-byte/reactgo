@@ -109,7 +109,9 @@ export default function Home() {
       if (outdated) {
         setRefresh(true);
       } else {
-        setList(newlist);
+        if (newlist.length > 0) {
+          setList(newlist);
+        }
       }
     }, 1000);
     return () => clearInterval(timer)
@@ -206,9 +208,11 @@ export default function Home() {
           </Accordion>
         ))}
       </Paper>
-      {list.length === 0 &&
+      {list.length === 0 && (loading ?
+        <Typography align='center' sx={{ m: 6 }} color='gray'>查询中</Typography>
+        :
         <Typography align='center' sx={{ m: 6 }} color='gray'>没有公告</Typography>
-      }
+      )}
       {list.length > 0 &&
         <Stack alignItems='center' sx={{ mt: 3 }}>
           <Pagination count={pageCount} color="primary" page={page + 1}

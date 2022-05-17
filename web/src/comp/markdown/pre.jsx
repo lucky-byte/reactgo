@@ -17,7 +17,7 @@ export default function Pre({ children }) {
 
   if (children?.type !== 'code') {
     return (
-      <Box component='pre' sx={{ whiteSpace: 'pre-wrap' }}>
+      <Box component='pre' sx={{ whiteSpace: 'pre-wrap', minWidth: 0 }}>
         {children}
       </Box>
     )
@@ -39,7 +39,7 @@ export default function Pre({ children }) {
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <Paper variant='outlined'
           sx={{
-            px: 1, my: 1, fontSize: '0.9rem', position: 'relative', overflowX: 'auto'
+            px: 1, my: 1, fontSize: '0.9rem', position: 'relative',
           }}
           onMouseOver={() => setCopyVisible(true)}
           onMouseOut={() => setCopyVisible(false)}>

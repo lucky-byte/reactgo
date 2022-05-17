@@ -123,7 +123,7 @@ export default function Event() {
   }
 
   return (
-    <Container as='main' role='main' maxWidth='lg' sx={{ mb: 4 }}>
+    <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
         <SearchInput isLoading={loading} onChange={onKeywordChange}
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
@@ -167,19 +167,22 @@ export default function Event() {
                 </Typography>
                 {e.fresh && <Badge color="secondary" variant="dot" />}
                 <Typography variant='caption' sx={{ color: 'gray', pl: 1 }}>
-                  {e.timeAgo || dayjs(e.create_at).fromNow()}
+                  {dayjs(e.create_at).fromNow()}
                 </Typography>
               </Stack>
             </AccordionSummary>
             <AccordionDetails sx={{ backgroundColor: theme =>
               theme.palette.mode === 'dark' ? 'black' : 'white',
             }}>
+              <Typography variant='body2' align='right' color='gray'>
+                {dayjs(e.create_at).format('LL LT')}
+              </Typography>
               <Markdown>{e.message}</Markdown>
             </AccordionDetails>
           </Accordion>
         ))}
       </Paper>
-      <Stack alignItems='center' sx={{ mt: 2 }}>
+      <Stack alignItems='center' sx={{ mt: 3 }}>
         <Pagination count={pageCount} color="primary" page={page + 1}
           onChange={(e, newPage) => { setPage(newPage - 1)}}
         />
