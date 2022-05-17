@@ -1,11 +1,14 @@
 import { lazy, useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, Link as RouteLink } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Chip from '@mui/material/Chip';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
+import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
@@ -35,6 +38,8 @@ import Footer from '~/comp/footer';
 const Markdown = lazy(() => import('~/comp/markdown'));
 
 export default function Item() {
+  const theme = useTheme();
+  const md_up = useMediaQuery(theme.breakpoints.up('md'));
   const params = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -102,15 +107,21 @@ export default function Item() {
           />
         </Stack>
       </Toolbar>
-      <Stack spacing={2} direction='row' alignItems='center' sx={{ mb: 2 }}>
-        <Breadcrumbs aria-label="导航" sx={{ flex: 1 }}>
-          <Link underline="hover" color="primary" component={RouteLink} to="..">
-            公告
-          </Link>
-          <EllipsisText variant='body2' sx={{ maxWidth: 500, textAlign: 'left' }}>
-            {bulletin.title || '无'}
-          </EllipsisText>
-        </Breadcrumbs>
+      <Stack spacing={2} direction='row' alignItems='center' sx={{ mb: 2 }}
+        justifyContent={md_up ? 'flex-start' : 'flex-end'}>
+        {md_up &&
+          <Breadcrumbs aria-label="导航" sx={{ flex: 1, minWidth: 0 }}>
+            <Link underline="hover" color="primary" component={RouteLink} to="..">
+              公告
+            </Link>
+            <EllipsisText variant='body2' sx={{ textAlign: 'left', maxWidth: 400 }}>
+              {bulletin.title || '无'}
+              {bulletin.title || '无'}
+              {bulletin.title || '无'}
+              {bulletin.title || '无'}
+            </EllipsisText>
+          </Breadcrumbs>
+        }
         <Tooltip title='打印'>
           <IconButton onClick={print}>
             <PrintIcon />
@@ -122,54 +133,58 @@ export default function Item() {
           </IconButton>
         </Tooltip>
       </Stack>
-      {loading ? <Placeholder /> :
-        bulletin.uuid ?
-          <>
-            <Typography variant='h4' textAlign='center' gutterBottom>
-              {bulletin.title}
-            </Typography>
-            <Typography variant='caption' paragraph textAlign='center'>
-              {dayjs(bulletin.send_time).format('LL dddd HH:mm:ss')}
-            </Typography>
-            <Stack direction='row' justifyContent='flex-end' spacing={1}>
-              <Tooltip title='浏览次数' arrow>
-                <Chip label={932} icon={<VisibilityIcon />}
-                  size='small' variant='outlined' sx={{ px: 1 }}
-                />
-              </Tooltip>
-              <Tooltip title='点赞次数' arrow>
-                <Chip label={132} size='small' variant='outlined' sx={{ px: 1 }}
-                  color={bulletin.star ? 'warning' : 'primary'}
-                  icon={bulletin.star ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}
-                  onClick={onStarClick}
-                />
-              </Tooltip>
-            </Stack>
-            <Markdown>{bulletin.content}</Markdown>
-          </>
-          :
-          <Alert severity="warning" sx={{ mt: 3 }}>
-            <AlertTitle>您访问的公告不存在！</AlertTitle>
-            <Typography variant='body2'>可能的原因：</Typography>
-            <ol>
-              <li>网址输入错误</li>
-              <li>该公告已被系统撤回</li>
-            </ol>
-            <Typography variant='body2'>
-              当前访问网址：{window.location.href}
-            </Typography>
-          </Alert>
-      }
+      {loading ? <Placeholder /> : (bulletin.uuid ?
+        <>
+          <Typography variant='h4' textAlign='center' gutterBottom>
+            {bulletin.title}
+          </Typography>
+          <Typography variant='caption' paragraph textAlign='center'>
+            {dayjs(bulletin.send_time).format('LL dddd HH:mm:ss')}
+          </Typography>
+          <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={1}>
+            <Tooltip title='浏览次数' arrow>
+              <Chip size='small' variant='outlined' sx={{ px: 1 }}
+                label={932} icon={<VisibilityIcon />}
+              />
+            </Tooltip>
+            <Tooltip title='点赞次数' arrow>
+              <Chip size='small' variant='outlined' sx={{ px: 1 }}
+                label={132} icon={<ThumbUpIcon />}
+              />
+            </Tooltip>
+            <Button size='small' onClick={onStarClick}
+              color={bulletin.star ? 'warning' : 'primary'}
+              startIcon={bulletin.star ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}>
+              点赞
+            </Button>
+          </Stack>
+          <Markdown>{bulletin.content}</Markdown>
+        </>
+        :
+        <Alert severity="warning" sx={{ mt: 3 }}>
+          <AlertTitle>您访问的公告不存在！</AlertTitle>
+          <Typography variant='body2'>可能的原因：</Typography>
+          <ol>
+            <li>网址输入错误</li>
+            <li>该公告已被系统撤回</li>
+          </ol>
+          <Typography variant='body2'>
+            当前访问网址：{window.location.href}
+          </Typography>
+        </Alert>
+      )}
       <Divider sx={{ mt: 6, mb: 4 }} />
       <Footer />
-      {scrollVisible &&
+
+      {scrollVisible && md_up && (
         <Tooltip title='到顶部' arrow>
-          <Fab aria-label="转到页面顶部" size="small" onClick={onScrollTop}
-            sx={{ position: 'fixed', top: 80, right: 60 }}>
+          <Fab aria-label="转到页面顶部" size="small" color='primary'
+            onClick={onScrollTop}
+            sx={{ position: 'fixed', bottom: 100, right: 80 }}>
             <ArrowUpwardIcon />
           </Fab>
         </Tooltip>
-      }
+      )}
     </Container>
   )
 }

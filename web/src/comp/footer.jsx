@@ -8,13 +8,13 @@ import Banner from './banner';
 
 export default function Footer(props) {
   const theme = useTheme();
-  const sm = useMediaQuery(theme.breakpoints.up('sm'));
+  const sm_up = useMediaQuery(theme.breakpoints.up('sm'));
 
   const { nobanner, ...others } = props;
 
   return (
     <Stack {...others} spacing={1}>
-      <Stack direction={sm ? 'row' : 'column-reverse'}
+      <Stack direction={sm_up ? 'row' : 'column-reverse'}
         alignItems='center' justifyContent='center' spacing={1}>
         <Typography variant='caption'>
           版权所有 &copy; {new Date().getFullYear()} {process.env.REACT_APP_COMPANY_NAME}
