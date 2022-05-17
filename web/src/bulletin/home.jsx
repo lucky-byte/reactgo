@@ -3,6 +3,7 @@ import { useNavigate, Link as RouteLink } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
@@ -14,6 +15,8 @@ import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import FitbitIcon from '@mui/icons-material/Fitbit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import EllipsisText from "~/comp/ellipsis-text";
@@ -92,13 +95,23 @@ export default function Home() {
               <ListItemText sx={{ mx: 2 }}
                 disableTypography
                 primary={
-                  <Stack direction='row' alignItems='center' spacing={1}>
+                  <Stack direction='row' alignItems='center' spacing={2} mb={1}>
                     <Link underline='hover' sx={{ flex: 1, cursor: 'pointer' }}
                       onClick={() => onItemClick(item)}>
                       <EllipsisText variant="h6" sx={{ fontWeight: 'bold' }}>
                         {item.title}
                       </EllipsisText>
                     </Link>
+                    <Tooltip title='浏览次数' arrow>
+                      <Chip label={932} icon={<VisibilityIcon />}
+                        size='small' variant='outlined' sx={{ px: 1 }}
+                      />
+                    </Tooltip>
+                    <Tooltip title='点赞次数' arrow>
+                      <Chip label={132} icon={<ThumbUpIcon />}
+                        size='small' variant='outlined' sx={{ px: 1 }}
+                      />
+                    </Tooltip>
                     <Typography variant='caption' sx={{ color: 'gray' }}>
                       {dayjs(item.send_time).fromNow()}
                     </Typography>
@@ -112,7 +125,7 @@ export default function Home() {
         {list.length === 0 && (loading ? <Placeholder /> : <Empty />)}
       </Paper>
       {list.length > 0 &&
-        <Stack alignItems='center' sx={{ mt: 2 }}>
+        <Stack alignItems='center' sx={{ mt: 3 }}>
           <Pagination count={pageCount} color="primary" page={page + 1}
             onChange={(_, newPage) => { setPage(newPage - 1) }}
           />

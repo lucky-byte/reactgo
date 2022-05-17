@@ -36,8 +36,10 @@ func add(c echo.Context) error {
 	if count > 0 {
 		return c.String(http.StatusConflict, fmt.Sprintf("%s 已存在", name))
 	}
-	ql = `insert into acl (uuid, code, name, summary) values (?, ?, ?, ?)`
-
+	ql = `
+		insert into acl (uuid, code, name, summary, features)
+		values (?, ?, ?, ?, '')
+	`
 	rand.Seed(time.Now().UnixNano())
 	code := rand.Intn(10000)
 

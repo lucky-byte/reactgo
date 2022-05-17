@@ -13,6 +13,7 @@ import { ColorModeContext } from "./hook/colormode";
 import titleState from "~/state/title";
 import ErrorBoundary from "./error";
 import SignIn from "./signin";
+import SignUp from "./signup";
 import ResetPass from "./resetpass";
 import Index from "./route";
 import Bulletin from "./bulletin";
@@ -104,6 +105,7 @@ export default function App() {
                 <Suspense fallback={<LinearProgress />}>
                   <Routes>
                     <Route path='/signin/*' element={<SignIn />} />
+                    <Route path='/signup/*' element={<SignUp />} />
                     <Route path='/resetpass/*' element={<ResetPass />} />
                     <Route path='/bulletin/*' element={<Bulletin />} />
                     <Route path='/*' element={<Index />} />

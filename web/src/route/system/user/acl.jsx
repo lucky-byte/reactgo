@@ -43,7 +43,7 @@ export default function ACL() {
         setProgress(false);
       }
     })();
-  }, [enqueueSnackbar, setProgress, location?.state?.acl]);
+  }, [enqueueSnackbar, setProgress]);
 
   useEffect(() => {
     for (let i = 0; i < acls.length; i++) {

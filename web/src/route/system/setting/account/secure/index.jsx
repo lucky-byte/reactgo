@@ -5,7 +5,6 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Switch from '@mui/material/Switch';
 import Collapse from "@mui/material/Collapse";
-import Chip from '@mui/material/Chip';
 import FormHelperText from "@mui/material/FormHelperText";
 import Divider from "@mui/material/Divider";
 import { useSnackbar } from 'notistack';
@@ -15,12 +14,15 @@ import useTitle from "~/hook/title";
 import { get, post } from "~/lib/rest";
 import progressState from '~/state/progress';
 import { useSecureTab } from "../state";
+import SignupAcl from "./signupacl";
 import JWTSignKeyButton from "./jwtsignkey";
 
 export default function Secure() {
   const { enqueueSnackbar } = useSnackbar();
   const setProgress = useSetRecoilState(progressState);
   const [signupable, setSignupable] = useState(false);
+  const [signupACL, setSignupACL] = useState('');
+  const [signupACLName, setSignupACLName] = useState('');
   const [lookUserid, setLookUserid] = useState(false);
   const [resetPass, setResetPass] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -36,6 +38,8 @@ export default function Secure() {
 
         const resp = await get('/system/setting/account/secure/');
         setSignupable(resp.signupable);
+        setSignupACL(resp.signupacl);
+        setSignupACLName(resp.signupaclname);
         setLookUserid(resp.lookuserid);
         setResetPass(resp.resetpass);
         setDuration(resp.sessduration);
@@ -112,29 +116,29 @@ export default function Secure() {
     <Stack mt={2} mb={3}>
       <Typography variant="h6">账号注册</Typography>
       <Paper variant="outlined" sx={{ mt: 1 }}>
-        <Stack p={2} spacing={2}>
-        <Stack direction='row' alignItems='center' justifyContent='space-between'>
-          <Stack>
-            <Typography>开放账号注册</Typography>
-            <FormHelperText>
-              开启后，任何用户都可以注册系统账号，如果关闭则只能通过管理员在后台添加用户账号
-            </FormHelperText>
-          </Stack>
-          <Switch checked={signupable} onChange={onSignupableCheck}
-            inputProps={{ 'aria-label': '是否开放用户注册' }}
+        <Stack p={2}>
+          <Stack direction='row' alignItems='center' justifyContent='space-between'>
+            <Stack>
+              <Typography>开放账号注册</Typography>
+              <FormHelperText>
+                开启后任何用户都可以注册账号，关闭后则只能通过管理员在后台添加用户账号
+              </FormHelperText>
+            </Stack>
+            <Switch checked={signupable} onChange={onSignupableCheck}
+              inputProps={{ 'aria-label': '是否开放用户注册' }}
             />
           </Stack>
           <Collapse in={signupable}>
-            <Stack direction='row' alignItems='center' spacing={1}>
+            <Stack direction='row' alignItems='center' spacing={1} mt={2}>
               <Stack flex={1}>
                 <Typography>访问控制角色</Typography>
                 <FormHelperText>
                   请选择新注册账号默认采用的访问控制角色，已注册账号不受影响
                 </FormHelperText>
               </Stack>
-              <Chip label='未配置' variant="outlined" color="warning" />
-              <Switch checked={signupable} onChange={onSignupableCheck}
-                inputProps={{ 'aria-label': '是否开放用户注册' }}
+              <SignupAcl
+                acl={signupACL} setACL={setSignupACL}
+                aclName={signupACLName} setACLName={setSignupACLName}
               />
             </Stack>
           </Collapse>

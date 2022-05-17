@@ -38,7 +38,9 @@ export default function Pre({ children }) {
     <Highlight {...defaultProps} theme={codeTheme} code={code} language={lang}>
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <Paper variant='outlined'
-          sx={{ px: 1, my: 1, fontSize: '0.9rem', position: 'relative' }}
+          sx={{
+            px: 1, my: 1, fontSize: '0.9rem', position: 'relative', overflowX: 'auto'
+          }}
           onMouseOver={() => setCopyVisible(true)}
           onMouseOut={() => setCopyVisible(false)}>
           <pre style={{ overflowX: 'auto' }}>

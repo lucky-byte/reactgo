@@ -18,18 +18,23 @@ func item(c echo.Context) error {
 		select * from bulletins
 		where status = 3 and is_public = true and uuid = ?
 	`
-	var result db.Bulletin
+	var result []db.Bulletin
 
-	err := db.SelectOne(ql, &result, uuid)
+	err := db.Select(ql, &result, uuid)
 	if err != nil {
 		cc.ErrLog(err).Error("查询公告错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
+	if len(result) == 0 {
+		return c.NoContent(http.StatusOK)
+	}
+	bulletin := result[0]
+
 	return c.JSON(http.StatusOK, echo.Map{
-		"uuid":      result.UUID,
-		"create_at": result.CreateAt,
-		"title":     result.Title,
-		"content":   result.Content,
-		"send_time": result.SendTime,
+		"uuid":      bulletin.UUID,
+		"create_at": bulletin.CreateAt,
+		"title":     bulletin.Title,
+		"content":   bulletin.Content,
+		"send_time": bulletin.SendTime,
 	})
 }

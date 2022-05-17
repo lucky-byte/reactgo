@@ -13,6 +13,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from "@mui/material/Tooltip";
 import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import PersonIcon from '@mui/icons-material/Person';
@@ -28,10 +29,10 @@ import { put, get } from "~/lib/rest";
 import { getLastAccess } from '~/lib/last-access';
 import useTitle from "~/hook/title";
 import Banner from '~/comp/banner';
-import Footer from '~/comp/footer';
-import ForgetUserid from './userid';
-import GitHub from "./github";
-import Google from "./google";
+import Beian from '~/img/beian.png';
+// import ForgetUserid from './userid';
+// import GitHub from "./github";
+// import Google from "./google";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  useTitle('请登录');
+  useTitle('注册');
 
   // 查询系统设置
   useEffect(() => {
@@ -194,8 +195,8 @@ export default function Home() {
         <Stack direction='row' alignItems='center' spacing={1}>
           {signupable &&
             <Button color='info' size='small' variant='outlined'
-              LinkComponent={RouteLink} to='/signup' disabled={submitting}>
-              注册账号
+              LinkComponent={RouteLink} to='/signin' disabled={submitting}>
+              已经有账号，请登录
             </Button>
           }
           <Tooltip title='公告' arrow>
@@ -212,9 +213,9 @@ export default function Home() {
               <LinearProgress />
             </Box>
           }
-          <Typography as='h1' variant='h6' sx={{ mt: 1 }}>欢迎，请登录</Typography>
-          <TextField required label='登录名' placeholder="请输入登录名"
-            fullWidth autoComplete="username" autoFocus
+          <Typography as='h1' variant='h6' sx={{ mt: 1 }}>注册新账号</Typography>
+          <TextField required label='登录名' placeholder="请选择一个登录名"
+            fullWidth autoComplete="off" autoFocus
             variant='standard' value={username} onChange={onUsernameChange}
             onKeyDown={onUsernameKeyDown}
             InputProps={{
@@ -225,14 +226,14 @@ export default function Home() {
               ),
               endAdornment: lookUserid && (
                 <InputAdornment position="end">
-                  <ForgetUserid />
+                  {/* <ForgetUserid /> */}
                 </InputAdornment>
               ),
             }}
             sx={{ mt: 3 }}
           />
           <TextField required label='密码' placeholder="请输入登录密码"
-            fullWidth autoComplete="password"
+            fullWidth autoComplete="new-password"
             variant='standard' type={passwordHide ? 'password' : 'text'}
             value={password} onChange={onPasswordChange}
             onKeyDown={onPasswordKeyDown}
@@ -255,9 +256,9 @@ export default function Home() {
             sx={{ mt: 4 }}
           />
           <Forget loading={loading} resetpass={resetPass} />
-          <Button fullWidth color='success' variant="contained" size="large" sx={{ mt: 4 }}
+          <Button fullWidth color='info' variant="contained" size="large" sx={{ mt: 4 }}
             onClick={onSubmit} disabled={submitting}>
-            登录
+            注册
           </Button>
           {providers.length > 0 &&
             <Stack mt={3}>
@@ -274,15 +275,30 @@ export default function Home() {
               </Stack>
             </Stack>
           }
-          {signupable &&
-            <Button fullWidth color='info' size='small' sx={{ mt: 2 }}
-              LinkComponent={RouteLink} to='/signup' disabled={submitting}>
-              还没有账号？点击这里注册
-            </Button>
-          }
         </Paper>
       </Container>
-      <Footer nobanner />
+      <Stack direction='row' alignItems='center' justifyContent='center' spacing={1}>
+        <Typography variant='caption'>
+          &copy; {new Date().getFullYear()} {process.env.REACT_APP_COMPANY_NAME}
+        </Typography>
+        {process.env.REACT_APP_ICP &&
+          <Stack direction='row' alignItems='center'>
+            <img src={Beian} alt='备案' height={14} width={14} />
+            <Typography variant='caption'>
+              <Link href={process.env.REACT_APP_ICP_LINK} target='_blank'
+                underline='hover' sx={{ ml: '2px' }}>
+                {process.env.REACT_APP_ICP}
+              </Link>
+            </Typography>
+          </Stack>
+        }
+        <Typography variant='caption'>
+          <Link href='/privacy' target='_blank' underline='hover'>隐私政策</Link>
+        </Typography>
+        <Typography variant='caption'>
+          <Link href='/terms' target='_blank' underline='hover'>服务条款</Link>
+        </Typography>
+      </Stack>
     </Stack>
   )
 }
@@ -314,11 +330,11 @@ function Forget(props) {
 function Authorize(props) {
   const { provider, ...others } = props;
 
-  if (provider === 'github') {
-    return <GitHub {...others} />
-  }
-  if (provider === 'google') {
-    return <Google {...others} />
-  }
+  // if (provider === 'github') {
+  //   return <GitHub {...others} />
+  // }
+  // if (provider === 'google') {
+  //   return <Google {...others} />
+  // }
   return null;
 }

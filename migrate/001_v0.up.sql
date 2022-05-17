@@ -130,6 +130,7 @@ create table if not exists smss (
 
 create table if not exists account (
   signupable    boolean         default false,
+  signupacl     varchar(36)     default '',
   lookuserid    boolean         default true,
   resetpass     boolean         default true,
   sessduration  int             default 1440,

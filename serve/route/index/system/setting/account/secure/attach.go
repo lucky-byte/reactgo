@@ -15,6 +15,7 @@ func Attach(up *echo.Group, code int) {
 	group.Use(acl.AllowWrite(code)) // Write 权限
 
 	group.POST("/signupable", signupable)
+	group.POST("/signupacl", signupacl)
 	group.POST("/lookuserid", lookuserid)
 	group.POST("/resetpass", resetpass)
 	group.POST("/duration", duration)

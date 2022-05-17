@@ -1,6 +1,7 @@
 package secure
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -12,18 +13,28 @@ import (
 func info(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	ql := `select * from account`
-	var result db.Account
+	ql := `
+		select a.*, acl.name as acl_name
+		from account as a
+		left join acl as acl on acl.uuid = a.signupacl
+	`
+	type result struct {
+		db.Account
+		AclName sql.NullString `db:"acl_name"`
+	}
+	var record result
 
-	if err := db.SelectOne(ql, &result); err != nil {
+	if err := db.SelectOne(ql, &record); err != nil {
 		cc.ErrLog(err).Error("查询账号设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"signupable":   result.Signupable,
-		"lookuserid":   result.LookUserid,
-		"resetpass":    result.ResetPass,
-		"sessduration": result.SessDuration,
-		"jwtsignkey":   result.JWTSignKey,
+		"signupable":    record.Signupable,
+		"signupacl":     record.SignupACL,
+		"signupaclname": record.AclName.String,
+		"lookuserid":    record.LookUserid,
+		"resetpass":     record.ResetPass,
+		"sessduration":  record.SessDuration,
+		"jwtsignkey":    record.JWTSignKey,
 	})
 }

@@ -249,7 +249,7 @@ function MenuIcon(props) {
       onClose();
 
       await confirm({
-        description: `确定要删除吗？删除后无法恢复! 如果您希望从用户通知中删除此公告，请使用撤回`,
+        description: `确定要删除吗？删除后无法恢复!`,
         confirmationText: '删除',
         confirmationButtonProps: { color: 'error' },
       });
@@ -342,7 +342,7 @@ function MenuIcon(props) {
           </ListItemIcon>
           <ListItemText>编辑</ListItemText>
         </MenuItem>
-        <MenuItem onClick={onDeleteClick}>
+        <MenuItem onClick={onDeleteClick} disabled={bulletin.status === 3}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" color='error' />
           </ListItemIcon>
