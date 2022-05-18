@@ -78,6 +78,7 @@
     "@storybook/preset-create-react-app": "^4.1.0",
     "@storybook/react": "^6.5.0",
     "@storybook/testing-library": "^0.0.11",
+    "@types/react": "*",
     "@types/uuid": "^8.3.4",
     "babel-plugin-root-import": "^6.6.0",
     "customize-cra": "^1.0.0",
@@ -87,7 +88,8 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "build": "GENERATE_SOURCEMAP=true react-app-rewired build",
+    "build-nomap": "GENERATE_SOURCEMAP=false react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
