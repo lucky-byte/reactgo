@@ -2,7 +2,7 @@ package config
 
 // server.webdir
 func (c *ViperConfig) ServerWebdir() string {
-	return c.vp.GetString("server.webdir")
+	return tildeExpand(c.vp.GetString("server.webdir"))
 }
 
 // server.httpurl
@@ -47,20 +47,15 @@ func (c *ViperConfig) ServerAutoTLSEmail() string {
 
 // server.autotls.cachedir
 func (c *ViperConfig) ServerAutoTLSCachedir() string {
-	return c.vp.GetString("server.autotls.cachedir")
+	return tildeExpand(c.vp.GetString("server.autotls.cachedir"))
 }
 
 // server.tlskey
 func (c *ViperConfig) ServerTLSKey() string {
-	return c.vp.GetString("server.tlskey")
+	return tildeExpand(c.vp.GetString("server.tlskey"))
 }
 
 // server.tlscrt
 func (c *ViperConfig) ServerTLSCrt() string {
-	return c.vp.GetString("server.tlscrt")
-}
-
-// server.session.store
-func (c *ViperConfig) ServerSessionStore() string {
-	return c.vp.GetString("server.session.store")
+	return tildeExpand(c.vp.GetString("server.tlscrt"))
 }

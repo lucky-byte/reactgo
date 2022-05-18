@@ -7,5 +7,10 @@ func (c *ViperConfig) DatabaseDriver() string {
 
 // database.dsn
 func (c *ViperConfig) DatabaseDSN() string {
-	return c.vp.GetString("database.dsn")
+	p := c.vp.GetString("database.dsn")
+
+	if c.DatabaseDriver() == "sqlite" || c.DatabaseDriver() == "sqlite3" {
+		p = tildeExpand(p)
+	}
+	return p
 }

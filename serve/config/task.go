@@ -2,7 +2,7 @@ package config
 
 // task.path
 func (c *ViperConfig) TaskPath() string {
-	return c.vp.GetString("task.path")
+	return tildeExpand(c.vp.GetString("task.path"))
 }
 
 // task.env

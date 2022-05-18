@@ -1,8 +1,8 @@
 package config
 
-// log.path
+// log.path 日志文件路径
 func (c *ViperConfig) LogPath() string {
-	return c.vp.GetString("log.path")
+	return tildeExpand(c.vp.GetString("log.path"))
 }
 
 // log.publish

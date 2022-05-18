@@ -66,7 +66,7 @@ database:
 
   # 数据源，参考驱动文档
   #
-  dsn: /tmp/reactgo.db
+  dsn: /tmp/reactgo.db?_pragma=busy_timeout=10000
 
 # 任务配置
 #
