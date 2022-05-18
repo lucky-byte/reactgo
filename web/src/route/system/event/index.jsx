@@ -120,20 +120,20 @@ export default function Event() {
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
           sx={{ minWidth: 300 }}
         />
-        <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ flex: 1 }}>
+        <Stack direction='row' spacing={2} justifyContent='flex-end' alignItems='center'
+          sx={{ flex: 1 }}>
           <ToggleButtonGroup exclusive size='small' color='primary' aria-label="级别"
             value={level} onChange={onLevelChange}>
-            <ToggleButton value='0' aria-label="全部">全部</ToggleButton>
-            <ToggleButton value='1' aria-label="信息">信息</ToggleButton>
-            <ToggleButton value='2' aria-label="警告">警告</ToggleButton>
-            <ToggleButton value='3' aria-label="错误">错误</ToggleButton>
-            <ToggleButton value='4' aria-label="错误">安全</ToggleButton>
+            <ToggleButton value='0' aria-label="全部" sx={{ py: '4px' }}>全部</ToggleButton>
+            <ToggleButton value='1' aria-label="信息" sx={{ py: '4px' }}>信息</ToggleButton>
+            <ToggleButton value='2' aria-label="警告" sx={{ py: '4px' }}>警告</ToggleButton>
+            <ToggleButton value='3' aria-label="错误" sx={{ py: '4px' }}>错误</ToggleButton>
+            <ToggleButton value='4' aria-label="错误" sx={{ py: '4px' }}>安全</ToggleButton>
           </ToggleButtonGroup>
           <ToggleButtonGroup exclusive size='small' color='primary' aria-label="状态"
             value={fresh} onChange={onFreshChange}>
-            <ToggleButton value='all' aria-label="全部">全部</ToggleButton>
-            <ToggleButton value='false' aria-label="已读">已读</ToggleButton>
-            <ToggleButton value='true' aria-label="未读">
+            <ToggleButton value='all' aria-label="全部" sx={{py: '4px'}}>全部</ToggleButton>
+            <ToggleButton value='true' aria-label="未读" sx={{py: '4px'}}>
               未读 ({freshCount})
             </ToggleButton>
           </ToggleButtonGroup>
