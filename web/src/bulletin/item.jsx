@@ -140,7 +140,7 @@ export default function Item() {
           </Typography>
           <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={2}>
             <Stack direction='row' spacing={1} alignItems='center'>
-              <VisibilityIcon color='disabled' sx={{ fontSize: '1rem' }} />
+              <VisibilityIcon sx={{ fontSize: '0.9rem', color: 'gray' }} />
               <Tooltip title='浏览' arrow>
                 <Typography variant='body2'>{bulletin.nread}</Typography>
               </Tooltip>

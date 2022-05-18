@@ -182,12 +182,14 @@ export default function Home() {
                 }
                 {b.status === 3 && b.is_public && (
                   <>
-                    <Chip size='small' variant='outlined' sx={{ px: '4px' }}
-                      label={b.nread} icon={<VisibilityIcon />}
-                    />
-                    <Chip size='small' variant='outlined' sx={{ px: '4px' }}
-                      label={b.nstar} icon={<ThumbUpIcon />}
-                    />
+                    <Stack direction='row' spacing={1} alignItems='center'>
+                      <VisibilityIcon sx={{ fontSize: '0.9rem', color: 'gray' }} />
+                      <Typography variant='body2'>{b.nread}</Typography>
+                    </Stack>
+                    <Stack direction='row' spacing={1} alignItems='center'>
+                      <ThumbUpIcon sx={{ fontSize: '0.9rem', color: 'gray' }} />
+                      <Typography variant='body2'>{b.nstar}</Typography>
+                    </Stack>
                   </>
                 )}
                 {b.status === 4 &&

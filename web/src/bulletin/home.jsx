@@ -104,13 +104,13 @@ export default function Home() {
                     </Link>
                     <Stack direction='row' spacing={1} alignItems='center'>
                       <Tooltip title='浏览' arrow>
-                        <VisibilityIcon color='disabled' sx={{ fontSize: '1rem' }} />
+                        <VisibilityIcon sx={{ fontSize: '0.9rem', color: 'gray' }} />
                       </Tooltip>
                       <Typography variant='body2'>{item.nread}</Typography>
                     </Stack>
                     <Stack direction='row' spacing={1} alignItems='center'>
                       <Tooltip title='点赞' arrow>
-                        <ThumbUpIcon color='disabled' sx={{ fontSize: '1rem' }} />
+                        <ThumbUpIcon sx={{ fontSize: '0.9rem', color: 'gray' }} />
                       </Tooltip>
                       <Typography variant='body2'>{item.nstar}</Typography>
                     </Stack>
