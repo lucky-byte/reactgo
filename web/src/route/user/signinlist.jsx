@@ -15,9 +15,9 @@ import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import dayjs from 'dayjs';
 import OutlinedPaper from '~/comp/outlined-paper';
 import OAuthIcon from '~/comp/oauth-icon';
+import TimeAgo from '~/comp/timeago';
 import useTitle from "~/hook/title";
 import { get } from "~/lib/rest";
 import { geo } from '~/lib/geo';
@@ -71,11 +71,7 @@ export default function SignInList() {
               {list.map((row, index) => (
                 <TableRow key={index} hover>
                   <TableCell align="center">
-                    <Tooltip arrow title={dayjs(row.create_at).format('LL dddd HH:mm:ss')}>
-                      <Typography variant='body2'>
-                        {dayjs(row.create_at).fromNow()}
-                      </Typography>
-                    </Tooltip>
+                    <TimeAgo time={row.create_at} variant='body2' />
                   </TableCell>
                   <TableCell align="center">
                     <OAuthIcon type={row.acttype} provider={row.oauthp} />

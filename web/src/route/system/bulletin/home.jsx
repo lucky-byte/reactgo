@@ -31,6 +31,8 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Tooltip from '@mui/material/Tooltip';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
@@ -40,6 +42,7 @@ import { useSecretCode } from '~/comp/secretcode';
 import { useSetCode } from "~/state/code";
 import DateInput from "~/comp/date-input";
 import EllipsisText from "~/comp/ellipsis-text";
+import TimeAgo from '~/comp/timeago';
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
 import { post, del, get } from '~/lib/rest';
@@ -94,23 +97,12 @@ export default function Home() {
     })();
   }, [enqueueSnackbar, page, rows, keyword, date, refresh]);
 
-  // 更新时间
+  // 检查是否有定时发布到期的记录，如果有则更新列表
   useEffect(() => {
     const timer = setInterval(() => {
-      let outdated = false;
-
-      const newlist = list.map(item => {
-        if (item.status === 2 && dayjs().isAfter(item.send_time)) {
-          outdated = true;
-        }
-        item._rand = Math.random();
-        return item;
-      });
-      if (outdated) {
-        setRefresh(true);
-      } else {
-        if (newlist.length > 0) {
-          setList(newlist);
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].status === 2 && dayjs().isAfter(list[i].send_time)) {
+          return setRefresh(true);
         }
       }
     }, 1000);
@@ -121,12 +113,14 @@ export default function Home() {
   const onKeywordChange = value => {
     setPage(0);
     setKeyword(value);
+    setRefresh(true);
   }
 
   // 日期
   const onDateChange = v => {
     setPage(0);
     setDate(v);
+    setRefresh(true);
   }
 
   // 点击标题展开
@@ -174,7 +168,9 @@ export default function Home() {
                   onClick={() => onAccordionTitleClick(b)}>
                   {b.title}
                 </EllipsisText>
-                {b.status === 1 && <Chip label="草稿" size='small' />}
+                {b.status === 1 &&
+                  <Chip label="草稿" size='small' color='warning' variant='outlined' />
+                }
                 {b.status === 2 &&
                   <Tooltip title={`${dayjs(b.send_time).format('LL dddd HH:mm:ss')} 发布`}>
                     <Chip
@@ -184,15 +180,24 @@ export default function Home() {
                     />
                   </Tooltip>
                 }
+                {b.status === 3 && b.is_public && (
+                  <>
+                    <Chip size='small' variant='outlined' sx={{ px: '4px' }}
+                      label={b.nread} icon={<VisibilityIcon />}
+                    />
+                    <Chip size='small' variant='outlined' sx={{ px: '4px' }}
+                      label={b.nstar} icon={<ThumbUpIcon />}
+                    />
+                  </>
+                )}
                 {b.status === 4 &&
                   <Chip label="失败" color='error' size='small' variant='outlined' />
                 }
-                {b.is_public && <Chip label="公开" color='success' size='small' />}
-                {b.is_notify && <NotificationIcon fontSize='small' color='disabled' />}
-                <Typography variant='caption' sx={{ color: 'gray' }}
-                  onClick={() => onAccordionTitleClick(b)}>
-                  {dayjs(b.create_at).fromNow()}
-                </Typography>
+                {b.is_public &&
+                  <Chip label="公开" color='success' size='small' variant='outlined' />
+                }
+                {b.is_notify && <NotificationIcon fontSize='small' color='success' />}
+                <TimeAgo time={b.create_at} />
                 <MenuIcon bulletin={b} requestRefresh={() => setRefresh(true)} />
               </Stack>
             </AccordionSummary>

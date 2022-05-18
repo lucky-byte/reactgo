@@ -18,9 +18,9 @@ import CheckIcon from '@mui/icons-material/Check';
 import BlockIcon from '@mui/icons-material/Block';
 import { useConfirm } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
-import dayjs from 'dayjs';
 import usePrint from "~/hook/print";
 import InplaceInput from '~/comp/inplace-input';
+import TimeAgo from '~/comp/timeago';
 import { del, put } from '~/lib/rest';
 import Features from './features';
 
@@ -107,9 +107,8 @@ export default function Info(props) {
           />
           <Chip label={`${info.users || 0} 个用户`} size='small' variant='outlined' />
           <Chip label={`${info.code}`} size='small' sx={{ ml: 1 }} />
-          <Typography variant='caption' color='gray' sx={{ mx: 1 }}>
-            {dayjs(info.create_at).fromNow()}
-          </Typography>
+          <TimeAgo time={info.create_at} sx={{ mx: 1 }} />
+
           <IconButton color='primary' onClick={print}>
             <PrintIcon fontSize='small' />
           </IconButton>

@@ -20,12 +20,11 @@ import SettingIcon from '@mui/icons-material/Settings';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import Pagination from '@mui/material/Pagination';
-import Typography from '@mui/material/Typography';
 import { useConfirm } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
-import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import EllipsisText from "~/comp/ellipsis-text";
+import TimeAgo from '~/comp/timeago';
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
 import { notificationOutdatedState } from "~/state/notification";
@@ -80,16 +79,6 @@ export default function Lists() {
       }
     })();
   }, [enqueueSnackbar, page, rows, keyword, type, status, refresh]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setList(list.map(e => {
-        e.timeAgo = dayjs(e.create_at).fromNow();
-        return e;
-      }));
-    }, 1000);
-    return () => clearInterval(timer)
-  }, [list]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -213,9 +202,7 @@ export default function Lists() {
                   <Button size='small' color='error' onClick={() => onDeleteClick(item)}>
                     删除
                   </Button>
-                  <Typography variant='caption' sx={{ color: 'gray' }}>
-                    {item.timeAgo || dayjs(item.create_at).fromNow()}
-                  </Typography>
+                  <TimeAgo time={item.create_at} />
                 </Stack>
               }
               secondary={<EllipsisText lines={3}>{item.content}</EllipsisText>}

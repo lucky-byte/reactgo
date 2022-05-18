@@ -36,5 +36,7 @@ func item(c echo.Context) error {
 		"title":     bulletin.Title,
 		"content":   bulletin.Content,
 		"send_time": bulletin.SendTime,
+		"nread":     bulletin.NRead,
+		"nstar":     bulletin.NStar,
 	})
 }

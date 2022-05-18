@@ -20,6 +20,7 @@ import Badge from '@mui/material/Badge';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
+import TimeAgo from '~/comp/timeago';
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
 import { get, put } from '~/lib/rest';
@@ -69,16 +70,6 @@ export default function Event() {
       }
     })();
   }, [enqueueSnackbar, page, rows, keyword, level, fresh]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setList(list.map(e => {
-        e.timeAgo = dayjs(e.create_at).fromNow();
-        return e;
-      }));
-    }, 1000);
-    return () => clearInterval(timer)
-  }, [list]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -166,9 +157,7 @@ export default function Event() {
                   {e.title}
                 </Typography>
                 {e.fresh && <Badge color="secondary" variant="dot" />}
-                <Typography variant='caption' sx={{ color: 'gray', pl: 1 }}>
-                  {dayjs(e.create_at).fromNow()}
-                </Typography>
+                <TimeAgo time={e.create_at} sx={{ pl: 1 }} />
               </Stack>
             </AccordionSummary>
             <AccordionDetails sx={{ backgroundColor: theme =>

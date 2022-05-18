@@ -9,7 +9,6 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Tooltip from '@mui/material/Tooltip';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
@@ -18,6 +17,7 @@ import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import DateInput from "~/comp/date-input";
 import EllipsisText from "~/comp/ellipsis-text";
+import TimeAgo from '~/comp/timeago';
 import useTitle from "~/hook/title";
 import { useSetCode } from "~/state/code";
 import { get } from '~/lib/rest';
@@ -66,19 +66,6 @@ export default function Ops() {
       }
     })();
   }, [enqueueSnackbar, page, rows, keyword, date, method]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const newlist = list.map(e => {
-        e.timeAgo = dayjs(e.create_at).fromNow();
-        return e;
-      });
-      if (newlist.length > 0) {
-        setList(newlist);
-      }
-    }, 1000);
-    return () => clearInterval(timer)
-  }, [list]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -142,11 +129,7 @@ export default function Ops() {
                 <Chip label={item.user_name || item.userid}
                   size='small' variant='outlined'
                 />
-                <Tooltip title={dayjs(item.create_at).format('LL LT')} arrow>
-                  <Typography variant='caption' sx={{ color: 'gray' }}>
-                    {dayjs(item.create_at).fromNow()}
-                  </Typography>
-                </Tooltip>
+                <TimeAgo time={item.create_at} />
               </Stack>
             </AccordionSummary>
             <AccordionDetails sx={{ backgroundColor: theme =>

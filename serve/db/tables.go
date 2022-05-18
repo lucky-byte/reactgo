@@ -202,6 +202,8 @@ type Bulletin struct {
 	IsPublic bool      `db:"is_public" json:"is_public"` // 公开访问
 	IsNotify bool      `db:"is_notify" json:"is_notify"` // 通知用户
 	Status   int       `db:"status"    json:"status"`    // 状态
+	NRead    int       `db:"nread"     json:"nread"`     // 阅读次数
+	NStar    int       `db:"nstar"     json:"nstar"`     // 点赞次数
 }
 
 // 通知

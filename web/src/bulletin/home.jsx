@@ -18,9 +18,9 @@ import FitbitIcon from '@mui/icons-material/Fitbit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { useSnackbar } from 'notistack';
-import dayjs from 'dayjs';
 import EllipsisText from "~/comp/ellipsis-text";
 import SearchBar from '~/comp/search-bar';
+import TimeAgo from '~/comp/timeago';
 import useTitle from "~/hook/title";
 import { get } from '~/lib/rest';
 import Banner from '~/comp/banner';
@@ -103,18 +103,16 @@ export default function Home() {
                       </EllipsisText>
                     </Link>
                     <Tooltip title='浏览次数' arrow>
-                      <Chip label={932} icon={<VisibilityIcon />}
+                      <Chip label={item.nread} icon={<VisibilityIcon />}
                         size='small' variant='outlined' sx={{ px: 1 }}
                       />
                     </Tooltip>
                     <Tooltip title='点赞次数' arrow>
-                      <Chip label={132} icon={<ThumbUpIcon />}
+                      <Chip label={item.nstar} icon={<ThumbUpIcon />}
                         size='small' variant='outlined' sx={{ px: 1 }}
                       />
                     </Tooltip>
-                    <Typography variant='caption' sx={{ color: 'gray' }}>
-                      {dayjs(item.send_time).fromNow()}
-                    </Typography>
+                    <TimeAgo time={item.send_time} />
                   </Stack>
                 }
                 secondary={<EllipsisText lines={3}>{item.content}</EllipsisText>}

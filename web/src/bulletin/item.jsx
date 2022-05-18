@@ -116,9 +116,6 @@ export default function Item() {
             </Link>
             <EllipsisText variant='body2' sx={{ textAlign: 'left', maxWidth: 400 }}>
               {bulletin.title || '无'}
-              {bulletin.title || '无'}
-              {bulletin.title || '无'}
-              {bulletin.title || '无'}
             </EllipsisText>
           </Breadcrumbs>
         }
@@ -144,12 +141,12 @@ export default function Item() {
           <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={1}>
             <Tooltip title='浏览次数' arrow>
               <Chip size='small' variant='outlined' sx={{ px: 1 }}
-                label={932} icon={<VisibilityIcon />}
+                label={bulletin.nread} icon={<VisibilityIcon />}
               />
             </Tooltip>
             <Tooltip title='点赞次数' arrow>
               <Chip size='small' variant='outlined' sx={{ px: 1 }}
-                label={132} icon={<ThumbUpIcon />}
+                label={bulletin.nstar} icon={<ThumbUpIcon />}
               />
             </Tooltip>
             <Button size='small' onClick={onStarClick}

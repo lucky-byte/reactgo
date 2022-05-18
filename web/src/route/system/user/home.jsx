@@ -35,7 +35,6 @@ import KeyOffIcon from '@mui/icons-material/KeyOff';
 import CodeOffOutlinedIcon from '@mui/icons-material/CodeOffOutlined';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
-import dayjs from 'dayjs';
 import userState from "~/state/user";
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
@@ -43,6 +42,7 @@ import SearchInput from '~/comp/search-input';
 import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import Avatar from '~/comp/avatar';
+import TimeAgo from '~/comp/timeago';
 import usePageData from '~/hook/pagedata';
 import { useSetCode } from "~/state/code";
 import { post, del, get } from '~/lib/rest';
@@ -186,9 +186,15 @@ export default function Home() {
                     <Typography variant='body2'>{u.acl_name}</Typography>
                   }
                 </TableCell>
-                <TableCell align="center">{dayjs(u.create_at).fromNow()}</TableCell>
-                <TableCell align="center">{dayjs(u.update_at).fromNow()}</TableCell>
-                <TableCell align="center">{dayjs(u.signin_at).fromNow()}</TableCell>
+                <TableCell align="center">
+                  <TimeAgo time={u.create_at} variant='body2' />
+                </TableCell>
+                <TableCell align="center">
+                  <TimeAgo time={u.update_at} variant='body2' />
+                </TableCell>
+                <TableCell align="center">
+                  <TimeAgo time={u.signin_at} variant='body2' />
+                </TableCell>
                 <TableCell align="center">{u.n_signin}</TableCell>
                 <TableCell align='center' padding='none'>
                   {u.deleted &&

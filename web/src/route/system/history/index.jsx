@@ -19,6 +19,7 @@ import SearchInput from '~/comp/search-input';
 import DateInput from "~/comp/date-input";
 import OutlinedPaper from '~/comp/outlined-paper';
 import OAuthIcon from '~/comp/oauth-icon';
+import TimeAgo from '~/comp/timeago';
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
 import { useSetCode } from "~/state/code";
@@ -129,19 +130,14 @@ export default function History() {
                   }
                 </TableCell>
                 <TableCell align="center">
-                  <Tooltip title={row.ip} arrow placement='left'>
+                  <Tooltip title={row.ip} arrow>
                     <Typography variant='body2' sx={{ cursor: 'default' }}>
                       {geo(row) || row.ip}
                     </Typography>
                   </Tooltip>
                 </TableCell>
                 <TableCell align="center">
-                  <Tooltip title={dayjs(row.create_at).format('L LT')} arrow
-                    placement='right'>
-                    <Typography variant='body2' sx={{ cursor: 'default' }}>
-                      {dayjs(row.create_at).fromNow()}
-                    </Typography>
-                  </Tooltip>
+                  <TimeAgo time={row.create_at} variant='body2' />
                 </TableCell>
                 <TableCell align="center" padding='none'>
                   {row.tfa === 0 ? '无' : row.tfa === 1 ? '短信' : 'OTP'}

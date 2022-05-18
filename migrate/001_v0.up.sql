@@ -231,11 +231,13 @@ create table if not exists bulletins (
   send_time   timestamp       not null,
   is_public   boolean         default false,
   is_notify   boolean         default true,
-  status      int             not null default 1
+  status      int             not null default 1,
                               -- 1. 草稿
                               -- 2. 等待发布
                               -- 3. 发布成功
                               -- 4. 发布失败
+  nread       int             not null default 0,
+  nstar       int             not null default 0
 );
 
 create table if not exists notifications (

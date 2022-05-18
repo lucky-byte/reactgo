@@ -6,7 +6,6 @@ import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import Popover from '@mui/material/Popover';
 import Stack from "@mui/material/Stack";
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -20,13 +19,13 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CloseIcon from '@mui/icons-material/Close';
 import SettingIcon from '@mui/icons-material/Settings';
 import { useSnackbar } from 'notistack';
-import dayjs from 'dayjs';
 import uuid from "uuid";
 import Push from 'push.js';
 import nats from '~/lib/nats';
 import userState from "~/state/user";
 import natsState from "~/state/nats";
 import EllipsisText from "~/comp/ellipsis-text";
+import TimeAgo from '~/comp/timeago';
 import latestNotificationState from "~/state/notification";
 import { notificationOutdatedState } from "~/state/notification";
 import { get } from "~/lib/rest";
@@ -257,9 +256,7 @@ export default function Notification() {
                       }}>
                         {item.title}
                       </EllipsisText>
-                      <Typography variant="caption">
-                        {dayjs(item.create_at).fromNow()}
-                      </Typography>
+                      <TimeAgo time={item.create_at} />
                     </Stack>
                   }
                   secondary={

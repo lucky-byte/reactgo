@@ -135,17 +135,17 @@ function BaseInfoTable(props) {
           <TableRow>
             <TableCell>创建时间</TableCell>
             <TableCell>
-              {dayjs(profile.create_at).format('YYYY/MM/DD HH:mm:ss')}
+              {dayjs(profile.create_at).format('LL LTS')}
             </TableCell>
             <TableCell>最后更新时间</TableCell>
             <TableCell>
-              {dayjs(profile.update_at).format('YYYY/MM/DD HH:mm:ss')}
+              {dayjs(profile.update_at).format('LL LTS')}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>最后登录时间</TableCell>
             <TableCell>
-              {dayjs(profile.signin_at).format('YYYY/MM/DD HH:mm:ss')}
+              {dayjs(profile.signin_at).format('LL LTS')}
             </TableCell>
             <TableCell>登录次数</TableCell>
             <TableCell>{profile.n_signin}</TableCell>
@@ -212,7 +212,7 @@ function SigninHistory(props) {
               <TableRow key={index}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell align="center">
-                  {dayjs(row.create_at).format('YY/MM/DD HH:mm:ss')}
+                  {dayjs(row.create_at).format('LL LTS')}
                 </TableCell>
                 <TableCell align="center">{row.userid}</TableCell>
                 <TableCell align="center">{row.name}</TableCell>
