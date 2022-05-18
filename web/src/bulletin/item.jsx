@@ -111,7 +111,8 @@ export default function Item() {
         justifyContent={md_up ? 'flex-start' : 'flex-end'}>
         {md_up &&
           <Breadcrumbs aria-label="导航" sx={{ flex: 1, minWidth: 0 }}>
-            <Link underline="hover" color="primary" component={RouteLink} to="..">
+            <Link underline="hover" color="primary" variant="button"
+              component={RouteLink} to="..">
               公告
             </Link>
             <EllipsisText variant='body2' sx={{ textAlign: 'left', maxWidth: 400 }}>

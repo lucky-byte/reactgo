@@ -99,7 +99,7 @@ export default function Modify() {
           <IconButton aria-label="返回" component={RouteLink} to='..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
-          <Typography variant='h6'>用户资料</Typography>
+          <Typography variant='h5'>修改用户资料</Typography>
         </Stack>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Paper variant='outlined' sx={{ px: 4, py: 3 }}>

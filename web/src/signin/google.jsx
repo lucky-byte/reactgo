@@ -1,17 +1,22 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { useTheme } from "@mui/material/styles";
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { useSnackbar } from 'notistack';
 import { put } from "~/lib/rest";
 import popupWindow from '~/lib/popup';
-import GoogleIcon from '~/img/google.png';
+import GoogleIcon1 from '~/img/google.png';
+import GoogleIcon2 from '~/img/google-alt.png';
 
 export default function Google(props) {
+  const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
   const [state, setState] = useState('');
 
   const { clientId, submitting, setSubmitting, login } = props;
+
+  const GoogleIcon = theme.palette.mode === 'dark' ? GoogleIcon1 : GoogleIcon2;
 
   const popupRef = useRef();
 
@@ -95,7 +100,9 @@ export default function Google(props) {
       <IconButton size='large' disabled={submitting} onClick={onAuthorizeClick}>
         <Box width={36} height={36}
           display='flex' alignItems='flex-end' justifyContent='center'>
-          <img src={GoogleIcon} alt='LOGO' style={{ width: 34, height: 34 }} />
+          <img src={GoogleIcon} alt='LOGO' style={{
+            width: 34, height: 34, opacity: submitting ? 0.3 : 1,
+          }} />
         </Box>
       </IconButton>
     </Tooltip>

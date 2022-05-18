@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import NotFound from "~/comp/notfound";
 import Home from "./home";
 import Add from "./add";
+import Import from "./import";
 import Modify from "./modify";
 import Password from "./passwd";
 import ACL from "./acl";
@@ -12,6 +13,7 @@ export default function User() {
     <Routes>
       <Route path='/' element={<Home />} />
       <Route path='add' element={<Add />} />
+      <Route path='import' element={<Import />} />
       <Route path='profile' element={<Profile />} />
       <Route path='modify' element={<Modify />} />
       <Route path='passwd' element={<Password />} />

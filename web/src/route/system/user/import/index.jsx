@@ -18,7 +18,7 @@ import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
 import { get, put } from '~/lib/rest';
 
-export default function ACL() {
+export default function Import() {
   const location = useLocation();
   const navigate = useNavigate();
   const setProgress = useSetRecoilState(progressState);
@@ -28,7 +28,7 @@ export default function ACL() {
   const [ submitting, setSubmitting ] = useState(false);
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useTitle('修改访问控制');
+  useTitle('导入用户');
 
   useEffect(() => {
     (async () => {
@@ -75,15 +75,11 @@ export default function ACL() {
     }
   }
 
-  if (!location.state?.uuid) {
-    return <Navigate to='..' />
-  }
-
   return (
-    <Container as='main' maxWidth='sm' sx={{ mb: 2 }}>
+    <Container as='main' maxWidth='md' sx={{ mb: 2 }}>
       <Paper sx={{ px: 5, py: 3, mt: 5 }}>
-        <Typography variant='h5'>修改 {location.state?.name} 的访问控制权限</Typography>
-        <Typography variant='body2'>修改后立即生效</Typography>
+        <Typography variant='h5'>批量导入用户</Typography>
+        <Typography variant='caption'>修改访问控制权限将立即生效</Typography>
         <Paper variant='outlined' sx={{ px: 3, py: 3, mt: 3 }}>
           <Stack spacing={4}>
             <TextField id='acl' label='访问控制权限' variant='standard' fullWidth

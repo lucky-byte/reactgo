@@ -72,7 +72,7 @@ export default function Profile() {
             sx={{ mr: 1 }}>
             <ArrowBackIcon color='primary' />
           </IconButton>
-          <Typography variant='h6' gutterBottom={false} sx={{ flex: 1 }}>
+          <Typography variant='h5' gutterBottom={false} sx={{ flex: 1 }}>
             用户详细资料
           </Typography>
           <Tooltip title='打印'>

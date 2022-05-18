@@ -98,7 +98,7 @@ export default function Home() {
                   <Stack direction='row' alignItems='center' spacing={2} mb={1}>
                     <Link underline='hover' sx={{ flex: 1, cursor: 'pointer' }}
                       onClick={() => onItemClick(item)}>
-                      <EllipsisText variant="h6" sx={{ fontWeight: 'bold' }}>
+                      <EllipsisText variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                         {item.title}
                       </EllipsisText>
                     </Link>
@@ -115,7 +115,7 @@ export default function Home() {
                     <TimeAgo time={item.send_time} />
                   </Stack>
                 }
-                secondary={<EllipsisText lines={3}>{item.content}</EllipsisText>}
+                secondary={<EllipsisText lines={2}>{item.content}</EllipsisText>}
               />
             </ListItem>
           ))}

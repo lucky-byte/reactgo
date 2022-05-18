@@ -58,7 +58,7 @@ export default function Password() {
   return (
     <Container as='main' maxWidth='sm' sx={{ mb: 2 }}>
       <Paper sx={{ px: 5, py: 3, mt: 5 }}>
-        <Typography variant='h6'>修改 {location.state?.name} 的登录密码</Typography>
+        <Typography variant='h5'>修改 {location.state?.name} 的登录密码</Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Paper variant='outlined' sx={{ px: 4, py: 3, mt: 3 }}>
             <Stack spacing={4}>
