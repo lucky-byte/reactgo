@@ -85,9 +85,9 @@ function Content(props) {
             </Stack>
             <Stack sx={{ mt: 2 }}>
               <Typography variant='subtitle2'>Component Stack:</Typography>
-              {componentStack?.map(i => (
+              {componentStack?.map((i, idx) => (
                 i.trim() ?
-                  <Typography key={i} variant='body2' sx={{ fontFamily: 'monospace' }}>
+                  <Typography key={idx} variant='body2' sx={{ fontFamily: 'monospace' }}>
                     at {i}
                   </Typography> : null
               ))}

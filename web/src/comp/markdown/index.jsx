@@ -6,12 +6,11 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableFooter from '@mui/material/TableFooter';
 import TableHead from '@mui/material/TableHead';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
+import TableBody from '@mui/material/TableBody';
+import TableFooter from '@mui/material/TableFooter';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
 import { useSnackbar } from 'notistack';
 import TableWrapper from './table';
 import Pre from './pre';
@@ -48,7 +47,6 @@ export default function Markdown(props) {
   const options = useMemo(() => ({
     wrapper: Wrapper,
     forceWrapper: true,
-    // disableParsingRawHTML: true,
     overrides: {
       p: {
         component: Typography,
@@ -73,12 +71,6 @@ export default function Markdown(props) {
           },
         }
       },
-      a: {
-        component: Link,
-        props: {
-          underline: 'hover', target: '_blank', rel: 'noopener',
-        }
-      },
       blockquote: {
         component: Paper,
         props: {
@@ -91,6 +83,7 @@ export default function Markdown(props) {
           }
         }
       },
+      a: ALink,
       pre: Pre,
       code: {
         component: 'code',
@@ -104,33 +97,14 @@ export default function Markdown(props) {
           },
         },
       },
-      table: {
-        component: TableWrapper,
-      },
-      tbody: {
-        component: TableBody,
-      },
-      th: {
-        component: TableCell,
-      },
-      td: {
-        component: TableCell,
-      },
-      tfoot: {
-        component: TableFooter,
-      },
-      thead: {
-        component: TableHead,
-      },
-      img: {
-        component: Image,
-      },
-      form: {
-        component: Box,
-      },
-      script: {
-        component: Script,
-      },
+      table:  TableWrapper,
+      thead:  TableHead,
+      tbody:  TableBody,
+      th:     TableCell,
+      tr:     TableRow,
+      td:     TableCell,
+      tfoot:  TableFooter,
+      img:    Image,
     },
     createElement: createCustomElement,
   }), [codeBgColor, codeColor]);
@@ -152,12 +126,15 @@ function Wrapper(props) {
   )
 }
 
-// <script> 标签内容以错误形式显示出来
-function Script(props) {
+function ALink(props) {
+  const inline = props?.href?.startsWith('#');
+
+  if (inline) {
+    return (
+      <Link {...props} underline='hover' />
+    )
+  }
   return (
-    <Alert severity="error" variant='filled'>
-      <AlertTitle>脚本(script):</AlertTitle>
-      <Typography as='pre'><code>{props.children}</code></Typography>
-    </Alert>
+    <Link {...props} target='_blank' underline='hover' rel='noopener' />
   )
 }

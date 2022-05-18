@@ -8,7 +8,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Chip from '@mui/material/Chip';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
-import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
@@ -139,22 +138,21 @@ export default function Item() {
           <Typography variant='caption' paragraph textAlign='center'>
             {dayjs(bulletin.send_time).format('LL dddd HH:mm:ss')}
           </Typography>
-          <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={1}>
-            <Tooltip title='浏览次数' arrow>
-              <Chip size='small' variant='outlined' sx={{ px: 1 }}
-                label={bulletin.nread} icon={<VisibilityIcon />}
+          <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={2}>
+            <Stack direction='row' spacing={1} alignItems='center'>
+              <VisibilityIcon color='disabled' sx={{ fontSize: '1rem' }} />
+              <Tooltip title='浏览' arrow>
+                <Typography variant='body2'>{bulletin.nread}</Typography>
+              </Tooltip>
+            </Stack>
+            <Tooltip title='点赞' arrow>
+              <Chip size='small' sx={{ px: 1 }}
+                color={bulletin.star ? 'warning' : 'primary'}
+                label={bulletin.nstar}
+                icon={bulletin.star ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}
+                onClick={onStarClick}
               />
             </Tooltip>
-            <Tooltip title='点赞次数' arrow>
-              <Chip size='small' variant='outlined' sx={{ px: 1 }}
-                label={bulletin.nstar} icon={<ThumbUpIcon />}
-              />
-            </Tooltip>
-            <Button size='small' onClick={onStarClick}
-              color={bulletin.star ? 'warning' : 'primary'}
-              startIcon={bulletin.star ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}>
-              点赞
-            </Button>
           </Stack>
           <Markdown>{bulletin.content}</Markdown>
         </>

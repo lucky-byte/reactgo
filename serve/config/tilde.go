@@ -14,7 +14,7 @@ func tildeExpand(p string) string {
 	if p == "~" {
 		p = dir
 	} else if strings.HasPrefix(p, "~/") {
-		p = filepath.Join(dir, p[:2])
+		p = filepath.Join(dir, p[2:])
 	}
 	return p
 }

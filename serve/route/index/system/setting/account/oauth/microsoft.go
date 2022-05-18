@@ -23,7 +23,7 @@ func microsoftGet(c echo.Context) error {
 	var oauth db.OAuth
 
 	if len(result) == 0 {
-		ql = `insert into oauth (provider) values ('microsoft')`
+		ql = `insert into oauth (provider, sortno) values ('microsoft', 3)`
 
 		err = db.ExecOne(ql)
 		if err != nil {

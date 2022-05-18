@@ -267,7 +267,7 @@ create table if not exists ops (
 
 create table if not exists oauth (
   provider    varchar(32)     not null unique,
-  sortno      int             not null default 1,
+  sortno      int             not null default 1 unique,
   clientid    varchar(128)    not null default '',
   secret      varchar(128)    not null default '',
   enabled     boolean         default false

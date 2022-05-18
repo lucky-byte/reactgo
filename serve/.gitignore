@@ -25,3 +25,5 @@ web
 .idea
 
 **/node_modules/
+
+.vscode

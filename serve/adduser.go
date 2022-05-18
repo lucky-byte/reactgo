@@ -79,7 +79,7 @@ func addFirstUser(conf *config.ViperConfig) {
 	fmt.Printf("登录密码: %s\n", color.MagentaString(passwd))
 	fmt.Println("====================================")
 	fmt.Println()
-	fmt.Printf("请使用上面的用户名和密码登录:\n%s\n\n", conf.ServerHttpURL())
+	fmt.Printf("请使用上面的用户名和密码登录 %s\n\n", conf.ServerHttpURL())
 }
 
 // 从 stdin 读一行数据

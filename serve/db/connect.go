@@ -20,14 +20,18 @@ const (
 // mainDB is global database connection pool
 var mainDB *sqlx.DB
 
-// Connect open database connection
+// 连接数据库
 func Connect(driver string, dsn string) {
 	if mainDB != nil {
 		log.Printf("Repeat connection to the database")
 		return
 	}
-	mainDB = sqlx.MustConnect(driver, dsn)
+	var err error
 
+	mainDB, err = sqlx.Connect(driver, dsn)
+	if err != nil {
+		log.Panicf("不能连接数据库 %s(%s): %v", driver, dsn, err)
+	}
 	mainDB.SetMaxOpenConns(100)
 	mainDB.SetMaxIdleConns(50)
 	mainDB.SetConnMaxIdleTime(30 * time.Minute)
@@ -37,7 +41,7 @@ func Connect(driver string, dsn string) {
 	initBuilderDialect(driver)
 }
 
-// Disconnect from database
+// 断开数据库连接
 func Disconnect() {
 	if err := mainDB.Close(); err != nil {
 		log.Printf("Disconnect from Database error: %v", err)

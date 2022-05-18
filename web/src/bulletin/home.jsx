@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
@@ -88,12 +89,11 @@ export default function Home() {
           placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
         />
       </Toolbar>
-      <Paper variant='outlined' sx={{ mt: 3 }}>
+      <Paper sx={{ mt: 3 }}>
         <List>
           {list.map((item, i) => (
             <ListItem key={item.uuid} divider={i < list.length - 1}>
-              <ListItemText sx={{ mx: 2 }}
-                disableTypography
+              <ListItemText sx={{ mx: 2 }} disableTypography
                 primary={
                   <Stack direction='row' alignItems='center' spacing={2} mb={1}>
                     <Link underline='hover' sx={{ flex: 1, cursor: 'pointer' }}
@@ -102,16 +102,18 @@ export default function Home() {
                         {item.title}
                       </EllipsisText>
                     </Link>
-                    <Tooltip title='浏览次数' arrow>
-                      <Chip label={item.nread} icon={<VisibilityIcon />}
-                        size='small' variant='outlined' sx={{ px: 1 }}
-                      />
-                    </Tooltip>
-                    <Tooltip title='点赞次数' arrow>
-                      <Chip label={item.nstar} icon={<ThumbUpIcon />}
-                        size='small' variant='outlined' sx={{ px: 1 }}
-                      />
-                    </Tooltip>
+                    <Stack direction='row' spacing={1} alignItems='center'>
+                      <Tooltip title='浏览' arrow>
+                        <VisibilityIcon color='disabled' sx={{ fontSize: '1rem' }} />
+                      </Tooltip>
+                      <Typography variant='body2'>{item.nread}</Typography>
+                    </Stack>
+                    <Stack direction='row' spacing={1} alignItems='center'>
+                      <Tooltip title='点赞' arrow>
+                        <ThumbUpIcon color='disabled' sx={{ fontSize: '1rem' }} />
+                      </Tooltip>
+                      <Typography variant='body2'>{item.nstar}</Typography>
+                    </Stack>
                     <TimeAgo time={item.send_time} />
                   </Stack>
                 }
@@ -139,6 +141,9 @@ function Placeholder() {
     <Stack p={2}>
       <Typography variant='h5' width='50%'><Skeleton /></Typography>
       <Typography variant='body2' width='100%'><Skeleton /></Typography>
+      <Typography variant='body2' width='100%'><Skeleton /></Typography>
+      <Divider sx={{ my: 2 }} />
+      <Typography variant='h5' width='50%'><Skeleton /></Typography>
       <Typography variant='body2' width='100%'><Skeleton /></Typography>
       <Typography variant='body2' width='100%'><Skeleton /></Typography>
     </Stack>
