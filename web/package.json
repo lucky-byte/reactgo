@@ -51,6 +51,7 @@
     "react-hook-form": "^7.31.1",
     "react-hotkeys-hook": "^3.4.6",
     "react-leaflet": "^4.0.0",
+    "react-medium-image-zoom": "^4.4.0",
     "react-photo-album": "^1.13.3",
     "react-pin-field": "^2.0.0-beta.3",
     "react-router-dom": "^6.3.0",
