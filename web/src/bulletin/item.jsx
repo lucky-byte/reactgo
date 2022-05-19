@@ -27,6 +27,7 @@ import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
+import readingTime from 'reading-time/lib/reading-time';
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
 import EllipsisText from "~/comp/ellipsis-text";
@@ -58,7 +59,11 @@ export default function Item() {
         setLoading(true);
 
         const resp = await get('/bulletin/' + params.uuid)
-        setBulletin(resp || {});
+        if (resp) {
+          const stats = readingTime(resp.content, { wordsPerMinute: 400 });
+          resp.readingTime = stats.minutes;
+          setBulletin(resp || {});
+        }
       } catch (err) {
         enqueueSnackbar(err.message);
       } finally {
@@ -138,7 +143,12 @@ export default function Item() {
           <Typography variant='caption' paragraph textAlign='center'>
             {dayjs(bulletin.send_time).format('LL dddd HH:mm:ss')}
           </Typography>
-          <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={2}>
+          <Stack direction='row' alignItems='center' spacing={2} mb={1}>
+            <Stack direction='row' flex={1}>
+              <Typography variant='caption'>
+                约 {Math.ceil(bulletin.readingTime)} 分钟
+              </Typography>
+            </Stack>
             <Stack direction='row' spacing={1} alignItems='center'>
               <VisibilityIcon sx={{ fontSize: '0.9rem', color: 'gray' }} />
               <Tooltip title='浏览' arrow>

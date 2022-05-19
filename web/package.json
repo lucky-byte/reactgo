@@ -57,6 +57,7 @@
     "react-scripts": "^5.0.1",
     "react-simplemde-editor": "^5.0.2",
     "react-to-print": "^2.14.7",
+    "reading-time": "^1.5.0",
     "recoil": "^0.7.3-alpha.2",
     "require-from-string": "^2.0.2",
     "sass": "^1.51.0",
