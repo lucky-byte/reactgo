@@ -3,8 +3,8 @@ package task
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/reactgo/serve/route/admin/acl"
-	"github.com/lucky-byte/reactgo/serve/route/admin/secretcode"
+	"github.com/lucky-byte/reactgo/serve/route/lib/acl"
+	"github.com/lucky-byte/reactgo/serve/route/lib/secretcode"
 )
 
 func Attach(up *echo.Group, code int) {

@@ -3,11 +3,11 @@ package setting
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/reactgo/serve/route/admin/acl"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system/setting/account"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system/setting/geoip"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system/setting/mail"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system/setting/sms"
+	"github.com/lucky-byte/reactgo/serve/route/lib/acl"
 )
 
 func Attach(up *echo.Group, code int) {

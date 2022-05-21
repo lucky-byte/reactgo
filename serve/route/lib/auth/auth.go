@@ -10,6 +10,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
+	"github.com/lucky-byte/reactgo/serve/route/lib/jwt2"
 )
 
 // 认证，每个受保护的请求都先经过此函数认证通过后才能调用，因此这是一个执行频率非常高的函数
@@ -23,7 +24,7 @@ func Authentication(next echo.HandlerFunc) echo.HandlerFunc {
 			cc.Log().Error("认证失败, 请求缺少认证 TOKEN")
 			return c.NoContent(http.StatusUnauthorized)
 		}
-		jwt, err := JWTParse(authToken)
+		jwt, err := jwt2.JWTParse(authToken)
 		if err != nil {
 			cc.ErrLog(err).Error("认证失败, 解析 TOKEN 错误")
 			return c.NoContent(http.StatusUnauthorized)

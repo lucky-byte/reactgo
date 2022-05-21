@@ -3,9 +3,9 @@ package user
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/reactgo/serve/route/admin/secretcode"
 	"github.com/lucky-byte/reactgo/serve/route/admin/user/notification"
 	"github.com/lucky-byte/reactgo/serve/route/admin/user/oauth"
+	"github.com/lucky-byte/reactgo/serve/route/lib/secretcode"
 )
 
 func Attach(up *echo.Group) {

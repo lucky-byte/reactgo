@@ -1,4 +1,4 @@
-package auth
+package jwt2
 
 import (
 	"encoding/hex"
@@ -6,9 +6,10 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/pkg/errors"
+
 	"github.com/lucky-byte/reactgo/serve/db"
 	"github.com/lucky-byte/reactgo/serve/secure"
-	"github.com/pkg/errors"
 )
 
 type AuthJWT struct {

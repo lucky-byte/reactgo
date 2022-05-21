@@ -9,7 +9,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
-	"github.com/lucky-byte/reactgo/serve/route/admin/auth"
+	"github.com/lucky-byte/reactgo/serve/route/lib/jwt2"
 )
 
 // 验证 TOTP 口令
@@ -43,9 +43,9 @@ func verify(c echo.Context) error {
 		cc.ErrLog(err).Error("查询设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	newJwt := auth.NewAuthJWT(user.UUID, true, duration*time.Minute)
+	newJwt := jwt2.NewAuthJWT(user.UUID, true, duration*time.Minute)
 
-	token, err := auth.JWTGenerate(newJwt)
+	token, err := jwt2.JWTGenerate(newJwt)
 	if err != nil {
 		cc.ErrLog(err).Error("生成登录 TOKEN 错")
 		return c.NoContent(http.StatusInternalServerError)

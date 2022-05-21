@@ -3,7 +3,7 @@ package acl
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/reactgo/serve/route/admin/acl"
+	"github.com/lucky-byte/reactgo/serve/route/lib/acl"
 )
 
 func Attach(up *echo.Group, code int) {

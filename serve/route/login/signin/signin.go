@@ -7,7 +7,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
-	"github.com/lucky-byte/reactgo/serve/route/admin/auth"
+	"github.com/lucky-byte/reactgo/serve/route/lib/login"
 	"github.com/lucky-byte/reactgo/serve/secure"
 )
 
@@ -51,5 +51,5 @@ func signin(c echo.Context) error {
 	}
 
 	// 完成后续登录过程
-	return auth.Login(cc, &user, clientid, 1, "")
+	return login.Login(cc, &user, clientid, 1, "")
 }

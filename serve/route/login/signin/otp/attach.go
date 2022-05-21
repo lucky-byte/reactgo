@@ -7,7 +7,7 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
-	"github.com/lucky-byte/reactgo/serve/route/admin/auth"
+	"github.com/lucky-byte/reactgo/serve/route/lib/jwt2"
 )
 
 func Attach(engine *echo.Group) {
@@ -30,7 +30,7 @@ func checkToken(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.NoContent(http.StatusUnauthorized)
 		}
 		// 解析登录 TOKEN
-		jwt, err := auth.JWTParse(authToken)
+		jwt, err := jwt2.JWTParse(authToken)
 		if err != nil {
 			cc.ErrLog(err).Error("短信认证解析登录 TOKEN 错")
 			return c.NoContent(http.StatusUnauthorized)

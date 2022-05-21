@@ -5,8 +5,8 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/db"
-	"github.com/lucky-byte/reactgo/serve/route/admin/acl"
-	"github.com/lucky-byte/reactgo/serve/route/admin/secretcode"
+	"github.com/lucky-byte/reactgo/serve/route/lib/acl"
+	"github.com/lucky-byte/reactgo/serve/route/lib/secretcode"
 	"github.com/lucky-byte/reactgo/serve/xlog"
 
 	"github.com/labstack/echo/v4"

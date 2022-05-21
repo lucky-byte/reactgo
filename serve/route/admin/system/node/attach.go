@@ -3,8 +3,8 @@ package node
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/lucky-byte/reactgo/serve/route/admin/acl"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system/node/user"
+	"github.com/lucky-byte/reactgo/serve/route/lib/acl"
 )
 
 func Attach(g *echo.Group, code int) {

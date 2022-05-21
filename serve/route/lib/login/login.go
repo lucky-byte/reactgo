@@ -1,4 +1,4 @@
-package auth
+package login
 
 import (
 	"fmt"
@@ -13,6 +13,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
 	"github.com/lucky-byte/reactgo/serve/geoip"
+	"github.com/lucky-byte/reactgo/serve/route/lib/jwt2"
 	"github.com/lucky-byte/reactgo/serve/sms"
 )
 
@@ -56,7 +57,7 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 		cc.ErrLog(err).Error("查询账号设置错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	newJwt := NewAuthJWT(user.UUID, true, duration*time.Minute)
+	newJwt := jwt2.NewAuthJWT(user.UUID, true, duration*time.Minute)
 	smsid := ""
 
 	// 查询登录历史是否有受信任的 client id，如果有则表示当前设备受信任，不需要2步认证
@@ -93,7 +94,7 @@ func Login(c echo.Context, user *db.User, clientid string, acttype int, oauthp s
 		}
 	}
 	// 生成 JWT
-	token, err := JWTGenerate(newJwt)
+	token, err := jwt2.JWTGenerate(newJwt)
 	if err != nil {
 		cc.ErrLog(err).Errorf("%s 登录失败, 生成 JWT 错", user.Name)
 		return c.NoContent(http.StatusInternalServerError)

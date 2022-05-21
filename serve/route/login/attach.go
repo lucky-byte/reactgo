@@ -11,6 +11,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/login/signin"
 )
 
+// 登录相关模块
 func Attach(up *echo.Echo, conf *config.ViperConfig) {
 	group := up.Group("/login")
 
