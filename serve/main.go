@@ -35,7 +35,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/image"
 	"github.com/lucky-byte/reactgo/serve/mailfs"
 	"github.com/lucky-byte/reactgo/serve/nats"
-	"github.com/lucky-byte/reactgo/serve/route/index"
+	"github.com/lucky-byte/reactgo/serve/route/admin"
 	"github.com/lucky-byte/reactgo/serve/route/oauth"
 	"github.com/lucky-byte/reactgo/serve/task"
 	"github.com/lucky-byte/reactgo/serve/ticket"
@@ -227,7 +227,7 @@ func main() {
 	oauth.Attach(engine, conf)
 
 	// 后台管理
-	index.Attach(engine, conf)
+	admin.Attach(engine, conf)
 
 	// 打印所有路由
 	if debug {
