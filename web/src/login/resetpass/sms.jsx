@@ -14,9 +14,9 @@ import FormHelperText from "@mui/material/FormHelperText";
 import Button from "@mui/material/Button";
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
-import { post, put } from "~/lib/rest";
 import useTitle from "~/hook/title";
 import Banner from '~/comp/banner';
+import { post, put } from "~/login/fetch";
 
 export default function SMS() {
   const navigate = useNavigate();

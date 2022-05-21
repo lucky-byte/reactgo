@@ -19,25 +19,24 @@ import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import userState from "~/state/user";
 import useTitle from "~/hook/title";
-import { post, put } from "~/lib/rest";
 import { getLastAccess } from '~/lib/last-access';
 import Banner from '~/comp/banner';
+import { put } from "~/login/fetch";
 
-export default function SignInSMS() {
+export default function SignInOTP() {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useRecoilState(userState);
   const { enqueueSnackbar } = useSnackbar();
   const [trust, setTrust] = useState(false);
+  const [tfa, setTFA] = useState(false);
   const [mobile, setMobile] = useState('');
   const [smsid, setSmsid] = useState('');
-  const [totp, setTotp] = useState('');
   const [historyId, setHistoryId] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const [time, setTime] = useState(0);
 
-  useTitle('短信验证');
+  useTitle('动态密码认证');
 
   // 获取页面传入的数据
   useEffect(() => {
@@ -45,28 +44,13 @@ export default function SignInSMS() {
     if (!token) {
       return navigate('/signin', { replace: true });
     }
-    if (location.state?.smsid) {
-      setSmsid(location.state.smsid);
-      setTime(60);
-    }
-    setTotp(location.state?.totp || false);
+    setTFA(location.state?.tfa || false);
     setMobile(location.state?.mobile || '');
+    setSmsid(location.state?.smsid || '');
     setHistoryId(location.state?.historyid || '');
-  }, [navigate, location.state]);
+  }, [navigate, location?.state]);
 
-  // 更新计时器
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (time > 0) {
-        setTime(time - 1);
-      } else {
-        clearTimeout(timer);
-      }
-    }, 1000);
-    return () => { clearTimeout(timer); }
-  }, [time]);
-
-  // 输入短信验证码
+  // 输入密码
   const onCodeChange = e => {
     const v = e.target.value;
 
@@ -90,18 +74,18 @@ export default function SignInSMS() {
   // 提交认证
   const onSubmit = async () => {
     if (code.length !== 6) {
-      return enqueueSnackbar('请输入完整的短信验证码', {
+      return enqueueSnackbar('请输入完整的口令', {
         variant: 'warning', preventDuplicate: true,
       });
     }
     try {
       setLoading(true);
 
-      const resp = await put('/signin/sms/verify', new URLSearchParams({
-        smsid, code, historyid: historyId, trust,
+      const resp = await put('/signin/otp/verify', new URLSearchParams({
+        code, trust, historyid: historyId,
       }));
-      if (!resp?.token) {
-        return enqueueSnackbar('服务器响应数据不完整', { variant: 'error' });
+      if (!resp || !resp.token) {
+        return enqueueSnackbar('响应数据不完整', { variant: 'error' });
       }
       // 保存新的 token, 更新用户信息
       localStorage.setItem('token', resp.token);
@@ -117,31 +101,17 @@ export default function SignInSMS() {
     }
   }
 
-  // 重新发送验证码
-  const onReSendClick = async () => {
-    try {
-      const resp = await post('/signin/sms/resend');
-      if (!resp.smsid) {
-        throw new Error('响应数据无效');
-      }
-      setSmsid(resp.smsid);
-      setTime(60);
-    } catch (err) {
-      enqueueSnackbar(err.message)
-    }
-  }
-
-  // 切换到 TOTP 认证
-  const onSwitchOTP = () => {
-    navigate('../otp', {
+  // 切换到短信认证
+  const onSwitchSMS = async () => {
+    navigate('../sms', {
       state: {
-        tfa: true, mobile, smsid, historyid: historyId,
+        totp: true, mobile, smsid, historyid: historyId,
       }
     });
   }
 
   return (
-    <Stack as='main' role='main'>
+    <Stack as='main' role='main' sx={{ mb: 5 }}>
       <Toolbar>
         <Box sx={{ flex: 1 }}>
           <Link component={RouteLink} to='/signin'>
@@ -152,20 +122,11 @@ export default function SignInSMS() {
       <Container maxWidth='xs'
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Paper elevation={3} sx={{ mt: 6, py: 3, px: 4, width: '100%' }}>
-          <Typography as='h1' variant="h6">短信认证</Typography>
-          {smsid ?
-            <Typography as='p' variant='caption' sx={{ mt: 1 }}>
-              短信验证码已发送到手机号 ****{mobile?.substring(7)}，
-              请输入短信中的验证码完成验证
-            </Typography>
-            :
-            <Typography as='p' variant='caption' sx={{ mt: 1 }}>
-              短信验证码将发送到手机号 ****{mobile?.substring(7)}，请获取短信验证码
-            </Typography>
-          }
+          <Typography as='h1' variant="h6">动态密码认证</Typography>
+          <Typography variant='caption'>请输入 6 位 TOTP 数字口令完成认证</Typography>
           <FormControl fullWidth sx={{ mt: 3 }}>
             <TextField required autoFocus autoComplete="off"
-              label='短信验证码' placeholder="请输入短信验证码"
+              label='TOTP 口令' placeholder="请输入 6 位口令"
               variant='outlined' value={code} onChange={onCodeChange}
               onKeyDown={onCodeKeyDown}
               inputProps={{ maxLength: 6, minLength: 6 }}
@@ -175,37 +136,17 @@ export default function SignInSMS() {
                     <KeyIcon />
                   </InputAdornment>
                 ),
-                endAdornment: (
-                <InputAdornment position="end">
-                  <Button disabled={time > 0} onClick={onReSendClick}>
-                    {time > 0 ? `${time} 秒` : '获取验证码'}
-                  </Button>
-                </InputAdornment>
-                )
               }}
             />
-            {time > 0 ?
-              <FormHelperText sx={{ mx: 0, my: 1 }}>
-                没有收到验证码？请等待 {time} 秒后尝试重新获取，如尝试多次无效，
-                请联系技术支持协助处理。
-                {totp &&
-                  <Link underline="hover" onClick={onSwitchOTP}
-                    sx={{ cursor: 'pointer' }}>
-                    或切换到动态密码认证
-                  </Link>
-                }
-              </FormHelperText>
-              :
-              <FormHelperText sx={{ mx: 0, my: 1 }}>
-                没有收到验证码？请尝试重新获取，如尝试多次无效，请联系管理员协助处理。
-                {totp &&
-                  <Link underline="hover" onClick={onSwitchOTP}
-                    sx={{ cursor: 'pointer' }}>
-                    或切换到动态密码认证
-                  </Link>
-                }
-              </FormHelperText>
-            }
+            <FormHelperText sx={{ mx: 0, my: 1 }}>
+              您可以在手机 TOTP 客户端中查看认证口令，如无法访问，请联系技术支持协助处理。
+              {tfa &&
+                <Link underline="hover" onClick={onSwitchSMS}
+                  sx={{ cursor: 'pointer' }}>
+                  或切换到短信认证
+                </Link>
+              }
+            </FormHelperText>
           </FormControl>
           <FormControlLabel sx={{ mt: 2 }}
             control={

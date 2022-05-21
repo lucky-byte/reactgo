@@ -36,6 +36,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/mailfs"
 	"github.com/lucky-byte/reactgo/serve/nats"
 	"github.com/lucky-byte/reactgo/serve/route/admin"
+	"github.com/lucky-byte/reactgo/serve/route/login"
 	"github.com/lucky-byte/reactgo/serve/route/oauth"
 	"github.com/lucky-byte/reactgo/serve/task"
 	"github.com/lucky-byte/reactgo/serve/ticket"
@@ -223,8 +224,11 @@ func main() {
 	// 访问图片
 	image.Attach(engine)
 
-	// OAuth 回调
+	// OAuth 客户端回调
 	oauth.Attach(engine, conf)
+
+	// 用户登录
+	login.Attach(engine, conf)
 
 	// 后台管理
 	admin.Attach(engine, conf)

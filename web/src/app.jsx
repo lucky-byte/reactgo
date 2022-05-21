@@ -12,9 +12,9 @@ import { ConfirmProvider } from 'material-ui-confirm';
 import { ColorModeContext } from "./hook/colormode";
 import titleState from "~/state/title";
 import ErrorBoundary from "./error";
-import SignIn from "./signin";
-import SignUp from "./signup";
-import ResetPass from "./resetpass";
+import SignUp from "./login/signup";
+import SignIn from "./login/signin";
+import ResetPass from "./login/resetpass";
 import Admin from "./admin";
 import Bulletin from "./bulletin";
 

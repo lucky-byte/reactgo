@@ -17,9 +17,9 @@ import KeyIcon from '@mui/icons-material/Key';
 import isEmail from 'validator/lib/isEmail';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { put, post } from "~/lib/rest";
 import useTitle from "~/hook/title";
 import Banner from '~/comp/banner';
+import { put, post } from "~/login/fetch";
 
 export default function Home() {
   const navigate = useNavigate();

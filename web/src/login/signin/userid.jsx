@@ -17,7 +17,7 @@ import DialpadIcon from '@mui/icons-material/Dialpad';
 import KeyIcon from '@mui/icons-material/Key';
 import { useSnackbar } from 'notistack';
 import isMobile from 'validator/lib/isMobilePhone';
-import { post } from "~/lib/rest";
+import { post } from "~/login/fetch";
 
 // 找回登录名
 export default function ForgetUserid() {

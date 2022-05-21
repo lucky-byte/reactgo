@@ -24,7 +24,7 @@ import { useSnackbar } from 'notistack';
 import uuid from "uuid";
 import Cookies from 'universal-cookie';
 import userState from "~/state/user";
-import { put, get } from "~/lib/rest";
+import { put, get } from "~/login/fetch";
 import { getLastAccess } from '~/lib/last-access';
 import useTitle from "~/hook/title";
 import Banner from '~/comp/banner';

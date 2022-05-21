@@ -11,9 +11,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/route/admin/auth"
 	"github.com/lucky-byte/reactgo/serve/route/admin/bulletin"
-	"github.com/lucky-byte/reactgo/serve/route/admin/resetpass"
 	"github.com/lucky-byte/reactgo/serve/route/admin/secretcode"
-	"github.com/lucky-byte/reactgo/serve/route/admin/signin"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system"
 	"github.com/lucky-byte/reactgo/serve/route/admin/user"
 )
@@ -34,9 +32,7 @@ func Attach(up *echo.Echo, conf *config.ViperConfig) {
 		},
 	}))
 
-	signin.Attach(group)    // 登录
-	resetpass.Attach(group) // 找回密码
-	bulletin.Attach(group)  // 公开公告
+	bulletin.Attach(group) // 公开公告
 
 	// 后续操作都需要通过认证
 	group.Use(auth.Authentication)

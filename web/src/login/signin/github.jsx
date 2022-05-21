@@ -1,36 +1,30 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useTheme } from "@mui/material/styles";
-import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import { useSnackbar } from 'notistack';
-import { put } from "~/lib/rest";
 import popupWindow from '~/lib/popup';
-import GoogleIcon1 from '~/img/google.png';
-import GoogleIcon2 from '~/img/google-alt.png';
+import { put } from "~/login/fetch";
 
-export default function Google(props) {
-  const theme = useTheme();
+export default function GitHub(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [state, setState] = useState('');
 
   const { clientId, submitting, setSubmitting, login } = props;
-
-  const GoogleIcon = theme.palette.mode === 'dark' ? GoogleIcon1 : GoogleIcon2;
 
   const popupRef = useRef();
 
   // 授权成功后将收到消息
   const onAuthorizedListener = useCallback(async e => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('google authorized message from ', e.origin);
+      console.log('github authorized message from ', e.origin);
     }
     if (process.env.NODE_ENV === 'production') {
       if (e.origin !== window.location.origin) {
         return enqueueSnackbar('来自不同源的消息，忽略...');
       }
     }
-    if (e.data.source === 'reactgo-google-authorize') {
+    if (e.data.source === 'reactgo-github-authorize') {
       if (e.source !== popupRef.current) {
         return enqueueSnackbar('来自不明窗口的消息，忽略...');
       }
@@ -40,7 +34,7 @@ export default function Google(props) {
         try {
           setSubmitting(true);
 
-          const resp = await put('/signin/oauth/google/signin', new URLSearchParams({
+          const resp = await put('/signin/oauth/github/signin', new URLSearchParams({
             clientid: clientId, userid: e.data.profile?.userid, state,
           }));
           setSubmitting(false);
@@ -69,41 +63,30 @@ export default function Google(props) {
   // 开始授权
   const onAuthorizeClick = async () => {
     try {
-      const resp = await put('/signin/oauth/google/authorize');
+      const resp = await put('/signin/oauth/github/authorize');
       setState(resp.state);
-
-      // 查询 Google discovery 配置
-      const c = await fetch(
-        'https://accounts.google.com/.well-known/openid-configuration'
-      );
-      const discovery = await c.json();
 
       const q = new URLSearchParams({
         client_id: resp.clientid,
         redirect_uri: resp.url,
         state: resp.state,
-        response_type: 'code',
-        scope: 'openid email profile',
-        nonce: Math.random(),
+        scope: 'user:email',
       });
-      const url = discovery.authorization_endpoint + '?' + q.toString();
+      const url = 'https://github.com/login/oauth/authorize?' + q.toString();
 
       // 打开新窗口进行授权
-      popupRef.current = popupWindow(url, 'GoogleAuthorize', 650, 650);
+      popupRef.current = popupWindow(url, 'GithubSignIn', 650, 600);
     } catch (err) {
-      enqueueSnackbar(err.message);
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
     }
   }
 
   return (
-    <Tooltip title='Google' arrow>
+    <Tooltip title='GitHub' arrow>
       <IconButton size='large' disabled={submitting} onClick={onAuthorizeClick}>
-        <Box width={36} height={36}
-          display='flex' alignItems='flex-end' justifyContent='center'>
-          <img src={GoogleIcon} alt='LOGO' style={{
-            width: 34, height: 34, opacity: submitting ? 0.3 : 1,
-          }} />
-        </Box>
+        <GitHubIcon sx={{ height: 36, width: 36 }} />
       </IconButton>
     </Tooltip>
   )
