@@ -33,7 +33,9 @@ export default function Modify() {
   useSMSTab();
 
   const {
-    register, handleSubmit, setValue, formState: { errors, isSubmitting }
+    register, handleSubmit, setValue, clearErrors, formState: {
+      errors, isSubmitting
+    }
   } = useForm();
 
   const reset = useCallback(info => {
@@ -42,7 +44,8 @@ export default function Modify() {
     setValue("secret_key", info.secret_key);
     setValue("prefix", info.prefix);
     setValue("textno1", info.textno1);
-  }, [setValue]);
+    clearErrors();
+  }, [setValue, clearErrors]);
 
   useEffect(() => {
     (async () => {
@@ -119,7 +122,7 @@ export default function Modify() {
                 inputProps={{ inputMode: 'numeric' }}
                 helperText={errors?.appid?.message}
                 error={errors?.appid}
-                InputLabelProps={{ shrink: sms.appid ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 sx={{ flex: 1 }}
                 {...register('appid', {
                   required: "不能为空",
@@ -137,7 +140,7 @@ export default function Modify() {
                 disabled={progress}
                 helperText={errors?.secret_id?.message}
                 error={errors?.secret_id}
-                InputLabelProps={{ shrink: sms.secret_id ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 sx={{ flex: 2 }}
                 {...register('secret_id', {
                   required: "不能为空",
@@ -155,7 +158,7 @@ export default function Modify() {
                 disabled={progress}
                 helperText={errors?.secret_key?.message}
                 error={errors?.secret_key}
-                InputLabelProps={{ shrink: sms.secret_key ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 sx={{ flex: 2 }}
                 {...register('secret_key', {
                   required: "不能为空",
@@ -175,7 +178,7 @@ export default function Modify() {
                 disabled={progress}
                 helperText={errors?.prefix?.message}
                 error={errors.prefix}
-                InputLabelProps={{ shrink: sms.prefix ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 {...register('prefix', {
                   required: "不能为空",
                   maxLength: {
@@ -210,7 +213,7 @@ export default function Modify() {
                 disabled={progress}
                 helperText={errors?.textno1?.message}
                 error={errors?.textno1}
-                InputLabelProps={{ shrink: sms.textno1 ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 {...register('textno1', {
                   required: "不能为空",
                   maxLength: {

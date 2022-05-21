@@ -30,7 +30,9 @@ export default function Modify() {
   useTitle('修改邮件服务配置信息');
 
   const {
-    register, handleSubmit, setValue, control, formState: { errors, isSubmitting }
+    register, handleSubmit, setValue, control, clearErrors, formState: {
+      errors, isSubmitting
+    }
   } = useForm({
     defaultValues: {
       sslmode: 'true',
@@ -49,7 +51,8 @@ export default function Modify() {
     setValue("prefix", info.prefix);
     setValue("cc", info.cc);
     setValue("bcc", info.bcc);
-  }, [setValue]);
+    clearErrors();
+  }, [setValue, clearErrors]);
 
   useEffect(() => {
     (async () => {
@@ -110,7 +113,7 @@ export default function Modify() {
               disabled={progress}
               helperText={errors?.name?.message}
               error={errors?.name}
-              InputLabelProps={{ shrink: mta.name ? true : false }}
+              InputLabelProps={{ shrink: true }}
               {...register('name', {
                 required: "不能为空",
                 maxLength: {
@@ -125,7 +128,7 @@ export default function Modify() {
                 placeholder='邮件服务器域名，例如 smtp.qq.com'
                 helperText={errors?.host?.message}
                 error={errors?.host}
-                InputLabelProps={{ shrink: mta.host ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 sx={{ flex: 2 }}
                 {...register('host', {
                   required: "不能为空",
@@ -141,7 +144,7 @@ export default function Modify() {
                 inputProps={{ maxLength: 5 }}
                 helperText={errors?.port?.message}
                 error={errors?.port}
-                InputLabelProps={{ shrink: mta.port ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 sx={{ flex: 1 }}
                 {...register('port', {
                   required: "不能为空",
@@ -172,7 +175,7 @@ export default function Modify() {
                 placeholder='发件人邮箱地址，通常也是登录账号'
                 helperText={errors?.sender?.message}
                 error={errors.sender}
-                InputLabelProps={{ shrink: mta.sender ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 {...register('sender', {
                   required: "不能为空",
                   maxLength: {
@@ -192,7 +195,7 @@ export default function Modify() {
                 placeholder='通常使用发件人地址作为登录用户，此字段不填'
                 helperText={errors?.username?.message}
                 error={errors?.username}
-                InputLabelProps={{ shrink: mta.username ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 {...register('username', {
                   maxLength: {
                     value: 64, message: '超出最大长度'
@@ -205,7 +208,7 @@ export default function Modify() {
                 placeholder='服务器登录密码，如果没有则不填'
                 helperText={errors?.password?.message}
                 error={errors?.password}
-                InputLabelProps={{ shrink: mta.passwd ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 {...register('password', {
                   maxLength: {
                     value: 64, message: '超出最大长度',
@@ -221,7 +224,7 @@ export default function Modify() {
                 placeholder='邮件标题前缀，可以不填'
                 helperText={errors?.prefix?.message}
                 error={errors?.prefix}
-                InputLabelProps={{ shrink: mta.prefix ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 {...register('prefix', {
                   maxLength: {
                     value: 32, message: '超出最大长度'
@@ -240,7 +243,7 @@ export default function Modify() {
                 placeholder='邮件回复地址，可以不填'
                 helperText={errors?.replyto?.message}
                 error={errors?.replyto}
-                InputLabelProps={{ shrink: mta.replyto ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 {...register('replyto', {
                   maxLength: {
                     value: 64, message: '超出最大长度'
@@ -258,7 +261,7 @@ export default function Modify() {
                 placeholder='邮件抄送地址，可以不填，多个地址以逗号分隔'
                 helperText={errors?.cc?.message}
                 error={errors?.cc}
-                InputLabelProps={{ shrink: mta.cc ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 {...register('cc', {
                   maxLength: {
                     value: 256, message: '超出最大长度'
@@ -275,7 +278,7 @@ export default function Modify() {
                 placeholder='邮件密送地址，可以不填，多个地址以逗号分隔'
                 helperText={errors?.bcc?.message}
                 error={errors?.bcc}
-                InputLabelProps={{ shrink: mta.bcc ? true : false }}
+                InputLabelProps={{ shrink: true }}
                 {...register('bcc', {
                   maxLength: {
                     value: 256, message: '超出最大长度'

@@ -17,28 +17,33 @@ type Image struct {
 
 // 用户
 type User struct {
-	UUID        string    `db:"uuid"         json:"uuid"`         // uuid
-	CreateAt    time.Time `db:"create_at"    json:"create_at"`    // 创建时间
-	UpdateAt    time.Time `db:"update_at"    json:"update_at"`    // 更新时间
-	SigninAt    time.Time `db:"signin_at"    json:"signin_at"`    // 最后登录时间
-	Disabled    bool      `db:"disabled"     json:"disabled"`     // 已禁用
-	Deleted     bool      `db:"deleted"      json:"deleted"`      // 已删除
-	UserId      string    `db:"userid"       json:"userid"`       // 登录名
-	Passwd      string    `db:"passwd"       json:"passwd"`       // 密码
-	Name        string    `db:"name"         json:"name"`         // 姓名
-	Avatar      string    `db:"avatar"       json:"avatar"`       // 头像
-	Email       string    `db:"email"        json:"email"`        // 邮箱地址
-	Mobile      string    `db:"mobile"       json:"mobile"`       // 手机号
-	IdNo        string    `db:"idno"         json:"idno"`         // 身份证号
-	Address     string    `db:"address"      json:"address"`      // 联系地址
-	TFA         bool      `db:"tfa"          json:"tfa"`          // 短信认证
-	ACL         string    `db:"acl"          json:"acl"`          // 访问控制
-	SecretCode  string    `db:"secretcode"   json:"secretcode"`   // 安全操作码
-	TOTPSecret  string    `db:"totp_secret"  json:"totp_secret"`  // TOTP 密钥
-	NSignin     int       `db:"n_signin"     json:"n_signin"`     // 总登录次数
-	NotiPopup   bool      `db:"noti_popup"   json:"noti_popup"`   // 弹出通知消息
-	NotiBrowser bool      `db:"noti_browser" json:"noti_browser"` // 弹出浏览器通知
-	NotiMail    bool      `db:"noti_mail"    json:"noti_mail"`    // 通知发送邮件
+	UUID         string    `db:"uuid"           json:"uuid"`           // uuid
+	CreateAt     time.Time `db:"create_at"      json:"create_at"`      // 创建时间
+	UpdateAt     time.Time `db:"update_at"      json:"update_at"`      // 更新时间
+	SigninAt     time.Time `db:"signin_at"      json:"signin_at"`      // 最后登录时间
+	Disabled     bool      `db:"disabled"       json:"disabled"`       // 已禁用
+	Deleted      bool      `db:"deleted"        json:"deleted"`        // 已删除
+	UserId       string    `db:"userid"         json:"userid"`         // 登录名
+	Passwd       string    `db:"passwd"         json:"passwd"`         // 密码
+	Name         string    `db:"name"           json:"name"`           // 姓名
+	Avatar       string    `db:"avatar"         json:"avatar"`         // 头像
+	Email        string    `db:"email"          json:"email"`          // 邮箱地址
+	Mobile       string    `db:"mobile"         json:"mobile"`         // 手机号
+	IdNo         string    `db:"idno"           json:"idno"`           // 身份证号
+	Address      string    `db:"address"        json:"address"`        // 联系地址
+	AcctName     string    `db:"acct_name"      json:"acct_name"`      // 银行账号开户人
+	AcctNo       string    `db:"acct_no"        json:"acct_no"`        // 银行账号
+	AcctIdno     string    `db:"acct_idno"      json:"acct_idno"`      // 银行账号身份证
+	AcctMobile   string    `db:"acct_mobile"    json:"acct_mobile"`    // 银行账号手机号
+	AcctBankName string    `db:"acct_bank_name" json:"acct_bank_name"` // 银行账号开户行
+	TFA          bool      `db:"tfa"            json:"tfa"`            // 短信认证
+	ACL          string    `db:"acl"            json:"acl"`            // 访问控制
+	SecretCode   string    `db:"secretcode"     json:"secretcode"`     // 安全操作码
+	TOTPSecret   string    `db:"totp_secret"    json:"totp_secret"`    // TOTP 密钥
+	NSignin      int       `db:"n_signin"       json:"n_signin"`       // 总登录次数
+	NotiPopup    bool      `db:"noti_popup"     json:"noti_popup"`     // 弹出通知消息
+	NotiBrowser  bool      `db:"noti_browser"   json:"noti_browser"`   // 弹出浏览器通知
+	NotiMail     bool      `db:"noti_mail"      json:"noti_mail"`      // 通知发送邮件
 }
 
 // 登录历史

@@ -3,13 +3,11 @@ import { useRecoilState } from "recoil";
 import {
   Navigate, useLocation, useNavigate, Link as RouteLink
 } from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import TextField from "@mui/material/TextField";
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -17,14 +15,14 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useSnackbar } from 'notistack';
-import isEmail from 'validator/lib/isEmail';
+import luhn from '~/lib/luhn';
 import isMobilePhone from 'validator/lib/isMobilePhone';
 import isIdentityCard from 'validator/lib/isIdentityCard'
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
 import { get, put } from "~/lib/rest";
 
-export default function Modify() {
+export default function Bank() {
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
@@ -32,24 +30,18 @@ export default function Modify() {
   const [userInfo, setUserInfo] = useState({});
 
   useHotkeys('esc', () => { navigate('..'); }, { enableOnTags: ["INPUT"] });
-  useTitle('修改用户资料');
+  useTitle('修改银行账号');
 
-  const { register, handleSubmit, control, setValue, clearErrors, formState: {
+  const { register, handleSubmit, setValue, clearErrors, formState: {
     errors, isSubmitting
-  }} = useForm({
-    defaultValues: {
-      tfa: true,
-    }
-  });
+  }} = useForm();
 
   const reset = useCallback(info => {
-    setValue("userid", info.userid);
-    setValue("name", info.name);
-    setValue("mobile", info.mobile);
-    setValue("email", info.email);
-    setValue("idno", info.idno);
-    setValue("address", info.address);
-    setValue("tfa", info.tfa);
+    setValue("name", info.acct_name || info.name);
+    setValue("idno", info.acct_idno || info.idno);
+    setValue("mobile", info.acct_mobile || info.mobile);
+    setValue("no", info.acct_no);
+    setValue("bank_name", info.acct_bank_name);
     clearErrors();
   }, [setValue, clearErrors]);
 
@@ -77,10 +69,10 @@ export default function Modify() {
       setProgress(true);
 
       data.uuid = location.state.uuid;
-      data._audit = `修改用户 ${data.name} 的资料`;
+      data._audit = `修改用户 ${location.state?.name} 的银行账号`;
 
-      await put('/system/user/modify', new URLSearchParams(data));
-      enqueueSnackbar('用户资料更新成功', { variant: 'success' });
+      await put('/system/user/bank', new URLSearchParams(data));
+      enqueueSnackbar('银行账号更新成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
       enqueueSnackbar(err.message);
@@ -100,29 +92,15 @@ export default function Modify() {
           <IconButton aria-label="返回" component={RouteLink} to='..'>
             <ArrowBackIcon color='primary' />
           </IconButton>
-          <Typography variant='h5'>修改用户资料</Typography>
+          <Typography variant='h5'>修改用户 {location.state?.name} 的银行账号</Typography>
         </Stack>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
             <Stack spacing={4}>
               <Stack direction='row' spacing={3}>
-                <TextField label='登录名' variant='standard' fullWidth required
+                <TextField label='开户人' variant='standard' fullWidth required
                   disabled={progress}
-                  placeholder='系统登录名'
-                  helperText={errors?.userid?.message}
-                  error={errors?.userid}
-                  inputProps={{ maxLength: 32 }}
-                  InputLabelProps={{ shrink: true }}
-                  {...register('userid', {
-                    required: "不能为空",
-                    maxLength: {
-                      value: 32, message: '超出最大长度'
-                    },
-                  })}
-                />
-                <TextField label='真实姓名' variant='standard' fullWidth required
-                  disabled={progress}
-                  placeholder='用户真实姓名'
+                  placeholder='账户所有者全称'
                   helperText={errors?.name?.message}
                   error={errors?.name}
                   inputProps={{ maxLength: 64 }}
@@ -134,11 +112,33 @@ export default function Modify() {
                     },
                   })}
                 />
+                <TextField label='身份证号' variant='standard' fullWidth required
+                  disabled={progress}
+                  placeholder='账户所有者身份证号码'
+                  helperText={errors?.idno?.message}
+                  error={errors?.idno}
+                  inputProps={{ maxLength: 18 }}
+                  InputLabelProps={{ shrink: true }}
+                  {...register('idno', {
+                    minLength: {
+                      value: 18, message: '长度不足18位'
+                    },
+                    maxLength: {
+                      value: 18, message: '超出最大长度'
+                    },
+                    validate: v => {
+                      if (v) {
+                        return isIdentityCard(v, 'zh-CN') || '格式错误';
+                      }
+                      return true;
+                    }
+                  })}
+                />
               </Stack>
               <Stack direction='row' spacing={3}>
                 <TextField label='手机号' variant='standard' fullWidth required
                   disabled={progress}
-                  placeholder='登录时用于接收短信验证码'
+                  placeholder='账户绑定手机号'
                   type='tel'
                   helperText={errors?.mobile?.message}
                   error={errors?.mobile}
@@ -155,66 +155,34 @@ export default function Modify() {
                     validate: v => isMobilePhone(v, 'zh-CN') || '格式错误',
                   })}
                 />
-                <TextField label='邮箱地址' variant='standard' fullWidth required
+                <TextField label='账号' variant='standard' fullWidth required
                   disabled={progress}
-                  placeholder='用于接收各种邮件'
-                  type='email'
-                  helperText={errors?.email?.message}
+                  placeholder='银行账号'
+                  type='tel'
+                  helperText={errors?.no?.message}
                   InputLabelProps={{ shrink: true }}
-                  error={errors?.email}
-                  {...register('email', {
+                  error={errors?.no}
+                  {...register('no', {
                     required: "不能为空",
                     maxLength: {
-                      value: 128, message: '超出最大长度'
+                      value: 40, message: '超出最大长度'
                     },
-                    validate: v => isEmail(v) || '格式错误',
+                    validate: v => luhn(v) || '不符合银行卡号规范',
                   })}
                 />
               </Stack>
-              <TextField label='身份证号' variant='standard' fullWidth
+              <TextField label='开户银行全称' variant='standard' fullWidth required
                 disabled={progress}
-                placeholder='18位居民身份证号码'
-                helperText={errors?.idno?.message}
-                error={errors?.idno}
-                inputProps={{ maxLength: 18 }}
+                placeholder='开户银行完整名称'
+                helperText={errors?.bank_name?.message}
+                error={errors?.bank_name}
+                inputProps={{ maxLength: 256 }}
                 InputLabelProps={{ shrink: true }}
-                {...register('idno', {
-                  minLength: {
-                    value: 18, message: '长度不足18位'
-                  },
-                  maxLength: {
-                    value: 18, message: '超出最大长度'
-                  },
-                  validate: v => {
-                    if (v) {
-                      return isIdentityCard(v, 'zh-CN') || '格式错误';
-                    }
-                    return true;
-                  }
-                })}
-              />
-              <TextField label='联系地址' variant='standard' fullWidth
-                disabled={progress}
-                placeholder='联系地址，如果没有可以不填'
-                InputLabelProps={{ shrink: userInfo.address ? true : false }}
-                {...register('address', {
+                {...register('bank_name', {
                   maxLength: {
                     value: 256, message: '超出最大长度'
                   },
                 })}
-              />
-              <FormControlLabel label="登录时须验证短信验证码，建议开启以保护账户安全"
-                control={
-                  <Controller
-                    control={control}
-                    name="tfa"
-                    render={({ field: { value, onChange, ref } }) => (
-                      <Checkbox edge='start' checked={value} onChange={onChange}
-                        disabled={progress} inputRef={ref}
-                      />
-                    )}
-                  />
-                }
               />
             </Stack>
           </Paper>

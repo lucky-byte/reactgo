@@ -32,6 +32,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import KeyIcon from '@mui/icons-material/Key';
 import KeyOffIcon from '@mui/icons-material/KeyOff';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 import CodeOffOutlinedIcon from '@mui/icons-material/CodeOffOutlined';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
@@ -269,6 +270,11 @@ function UserMenuIconButton(props) {
     navigate('acl', { state: { uuid: user.uuid, name: user.name, acl: user.acl } });
   };
 
+  // 银行账号
+  const onBankClick = () => {
+    navigate('bank', { state: { uuid: user.uuid, name: user.name } });
+  };
+
   // 清除安全操作码
   const onClearSecretCode = async () => {
     try {
@@ -400,6 +406,12 @@ function UserMenuIconButton(props) {
             <SecurityIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>访问控制</ListItemText>
+        </MenuItem>
+        <MenuItem disabled={user.disabled || user.deleted} onClick={onBankClick}>
+          <ListItemIcon>
+            <CreditCardIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>银行账号</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem disabled={user.disabled || user.deleted} onClick={onClearSecretCode}>

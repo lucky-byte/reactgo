@@ -1,5 +1,5 @@
+import PersonIcon from '@mui/icons-material/Person';
 import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import HistoryIcon from '@mui/icons-material/History';
 import SecurityIcon from '@mui/icons-material/Security';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -50,7 +50,7 @@ const menus = [{
   title: '系统管理',
   items: [{
     code: 9000,
-    icon: SupervisorAccountIcon,
+    icon: PersonIcon,
   }, {
     code: 9010,
     icon: SecurityIcon,

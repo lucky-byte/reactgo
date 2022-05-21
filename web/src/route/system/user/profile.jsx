@@ -133,22 +133,20 @@ function BaseInfoTable(props) {
             <TableCell colSpan={3}>{profile.address}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>创建时间</TableCell>
-            <TableCell>
-              {dayjs(profile.create_at).format('LL LTS')}
-            </TableCell>
-            <TableCell>最后更新时间</TableCell>
-            <TableCell>
-              {dayjs(profile.update_at).format('LL LTS')}
-            </TableCell>
+            <TableCell>银行账号</TableCell>
+            <TableCell>{profile.acct_no}</TableCell>
+            <TableCell>开户人</TableCell>
+            <TableCell>{profile.acct_name}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>最后登录时间</TableCell>
-            <TableCell>
-              {dayjs(profile.signin_at).format('LL LTS')}
-            </TableCell>
-            <TableCell>登录次数</TableCell>
-            <TableCell>{profile.n_signin}</TableCell>
+            <TableCell>账户身份证号</TableCell>
+            <TableCell>{profile.acct_idno}</TableCell>
+            <TableCell>账户手机号</TableCell>
+            <TableCell>{profile.acct_mobile}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>开户银行</TableCell>
+            <TableCell colSpan={3}>{profile.acct_bank_name}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>状态</TableCell>
@@ -179,6 +177,24 @@ function BaseInfoTable(props) {
           <TableRow>
             <TableCell>授权账号</TableCell>
             <TableCell colSpan={3}>{profile.oauth || '无'}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>创建时间</TableCell>
+            <TableCell>
+              {dayjs(profile.create_at).format('LL LTS')}
+            </TableCell>
+            <TableCell>最后更新时间</TableCell>
+            <TableCell>
+              {dayjs(profile.update_at).format('LL LTS')}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>最后登录时间</TableCell>
+            <TableCell>
+              {dayjs(profile.signin_at).format('LL LTS')}
+            </TableCell>
+            <TableCell>登录次数</TableCell>
+            <TableCell>{profile.n_signin}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
