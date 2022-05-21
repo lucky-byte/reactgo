@@ -12,6 +12,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/admin/system"
 	"github.com/lucky-byte/reactgo/serve/route/admin/user"
 	"github.com/lucky-byte/reactgo/serve/route/lib/auth"
+	"github.com/lucky-byte/reactgo/serve/route/lib/ops"
 	"github.com/lucky-byte/reactgo/serve/route/lib/secretcode"
 )
 
@@ -45,7 +46,7 @@ func Attach(up *echo.Echo, conf *config.ViperConfig) {
 	user.Attach(group)
 
 	// 后续操作记录操作审计
-	group.Use(opsRecorder)
+	group.Use(ops.Recorder)
 
 	// 检查用户访问角色是否允许进一步操作
 	group.Use(aclCheck)
