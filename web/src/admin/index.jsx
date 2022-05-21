@@ -31,7 +31,7 @@ import Media from "./media";
 import System from "./system";
 import User from "./user";
 
-export default function Index() {
+export default function Admin() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [user, setUser] = useRecoilState(userState);

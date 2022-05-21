@@ -15,7 +15,7 @@ import ErrorBoundary from "./error";
 import SignIn from "./signin";
 import SignUp from "./signup";
 import ResetPass from "./resetpass";
-import Index from "./route";
+import Admin from "./admin";
 import Bulletin from "./bulletin";
 
 export default function App() {
@@ -108,7 +108,7 @@ export default function App() {
                     <Route path='/signup/*' element={<SignUp />} />
                     <Route path='/resetpass/*' element={<ResetPass />} />
                     <Route path='/bulletin/*' element={<Bulletin />} />
-                    <Route path='/*' element={<Index />} />
+                    <Route path='/*' element={<Admin />} />
                   </Routes>
                 </Suspense>
               </BrowserRouter>

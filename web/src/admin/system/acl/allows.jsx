@@ -18,9 +18,9 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useSnackbar } from 'notistack';
 import { useHotkeys } from 'react-hotkeys-hook';
 import OutlinedPaper from "~/comp/outlined-paper";
-import urlCodes from "~/route/sidebar/codes";
 import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
+import urlCodes from "~/admin/sidebar/codes";
 import { post, get, put } from '~/lib/rest';
 
 export default function Allows() {
