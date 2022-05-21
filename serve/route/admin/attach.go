@@ -9,7 +9,6 @@ import (
 
 	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/ctx"
-	"github.com/lucky-byte/reactgo/serve/route/admin/bulletin"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system"
 	"github.com/lucky-byte/reactgo/serve/route/admin/user"
 	"github.com/lucky-byte/reactgo/serve/route/lib/auth"
@@ -32,8 +31,6 @@ func Attach(up *echo.Echo, conf *config.ViperConfig) {
 			return false
 		},
 	}))
-
-	bulletin.Attach(group) // 公开公告
 
 	// 后续操作都需要通过认证
 	group.Use(auth.Authentication)

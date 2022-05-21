@@ -23,9 +23,9 @@ import EllipsisText from "~/comp/ellipsis-text";
 import SearchBar from '~/comp/search-bar';
 import TimeAgo from '~/comp/timeago';
 import useTitle from "~/hook/title";
-import { get } from '~/lib/rest';
 import Banner from '~/comp/banner';
 import Footer from '~/comp/footer';
+import { get } from '~/public/fetch';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -73,7 +73,7 @@ export default function Home() {
   }
 
   const onItemClick = item => {
-    navigate(`/bulletin/${item.uuid}`);
+    navigate(item.uuid);
   }
 
   return (

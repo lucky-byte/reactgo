@@ -15,8 +15,8 @@ import ErrorBoundary from "./error";
 import SignUp from "./login/signup";
 import SignIn from "./login/signin";
 import ResetPass from "./login/resetpass";
+import Public from "./public";
 import Admin from "./admin";
-import Bulletin from "./bulletin";
 
 export default function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -107,7 +107,7 @@ export default function App() {
                     <Route path='/signin/*' element={<SignIn />} />
                     <Route path='/signup/*' element={<SignUp />} />
                     <Route path='/resetpass/*' element={<ResetPass />} />
-                    <Route path='/bulletin/*' element={<Bulletin />} />
+                    <Route path='/public/*' element={<Public />} />
                     <Route path='/*' element={<Admin />} />
                   </Routes>
                 </Suspense>

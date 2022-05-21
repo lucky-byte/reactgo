@@ -38,6 +38,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/admin"
 	"github.com/lucky-byte/reactgo/serve/route/login"
 	"github.com/lucky-byte/reactgo/serve/route/oauth"
+	"github.com/lucky-byte/reactgo/serve/route/public"
 	"github.com/lucky-byte/reactgo/serve/task"
 	"github.com/lucky-byte/reactgo/serve/ticket"
 	"github.com/lucky-byte/reactgo/serve/xlog"
@@ -221,17 +222,11 @@ func main() {
 		return c.HTML(http.StatusOK, terms_html)
 	})
 
-	// 访问图片
-	image.Attach(engine)
-
-	// OAuth 客户端回调
-	oauth.Attach(engine, conf)
-
-	// 用户登录
-	login.Attach(engine, conf)
-
-	// 后台管理
-	admin.Attach(engine, conf)
+	image.Attach(engine, conf)  // 图片
+	oauth.Attach(engine, conf)  // OAuth 客户端回调
+	login.Attach(engine, conf)  // 用户登录
+	admin.Attach(engine, conf)  // 后台管理
+	public.Attach(engine, conf) // 公开访问
 
 	// 打印所有路由
 	if debug {

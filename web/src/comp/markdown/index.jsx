@@ -76,7 +76,7 @@ export default function Markdown(props) {
         props: {
           variant: 'outlined',
           sx: {
-            p: 1, borderLeft: `4px solid #088`, my: 1,
+            p: 2, borderLeft: `4px solid #088`, my: 1,
             '& p': {
               marginBottom: 0,
             }

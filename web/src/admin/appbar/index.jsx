@@ -201,7 +201,7 @@ export default function Appbar(params) {
             <ListItemText>通知</ListItemText>
           </MenuItem>
           <Divider />
-          <MenuItem component={Link} href='/bulletin' target='_blank'>
+          <MenuItem component={Link} href='/public/bulletin' target='_blank'>
             <ListItemIcon>
               <CampaignIcon fontSize="small" />
             </ListItemIcon>

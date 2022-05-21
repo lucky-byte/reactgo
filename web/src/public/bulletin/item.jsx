@@ -31,7 +31,7 @@ import readingTime from 'reading-time/lib/reading-time';
 import useTitle from "~/hook/title";
 import usePrint from "~/hook/print";
 import EllipsisText from "~/comp/ellipsis-text";
-import { get } from '~/lib/rest';
+import { get } from '~/public/fetch';
 import Banner from '~/comp/banner';
 import Footer from '~/comp/footer';
 
