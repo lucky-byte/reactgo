@@ -17,15 +17,15 @@ export default function Footer(props) {
       <Stack direction={sm_up ? 'row' : 'column-reverse'}
         alignItems='center' justifyContent='center' spacing={1}>
         <Typography variant='caption'>
-          版权所有 &copy; {new Date().getFullYear()} {process.env.REACT_APP_COMPANY_NAME}
+          版权所有 &copy; {new Date().getFullYear()} {process.env.REACT_APP_COMPANY_NAME_FULL}
         </Typography>
         <Stack direction='row' alignItems='center' justifyContent='center' spacing={1}>
           {process.env.REACT_APP_ICP &&
-            <Stack direction='row' alignItems='center'>
+            <Stack direction='row' alignItems='flex-start'>
               <img src={Beian} alt='备案' height={14} width={14} />
               <Typography variant='caption'>
                 <Link href={process.env.REACT_APP_ICP_LINK} target='_blank'
-                  underline='hover' sx={{ ml: '2px' }}>
+                  underline='hover' sx={{ ml: '3px' }}>
                   {process.env.REACT_APP_ICP}
                 </Link>
               </Typography>

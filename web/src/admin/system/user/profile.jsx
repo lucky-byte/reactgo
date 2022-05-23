@@ -23,7 +23,7 @@ import progressState from '~/state/progress';
 import useTitle from "~/hook/title";
 import usePrint from '~/hook/print';
 import { get } from '~/lib/rest';
-import { geo } from '~/lib/geo';
+import { shortAddress } from '~/lib/geo';
 
 export default function Profile() {
   const location = useLocation();
@@ -237,7 +237,7 @@ function SigninHistory(props) {
                 <TableCell align="center">
                   <Tooltip title={row.ip} arrow placement='right'>
                     <Typography variant='body2' sx={{ cursor: 'default' }}>
-                      {geo(row) || row.ip}
+                      {shortAddress(row) || row.ip}
                     </Typography>
                   </Tooltip>
                 </TableCell>

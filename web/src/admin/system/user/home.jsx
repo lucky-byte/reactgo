@@ -169,7 +169,7 @@ export default function Home() {
           </TableHead>
           <TableBody>
             {list.map(u => (
-              <TableRow hover key={u.userid}
+              <TableRow hover key={u.uuid}
                 disabled={u.disabled} deleted={u.deleted?.toString()}>
                 <TableCell align="center" padding='checkbox'>
                   <Avatar avatar={u.avatar} name={u.name}

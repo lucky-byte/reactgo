@@ -20,12 +20,14 @@ import isMobilePhone from 'validator/lib/isMobilePhone';
 import isIdentityCard from 'validator/lib/isIdentityCard'
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
+import { useSecretCode } from '~/comp/secretcode';
 import { get, put } from "~/lib/rest";
 
 export default function Bank() {
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
+  const secretCode = useSecretCode();
   const [progress, setProgress] = useRecoilState(progressState);
   const [userInfo, setUserInfo] = useState({});
 
@@ -66,16 +68,21 @@ export default function Bank() {
 
   const onSubmit = async data => {
     try {
+      const token = await secretCode();
+
       setProgress(true);
 
       data.uuid = location.state.uuid;
+      data.secretcode_token = token;
       data._audit = `修改用户 ${location.state?.name} 的银行账号`;
 
       await put('/system/user/bank', new URLSearchParams(data));
       enqueueSnackbar('银行账号更新成功', { variant: 'success' });
       navigate('..', { replace: true });
     } catch (err) {
-      enqueueSnackbar(err.message);
+      if (err) {
+        enqueueSnackbar(err.message);
+      }
     } finally {
       setProgress(false);
     }

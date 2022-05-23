@@ -32,17 +32,23 @@ func list(c echo.Context) error {
 
 	pg := db.NewPagination("users", offset, rows)
 
+	// 关键字匹配
 	pg.Where(goqu.Or(
 		pg.Col("userid").ILike(keyword),
 		pg.Col("name").ILike(keyword),
 		pg.Col("mobile").ILike(keyword),
 		pg.Col("email").ILike(keyword),
+		pg.Col("idno").ILike(keyword),
+		pg.Col("address").ILike(keyword),
+		pg.Col("acct_bank_name").ILike(keyword),
 	))
+	// 访问控制匹配
 	if len(acl) > 0 && acl != "all" {
 		pg.Where(pg.Col("acl").Eq(acl))
 	}
 	aclTable := goqu.T("acl")
 
+	// 连表查询 ACL 名称和代码
 	pg.Join(aclTable, goqu.On(pg.Col("acl").Eq(aclTable.Col("uuid"))))
 
 	pg.Select(pg.Col("*"),

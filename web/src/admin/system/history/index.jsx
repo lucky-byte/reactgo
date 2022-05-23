@@ -24,7 +24,7 @@ import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
 import { useSetCode } from "~/state/code";
 import { get } from '~/lib/rest';
-import { geo } from '~/lib/geo';
+import { shortAddress } from '~/lib/geo';
 
 export default function History() {
   const { enqueueSnackbar } = useSnackbar();
@@ -132,7 +132,7 @@ export default function History() {
                 <TableCell align="center">
                   <Tooltip title={row.ip} arrow>
                     <Typography variant='body2' sx={{ cursor: 'default' }}>
-                      {geo(row) || row.ip}
+                      {shortAddress(row) || row.ip}
                     </Typography>
                   </Tooltip>
                 </TableCell>

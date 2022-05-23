@@ -68,8 +68,9 @@ export default function Codes() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>代码</TableCell>
-              <TableCell>菜单</TableCell>
+              <TableCell align='center'>代码</TableCell>
+              <TableCell align='center'>菜单</TableCell>
+              <TableCell align='center'>描述</TableCell>
               <TableCell>路径</TableCell>
               <TableCell padding='checkbox'>授权</TableCell>
             </TableRow>
@@ -78,16 +79,18 @@ export default function Codes() {
             {Object.keys(codeList).map(code => (
               <TableRow key={code} hover
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell>{code}</TableCell>
-                <TableCell>{codes[code].title}</TableCell>
+                <TableCell align='center'>{code}</TableCell>
+                <TableCell align='center'>{codes[code].title}</TableCell>
+                <TableCell align='center'>{codes[code].desc || '-'}</TableCell>
                 <TableCell>{codes[code].to}</TableCell>
                 <TableCell padding='checkbox'>
                   {
-                    codes[code].allow ? <CheckIcon color='success' /> :
+                    codes[code].allow ? <CheckIcon color='success' /> : (
                       allow_codes?.includes(parseInt(code)) ?
                         <CheckIcon color='success' />
                         :
                         <BlockIcon color='warning' />
+		    )
                   }
                 </TableCell>
               </TableRow>

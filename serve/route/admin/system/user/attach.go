@@ -21,10 +21,10 @@ func Attach(up *echo.Group, code int) {
 	group.PUT("/modify", modify)
 	group.PUT("/passwd", passwd)
 	group.PUT("/acl", aclUpdate)
-	group.PUT("/bank", bank)
 
 	group.Use(acl.AllowAdmin(code))
 
+	group.PUT("/bank", bank, secretcode.Verify())
 	group.GET("/profile", profile)
 	group.POST("/add", add)
 	group.POST("/clearsecretcode", clearSecretCode)
