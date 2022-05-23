@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useRef } from "react";
+import Stack from '@mui/material/Stack';
 import ReactPinField from "react-pin-field";
 import styles from './index.module.scss';
 
@@ -9,46 +10,49 @@ export default function PinInput(props) {
   // 设置是否显示明文
   useEffect(() => {
     if (props.hide) {
-      ref.current.inputs.forEach(input => input.type = 'password');
+      ref.current.forEach(input => input.type = 'password');
     } else {
-      ref.current.inputs.forEach(input => input.type = 'text');
+      ref.current.forEach(input => input.type = 'text');
     }
   }, [props.hide]);
 
   // 设置禁用
   useEffect(() => {
     if (props.disabled) {
-      ref.current.inputs.forEach(input => input.disabled = true);
+      ref.current.forEach(input => input.disabled = true);
     } else {
-      ref.current.inputs.forEach(input => input.disabled = false);
+      ref.current.forEach(input => input.disabled = false);
     }
   }, [props.disabled]);
 
   // 设置焦点
   useEffect(() => {
     if (props.focus) {
-      ref.current.inputs[0].focus();
+      ref.current[0].focus();
     }
   }, [props.focus]);
 
   // 清除
   useEffect(() => {
-    ref.current.inputs.forEach(input => input.value = '');
+    ref.current.forEach(input => input.value = '');
   }, [props.clear]);
 
   return (
-    <ReactPinField
-      ref={ref}
-      className={styles.pininput}
-      autoComplete="one-time-code"
-      placeholder='○'
-      length={6}
-      validate='0123456789'
-      aria-label="输入代码"
-      maxLength={1}
-      onChange={props.onChange}
-      onComplete={props.onComplete}
-    />
+    <Stack direction='row'>
+      <ReactPinField
+        ref={ref}
+        className={styles.pininput}
+        autoComplete="one-time-code"
+        placeholder='○'
+        length={6}
+        validate='0123456789'
+        aria-label="输入代码"
+        maxLength={1}
+        onChange={props.onChange}
+        onComplete={props.onComplete}
+        debug={undefined}
+      />
+    </Stack>
   )
 }
 
