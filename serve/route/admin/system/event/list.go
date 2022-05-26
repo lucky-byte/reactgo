@@ -3,7 +3,6 @@ package event
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/labstack/echo/v4"
@@ -28,14 +27,18 @@ func list(c echo.Context) error {
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
+	cc.Trim(&keyword, &fresh)
+
+	search := fmt.Sprintf("%%%s%%", keyword)
 	offset := page * rows
 
 	pg := db.NewPagination("events", offset, rows)
 
-	pg.Where(goqu.Or(
-		pg.Col("title").ILike(keyword), pg.Col("message").ILike(keyword),
-	))
+	if len(keyword) > 0 {
+		pg.Where(goqu.Or(
+			pg.Col("title").ILike(search), pg.Col("message").ILike(search),
+		))
+	}
 	if fresh == "true" {
 		pg.Where(pg.Col("fresh").Eq(true))
 	} else if fresh == "false" {

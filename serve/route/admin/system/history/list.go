@@ -3,7 +3,6 @@ package history
 import (
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
@@ -29,14 +28,18 @@ func list(c echo.Context) error {
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
+	cc.Trim(&keyword, &date)
+
+	search := fmt.Sprintf("%%%s%%", keyword)
 	offset := page * rows
 
 	pg := db.NewPagination("signin_history", offset, rows)
 
-	pg.Where(goqu.Or(
-		pg.Col("userid").ILike(keyword), pg.Col("name").ILike(keyword),
-	))
+	if len(keyword) > 0 {
+		pg.Where(goqu.Or(
+			pg.Col("userid").ILike(search), pg.Col("name").ILike(search),
+		))
+	}
 	if len(date) > 0 {
 		t, err := db.ParseDate(date)
 		if err != nil {

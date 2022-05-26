@@ -3,7 +3,6 @@ package user
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/labstack/echo/v4"
@@ -27,21 +26,25 @@ func list(c echo.Context) error {
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
+	cc.Trim(&keyword, &acl)
+
+	search := fmt.Sprintf("%%%s%%", keyword)
 	offset := page * rows
 
 	pg := db.NewPagination("users", offset, rows)
 
 	// 关键字匹配
-	pg.Where(goqu.Or(
-		pg.Col("userid").ILike(keyword),
-		pg.Col("name").ILike(keyword),
-		pg.Col("mobile").ILike(keyword),
-		pg.Col("email").ILike(keyword),
-		pg.Col("idno").ILike(keyword),
-		pg.Col("address").ILike(keyword),
-		pg.Col("acct_bank_name").ILike(keyword),
-	))
+	if len(keyword) > 0 {
+		pg.Where(goqu.Or(
+			pg.Col("userid").ILike(search),
+			pg.Col("name").ILike(search),
+			pg.Col("mobile").ILike(search),
+			pg.Col("email").ILike(search),
+			pg.Col("idno").ILike(search),
+			pg.Col("address").ILike(search),
+			pg.Col("acct_bank_name").ILike(search),
+		))
+	}
 	// 访问控制匹配
 	if len(acl) > 0 && acl != "all" {
 		pg.Where(pg.Col("acl").Eq(acl))

@@ -3,7 +3,6 @@ package bulletin
 import (
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
@@ -28,7 +27,9 @@ func list(c echo.Context) error {
 	if err != nil {
 		return cc.BadRequest(err)
 	}
-	keyword = fmt.Sprintf("%%%s%%", strings.TrimSpace(keyword))
+	cc.Trim(&keyword, &date)
+
+	search := fmt.Sprintf("%%%s%%", keyword)
 	offset := page * rows
 
 	pg := db.NewPagination("bulletins", offset, rows)
@@ -37,9 +38,11 @@ func list(c echo.Context) error {
 
 	pg.Join(userTable, goqu.On(pg.Col("user_uuid").Eq(userTable.Col("uuid"))))
 
-	pg.Where(goqu.Or(
-		pg.Col("title").ILike(keyword), pg.Col("content").ILike(keyword),
-	))
+	if len(keyword) > 0 {
+		pg.Where(goqu.Or(
+			pg.Col("title").ILike(search), pg.Col("content").ILike(search),
+		))
+	}
 	if len(date) > 0 {
 		t, err := db.ParseDate(date)
 		if err != nil {

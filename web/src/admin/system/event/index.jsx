@@ -9,14 +9,16 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import InfoIcon from '@mui/icons-material/Info';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import SecurityIcon from '@mui/icons-material/Security';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 import Badge from '@mui/material/Badge';
+import Button from '@mui/material/Button';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
@@ -113,6 +115,15 @@ export default function Event() {
     }
   }
 
+  const onFormatClick = item => {
+    setList(list.map(e => {
+      if (e.uuid === item.uuid) {
+        e.raw = e.raw ? false : true;
+      }
+      return e;
+    }));
+  }
+
   return (
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
@@ -163,10 +174,24 @@ export default function Event() {
             <AccordionDetails sx={{ backgroundColor: theme =>
               theme.palette.mode === 'dark' ? 'black' : 'white',
             }}>
-              <Typography variant='body2' align='right' color='gray'>
-                {dayjs(e.create_at).format('LL LT')}
-              </Typography>
-              <Markdown>{e.message}</Markdown>
+              <Stack direction='row' justifyContent='flex-end' alignItems='center'>
+                <Typography variant='body2' color='gray'>
+                  {dayjs(e.create_at).format('LL LT')}
+                </Typography>
+                <Button size='small' onClick={() => onFormatClick(e)}>
+                  {e.raw ? 'Markdown' : '纯文本'}
+                </Button>
+              </Stack>
+              {e.raw ?
+                <pre style={{ overflowX: 'auto' }}>
+                  <Typography variant='body2'
+                    sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+                    {e.message}
+                  </Typography>
+                </pre>
+                :
+                <Markdown>{e.message}</Markdown>
+              }
             </AccordionDetails>
           </Accordion>
         ))}
@@ -184,13 +209,15 @@ export default function Event() {
 function LevelIcon(props) {
   switch (props.level) {
     case 0:
-      return <CheckBoxOutlineBlankIcon color='success' />
+      return <HistoryToggleOffIcon color='success' />
     case 1:
       return <InfoIcon color='info' />
     case 2:
       return <WarningAmberIcon color='warning' />
     case 3:
       return <ErrorOutlineIcon color='error' />
+    case 4:
+      return <SecurityIcon color='secondary' />
     default:
       return <HelpOutlineIcon color='disabled' />
   }

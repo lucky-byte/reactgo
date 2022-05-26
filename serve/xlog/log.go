@@ -13,10 +13,12 @@ import (
 
 // common field names
 const (
-	FReqID  = "reqid"  // http request id
-	FIP     = "ip"     // http client ip
-	FPath   = "path"   // http request url path
-	FMethod = "method" // http request method
+	FReqID   = "reqid"   // http request id
+	FIP      = "ip"      // http client ip
+	FPath    = "path"    // http request url path
+	FMethod  = "method"  // http request method
+	FOS      = "os"      // user agent os
+	FBrowser = "browser" // user agent browser
 )
 
 // keep X usable(not panic) before Setup
@@ -35,7 +37,7 @@ func Setup(debug bool, conf *config.ViperConfig) {
 
 	// 日志文件
 	rotate_logger := &lumberjack.Logger{
-		Filename:  path.Join(conf.LogPath(), "reactgo.log"),
+		Filename:  path.Join(conf.LogPath(), "main.log"),
 		MaxSize:   20,
 		Compress:  true,
 		LocalTime: true,
