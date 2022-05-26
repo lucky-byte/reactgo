@@ -94,8 +94,9 @@ export default function Add() {
                 <TextField label='登录名' variant='standard' fullWidth required
                   autoFocus
                   placeholder='系统登录名'
+                  disabled={isSubmitting}
                   helperText={errors?.userid?.message}
-                  error={errors?.userid}
+                  error={errors?.userid ? true : false}
                   inputProps={{ maxLength: 32 }}
                   {...register('userid', {
                     required: "不能为空",
@@ -104,10 +105,11 @@ export default function Add() {
                     },
                   })}
                 />
-                <TextField label='真实姓名' variant='standard' fullWidth required
+                <TextField label='姓名' variant='standard' fullWidth required
                   placeholder='用户真实姓名'
+                  disabled={isSubmitting}
                   helperText={errors?.name?.message}
-                  error={errors?.name}
+                  error={errors?.name ? true : false}
                   inputProps={{ maxLength: 64 }}
                   {...register('name', {
                     required: "不能为空",
@@ -121,8 +123,9 @@ export default function Add() {
                 <TextField label='手机号' variant='standard' fullWidth
                   required type='tel'
                   placeholder='登录时用于接收短信验证码'
+                  disabled={isSubmitting}
                   helperText={errors?.mobile?.message}
-                  error={errors?.mobile}
+                  error={errors?.mobile ? true : false}
                   inputProps={{ maxLength: 11 }}
                   {...register('mobile', {
                     required: "不能为空",
@@ -138,8 +141,9 @@ export default function Add() {
                 <TextField label='邮箱地址' variant='standard' fullWidth
                   required type='email'
                   placeholder='用于接收重要邮件，请填写真实有效的邮箱地址'
+                  disabled={isSubmitting}
                   helperText={errors?.email?.message}
-                  error={errors?.email}
+                  error={errors?.email ? true : false}
                   {...register('email', {
                     required: "不能为空",
                     maxLength: {
@@ -150,17 +154,19 @@ export default function Add() {
                 />
               </Stack>
               <Stack direction='row' spacing={3}>
-                <TextField label='登录密码' variant='standard' fullWidth focused
-                  required type='password' autoComplete='new-password'
+                <TextField label='登录密码' variant='standard' fullWidth required 
+                  type='password' autoComplete='new-password'
                   placeholder='登录密码不能少于6个字符'
+                  disabled={isSubmitting}
                   InputProps={{
                     endAdornment:
                       <InputAdornment position="end">
                         <Button size='small' onClick={onNewPassword}>随机密码</Button>
                       </InputAdornment>
                   }}
+                  InputLabelProps={{ shrink: true }}
                   helperText={errors?.password?.message}
-                  error={errors?.password}
+                  error={errors?.password ? true : false}
                   {...register('password', {
                     required: "不能为空",
                     minLength: {
@@ -171,11 +177,13 @@ export default function Add() {
                     },
                   })}
                 />
-                <TextField label='确认登录密码' variant='standard' fullWidth focused
-                  required type='password' autoComplete='new-password'
+                <TextField label='确认登录密码' variant='standard' fullWidth required 
+                  type='password' autoComplete='new-password'
                   placeholder='再次输入登录密码'
+                  disabled={isSubmitting}
+                  InputLabelProps={{ shrink: true }}
                   helperText={errors?.password2?.message}
-                  error={errors?.password2}
+                  error={errors?.password2 ? true : false}
                   {...register('password2', {
                     required: "不能为空",
                     minLength: {
@@ -189,8 +197,9 @@ export default function Add() {
               </Stack>
               <TextField label='身份证号码' variant='standard' fullWidth
                 placeholder='18位居民身份证号码'
+                disabled={isSubmitting}
                 helperText={errors?.idno?.message}
-                error={errors?.idno}
+                error={errors?.idno ? true : false}
                 inputProps={{ maxLength: 18 }}
                 {...register('idno', {
                   minLength: {
@@ -210,6 +219,7 @@ export default function Add() {
               <Stack>
                 <TextField id='acl' label='访问控制' variant='standard' fullWidth
                   required select defaultValue=''
+                  disabled={isSubmitting}
                   helperText={errors?.acl?.message}
                   {...register('acl', { required: "不能为空" })}>
                   {acls.map(acl => (
@@ -231,6 +241,7 @@ export default function Add() {
               </Stack>
               <TextField label='联系地址' variant='standard' fullWidth
                 placeholder='用户联系地址，如果没有可以不填'
+                disabled={isSubmitting}
                 {...register('address', {
                   maxLength: {
                     value: 256, message: '超出最大长度'
@@ -241,27 +252,31 @@ export default function Add() {
                 <FormControlLabel
                   label={
                     <Stack spacing={0}>
-                      <Typography>登录时须验证短信验证码，建议开启以保护账户安全</Typography>
+                      <Typography>登录时必须验证短信验证码</Typography>
                       <FormHelperText sx={{ mt: 0 }}>
-                        开启前请先正确配置短信服务
+                        建议开启以保护账户安全，开启前请先正确配置短信服务
                       </FormHelperText>
                     </Stack>
                   }
                   control={
-                    <Checkbox defaultChecked {...register('tfa')} />
+                    <Checkbox defaultChecked {...register('tfa')} 
+                      disabled={isSubmitting}
+                    />
                   }
                 />
                 <FormControlLabel sx={{ mt: 2 }}
                   label={
                     <Stack spacing={0}>
-                      <Typography>将登录信息（网址、登录名及密码）发送到用户邮箱</Typography>
+                      <Typography>将登录信息发送到用户邮箱</Typography>
                       <FormHelperText sx={{ mt: 0 }}>
                         邮件中包含用户登录需要的所有信息(包括密码)，请确认录入的邮箱地址正确无误
                       </FormHelperText>
                     </Stack>
                   }
                   control={
-                    <Checkbox defaultChecked {...register('sendmail')} />
+                    <Checkbox defaultChecked {...register('sendmail')}
+                      disabled={isSubmitting}
+                    />
                   }
                 />
               </Stack>

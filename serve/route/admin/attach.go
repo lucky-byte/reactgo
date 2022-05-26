@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -15,6 +16,9 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/lib/ops"
 	"github.com/lucky-byte/reactgo/serve/route/lib/secretcode"
 )
+
+// 用于构造 nats 客户端名称
+var natsCounter = 0
 
 // 后台管理模块
 func Attach(up *echo.Echo, conf *config.ViperConfig) {
@@ -36,9 +40,6 @@ func Attach(up *echo.Echo, conf *config.ViperConfig) {
 	// 后续操作都需要通过认证
 	group.Use(auth.Authentication)
 
-	// 查询 NATS 配置信息，用于客户端连接消息通道
-	group.GET("/nats", nats)
-
 	// 统一验证安全码
 	secretcode.Attach(group)
 
@@ -50,6 +51,9 @@ func Attach(up *echo.Echo, conf *config.ViperConfig) {
 
 	// 检查用户访问角色是否允许进一步操作
 	group.Use(aclCheck)
+
+	group.GET("/nats", nats)       // NATS 配置信息
+	group.GET("/httpurl", httpurl) // HTTP URL 地址
 
 	system.Attach(group) // 系统管理
 }
@@ -69,3 +73,25 @@ func aclCheck(next echo.HandlerFunc) echo.HandlerFunc {
 		return next(c)
 	}
 }
+
+
+// 查询 NATS 配置信息
+func nats(c echo.Context) error {
+	cc := c.(*ctx.Context)
+	user := cc.User()
+
+	natsCounter += 1
+
+	servers := cc.Config().NatsWebSocket()
+	name := fmt.Sprintf("%s-%d", user.UserId, natsCounter)
+
+	return c.JSON(http.StatusOK, echo.Map{"servers": servers, "name": name})
+}
+
+// 查询 Http URL
+func httpurl(c echo.Context) error {
+	cc := c.(*ctx.Context)
+
+	return c.String(http.StatusOK, cc.Config().ServerHttpURL())
+}
+

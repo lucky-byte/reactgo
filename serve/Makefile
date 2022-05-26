@@ -1,6 +1,3 @@
-# Copyright (c) 2021 KrossIAM Project.
-# https://github.com/krossdev/iam/blob/main/LICENSE
-#
 NAME ?= ReactGo
 VERSION ?= $(shell git describe --tags 2>/dev/null | cut -c 2-)
 BUILD_YEAR ?= $(shell date +%Y)
@@ -8,36 +5,36 @@ BUILD_DATE ?= $(shell date +%Y%m%d)
 
 LDFLAGS ?= -s -w
 
-# version information
+# 版本信息
 LDFLAGS += -X main.Name=${NAME} -X main.Version=${VERSION}
 LDFLAGS += -X main.BuildDate=${BUILD_DATE} -X main.BuildYear=${BUILD_YEAR}
 
-# executable app name
-APPNAME ?= reactgo
+# 执行文件名
+EXECUTABLE ?= reactgo
 
 # sqlite json functions
 TAGS ?= sqlite_json
 
 all: build
 
-# refresh web assets
+# 更新 web 文件
 web:
 	rm -fr ./web
 	cp -r ../web/build web
 
-# build a production executable
+# 构建生产版本执行文件
 build: web
-	go build -ldflags='$(LDFLAGS)' -tags '${TAGS}' -o ${APPNAME}
+	go build -ldflags='$(LDFLAGS)' -tags '${TAGS}' -o ${EXECUTABLE}
 
-# build a development executable
-build-dev: web
-	go build -ldflags='$(LDFLAGS)' -tags '${TAGS} dev' -o ${APPNAME}-dev
+# 构建开发版本执行文件
+build-dev:
+	go build -ldflags='$(LDFLAGS)' -tags '${TAGS} dev' -o ${EXECUTABLE}-dev
 
-# startup development server with default args
+# 采用默认的参数启动开发服务器
 dev: build-dev
-	./${APPNAME}-dev -config .config/config.yaml -webfs osdir -mailfs osdir
+	./${EXECUTABLE}-dev -config .config/config.yaml -webfs osdir -mailfs osdir
 
-# startup development server with customized args
+# 采用默认的参数启动开发服务器
 run:
 	go run -ldflags='$(LDFLAGS)' -tags '${TAGS} dev' . \
 		-config .config/config.yaml -webfs osdir -mailfs osdir
@@ -45,18 +42,15 @@ run:
 # build a linux amd64 executable
 linux: web
 	GOOS=linux GOARCH=amd64 \
-	go build -ldflags='$(LDFLAGS)' -tags '${TAGS}' -o ${APPNAME}-linux-amd64
-
-	GOOS=linux GOARCH=amd64 \
-	go build -ldflags='$(LDFLAGS)' -tags '${TAGS} dev' -o ${APPNAME}-linux-amd64-dev
+	go build -ldflags='$(LDFLAGS)' -tags '${TAGS}' -o ${EXECUTABLE}-linux-amd64
 
 # run test
 test:
 	go test $(arg) ./test/...
 
-# clean
+# 清理
 clean:
 	go clean
-	rm ${APPNAME} ${APPNAME}-dev ${APPNAME}-linux-amd64 ${APPNAME}-linux-amd64-dev
+	rm -f ${EXECUTABLE} ${EXECUTABLE}-dev ${EXECUTABLE}-linux-*
 
 .PHONY: web build build-dev dev test all clean linux

@@ -86,6 +86,8 @@ func SetAcl(cc *ctx.Context) error {
 	if err != nil {
 		return errors.Wrapf(err, "查询用户 %s 访问控制信息错", user.Name)
 	}
+	cc.SetAcl(&acl)
+
 	features := strings.Split(acl.Features, ",")
 
 	// 是否含有 nologin 特征，如果有则不允许登录

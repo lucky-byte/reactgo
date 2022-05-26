@@ -279,7 +279,7 @@ function UserMenuIconButton(props) {
   const onClearSecretCode = async () => {
     try {
       await confirm({
-        description: `确定要清除 ${user.name} 的安全操作码吗？`,
+        description: `确定要清除 ${user.name} 的安全操作码吗？这将导致用户在进行敏感操作时无需验证安全码`,
         confirmationText: '清除',
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
@@ -305,12 +305,12 @@ function UserMenuIconButton(props) {
   const onClearTOTP = async () => {
     try {
       await confirm({
-        description: `确定要清除 ${user.name} 的一次性密码设置吗？`,
+        description: `确定要清除 ${user.name} 的动态密码设置吗？这将导致用户在登录时无需验证动态密码`,
         confirmationText: '清除',
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      const _audit = `清除用户 ${user.name} 的一次性密码`;
+      const _audit = `清除用户 ${user.name} 的动态密码`;
 
       await post('/system/user/cleartotp', new URLSearchParams({
         uuid: user.uuid, _audit,
@@ -334,12 +334,12 @@ function UserMenuIconButton(props) {
         description: user.disabled ?
           `确定要恢复 ${user.name} 的账号吗？恢复后该账号将立即恢复正常使用。`
           :
-          `确定要停用 ${user.name} 的账号吗？停用后该账号不能再继续使用，直到恢复为止。`,
-        confirmationText: user.disabled ? '恢复' : '停用',
+          `确定要禁用 ${user.name} 的账号吗？禁用后该账号不能再继续使用，直到恢复为止。`,
+        confirmationText: user.disabled ? '恢复' : '禁用',
         confirmationButtonProps: { color: 'warning' },
         contentProps: { p: 8 },
       });
-      const _audit = `${user.disabled ? '恢复' : '停用'}用户 ${user.name}`;
+      const _audit = `${user.disabled ? '恢复' : '禁用'}用户 ${user.name}`;
 
       await post('/system/user/disable', new URLSearchParams({
         uuid: user.uuid, _audit,
@@ -424,7 +424,7 @@ function UserMenuIconButton(props) {
           <ListItemIcon>
             <CodeOffOutlinedIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>清除一次性密码</ListItemText>
+          <ListItemText>清除动态密码</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem onClick={onProfileClick}>
@@ -444,7 +444,7 @@ function UserMenuIconButton(props) {
           {user.disabled ?
             <ListItemText>恢复</ListItemText>
             :
-            <ListItemText>停用</ListItemText>
+            <ListItemText>禁用</ListItemText>
           }
         </MenuItem>
         <MenuItem disabled={user.deleted} onClick={onDeleteClick}>

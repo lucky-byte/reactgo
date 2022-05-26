@@ -18,18 +18,18 @@ func Attach(up *echo.Group, code int) {
 
 	group.Use(acl.AllowWrite(code))
 
+	group.POST("/add", add)
 	group.PUT("/modify", modify)
 	group.PUT("/passwd", passwd)
 	group.PUT("/acl", aclUpdate)
-
-	group.Use(acl.AllowAdmin(code))
-
 	group.PUT("/bank", bank, secretcode.Verify())
-	group.GET("/profile", profile)
-	group.POST("/add", add)
 	group.POST("/clearsecretcode", clearSecretCode)
 	group.POST("/cleartotp", clearTOTP)
 	group.POST("/disable", disable)
+
+	group.Use(acl.AllowAdmin(code))
+
+	group.GET("/profile", profile)
 	group.DELETE("/delete", del, secretcode.Verify())
 }
 
@@ -41,6 +41,7 @@ func isUpdatable(user_uuid string) (*db.User, error) {
 	if err := db.SelectOne(ql, &user, user_uuid); err != nil {
 		return nil, err
 	}
+	// 已禁用或删除的用户不能修改信息
 	if user.Disabled || user.Deleted {
 		return nil, fmt.Errorf("用户已被禁用或删除，不能修改用户信息")
 	}

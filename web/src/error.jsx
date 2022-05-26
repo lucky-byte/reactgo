@@ -44,7 +44,6 @@ function Content(props) {
   const { error, errorStack, componentStack } = props;
 
   const contentRef = useRef();
-
   const print = usePrint(contentRef.current);
 
   const onPrint = () => {

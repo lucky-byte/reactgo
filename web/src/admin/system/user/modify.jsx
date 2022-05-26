@@ -9,6 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import TextField from "@mui/material/TextField";
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
@@ -94,7 +95,7 @@ export default function Modify() {
   }
 
   return (
-    <Container as='main' maxWidth='md' sx={{ mb: 2 }}>
+    <Container as='main' maxWidth='md' sx={{ mb: 6 }}>
       <Paper sx={{ px: 4, py: 3, mt: 5 }}>
         <Stack direction='row' alignItems='center' spacing={1} sx={{ mb: 3 }}>
           <IconButton aria-label="返回" component={RouteLink} to='..'>
@@ -107,10 +108,10 @@ export default function Modify() {
             <Stack spacing={4}>
               <Stack direction='row' spacing={3}>
                 <TextField label='登录名' variant='standard' fullWidth required
-                  disabled={progress}
+                  disabled={progress || isSubmitting}
                   placeholder='系统登录名'
                   helperText={errors?.userid?.message}
-                  error={errors?.userid}
+                  error={errors?.userid ? true : false}
                   inputProps={{ maxLength: 32 }}
                   InputLabelProps={{ shrink: true }}
                   {...register('userid', {
@@ -121,10 +122,10 @@ export default function Modify() {
                   })}
                 />
                 <TextField label='真实姓名' variant='standard' fullWidth required
-                  disabled={progress}
+                  disabled={progress || isSubmitting}
                   placeholder='用户真实姓名'
                   helperText={errors?.name?.message}
-                  error={errors?.name}
+                  error={errors?.name ? true : false}
                   inputProps={{ maxLength: 64 }}
                   InputLabelProps={{ shrink: true }}
                   {...register('name', {
@@ -137,11 +138,11 @@ export default function Modify() {
               </Stack>
               <Stack direction='row' spacing={3}>
                 <TextField label='手机号' variant='standard' fullWidth required
-                  disabled={progress}
+                  disabled={progress || isSubmitting}
                   placeholder='登录时用于接收短信验证码'
                   type='tel'
                   helperText={errors?.mobile?.message}
-                  error={errors?.mobile}
+                  error={errors?.mobile ? true : false}
                   inputProps={{ maxLength: 11 }}
                   InputLabelProps={{ shrink: true }}
                   {...register('mobile', {
@@ -156,12 +157,12 @@ export default function Modify() {
                   })}
                 />
                 <TextField label='邮箱地址' variant='standard' fullWidth required
-                  disabled={progress}
+                  disabled={progress || isSubmitting}
                   placeholder='用于接收各种邮件'
                   type='email'
                   helperText={errors?.email?.message}
                   InputLabelProps={{ shrink: true }}
-                  error={errors?.email}
+                  error={errors?.email ? true : false}
                   {...register('email', {
                     required: "不能为空",
                     maxLength: {
@@ -172,10 +173,10 @@ export default function Modify() {
                 />
               </Stack>
               <TextField label='身份证号' variant='standard' fullWidth
-                disabled={progress}
+                disabled={progress || isSubmitting}
                 placeholder='18位居民身份证号码'
                 helperText={errors?.idno?.message}
-                error={errors?.idno}
+                error={errors?.idno ? true : false}
                 inputProps={{ maxLength: 18 }}
                 InputLabelProps={{ shrink: true }}
                 {...register('idno', {
@@ -194,7 +195,7 @@ export default function Modify() {
                 })}
               />
               <TextField label='联系地址' variant='standard' fullWidth
-                disabled={progress}
+                disabled={progress || isSubmitting}
                 placeholder='联系地址，如果没有可以不填'
                 InputLabelProps={{ shrink: userInfo.address ? true : false }}
                 {...register('address', {
@@ -203,14 +204,22 @@ export default function Modify() {
                   },
                 })}
               />
-              <FormControlLabel label="登录时须验证短信验证码，建议开启以保护账户安全"
+              <FormControlLabel
+                label={
+                  <Stack spacing={0}>
+                    <Typography>登录时必须验证短信验证码</Typography>
+                    <FormHelperText sx={{ mt: 0 }}>
+                      建议开启以保护账户安全，开启前请先正确配置短信服务
+                    </FormHelperText>
+                  </Stack>
+                }
                 control={
                   <Controller
                     control={control}
                     name="tfa"
                     render={({ field: { value, onChange, ref } }) => (
                       <Checkbox edge='start' checked={value} onChange={onChange}
-                        disabled={progress} inputRef={ref}
+                        disabled={progress || isSubmitting} inputRef={ref}
                       />
                     )}
                   />

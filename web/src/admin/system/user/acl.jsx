@@ -83,7 +83,7 @@ export default function ACL() {
     <Container as='main' maxWidth='sm' sx={{ mb: 2 }}>
       <Paper sx={{ px: 5, py: 3, mt: 5 }}>
         <Typography variant='h5'>修改 {location.state?.name} 的访问控制权限</Typography>
-        <Typography variant='body2'>修改后立即生效</Typography>
+        <Typography variant='body2'>修改后将立即生效（包括已登录用户）</Typography>
         <Paper variant='outlined' sx={{ px: 3, py: 3, mt: 3 }}>
           <Stack spacing={4}>
             <TextField id='acl' label='访问控制权限' variant='standard' fullWidth

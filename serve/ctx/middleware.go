@@ -28,7 +28,7 @@ func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 				xlog.FMethod: req.Method,
 				xlog.FIP:     c.RealIP(),
 			})
-			cc := &Context{c, l, conf, nil, nil, nil, nil}
+			cc := &Context{c, l, conf, nil, nil, nil, nil, nil}
 
 			c.Response().Before(func() {
 				urlpath := req.URL.Path

@@ -55,7 +55,7 @@ export default function Secure() {
   // 开放用户注册
   const onSignupableCheck = async () => {
     try {
-      const _audit = `${lookUserid ? '禁止' : '允许'}用户注册`;
+      const _audit = `${signupable ? '禁止' : '允许'}用户注册`;
 
       await post('/system/setting/account/secure/signupable', new URLSearchParams({
         signupable: !signupable, _audit,

@@ -50,7 +50,6 @@ export default function PinInput(props) {
         maxLength={1}
         onChange={props.onChange}
         onComplete={props.onComplete}
-        debug={undefined}
       />
     </Stack>
   )

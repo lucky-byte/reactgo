@@ -22,6 +22,7 @@ type Context struct {
 	logger       *logrus.Entry
 	config       *config.ViperConfig
 	user         *db.User
+	acl          *db.ACL
 	acl_features []string
 	acl_allows   AclAllows
 	node         *db.Tree
@@ -65,11 +66,21 @@ func (c *Context) User() *db.User {
 }
 
 // 设置用户访问控制
+func (c *Context) SetAcl(a *db.ACL) {
+	c.acl = a
+}
+
+// 获取用户访问控制
+func (c *Context) Acl() *db.ACL {
+	return c.acl
+}
+
+// 设置用户访问控制特征
 func (c *Context) SetAclFeatures(a []string) {
 	c.acl_features = a
 }
 
-// 获取用户访问控制
+// 获取用户访问控制特征
 func (c *Context) AclFeatures() []string {
 	return c.acl_features
 }
@@ -121,7 +132,7 @@ func (c *Context) AllowAdmin(code int) bool {
 
 // 文件下载
 func (c *Context) Download(b []byte, filename string) error {
-	tmpfile, err := ioutil.TempFile(os.TempDir(), "download-*.json")
+	tmpfile, err := ioutil.TempFile(os.TempDir(), "download-*.tmp")
 	if err != nil {
 		c.ErrLog(err).Error("创建临时文件错")
 		return c.NoContent(http.StatusInternalServerError)
@@ -140,7 +151,7 @@ func (c *Context) Download(b []byte, filename string) error {
 }
 
 // 去除字符串前后空白字符，用法:
-// c.Trim(&str1, &str2, ...)
+//   c.Trim(&str1, &str2, ...)
 func (c *Context) Trim(args ...*string) {
 	for _, v := range args {
 		*v = strings.TrimSpace(*v)

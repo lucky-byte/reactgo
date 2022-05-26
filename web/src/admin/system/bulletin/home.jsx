@@ -1,4 +1,4 @@
-import { lazy, useEffect, useState, useRef } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
@@ -379,11 +379,11 @@ function MenuIcon(props) {
 
 function FullScreenMenuItem(props) {
   const [fullScreenOpen, setFullScreenOpen] = useState(false);
+  const [printNode, setPrintNode] = useState(null);
 
   const { bulletin, closeMenu } = props;
 
-  const contentRef = useRef();
-  const print = usePrint(contentRef.current);
+  const print = usePrint(printNode);
 
   const onOpenFullScreen = () => {
     setFullScreenOpen(true);
@@ -404,7 +404,7 @@ function FullScreenMenuItem(props) {
       </MenuItem>
       <Dialog onClose={onCloseFullScreen} open={fullScreenOpen} fullScreen
         TransitionComponent={Zoom}>
-        <Container maxWidth='md' sx={{ my: 4 }} ref={contentRef}>
+        <Container maxWidth='md' sx={{ my: 4 }} ref={setPrintNode}>
           <Typography variant='h4' textAlign='center'>{bulletin.title}</Typography>
           <Typography variant='caption' paragraph textAlign='center'>
             {dayjs(bulletin.create_at).format('LL dddd HH:mm:ss')} by{' '}

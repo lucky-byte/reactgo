@@ -33,7 +33,7 @@ export default function App() {
     palette: {
       mode: mode,
       secondary: {
-        main: '#E700B9',
+        main: '#FF1493',
       },
     },
     components: {
