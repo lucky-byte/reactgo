@@ -18,7 +18,7 @@ func geo(c echo.Context) error {
 		select country, province, city,
 			avg(longitude) as longitude, avg(latitude) as latitude
 		from signin_history
-		where user_uuid = ?
+		where user_uuid = ? and longitude <> 0 and latitude <> 0
 		group by country, province, city
 	`
 	var records []db.SigninHistory

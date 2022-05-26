@@ -20,7 +20,7 @@ import OAuthIcon from '~/comp/oauth-icon';
 import TimeAgo from '~/comp/timeago';
 import useTitle from "~/hook/title";
 import { get } from "~/lib/rest";
-import { shortAddress } from '~/lib/geo';
+import { location } from '~/lib/geo';
 
 export default function SignInList() {
   const navigate = useNavigate();
@@ -81,7 +81,7 @@ export default function SignInList() {
                   <TableCell align="center">
                     <Tooltip title={row.ip} arrow placement='right'>
                       <Typography variant='body2' sx={{ cursor: 'default' }}>
-                        {shortAddress(row) || row.ip}
+                        {location(row) || row.ip}
                       </Typography>
                     </Tooltip>
                   </TableCell>

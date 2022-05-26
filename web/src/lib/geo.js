@@ -1,7 +1,7 @@
 /**
  * 以简单的形式显示国家/省/市/区中的一部分
  */
-export const shortAddress = r => {
+export const location = r => {
   // 如果有区，则显示 市/区
   if (r.district) {
     if (r.district === r.city) {

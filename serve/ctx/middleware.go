@@ -10,6 +10,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/event"
 	"github.com/lucky-byte/reactgo/serve/xlog"
+	"github.com/mssola/user_agent"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,12 +22,22 @@ func Middleware(conf *config.ViperConfig) echo.MiddlewareFunc {
 			reqid := c.Response().Header().Get(echo.HeaderXRequestID)
 			req := c.Request()
 
+			ua := user_agent.New(req.UserAgent())
+
+			osinfo := ua.OSInfo()
+			os := fmt.Sprintf("%s %s", osinfo.Name, osinfo.Version)
+
+			name, version := ua.Browser()
+			browser := fmt.Sprintf("%s %s", name, version)
+
 			// 将 logger 附属到 Context，后续可以使用
 			l := xlog.X.WithFields(logrus.Fields{
-				xlog.FReqID:  reqid,
-				xlog.FPath:   req.URL.Path,
-				xlog.FMethod: req.Method,
-				xlog.FIP:     c.RealIP(),
+				xlog.FReqID:   reqid,
+				xlog.FPath:    req.URL.Path,
+				xlog.FMethod:  req.Method,
+				xlog.FIP:      c.RealIP(),
+				xlog.FOS:      os,
+				xlog.FBrowser: browser,
 			})
 			cc := &Context{c, l, conf, nil, nil, nil, nil, nil}
 
