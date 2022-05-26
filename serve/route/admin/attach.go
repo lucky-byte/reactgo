@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/ctx"
@@ -23,19 +22,6 @@ var natsCounter = 0
 // 后台管理模块
 func Attach(up *echo.Echo, conf *config.ViperConfig) {
 	group := up.Group("/admin")
-
-	// CSRF token
-	group.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		CookieName:     "csrf",
-		CookiePath:     "/",
-		CookieHTTPOnly: false,
-		CookieSecure:   conf.ServerSecure(),
-		CookieSameSite: http.SameSiteStrictMode,
-		TokenLookup:    "header:X-Csrf-Token",
-		Skipper: func(c echo.Context) bool {
-			return false
-		},
-	}))
 
 	// 后续操作都需要通过认证
 	group.Use(auth.Authentication)
@@ -74,7 +60,6 @@ func aclCheck(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-
 // 查询 NATS 配置信息
 func nats(c echo.Context) error {
 	cc := c.(*ctx.Context)
@@ -94,4 +79,3 @@ func httpurl(c echo.Context) error {
 
 	return c.String(http.StatusOK, cc.Config().ServerHttpURL())
 }
-

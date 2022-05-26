@@ -33,6 +33,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/db"
 	"github.com/lucky-byte/reactgo/serve/event"
 	"github.com/lucky-byte/reactgo/serve/image"
+	"github.com/lucky-byte/reactgo/serve/legal"
 	"github.com/lucky-byte/reactgo/serve/mailfs"
 	"github.com/lucky-byte/reactgo/serve/nats"
 	"github.com/lucky-byte/reactgo/serve/route/admin"
@@ -69,12 +70,6 @@ func init() {
 
 //go:embed web
 var embededWebFS embed.FS
-
-//go:embed static/privacy.html
-var privacy_html string
-
-//go:embed static/terms.html
-var terms_html string
 
 // WEB 静态文件目录，可以通过配置修改
 var web_directory = "./web"
@@ -213,15 +208,20 @@ func main() {
 		engine.Static("/", web_directory)
 	}
 
-	// 隐私政策
-	engine.GET("/privacy", func(c echo.Context) error {
-		return c.HTML(http.StatusOK, privacy_html)
-	})
-	// 服务条款
-	engine.GET("/terms", func(c echo.Context) error {
-		return c.HTML(http.StatusOK, terms_html)
-	})
+	// CSRF token
+	engine.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		CookieName:     "csrf",
+		CookiePath:     "/",
+		CookieHTTPOnly: false,
+		CookieSecure:   conf.ServerSecure(),
+		CookieSameSite: http.SameSiteStrictMode,
+		TokenLookup:    "header:X-Csrf-Token",
+		Skipper: func(c echo.Context) bool {
+			return false
+		},
+	}))
 
+	legal.Attach(engine)        // 隐私政策/服务条款
 	image.Attach(engine, conf)  // 图片
 	oauth.Attach(engine, conf)  // OAuth 客户端回调
 	login.Attach(engine, conf)  // 用户登录

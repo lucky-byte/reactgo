@@ -7,9 +7,9 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/public/bulletin"
 )
 
-// 公开访问模块
+// 公开访问
 func Attach(up *echo.Echo, conf *config.ViperConfig) {
-	group := up.Group("/public")
+	group := up.Group("/pubacc")
 
 	bulletin.Attach(group) // 公告
 }
