@@ -1,0 +1,26 @@
+<mjml lang="zh_CN">
+  <mj-head>
+    <mj-include path="./component/head.mjml" />
+  </mj-head>
+  <mj-body>
+    <mj-include path="./component/header.mjml" />
+    <mj-section padding-top="10px">
+      <mj-column>
+        <mj-text align='center'>您的密码已重置，请使用新密码登录系统</mj-text>
+        <mj-text align='center' font-size="11px" color="#888">新密码</mj-text>
+        <mj-text align='center' font-size='28px' font-weight="bold"
+          font-family="Arial" padding-top="0px">
+          {{.password}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="5px">
+      <mj-column>
+        <mj-divider padding-bottom='0px' />
+        <mj-text font-size="12px" color="#888">
+          这是一封发送给{{.name}}的邮件，如果您不认识{{.name}}，可以放心忽略此邮件。
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

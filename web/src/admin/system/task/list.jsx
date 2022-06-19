@@ -6,7 +6,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -33,7 +32,6 @@ import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
 import progressState from "~/state/progress";
 import SearchInput from '~/comp/search-input';
-import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import useTitle from "~/hook/title";
 import usePageData from '~/hook/pagedata';
@@ -103,70 +101,67 @@ export default function List() {
         />
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Stack direction='row' spacing={1}>
-          <Button variant='outlined' startIcon={<AddIcon />}
-            onClick={() => { navigate('add') }}>
+          <Button startIcon={<AddIcon />} onClick={() => { navigate('add') }}>
             添加
           </Button>
           <Button color='warning' onClick={() => { navigate('entries') }}>
-          诊断
-        </Button>
+            诊断
+          </Button>
         </Stack>
       </Toolbar>
-      <TableContainer component={OutlinedPaper}>
-        <Table size='medium'>
-          <TableHead>
-            <TableRow sx={{ whiteSpace:'nowrap' }}>
-              <TableCell align='center'>名称</TableCell>
-              <TableCell align='center'>CRON</TableCell>
-              <TableCell align='center'>类型</TableCell>
-              <TableCell align='center'>路径</TableCell>
-              <TableCell align='center'>执行次数</TableCell>
-              <TableCell align='center'>最后执行时间</TableCell>
-              <TableCell as='td' align='right' colSpan={2} padding='checkbox' />
+      <Table size='medium'>
+        <TableHead>
+          <TableRow sx={{ whiteSpace: 'nowrap' }}>
+            <TableCell align='center'>名称</TableCell>
+            <TableCell align='center'>CRON</TableCell>
+            <TableCell align='center'>类型</TableCell>
+            <TableCell align='center'>路径</TableCell>
+            <TableCell align='center'>执行次数</TableCell>
+            <TableCell align='center'>最后执行时间</TableCell>
+            <TableCell as='td' align='right' colSpan={2} padding='checkbox' />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {list.map(t => (
+            <TableRow hover key={t.uuid} disabled={t.disabled}>
+              <TableCell align="center">{t.name}</TableCell>
+              <TableCell align="center"><code>{t.cron}</code></TableCell>
+              <TableCell align="center">
+                {t.type === 1 ? '函数' : '命令'}
+              </TableCell>
+              <TableCell align="center">{t.path}</TableCell>
+              <TableCell align="center">{t.nfire}</TableCell>
+              <TableCell align="center">
+                {dayjs(t.last_fire).format('YY-MM-DD HH:mm:ss')}
+              </TableCell>
+              <TableCell align="right" padding='none'>
+                {t.disabled &&
+                  <BlockIcon color='warning' fontSize='small'
+                    sx={{ verticalAlign: 'middle' }}
+                  />
+                }
+              </TableCell>
+              <TableCell align="right" padding='checkbox' className='action'>
+                <UserMenuIconButton task={t} requestRefresh={requestRefresh} />
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {list.map(t => (
-              <TableRow hover key={t.uuid} disabled={t.disabled}>
-                <TableCell align="center">{t.name}</TableCell>
-                <TableCell align="center"><code>{t.cron}</code></TableCell>
-                <TableCell align="center">
-                  {t.type === 1 ? '函数' : '命令'}
-                </TableCell>
-                <TableCell align="center">{t.path}</TableCell>
-                <TableCell align="center">{t.nfire}</TableCell>
-                <TableCell align="center">
-                  {dayjs(t.last_fire).format('YY-MM-DD HH:mm:ss')}
-                </TableCell>
-                <TableCell align="right" padding='none'>
-                  {t.disabled &&
-                    <BlockIcon color='warning' fontSize='small'
-                      sx={{ verticalAlign: 'middle' }}
-                    />
-                  }
-                </TableCell>
-                <TableCell align="right" padding='checkbox' className='action'>
-                  <UserMenuIconButton task={t} requestRefresh={requestRefresh} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50, 100]}
-                colSpan={10}
-                count={count}
-                rowsPerPage={rows}
-                page={page}
-                SelectProps={{ inputProps: { 'aria-label': '每页行数' } }}
-                onPageChange={onPageChange}
-                onRowsPerPageChange={onRowsPerPageChange}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </TableContainer>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 50, 100]}
+              colSpan={10}
+              count={count}
+              rowsPerPage={rows}
+              page={page}
+              SelectProps={{ inputProps: { 'aria-label': '每页行数' } }}
+              onPageChange={onPageChange}
+              onRowsPerPageChange={onRowsPerPageChange}
+            />
+          </TableRow>
+        </TableFooter>
+      </Table>
     </Container>
   )
 }

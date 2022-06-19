@@ -111,7 +111,7 @@ export default function Ops() {
         </Stack>
       </Toolbar>
 
-      <Paper variant='outlined' sx={{ mt: 0 }}>
+      <Paper variant='outlined' sx={{ mt: 1 }}>
         {list.map(item => (
           <Accordion key={item.uuid} elevation={0} disableGutters
             sx={{

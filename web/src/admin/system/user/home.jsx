@@ -8,7 +8,6 @@ import TextField from '@mui/material/TextField';
 import SecurityIcon from '@mui/icons-material/Security';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -40,7 +39,6 @@ import userState from "~/state/user";
 import progressState from "~/state/progress";
 import useTitle from "~/hook/title";
 import SearchInput from '~/comp/search-input';
-import OutlinedPaper from '~/comp/outlined-paper';
 import { useSecretCode } from '~/comp/secretcode';
 import Avatar from '~/comp/avatar';
 import TimeAgo from '~/comp/timeago';
@@ -152,85 +150,83 @@ export default function Home() {
           批量导入
         </Button>
       </Toolbar>
-      <TableContainer component={OutlinedPaper}>
-        <Table size='medium'>
-          <TableHead>
-            <TableRow sx={{ whiteSpace:'nowrap' }}>
-              <TableCell align='center'></TableCell>
-              <TableCell align='center'>登录名</TableCell>
-              <TableCell align='center'>姓名</TableCell>
-              <TableCell align='center'>访问角色</TableCell>
-              <TableCell align='center'>创建时间</TableCell>
-              <TableCell align='center'>更新时间</TableCell>
-              <TableCell align='center'>最后登录</TableCell>
-              <TableCell align='center'>登录次数</TableCell>
-              <TableCell colSpan={2} />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {list.map(u => (
-              <TableRow hover key={u.uuid}
-                disabled={u.disabled} deleted={u.deleted?.toString()}>
-                <TableCell align="center" padding='checkbox'>
-                  <Avatar avatar={u.avatar} name={u.name}
-                    sx={{ width: 32, height: 32, mx: 1 }}
+      <Table size='medium'>
+        <TableHead>
+          <TableRow sx={{ whiteSpace: 'nowrap' }}>
+            <TableCell align='center'></TableCell>
+            <TableCell align='center'>登录名</TableCell>
+            <TableCell align='center'>姓名</TableCell>
+            <TableCell align='center'>访问角色</TableCell>
+            <TableCell align='center'>创建时间</TableCell>
+            <TableCell align='center'>更新时间</TableCell>
+            <TableCell align='center'>最后登录</TableCell>
+            <TableCell align='center'>登录次数</TableCell>
+            <TableCell colSpan={2} />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {list.map(u => (
+            <TableRow hover key={u.uuid}
+              disabled={u.disabled} deleted={u.deleted?.toString()}>
+              <TableCell align="center" padding='checkbox'>
+                <Avatar avatar={u.avatar} name={u.name}
+                  sx={{ width: 32, height: 32, mx: 1 }}
+                />
+              </TableCell>
+              <TableCell align="center">{u.userid}</TableCell>
+              <TableCell align="center">{u.name}</TableCell>
+              <TableCell align="center">
+                {parseInt(u.acl_code) === 0 ?
+                  <Typography variant='body2' color='secondary'>
+                    {u.acl_name}
+                  </Typography>
+                  :
+                  <Typography variant='body2'>{u.acl_name}</Typography>
+                }
+              </TableCell>
+              <TableCell align="center">
+                <TimeAgo time={u.create_at} variant='body2' />
+              </TableCell>
+              <TableCell align="center">
+                <TimeAgo time={u.update_at} variant='body2' />
+              </TableCell>
+              <TableCell align="center">
+                <TimeAgo time={u.signin_at} variant='body2' />
+              </TableCell>
+              <TableCell align="center">{u.n_signin}</TableCell>
+              <TableCell align='center' padding='none'>
+                {u.deleted &&
+                  <RemoveCircleOutlineIcon color='error' fontSize='small'
+                    sx={{ verticalAlign: 'middle' }}
                   />
-                </TableCell>
-                <TableCell align="center">{u.userid}</TableCell>
-                <TableCell align="center">{u.name}</TableCell>
-                <TableCell align="center">
-                  {parseInt(u.acl_code) === 0 ?
-                    <Typography variant='body2' color='secondary'>
-                      {u.acl_name}
-                    </Typography>
-                    :
-                    <Typography variant='body2'>{u.acl_name}</Typography>
-                  }
-                </TableCell>
-                <TableCell align="center">
-                  <TimeAgo time={u.create_at} variant='body2' />
-                </TableCell>
-                <TableCell align="center">
-                  <TimeAgo time={u.update_at} variant='body2' />
-                </TableCell>
-                <TableCell align="center">
-                  <TimeAgo time={u.signin_at} variant='body2' />
-                </TableCell>
-                <TableCell align="center">{u.n_signin}</TableCell>
-                <TableCell align='center' padding='none'>
-                  {u.deleted &&
-                    <RemoveCircleOutlineIcon color='error' fontSize='small'
-                      sx={{ verticalAlign: 'middle' }}
-                    />
-                  }
-                  {(u.disabled && !u.deleted) &&
-                    <BlockIcon fontSize='small' sx={{ verticalAlign: 'middle' }} />
-                  }
-                </TableCell>
-                <TableCell align="center" padding='none' className='action'>
-                  <UserMenuIconButton user={u} requestRefresh={requestRefresh} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50, 100]}
-                colSpan={10}
-                count={count}
-                rowsPerPage={rows}
-                page={page}
-                SelectProps={{
-                  inputProps: { 'aria-label': '每页行数' }
-                }}
-                onPageChange={onPageChange}
-                onRowsPerPageChange={onRowsPerPageChange}
-              />
+                }
+                {(u.disabled && !u.deleted) &&
+                  <BlockIcon fontSize='small' sx={{ verticalAlign: 'middle' }} />
+                }
+              </TableCell>
+              <TableCell align="center" padding='none' className='action'>
+                <UserMenuIconButton user={u} requestRefresh={requestRefresh} />
+              </TableCell>
             </TableRow>
-          </TableFooter>
-        </Table>
-      </TableContainer>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 50, 100]}
+              colSpan={10}
+              count={count}
+              rowsPerPage={rows}
+              page={page}
+              SelectProps={{
+                inputProps: { 'aria-label': '每页行数' }
+              }}
+              onPageChange={onPageChange}
+              onRowsPerPageChange={onRowsPerPageChange}
+            />
+          </TableRow>
+        </TableFooter>
+      </Table>
     </Container>
   )
 }

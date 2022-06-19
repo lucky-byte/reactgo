@@ -6,7 +6,6 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableFooter from '@mui/material/TableFooter';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
@@ -17,7 +16,6 @@ import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 import SearchInput from '~/comp/search-input';
 import DateInput from "~/comp/date-input";
-import OutlinedPaper from '~/comp/outlined-paper';
 import OAuthIcon from '~/comp/oauth-icon';
 import TimeAgo from '~/comp/timeago';
 import useTitle from "~/hook/title";
@@ -98,69 +96,67 @@ export default function History() {
           }}
         />
       </Toolbar>
-      <TableContainer component={OutlinedPaper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">登录名</TableCell>
-              <TableCell align="center">姓名</TableCell>
-              <TableCell align="center">登录账号</TableCell>
-              <TableCell align="center">系统</TableCell>
-              <TableCell align="center">浏览器</TableCell>
-              <TableCell align="center">信任设备</TableCell>
-              <TableCell align="center">位置</TableCell>
-              <TableCell align="center">登录时间</TableCell>
-              <TableCell align="center">TFA</TableCell>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell align="center">登录名</TableCell>
+            <TableCell align="center">姓名</TableCell>
+            <TableCell align="center">账号</TableCell>
+            <TableCell align="center">系统</TableCell>
+            <TableCell align="center">浏览器</TableCell>
+            <TableCell align="center">信任设备</TableCell>
+            <TableCell align="center">位置</TableCell>
+            <TableCell align="center">登录时间</TableCell>
+            <TableCell align="center">TFA</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {list.map((row, index) => (
+            <TableRow key={index} hover>
+              <TableCell align="center">{row.userid}</TableCell>
+              <TableCell align="center">{row.name}</TableCell>
+              <TableCell align="center">
+                <OAuthIcon type={row.acttype} provider={row.oauthp} />
+              </TableCell>
+              <TableCell align="center">{row.os}</TableCell>
+              <TableCell align="center">{row.browser}</TableCell>
+              <TableCell align="center" padding='none'>
+                {row.trust ?
+                  <CheckIcon fontSize='small' sx={{ verticalAlign: 'middle' }} /> :
+                  <CloseIcon fontSize='small' sx={{ verticalAlign: 'middle' }} />
+                }
+              </TableCell>
+              <TableCell align="center">
+                <Tooltip title={row.ip} arrow>
+                  <Typography variant='body2' sx={{ cursor: 'default' }}>
+                    {location(row) || row.ip}
+                  </Typography>
+                </Tooltip>
+              </TableCell>
+              <TableCell align="center">
+                <TimeAgo time={row.create_at} variant='body2' />
+              </TableCell>
+              <TableCell align="center" padding='none'>
+                {row.tfa === 0 ? '无' : row.tfa === 1 ? '短信' : 'OTP'}
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {list.map((row, index) => (
-              <TableRow key={index} hover>
-                <TableCell align="center">{row.userid}</TableCell>
-                <TableCell align="center">{row.name}</TableCell>
-                <TableCell align="center">
-                  <OAuthIcon type={row.acttype} provider={row.oauthp} />
-                </TableCell>
-                <TableCell align="center">{row.os}</TableCell>
-                <TableCell align="center">{row.browser}</TableCell>
-                <TableCell align="center" padding='none'>
-                  {row.trust ?
-                    <CheckIcon fontSize='small' sx={{ verticalAlign: 'middle' }} /> :
-                    <CloseIcon fontSize='small' sx={{ verticalAlign: 'middle' }} />
-                  }
-                </TableCell>
-                <TableCell align="center">
-                  <Tooltip title={row.ip} arrow>
-                    <Typography variant='body2' sx={{ cursor: 'default' }}>
-                      {location(row) || row.ip}
-                    </Typography>
-                  </Tooltip>
-                </TableCell>
-                <TableCell align="center">
-                  <TimeAgo time={row.create_at} variant='body2' />
-                </TableCell>
-                <TableCell align="center" padding='none'>
-                  {row.tfa === 0 ? '无' : row.tfa === 1 ? '短信' : 'OTP'}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50, 100]}
-                colSpan={10}
-                count={count}
-                rowsPerPage={rows}
-                page={page}
-                SelectProps={{ inputProps: { 'aria-label': '每页行数' } }}
-                onPageChange={onPageChange}
-                onRowsPerPageChange={onRowsPerPageChange}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </TableContainer>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 50, 100]}
+              colSpan={10}
+              count={count}
+              rowsPerPage={rows}
+              page={page}
+              SelectProps={{ inputProps: { 'aria-label': '每页行数' } }}
+              onPageChange={onPageChange}
+              onRowsPerPageChange={onRowsPerPageChange}
+            />
+          </TableRow>
+        </TableFooter>
+      </Table>
     </Container>
   )
 }

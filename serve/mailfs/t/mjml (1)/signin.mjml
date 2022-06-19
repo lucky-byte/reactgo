@@ -1,0 +1,39 @@
+<mjml lang="zh_CN">
+  <mj-head>
+    <mj-include path="./component/head.mjml" />
+  </mj-head>
+  <mj-body>
+    <mj-include path="./component/header.mjml" />
+    <mj-section padding-top="10px">
+      <mj-column>
+        <mj-text align='left'>
+          {{.name}}，欢迎，下面是您的登录信息:
+        </mj-text>
+        <mj-text align='left' padding-bottom="0px">
+          登录账号: <b>{{.userid}}</b>
+        </mj-text>
+        <mj-text align='left' padding-bottom="0px">
+          登陆密码: <b>{{.password}}</b>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="5px">
+      <mj-column>
+        <mj-button background-color='#088' color='white' href='{{.url}}'>
+          点击这里登录
+         </mj-button>
+        <mj-text align='center' color="#888" font-size="13px">
+          如按钮不能点击，将 {{.url}} 复制到浏览器地址栏中进行访问。
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="5px">
+      <mj-column>
+        <mj-divider padding-bottom='0px' />
+        <mj-text font-size="12px" color="#888">
+          如果这不是发给您的邮件，请放心忽略。
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

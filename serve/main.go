@@ -188,14 +188,18 @@ func main() {
 		}
 		handler := echo.WrapHandler(http.FileServer(http.FS(fsys)))
 
-		engine.GET("/static/*", handler)
-		engine.GET("/asset-manifest.json", handler)
-		engine.GET("/favicon.ico", handler)
-		engine.GET("/favicon.png", handler)
-		engine.GET("/logo192.png", handler)
-		engine.GET("/logo512.png", handler)
-		engine.GET("/manifest.json", handler)
-		engine.GET("/robots.txt", handler)
+		list, err := fs.ReadDir(fsys, ".")
+		if err != nil {
+			xlog.X.Fatalf("读嵌入 WEB 目录错 %v", err)
+		}
+		for _, f := range list {
+			if f.Type().IsRegular() {
+				engine.GET("/"+f.Name(), handler)
+			}
+			if f.Type().IsDir() {
+				engine.GET("/"+f.Name()+"/*", handler)
+			}
+		}
 	} else {
 		webdir := conf.ServerWebdir()
 		if len(webdir) > 0 {
@@ -223,8 +227,18 @@ func main() {
 
 	legal.Attach(engine)        // 隐私政策/服务条款
 	image.Attach(engine, conf)  // 图片
-	oauth.Attach(engine, conf)  // OAuth 客户端回调
+
+	// 速率限制
+	rlconfig := middleware.DefaultRateLimiterConfig
+	rlconfig.Store = middleware.NewRateLimiterMemoryStore(20)
+	rlconfig.Skipper = func(c echo.Context) bool {
+		// GET 方法不限制
+		return c.Request().Method == http.MethodGet
+	}
+	engine.Use(middleware.RateLimiterWithConfig(rlconfig))
+
 	login.Attach(engine, conf)  // 用户登录
+	oauth.Attach(engine, conf)  // OAuth 客户端登录
 	admin.Attach(engine, conf)  // 后台管理
 	public.Attach(engine, conf) // 公开访问
 
