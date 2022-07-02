@@ -43,7 +43,7 @@ func Lookup(ip string) (*Info, error) {
 			if len(info.City) > 0 {
 				return info, nil
 			} else {
-				xlog.X.Info("高德定位IP %s 返回无结果", ip)
+				xlog.X.Infof("高德定位IP %s 返回无结果", ip)
 			}
 		}
 		xlog.X.WithError(err).Error("使用高德定位失败")

@@ -53,7 +53,7 @@ func TencentLookup(ip string, webkey string) (*Info, error) {
 	if err != nil {
 		return nil, err
 	}
-	xlog.X.Debugf("腾讯定位响应: %s", body)
+	xlog.X.Infof("腾讯定位响应: %s", body)
 
 	// result := make(map[string]string)
 	var result tencentResponse
