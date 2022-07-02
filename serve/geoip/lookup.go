@@ -40,6 +40,21 @@ func Lookup(ip string) (*Info, error) {
 	if config.AMapEnable {
 		info, err := lookupAMap(&config, addr)
 		if err == nil {
+			if len(info.City) > 0 {
+				return info, nil
+			} else {
+				xlog.X.Info("高德定位IP %s 返回无结果", ip)
+			}
+		}
+		xlog.X.WithError(err).Error("使用高德定位失败")
+	}
+	// 使用腾讯定位
+	if config.TencentEnable {
+		if len(config.TencentWebKey) == 0 {
+			return nil, fmt.Errorf("未配置腾讯定位 WebKey")
+		}
+		info, err := TencentLookup(ip, config.TencentWebKey)
+		if err == nil {
 			return info, nil
 		}
 		xlog.X.WithError(err).Error("使用高德定位失败")

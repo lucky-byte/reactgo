@@ -15,4 +15,6 @@ func Attach(up *echo.Group, code int) {
 
 	group.PUT("/amap-webkey", amapWebKey)
 	group.PUT("/amap-enable", amapEnable)
+	group.PUT("/tencent-webkey", tencentWebKey)
+	group.PUT("/tencent-enable", tencentEnable)
 }

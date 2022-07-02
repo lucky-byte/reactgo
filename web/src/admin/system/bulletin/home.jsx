@@ -8,7 +8,6 @@ import Stack from '@mui/material/Stack';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
@@ -162,8 +161,8 @@ export default function Home() {
               '&:before': { display: 'none', },
               '&:last-child': { borderBottom: 0, }
             }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1, mr: 1 }}>
+            <AccordionSummary>
+              <Stack direction='row' alignItems='center' spacing={1} sx={{ flex: 1 }}>
                 <EllipsisText variant='subtitle1' sx={{ flex: 1 }}
                   onClick={() => onAccordionTitleClick(b)}>
                   {b.title}

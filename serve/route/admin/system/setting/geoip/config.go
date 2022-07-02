@@ -20,7 +20,9 @@ func config(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"amap_webkey": result.AMapWebKey,
-		"amap_enable": result.AMapEnable,
+		"amap_webkey":    result.AMapWebKey,
+		"amap_enable":    result.AMapEnable,
+		"tencent_webkey": result.TencentWebKey,
+		"tencent_enable": result.TencentEnable,
 	})
 }

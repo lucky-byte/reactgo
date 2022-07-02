@@ -168,9 +168,11 @@ type Event struct {
 
 // IP 定位
 type GeoIP struct {
-	AMapWebKey string `db:"amap_webkey" json:"amap_webkey"` // 高德开放平台 web 服务 key
-	AMapEnable bool   `db:"amap_enable" json:"amap_enable"` // 高德开放平台 web 服务 key
-	AMapApiVer string `db:"amap_apiver" json:"amap_apiver"` // 高德开放平台 IP 定位接口版本
+	AMapWebKey    string `db:"amap_webkey"    json:"amap_webkey"`    // 高德开放平台 web 服务 key
+	AMapEnable    bool   `db:"amap_enable"    json:"amap_enable"`    // 是否允许高德开放平台
+	AMapApiVer    string `db:"amap_apiver"    json:"amap_apiver"`    // 高德开放平台 IP 定位接口版本
+	TencentWebKey string `db:"tencent_webkey" json:"tencent_webkey"` // 腾讯位置服务 web 服务 key
+	TencentEnable bool   `db:"tencent_enable" json:"tencent_enable"` // 是否允许腾讯位置服务
 }
 
 // 层次结构

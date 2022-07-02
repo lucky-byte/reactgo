@@ -101,10 +101,12 @@ export default function List() {
         />
         <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
         <Stack direction='row' spacing={1}>
-          <Button startIcon={<AddIcon />} onClick={() => { navigate('add') }}>
+          <Button variant='outlined' size='small' startIcon={<AddIcon />}
+            onClick={() => { navigate('add') }}>
             添加
           </Button>
-          <Button color='warning' onClick={() => { navigate('entries') }}>
+          <Button variant='outlined' size='small' color='warning'
+            onClick={() => { navigate('entries') }}>
             诊断
           </Button>
         </Stack>
