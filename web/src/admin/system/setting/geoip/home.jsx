@@ -67,7 +67,7 @@ export default function Home() {
       await put('/system/setting/geoip/amap-enable', new URLSearchParams({
         enable, _audit,
       }));
-      setTencentEnable(enable);
+      setAMapEnable(enable);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
       enqueueSnackbar(err.message);
@@ -98,7 +98,7 @@ export default function Home() {
       await put('/system/setting/geoip/tencent-enable', new URLSearchParams({
         enable, _audit,
       }));
-      setAMapEnable(enable);
+      setTencentEnable(enable);
       enqueueSnackbar('更新成功', { variant: 'success' });
     } catch (err) {
       enqueueSnackbar(err.message);
