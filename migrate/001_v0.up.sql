@@ -5,6 +5,11 @@ create table if not exists serials (
 );
 insert into serials (n) values (0);
 
+create table if not exists debug (
+  debug           boolean         default true
+);
+insert into debug (debug) values (true);
+
 create table if not exists users (
   uuid            varchar(36)     primary key not null,
   create_at       timestamp       not null default current_timestamp,
@@ -178,8 +183,12 @@ create table if not exists images (
   uuid        varchar(36)     primary key not null,
   create_at   timestamp       not null default current_timestamp,
   update_at   timestamp       not null default current_timestamp,
+  place       int             not null default 1,
+                              -- 1. 数据库
+                              -- 2. 文件系统
   data        bytea           not null, -- PostgreSQL, Sqlite
   -- data        mediumblob      not null, -- MySQL
+  path        varchar(256)    not null default '',
   mime        varchar(128)    not null,
   etag        varchar(32)     not null
 );

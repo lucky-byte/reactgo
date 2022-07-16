@@ -5,12 +5,18 @@ import (
 	"time"
 )
 
+type Debug struct {
+	Debug bool `db:"debug"      json:"debug"` // Debug mode
+}
+
 // 图片
 type Image struct {
 	UUID     string    `db:"uuid"      json:"uuid"`      // unique id
 	CreateAt time.Time `db:"create_at" json:"create_at"` // create time
 	UpdateAt time.Time `db:"update_at" json:"update_at"` // update time
+	Place    int       `db:"place"     json:"place"`     // 位置
 	Data     []byte    `db:"data"      json:"data"`      // image 数据
+	Path     string    `db:"path"      json:"path"`      // 文件系统路径(相对路径)
 	Mime     string    `db:"mime"      json:"mime"`      // image mime 类型
 	ETag     string    `db:"etag"      json:"etag"`      // image 数据哈希
 }

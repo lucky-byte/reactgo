@@ -10,16 +10,18 @@ import NotFound from "~/comp/notfound";
 import Mail from './mail';
 import SMS from "./sms";
 import Geoip from "./geoip";
-import Pay from "./pay";
 import Account from "./account";
+import Pay from "./pay";
+import Debug from "./debug";
 import tabState from "./tabstate";
 
 const tabsArray = [
   { title: '邮件服务', value: 1, to: 'mail', },
   { title: '短信服务', value: 2, to: 'sms', },
   { title: '定位服务', value: 3, to: 'geoip', },
-  { title: '支付服务', value: 4, to: 'pay', },
-  { title: '账号设置', value: 5, to: 'account', },
+  { title: '账号设置', value: 4, to: 'account', },
+  { title: '支付服务', value: 5, to: 'pay', },
+  { title: '诊断模式', value: 6, to: 'debug', },
 ]
 
 export default function Setting() {
@@ -43,8 +45,9 @@ export default function Setting() {
             <Route path='mail/*' element={<Mail />} />
             <Route path='sms/*' element={<SMS />} />
             <Route path='geoip/*' element={<Geoip />} />
-            <Route path='pay/*' element={<Pay />} />
             <Route path='account/*' element={<Account />} />
+            <Route path='pay/*' element={<Pay />} />
+            <Route path='debug/*' element={<Debug />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Box>

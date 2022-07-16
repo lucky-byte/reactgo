@@ -20,7 +20,7 @@ const useSecureTab = () => {
 }
 
 const useOAuthTab = () => {
-  useTab(3);
+  useTab(2);
 }
 
 export { useSecureTab, useOAuthTab }

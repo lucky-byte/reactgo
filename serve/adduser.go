@@ -30,8 +30,6 @@ func fatal(format string, args ...any) {
 
 // 添加第一个管理员用户，用于初始化阶段
 func addFirstUser(conf *config.ViperConfig) {
-	db.Connect(conf.DatabaseDriver(), conf.DatabaseDSN())
-
 	bold := color.New(color.Bold)
 
 	bold.Printf("Welcome to %s!\n\n", Name)

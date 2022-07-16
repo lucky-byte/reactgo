@@ -1,9 +1,5 @@
 # ReactGo 配置文件
 
-# 是否开启调试模式
-#
-debug: true
-
 # 日志配置
 #
 log:
@@ -73,11 +69,22 @@ database:
 task:
   # 执行文件路径
   #
-  path: ../jobs
+  path: ~/jobs
 
   # 环境变量，名称会转换为大些字母
   env:
     name: value
+
+# 图片配置
+#
+image:
+  # 存储位置, 1-数据库，2-文件系统
+  #
+  place: 1
+
+  # 文件系统路径
+  #
+  rootpath: ~/imgs
 
 # nats 配置
 #

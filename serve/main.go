@@ -86,11 +86,19 @@ func main() {
 		printVersion()
 		os.Exit(0)
 	}
+
+reboot:
 	// 从文件中加载配置
 	conf, err := config.Load(*configFile, *master)
 	if err != nil {
 		log.Fatalf("加载配置文件错: %v", err)
 	}
+	// 连接数据库，如果失败将会 panic
+	db.Connect(conf.DatabaseDriver(), conf.DatabaseDSN())
+
+	// 从数据库加载配置
+	loadDBConfig(conf)
+
 	// 添加用户，然后退出
 	if *addUser {
 		addFirstUser(conf)
@@ -108,9 +116,6 @@ func main() {
 	}
 	// 设置 xlog
 	xlog.Setup(debug, conf)
-
-	// 连接数据库，如果失败将会 panic
-	db.Connect(conf.DatabaseDriver(), conf.DatabaseDSN())
 
 	// 日志记录到事件表
 	xlog.X.AddHook(event.NewEventHook(event.FormatJson))
@@ -225,8 +230,8 @@ func main() {
 		},
 	}))
 
-	legal.Attach(engine)        // 隐私政策/服务条款
-	image.Attach(engine, conf)  // 图片
+	legal.Attach(engine)       // 隐私政策/服务条款
+	image.Attach(engine, conf) // 图片
 
 	// 速率限制
 	rlconfig := middleware.DefaultRateLimiterConfig
@@ -268,11 +273,7 @@ func main() {
 	}
 	// 捕获系统信号，优雅的退出
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-
-	if signal.Ignored(syscall.SIGHUP) {
-		signal.Notify(quit, syscall.SIGHUP)
-	}
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	s := <-quit
 
 	xlog.X.Infof("接收到信号 %s", s.String())
@@ -287,6 +288,11 @@ func main() {
 	task.Stop()
 	db.Disconnect()
 	nats.Drain()
+
+	// SIGHUP 导致服务器重启
+	if s == syscall.SIGHUP {
+		goto reboot
+	}
 }
 
 // 在单独的 goroutine 中启动 http 服务
@@ -434,4 +440,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 `, BuildYear)
+}
+
+// 加载数据库配置
+func loadDBConfig(c *config.ViperConfig) {
+	ql := `select debug from debug limit 1`
+	var debug bool
+
+	err := db.SelectOne(ql, &debug)
+	if err != nil {
+		log.Panicf("Read debug from database error: %v", err)
+	}
+	c.SetDebug(debug)
 }
