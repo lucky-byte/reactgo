@@ -1,5 +1,10 @@
 begin;
 
+create table if not exists serials (
+  n               bigint          default 0
+);
+insert into serials (n) values (0);
+
 create table if not exists users (
   uuid            varchar(36)     primary key not null,
   create_at       timestamp       not null default current_timestamp,
