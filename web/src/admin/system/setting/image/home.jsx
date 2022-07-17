@@ -72,12 +72,16 @@ export default function Home() {
   return (
     <Stack>
       <Typography variant='h4'>图片存储</Typography>
-      <Typography variant='body2'>用户上传的图片可以根据配置存储在不同的位置</Typography>
+      <Typography variant='body2'>
+        如何存储用户上传的图片文件，修改配置立即生效，可能导致非预期结果，请谨慎操作
+      </Typography>
       <Paper variant="outlined" sx={{ mt: 3, p: 2 }}>
         <Stack direction='row' alignItems='center' spacing={1}>
           <Stack flex={1}>
-            <Typography>图片文件存储方式</Typography>
-            <FormHelperText>选择图片文件在系统中的存储方式</FormHelperText>
+            <Typography>图片存储方式</Typography>
+            <FormHelperText>
+              设置以哪种方式存储用户上传的图片文件，通常在系统部署时确定一种方式，不建议更换
+            </FormHelperText>
           </Stack>
           <TextField select variant='standard'
             value={place} onChange={onPlaceChange}>

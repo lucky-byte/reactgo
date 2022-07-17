@@ -254,13 +254,18 @@ reboot:
 		sort.SliceStable(routes, func(i, j int) bool {
 			return routes[i].Path < routes[j].Path
 		})
+		sb := strings.Builder{}
+
 		for i, v := range routes {
 			arr := strings.Split(v.Name, "/")
 			fn := arr[len(arr)-1]
 			if fn != "v4.glob..func1" {
-				xlog.X.Infof("%3d %8s %-36s %s", i, v.Method, v.Path, fn)
+				sb.WriteString(
+					fmt.Sprintf("\n%4d %6s %-42s %s", i, v.Method, v.Path, fn),
+				)
 			}
 		}
+		log.Printf("%s\n", sb.String())
 	}
 	// 在 goroutine 中启动服务器，这样主 goroutine 不会阻塞
 	go startup(conf)
@@ -315,7 +320,7 @@ func startup(conf *config.ViperConfig) {
 			MaxConcurrentStreams: 250,
 			IdleTimeout:          10 * time.Second,
 		}
-		xlog.X.Tracef("HTTP 服务 %d 准备就绪, 监听地址 %s", os.Getpid(), bind)
+		log.Printf("HTTP 服务 %d 准备就绪, 监听地址 %s\n", os.Getpid(), bind)
 
 		if err := engine.StartH2CServer(bind, h2s); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
@@ -367,7 +372,7 @@ func startup(conf *config.ViperConfig) {
 			Addr:      bind,
 			Handler:   engine,
 		}
-		xlog.X.Tracef("HTTPS 服务 %d 准备就绪, 监听地址 %s", os.Getpid(), bind)
+		log.Printf("HTTPS 服务 %d 准备就绪, 监听地址 %s\n", os.Getpid(), bind)
 
 		err := hs.ListenAndServeTLS("", "")
 		if err != nil {
