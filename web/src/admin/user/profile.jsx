@@ -28,7 +28,7 @@ import isEmail from 'validator/lib/isEmail';
 import isMobile from 'validator/lib/isMobilePhone';
 import InplaceInput from '~/comp/inplace-input';
 import { useSecretCode } from '~/comp/secretcode';
-import Avatar from '~/comp/avatar';
+import Avatar from '~/comp/zoom-avatar';
 import userState from "~/state/user";
 import { useSetCode } from "~/state/code";
 import useTitle from "~/hook/title";
