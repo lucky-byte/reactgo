@@ -1,5 +1,8 @@
 begin;
 
+drop table if exists serials;
+drop table if exists debug;
+drop table if exists image_store;
 drop table if exists users;
 drop table if exists signin_history;
 drop table if exists acl;

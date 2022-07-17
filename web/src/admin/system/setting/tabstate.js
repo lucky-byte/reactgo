@@ -35,8 +35,15 @@ const usePayTab = () => {
   useTab(5);
 }
 
-const useDebugTab = () => {
+const useImageTab = () => {
   useTab(6);
 }
 
-export { useMailTab, useSMSTab, useGeoipTab, usePayTab, useAccountTab, useDebugTab }
+const useDebugTab = () => {
+  useTab(7);
+}
+
+export {
+  useMailTab, useSMSTab, useGeoipTab, usePayTab, useAccountTab,
+  useImageTab, useDebugTab,
+}

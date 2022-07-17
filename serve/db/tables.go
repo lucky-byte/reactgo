@@ -9,6 +9,11 @@ type Debug struct {
 	Debug bool `db:"debug"      json:"debug"` // Debug mode
 }
 
+type ImageStore struct {
+	Place    int    `db:"place"     json:"place"`    // 位置
+	RootPath string `db:"rootpath"  json:"rootpath"` // 文件系统路径(绝对路径)
+}
+
 // 图片
 type Image struct {
 	UUID     string    `db:"uuid"      json:"uuid"`      // unique id

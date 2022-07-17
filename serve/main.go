@@ -444,12 +444,24 @@ SOFTWARE.
 
 // 加载数据库配置
 func loadDBConfig(c *config.ViperConfig) {
+	// 诊断模式配置
 	ql := `select debug from debug limit 1`
 	var debug bool
 
 	err := db.SelectOne(ql, &debug)
 	if err != nil {
-		log.Panicf("Read debug from database error: %v", err)
+		log.Panicf("Read debug config error: %v", err)
 	}
 	c.SetDebug(debug)
+
+	// 图片存储配置
+	ql = `select * from image_store limit 1`
+	var store db.ImageStore
+
+	err = db.SelectOne(ql, &store)
+	if err != nil {
+		log.Panicf("Read image store config error: %v", err)
+	}
+	c.SetImagePlace(store.Place)
+	c.SetImageRootPath(store.RootPath)
 }

@@ -75,17 +75,6 @@ task:
   env:
     name: value
 
-# 图片配置
-#
-image:
-  # 存储位置, 1-数据库，2-文件系统
-  #
-  place: 1
-
-  # 文件系统路径
-  #
-  rootpath: ~/imgs
-
 # nats 配置
 #
 nats:

@@ -6,6 +6,7 @@ import (
 	"github.com/lucky-byte/reactgo/serve/route/admin/system/setting/account"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system/setting/debug"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system/setting/geoip"
+	"github.com/lucky-byte/reactgo/serve/route/admin/system/setting/image"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system/setting/mail"
 	"github.com/lucky-byte/reactgo/serve/route/admin/system/setting/sms"
 	"github.com/lucky-byte/reactgo/serve/route/lib/acl"
@@ -18,5 +19,6 @@ func Attach(up *echo.Group, code int) {
 	sms.Attach(group, code)
 	geoip.Attach(group, code)
 	account.Attach(group, code)
+	image.Attach(group, code)
 	debug.Attach(group, code)
 }

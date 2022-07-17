@@ -1,14 +1,22 @@
 begin;
 
 create table if not exists serials (
-  n               bigint          default 0
+  n           bigint          default 0
 );
 insert into serials (n) values (0);
 
 create table if not exists debug (
-  debug           boolean         default true
+  debug       boolean         default true
 );
 insert into debug (debug) values (true);
+
+create table if not exists image_store (
+  place       int             not null default 1,
+                              -- 1. 数据库
+                              -- 2. 文件系统
+  rootpath    varchar(256)    not null default ''
+);
+insert into image_store (place) values (1);
 
 create table if not exists users (
   uuid            varchar(36)     primary key not null,
