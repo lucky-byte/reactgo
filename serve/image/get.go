@@ -2,9 +2,12 @@ package image
 
 import (
 	"net/http"
+	"os"
+	"path"
 
 	"github.com/labstack/echo/v4"
 
+	"github.com/lucky-byte/reactgo/serve/config"
 	"github.com/lucky-byte/reactgo/serve/ctx"
 	"github.com/lucky-byte/reactgo/serve/db"
 )
@@ -20,12 +23,12 @@ func get(c echo.Context) error {
 		cc.Log().WithError(err).Error("missing parameters")
 		return c.NoContent(http.StatusBadRequest)
 	}
+	// 查询图片
+	ql := "select * from images where uuid = ?"
 	var image db.Image
 
-	// 查询图片
-	ql := "select data, mime, etag from images where uuid = ?"
-
-	if err = db.SelectOne(ql, &image, image_uuid); err != nil {
+	err = db.SelectOne(ql, &image, image_uuid)
+	if err != nil {
 		cc.Log().WithError(err).Error("failed to get image")
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -40,5 +43,20 @@ func get(c echo.Context) error {
 	// 不需要响应这个资源内容，这样可以让客户端缓存更有效，节省带宽
 	c.Response().Header().Set("etag", image.ETag)
 
-	return c.Blob(http.StatusOK, image.Mime, image.Data)
+	// 数据库
+	if image.Place == 1 {
+		return c.Blob(http.StatusOK, image.Mime, image.Data)
+	}
+	// 文件系统
+	if image.Place == 2 {
+		rootpath := config.Config.ImageRootPath()
+		p := path.Join(rootpath, image.Path)
+
+		data, err := os.ReadFile(p)
+		if err != nil {
+			cc.ErrLog(err).Errorf("从文件 %s 读取图片错", p)
+		}
+		return c.Blob(http.StatusOK, image.Mime, data)
+	}
+	return c.NoContent(http.StatusBadRequest)
 }

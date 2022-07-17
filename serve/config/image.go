@@ -17,5 +17,5 @@ func (c *ViperConfig) ImageRootPath() string {
 
 // 设置图片存储文件系统路径
 func (c *ViperConfig) SetImageRootPath(rootpath string) {
-	c.vp.Set("image.place", rootpath)
+	c.vp.Set("image.rootpath", rootpath)
 }

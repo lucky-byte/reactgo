@@ -21,6 +21,9 @@ var Master bool = false
 // 是否开发模式
 var dev = false
 
+// 全局实例
+var Config *ViperConfig
+
 func Load(filepath string, master bool) (*ViperConfig, error) {
 	vp := viper.NewWithOptions()
 
@@ -63,7 +66,11 @@ func Load(filepath string, master bool) (*ViperConfig, error) {
 	// 设置开发模式
 	vp.Set("dev", dev)
 
+	// 设置主服务器标识
 	Master = master
+
+	// 设置全局实例
+	Config = config
 
 	return config, nil
 }
