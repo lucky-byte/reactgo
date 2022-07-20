@@ -124,7 +124,7 @@ export default function List() {
             </Button>
             <Button variant='outlined' size='small' color='info'
               startIcon={<SettingsIcon />}
-              onClick={() => { navigate('entries') }}>
+              onClick={() => { navigate('setting') }}>
               配置
             </Button>
             <Button variant='outlined' size='small' color='warning'

@@ -4,6 +4,7 @@ import { useNavigate, Link as RouteLink } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
+import Tooltip from '@mui/material/Tooltip';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
@@ -51,13 +52,13 @@ export default function Entries() {
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Stack direction='row' alignItems='center' spacing={1} sx={{ my: 3 }}>
         <IconButton aria-label='返回' component={RouteLink} to='..'>
-          <ArrowBackIcon color='primary' />
+          <Tooltip arrow title='ESC' placement='top'>
+            <ArrowBackIcon color='primary' />
+          </Tooltip>
         </IconButton>
         <Stack sx={{ flex: 1 }}>
           <Typography variant='h6'>任务诊断</Typography>
-          <Typography variant='caption'>
-            查看系统任务调度器内部运行状态
-          </Typography>
+          <Typography variant='caption'>查看系统任务调度器内部运行状态</Typography>
         </Stack>
         <Stack direction='row' alignItems='center' spacing={4}>
           <Typography variant='body2'>共 {entries.length} 项</Typography>
