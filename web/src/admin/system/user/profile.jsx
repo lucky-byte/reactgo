@@ -67,10 +67,11 @@ export default function Profile() {
           boxShadow: 0, borderWidth: 0,
         }
       }}>
-        <Stack direction='row' alignItems='center' sx={{ mb: 3 }}>
-          <IconButton aria-label='返回' onClick={() => { navigate('..') }}
-            sx={{ mr: 1 }}>
-            <ArrowBackIcon color='primary' />
+        <Stack direction='row' alignItems='center' sx={{ mb: 3 }} spacing={1}>
+          <IconButton aria-label='返回' onClick={() => { navigate('..') }}>
+            <Tooltip arrow title='ESC' placement='top'>
+              <ArrowBackIcon color='primary' />
+            </Tooltip>
           </IconButton>
           <Typography variant='h5' gutterBottom={false} sx={{ flex: 1 }}>
             用户详细资料

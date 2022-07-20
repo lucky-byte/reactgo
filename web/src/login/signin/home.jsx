@@ -195,7 +195,7 @@ export default function Home() {
           {signupable &&
             <Button color='info' size='small' variant='outlined'
               LinkComponent={RouteLink} to='/signup' disabled={submitting}>
-              注册账号
+              注册新账号
             </Button>
           }
           <Tooltip title='公告' arrow>
@@ -273,12 +273,6 @@ export default function Home() {
                 ))}
               </Stack>
             </Stack>
-          }
-          {signupable &&
-            <Button fullWidth color='info' size='small' sx={{ mt: 2 }}
-              LinkComponent={RouteLink} to='/signup' disabled={submitting}>
-              还没有账号？点击这里注册
-            </Button>
           }
         </Paper>
       </Container>

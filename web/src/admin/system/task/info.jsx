@@ -6,6 +6,7 @@ import Paper from "@mui/material/Paper";
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -58,7 +59,9 @@ export default function Info() {
         <Stack direction='row' alignItems='center' sx={{ mb: 3 }}>
           <IconButton aria-label='返回' onClick={() => { navigate('..') }}
             sx={{ mr: 1 }}>
-            <ArrowBackIcon color='primary' />
+            <Tooltip arrow title='ESC' placement='top'>
+              <ArrowBackIcon color='primary' />
+            </Tooltip>
           </IconButton>
           <Typography variant='h6' gutterBottom={false}>
             定时任务详细信息

@@ -131,7 +131,7 @@ export default function Home() {
             <Banner height={28} />
           </Link>
         </Box>
-        <Button variant='outlined' LinkComponent={RouteLink} to='/signin'>
+        <Button size='small' variant='outlined' LinkComponent={RouteLink} to='/signin'>
           返回登录页面
         </Button>
       </Toolbar>

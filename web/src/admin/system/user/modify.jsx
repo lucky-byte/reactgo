@@ -6,6 +6,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
+import Tooltip from '@mui/material/Tooltip';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import TextField from "@mui/material/TextField";
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -99,7 +100,9 @@ export default function Modify() {
       <Paper sx={{ px: 4, py: 3, mt: 5 }}>
         <Stack direction='row' alignItems='center' spacing={1} sx={{ mb: 3 }}>
           <IconButton aria-label="返回" component={RouteLink} to='..'>
-            <ArrowBackIcon color='primary' />
+            <Tooltip arrow title='ESC' placement='top'>
+              <ArrowBackIcon color='primary' />
+            </Tooltip>
           </IconButton>
           <Typography variant='h5'>修改用户资料</Typography>
         </Stack>
@@ -207,9 +210,9 @@ export default function Modify() {
               <FormControlLabel
                 label={
                   <Stack spacing={0}>
-                    <Typography>登录时必须验证短信验证码</Typography>
+                    <Typography>登录时须验证短信验证码</Typography>
                     <FormHelperText sx={{ mt: 0 }}>
-                      建议开启以保护账户安全，开启前请先正确配置短信服务
+                      建议开启以保护账户安全，开启前请先正确配置系统短信服务
                     </FormHelperText>
                   </Stack>
                 }

@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import ToggleButton from '@mui/material/ToggleButton';
 import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -27,6 +28,8 @@ import Divider from '@mui/material/Divider';
 import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/Edit';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import SettingsIcon from '@mui/icons-material/Settings';
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import { useSnackbar } from 'notistack';
 import { useConfirm } from 'material-ui-confirm';
 import dayjs from 'dayjs';
@@ -48,6 +51,7 @@ export default function List() {
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(pageData('rowsPerPage') || 10);
+  const [type, setType] = useState('');
   const [refresh, setRefresh] = useState(true);
 
   useTitle('定时任务');
@@ -60,7 +64,7 @@ export default function List() {
       try {
         setProgress(true);
 
-        const query = new URLSearchParams({ page, rows, keyword });
+        const query = new URLSearchParams({ page, rows, keyword, type });
         const resp = await get('/system/task/list?' + query.toString());
         setCount(resp.count || 0);
         setList(resp.list || []);
@@ -70,7 +74,7 @@ export default function List() {
         setProgress(false);
       }
     })();
-  }, [ enqueueSnackbar, setProgress, page, rows, keyword, refresh ]);
+  }, [ enqueueSnackbar, setProgress, page, rows, keyword, type, refresh ]);
 
   // 搜索
   const onKeywordChange = value => {
@@ -92,23 +96,43 @@ export default function List() {
     setPageData('rowsPerPage', rows);
   }
 
+  const onTypeChange = (e, v) => {
+    if (v !== null) {
+      setType(v);
+      setPage(0);
+    }
+  }
+
   return (
-    <Container as='main' maxWidth='md' sx={{ mb: 4 }}>
+    <Container as='main' maxWidth='lg' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
-        <SearchInput isLoading={progress} onChange={onKeywordChange}
-          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
-          sx={{ minWidth: 300 }}
-        />
-        <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
-        <Stack direction='row' spacing={1}>
-          <Button variant='outlined' size='small' startIcon={<AddIcon />}
-            onClick={() => { navigate('add') }}>
-            添加
-          </Button>
-          <Button variant='outlined' size='small' color='warning'
-            onClick={() => { navigate('entries') }}>
-            诊断
-          </Button>
+        <Stack direction='row' spacing={1} flex={1}>
+          <SearchInput isLoading={progress} onChange={onKeywordChange}
+            placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
+            sx={{ minWidth: 300 }}
+          />
+          <ToggleButtonGroup exclusive size='small' color='primary' aria-label="类型"
+            value={type} onChange={onTypeChange}>
+            <ToggleButton value='' sx={{ py: '4px' }}>全部</ToggleButton>
+            <ToggleButton value='1' sx={{ py: '4px' }}>函数</ToggleButton>
+            <ToggleButton value='2' sx={{ py: '4px' }}>命令</ToggleButton>
+          </ToggleButtonGroup>
+          <Stack flex={1} direction='row' spacing={1} justifyContent='flex-end'>
+            <Button variant='outlined' size='small' startIcon={<AddIcon />}
+              onClick={() => { navigate('add') }}>
+              添加
+            </Button>
+            <Button variant='outlined' size='small' color='info'
+              startIcon={<SettingsIcon />}
+              onClick={() => { navigate('entries') }}>
+              配置
+            </Button>
+            <Button variant='outlined' size='small' color='warning'
+              startIcon={<MonitorHeartIcon />}
+              onClick={() => { navigate('entries') }}>
+              诊断
+            </Button>
+          </Stack>
         </Stack>
       </Toolbar>
       <Table size='medium'>

@@ -4,6 +4,7 @@ import { useSetRecoilState } from "recoil";
 import { useForm } from "react-hook-form";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
+import Tooltip from '@mui/material/Tooltip';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import TextField from "@mui/material/TextField";
 import InputAdornment from '@mui/material/InputAdornment';
@@ -83,9 +84,11 @@ export default function Add() {
       <Paper sx={{ px: 4, py: 3, mt: 5 }}>
         <Stack direction='row' alignItems='center' spacing={1} sx={{ mb: 3 }}>
           <IconButton aria-label='返回' component={RouteLink} to='..'>
-            <ArrowBackIcon color='primary' />
+            <Tooltip arrow title='ESC' placement='top'>
+              <ArrowBackIcon color='primary' />
+            </Tooltip>
           </IconButton>
-          <Typography variant='h5'>新用户资料</Typography>
+          <Typography variant='h5'>用户资料</Typography>
         </Stack>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Paper variant='outlined' sx={{ px: 4, py: 3 }}>
@@ -154,7 +157,7 @@ export default function Add() {
                 />
               </Stack>
               <Stack direction='row' spacing={3}>
-                <TextField label='登录密码' variant='standard' fullWidth required 
+                <TextField label='登录密码' variant='standard' fullWidth required
                   type='password' autoComplete='new-password'
                   placeholder='登录密码不能少于6个字符'
                   disabled={isSubmitting}
@@ -177,7 +180,7 @@ export default function Add() {
                     },
                   })}
                 />
-                <TextField label='确认登录密码' variant='standard' fullWidth required 
+                <TextField label='确认登录密码' variant='standard' fullWidth required
                   type='password' autoComplete='new-password'
                   placeholder='再次输入登录密码'
                   disabled={isSubmitting}
@@ -252,14 +255,14 @@ export default function Add() {
                 <FormControlLabel
                   label={
                     <Stack spacing={0}>
-                      <Typography>登录时必须验证短信验证码</Typography>
+                      <Typography>登录时须验证短信验证码</Typography>
                       <FormHelperText sx={{ mt: 0 }}>
-                        建议开启以保护账户安全，开启前请先正确配置短信服务
+                        建议开启以保护账户安全，开启前请先正确配置系统短信服务
                       </FormHelperText>
                     </Stack>
                   }
                   control={
-                    <Checkbox defaultChecked {...register('tfa')} 
+                    <Checkbox defaultChecked {...register('tfa')}
                       disabled={isSubmitting}
                     />
                   }
@@ -269,7 +272,7 @@ export default function Add() {
                     <Stack spacing={0}>
                       <Typography>将登录信息发送到用户邮箱</Typography>
                       <FormHelperText sx={{ mt: 0 }}>
-                        邮件中包含用户登录需要的所有信息(包括密码)，请确认录入的邮箱地址正确无误
+                        邮件中包含用户登录需要的所有信息(包括密码)，请确认录入的邮箱地址正确
                       </FormHelperText>
                     </Stack>
                   }

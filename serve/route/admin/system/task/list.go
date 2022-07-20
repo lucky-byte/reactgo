@@ -16,12 +16,13 @@ import (
 func list(c echo.Context) error {
 	cc := c.(*ctx.Context)
 
-	var page, rows uint
+	var page, rows, task_type uint
 	var keyword string
 
 	err := echo.QueryParamsBinder(c).
 		MustUint("page", &page).
 		MustUint("rows", &rows).
+		Uint("type", &task_type).
 		String("keyword", &keyword).BindError()
 	if err != nil {
 		return cc.BadRequest(err)
@@ -36,6 +37,9 @@ func list(c echo.Context) error {
 		pg.Col("summary").ILike(keyword),
 		pg.Col("path").ILike(keyword),
 	))
+	if task_type > 0 {
+		pg.Where(pg.Col("type").Eq(task_type))
+	}
 	pg.Select(pg.Col("*")).OrderBy(pg.Col("create_at").Desc())
 
 	var count uint
@@ -45,22 +49,5 @@ func list(c echo.Context) error {
 		cc.ErrLog(err).Error("查询任务信息错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
-	var list []echo.Map
-
-	for _, u := range records {
-		list = append(list, echo.Map{
-			"uuid":      u.UUID,
-			"create_at": u.CreateAt,
-			"update_at": u.UpdateAt,
-			"name":      u.Name,
-			"summary":   u.Summary,
-			"cron":      u.Cron,
-			"type":      u.Type,
-			"path":      u.Path,
-			"last_fire": u.LastFire,
-			"nfire":     u.NFire,
-			"disabled":  u.Disabled,
-		})
-	}
-	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": list})
+	return c.JSON(http.StatusOK, echo.Map{"count": count, "list": records})
 }
