@@ -132,7 +132,7 @@ export default function Home() {
           </Link>
         </Box>
         <Button variant='outlined' LinkComponent={RouteLink} to='/signin'>
-          去登录
+          返回登录页面
         </Button>
       </Toolbar>
       <Container maxWidth='xs'
