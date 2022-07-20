@@ -199,7 +199,7 @@ export default function Home() {
             </Button>
           }
           <Tooltip title='公告' arrow>
-            <IconButton LinkComponent={RouteLink} to='/bulletin'>
+            <IconButton LinkComponent={RouteLink} to='/public/bulletin'>
               <CampaignIcon color='primary' />
             </IconButton>
           </Tooltip>
