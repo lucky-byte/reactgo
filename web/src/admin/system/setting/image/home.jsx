@@ -83,10 +83,10 @@ export default function Home() {
               设置以哪种方式存储用户上传的图片文件，通常在系统部署时确定一种方式，不建议更换
             </FormHelperText>
           </Stack>
-          <TextField select variant='standard'
+          <TextField select variant='standard' size='small'
             value={place} onChange={onPlaceChange}>
-            <MenuItem value={1}>1.数据库</MenuItem>
-            <MenuItem value={2}>2.文件系统</MenuItem>
+            <MenuItem value={1}>数据库</MenuItem>
+            <MenuItem value={2}>文件系统</MenuItem>
           </TextField>
         </Stack>
         <Collapse in={place === 2}>

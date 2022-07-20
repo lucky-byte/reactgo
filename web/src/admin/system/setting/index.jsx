@@ -14,6 +14,7 @@ import Account from "./account";
 import Pay from "./pay";
 import Debug from "./debug";
 import Image from "./image";
+import Nats from "./nats";
 import tabState from "./tabstate";
 
 const tabsArray = [
@@ -23,7 +24,8 @@ const tabsArray = [
   { title: '账号设置', value: 4, to: 'account', },
   { title: '支付服务', value: 5, to: 'pay', },
   { title: '图片存储', value: 6, to: 'image', },
-  { title: '诊断模式', value: 7, to: 'debug', },
+  { title: '消息服务', value: 7, to: 'nats', },
+  { title: '诊断模式', value: 8, to: 'debug', },
 ]
 
 export default function Setting() {
@@ -50,6 +52,7 @@ export default function Setting() {
             <Route path='account/*' element={<Account />} />
             <Route path='pay/*' element={<Pay />} />
             <Route path='image/*' element={<Image />} />
+            <Route path='nats/*' element={<Nats />} />
             <Route path='debug/*' element={<Debug />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
