@@ -170,6 +170,10 @@ reboot:
 	// 自定义 Context
 	engine.Use(ctx.Middleware(conf))
 
+	// 输出请求和响应详情
+	if debug && !conf.Dev() {
+		engine.Use(debugMiddleware)
+	}
 	// WEB 静态文件
 	engine.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Skipper: func(c echo.Context) bool {
