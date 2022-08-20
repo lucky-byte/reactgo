@@ -99,13 +99,13 @@ func dumpRequest(req *http.Request) {
 	reqC := color.New(color.FgHiGreen, color.Bold)
 
 	fmt.Println()
-	reqC.Printf("Request Headers: %s %s\n", req.Method, url)
+	reqC.Printf("请求首部: %s %s\n", req.Method, url)
 	reqC.Println("===============================================")
 	dumpHeader(req.Header)
 
 	fmt.Println()
 	n := fmt.Sprintf("%d", len(string(body)))
-	reqC.Printf("Request Body: %s %s %s bytes\n", req.Method, url, n)
+	reqC.Printf("请求数据: %s %s %s bytes\n", req.Method, url, n)
 	reqC.Println("===============================================")
 
 	// Request mime type
@@ -129,13 +129,13 @@ func (d *dumpWriter) dumpResponse(req *http.Request, res *echo.Response) {
 	resC := color.New(color.FgHiMagenta, color.Bold)
 
 	fmt.Println()
-	resC.Printf("Response Headers: %s %s %d\n", req.Method, url, res.Status)
+	resC.Printf("响应首部: %s %s %d\n", req.Method, url, res.Status)
 	resC.Println("===============================================")
 	dumpHeader(res.Header())
 
 	fmt.Println()
 	n := fmt.Sprintf("%d", res.Size)
-	resC.Printf("Response Body: %s %s %s bytes\n", req.Method, url, n)
+	resC.Printf("响应数据: %s %s %s bytes\n", req.Method, url, n)
 	resC.Println("===============================================")
 
 	// Response mime type
