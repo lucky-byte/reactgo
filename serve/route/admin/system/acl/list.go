@@ -19,6 +19,16 @@ func list(c echo.Context) error {
 		from acl as a
 		order by a.create_at desc
 	`
+	if cc.Acl().Code != 0 {
+		ql = `
+			select a.*, (
+				select count(*) from users where acl = a.uuid
+			) as user_count
+			from acl as a
+			where a.code <> 0
+			order by a.create_at desc
+		`
+	}
 	type result struct {
 		db.ACL
 		UserCount int `db:"user_count"`

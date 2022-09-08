@@ -45,6 +45,18 @@ func list(c echo.Context) error {
 			pg.Col("acct_bank_name").ILike(search),
 		))
 	}
+	// 如果不是超级用户，则不能查询超级用户
+	if cc.Acl().Code != 0 {
+		ql := `select uuid from acl where code <> 0`
+		var uuids []string
+
+		err = db.Select(ql, &uuids)
+		if err != nil {
+			cc.ErrLog(err).Error("查询访问控制列表错")
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		pg.Where(pg.Col("acl").In(uuids))
+	}
 	// 访问控制匹配
 	if len(acl) > 0 && acl != "all" {
 		pg.Where(pg.Col("acl").Eq(acl))

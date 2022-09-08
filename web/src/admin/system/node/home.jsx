@@ -442,9 +442,12 @@ export default function Home() {
         uuid: node.uuid, _audit,
       }));
       enqueueSnackbar('删除成功', { variant: 'success' });
-      setSelected('');
-      setPageData('selected', '');
       setReload(true);
+
+      setTimeout(() => {
+        setPageData('selected', '');
+        setSelected('');
+      }, 500);
     } catch (err) {
       if (err) {
         enqueueSnackbar(err.message);
