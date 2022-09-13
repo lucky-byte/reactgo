@@ -19,8 +19,23 @@ func info(c echo.Context) error {
 	ql := `select * from tree where uuid = ?`
 	var node db.Tree
 
-	if err := db.SelectOne(ql, &node, uuid); err != nil {
+	err := db.SelectOne(ql, &node, uuid)
+	if err != nil {
 		cc.ErrLog(err).Error("查询层级结构错")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	// 查询节点绑定的用户列表
+	ql = `
+		select u.name as user_name from tree_bind as tb
+		left join users as u on u.uuid = tb.entity
+		where tb.type = 1 and tb.node = ?
+		order by tb.create_at desc
+	`
+	var users []string
+
+	err = db.Select(ql, &users, node.UUID)
+	if err != nil {
+		cc.ErrLog(err).Error("查询层级结构绑定用户错")
 		return c.NoContent(http.StatusInternalServerError)
 	}
 	return c.JSON(http.StatusOK, echo.Map{
@@ -34,5 +49,6 @@ func info(c echo.Context) error {
 		"tpath":     node.TPath,
 		"disabled":  node.Disabled,
 		"sortno":    node.SortNo,
+		"users":     users,
 	})
 }

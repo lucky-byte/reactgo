@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import TreeView from '@mui/lab/TreeView';
 import Menu from '@mui/material/Menu';
@@ -608,6 +609,11 @@ export default function Home() {
                   <Typography variant='body2' disabled={node.disabled}>
                     绑定的用户可以访问该节点(包含所有子节点)下的资源
                   </Typography>
+                  <Stack direction='row' mt={1} spacing={1}>
+                    {node.users?.map(user => (
+                      <Chip label={user} variant='outlined' size='small' />
+                    ))}
+                  </Stack>
                 </Stack>
                 <Button disabled={node.disabled} variant='contained' onClick={() => {
                   navigate('user', { state: { node }});
