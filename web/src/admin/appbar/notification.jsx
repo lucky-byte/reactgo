@@ -19,7 +19,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CloseIcon from '@mui/icons-material/Close';
 import SettingIcon from '@mui/icons-material/Settings';
 import { useSnackbar } from 'notistack';
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import Push from 'push.js';
 import nats from '~/lib/nats';
 import userState from "~/state/user";
@@ -86,7 +86,7 @@ export default function Notification() {
       }
       return;
     }
-    const tag = uuid.v4();
+    const tag = uuidv4();
 
     Push.create(title, {
       icon: '/logo192.png',

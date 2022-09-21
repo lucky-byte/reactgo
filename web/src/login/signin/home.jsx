@@ -21,7 +21,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import KeyIcon from '@mui/icons-material/Key';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import { useSnackbar } from 'notistack';
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import Cookies from 'universal-cookie';
 import userState from "~/state/user";
 import { put, get } from "~/login/fetch";
@@ -78,7 +78,7 @@ export default function Home() {
     if (id) {
       setClientId(id);
     } else {
-      const newid = uuid.v4();
+      const newid = uuidv4();
 
       cookies.set('reactgo-clientid', newid, {
         path: '/',

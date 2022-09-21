@@ -22,7 +22,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import KeyIcon from '@mui/icons-material/Key';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import { useSnackbar } from 'notistack';
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import Cookies from 'universal-cookie';
 import userState from "~/state/user";
 import { getLastAccess } from '~/lib/last-access';
@@ -79,7 +79,7 @@ export default function Home() {
     if (id) {
       setClientId(id);
     } else {
-      const newid = uuid.v4();
+      const newid = uuidv4();
 
       cookies.set('reactgo-clientid', newid, {
         path: '/',
@@ -328,8 +328,6 @@ function Forget(props) {
 
 // 授权账号登录
 function Authorize(props) {
-  const { provider, ...others } = props;
-
   // if (provider === 'github') {
   //   return <GitHub {...others} />
   // }
