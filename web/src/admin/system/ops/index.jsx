@@ -90,16 +90,15 @@ export default function Ops() {
   return (
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
-        <SearchInput isLoading={loading} onChange={onKeywordChange}
-          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
-          sx={{ minWidth: 300 }}
-        />
-        <DateInput
-          value={date} onChange={onDateChange} maxDate={dayjs()}
-          inputProps={{
-            variant: 'standard', sx: { ml: 2, width: 180 },
-          }}
-        />
+        <Stack direction='row' spacing={2}>
+          <SearchInput isLoading={loading} onChange={onKeywordChange}
+            placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
+            sx={{ minWidth: 300 }}
+          />
+          <DateInput
+            value={date} onChange={onDateChange} maxDate={dayjs()}
+          />
+        </Stack>
         <Stack direction='row' spacing={2} justifyContent='flex-end' sx={{ flex: 1 }}>
           <ToggleButtonGroup exclusive size='small' color='primary' aria-label="级别"
             value={method} onChange={onMethodChange}>

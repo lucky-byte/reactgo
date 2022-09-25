@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Container from "@mui/material/Container";
 import Toolbar from '@mui/material/Toolbar';
+import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -85,16 +86,15 @@ export default function History() {
   return (
     <Container as='main' maxWidth='lg' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
-        <SearchInput isLoading={loading} onChange={onKeywordChange}
-          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
-          sx={{ minWidth: 300 }}
-        />
-        <DateInput
-          value={date} onChange={onDateChange} maxDate={dayjs()}
-          inputProps={{
-            variant: 'standard', sx: { ml: 2, width: 180 },
-          }}
-        />
+        <Stack direction='row' spacing={2}>
+          <SearchInput isLoading={loading} onChange={onKeywordChange}
+            placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
+            sx={{ minWidth: 300 }}
+          />
+          <DateInput
+            value={date} onChange={onDateChange} maxDate={dayjs()}
+          />
+        </Stack>
       </Toolbar>
       <Table>
         <TableHead>

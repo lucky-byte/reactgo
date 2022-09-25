@@ -136,17 +136,15 @@ export default function Home() {
   return (
     <Container as='main' role='main' maxWidth='md' sx={{ mb: 4 }}>
       <Toolbar sx={{ mt: 2 }} disableGutters>
-        <SearchInput isLoading={loading} onChange={onKeywordChange}
-          placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
-          sx={{ minWidth: 300 }}
-        />
-        <DateInput
-          value={date} onChange={onDateChange} maxDate={dayjs()}
-          inputProps={{
-            variant: 'standard', sx: { ml: 2, width: 180 },
-          }}
-        />
-        <Typography textAlign='right' sx={{ flex: 1 }} variant='caption' />
+        <Stack direction='row' spacing={2} flex={1}>
+          <SearchInput isLoading={loading} onChange={onKeywordChange}
+            placeholder={count > 0 ? `在 ${count} 条记录中搜索...` : '搜索...'}
+            sx={{ minWidth: 300 }}
+          />
+          <DateInput
+            value={date} onChange={onDateChange} maxDate={dayjs()}
+          />
+        </Stack>
         <Button variant='outlined' size='small' startIcon={<AddIcon />}
           onClick={() => { navigate('edit') }}>
           发布公告
