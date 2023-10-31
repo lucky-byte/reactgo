@@ -175,18 +175,19 @@ reboot:
 		engine.Use(debugMiddleware)
 	}
 	// WEB 静态文件
-	engine.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-		Skipper: func(c echo.Context) bool {
-			if strings.ToUpper(c.Request().Method) == "GET" {
-				urlpath := c.Request().URL.Path
+        // Gzip 插件压缩后浏览器不能正确解码
+	// engine.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+	// 	Skipper: func(c echo.Context) bool {
+	// 		if strings.ToUpper(c.Request().Method) == "GET" {
+	// 			urlpath := c.Request().URL.Path
 
-				if strings.HasPrefix(urlpath, "/static/js/") {
-					return false
-				}
-			}
-			return true
-		},
-	}))
+	// 			if strings.HasPrefix(urlpath, "/static/js/") {
+	// 				return false
+	// 			}
+	// 		}
+	// 		return true
+	// 	},
+	// }))
 	// 执行文件中通过 gl:embed 打包了 WEB 静态文件
 	// 如果命令行选项 -webfs 设置为 osdir，那么使用文件系统中的 WEB 静态文件，
 	// 而不是打包的静态文件，如果 -webfs 设置为 embed，则使用打包的静态文件
