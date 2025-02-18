@@ -71,7 +71,7 @@ export default function Sidebar() {
           <Banner height={26} />
         </Link>
       </Toolbar>
-      <Box sx={{ flexGrow: 1, overflowY: 'scroll' }}>
+      <Box sx={{ flexGrow: 1 }}>
         {visibleMenus.map(menu => (<Menu menu={menu} key={menu.title} />))}
       </Box>
     </Box>
