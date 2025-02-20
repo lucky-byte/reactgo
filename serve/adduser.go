@@ -119,9 +119,6 @@ func addNewUser(userid, email, mobile, passwd string) error {
 	// generate hashed password with default algorithm
 	passwdHash, err := secure.DefaultPHC().Hash(passwd)
 	if err != nil {
-		return err
-	}
-	if err != nil {
 		return errors.Wrap(err, "json marshal")
 	}
 	ql := `select uuid from acl where code = 0`
