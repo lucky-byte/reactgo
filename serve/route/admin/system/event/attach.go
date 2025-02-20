@@ -11,4 +11,5 @@ func Attach(up *echo.Group, code int) {
 
 	group.GET("/", list)
 	group.PUT("/unfresh", unfresh)
+	group.POST("/clean", clean)
 }
