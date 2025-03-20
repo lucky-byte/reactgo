@@ -49,6 +49,11 @@ const rest = async (prefix, path, redirect401, args) => {
     }
     throw new Error(text || '未知错误-' + resp.status);
   }
+  // 附件作为二进制处理
+  const dispose = resp.headers.get('content-disposition');
+  if (dispose?.includes('attachment')) {
+    return await resp.blob();
+  }
   // 根据返回类型解析数据，支持 json，其它类型作为 text 处理
   const type = resp.headers.get("content-type");
   if (type?.startsWith("application/json")) {
